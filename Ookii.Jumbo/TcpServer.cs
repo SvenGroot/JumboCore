@@ -89,7 +89,7 @@ namespace Ookii.Jumbo
         {
             if( System.Net.Sockets.Socket.OSSupportsIPv6 )
             {
-                if( listen4And6 ?? Environment.OSVersion.Platform != PlatformID.Unix )
+                if( listen4And6 ?? true )
                     return new[] { IPAddress.IPv6Any, IPAddress.Any };
                 else
                     return new[] { IPAddress.IPv6Any };
