@@ -1,0 +1,38 @@
+﻿@using System.Globalization
+@using Ookii.Jumbo
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Jumbo DFS - @ViewBag.Title</title>
+    <link rel="stylesheet" type="text/css" href="~/style/jumbo.css" />
+</head>
+<body>
+    <div id="PageHeader">
+        <p id="VersionInfo">
+            Jumbo version: @string.Format(CultureInfo.CurrentCulture, "{0} ({1})", RuntimeEnvironment.JumboVersion, RuntimeEnvironment.JumboConfiguration)<br />
+            OS Version: @RuntimeEnvironment.OperatingSystemDescription<br />
+            CLR Version: @RuntimeEnvironment.Description (@((IntPtr.Size * 8).ToString()) bit runtime)
+        </p>
+        <h1>
+            <a href="~/"><em>Jumbo</em> DFS</a>
+        </h1>
+    </div>
+    <div id="MainContent">
+        @RenderBody()
+    </div>
+</body>
+</html>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

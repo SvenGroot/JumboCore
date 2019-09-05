@@ -1,0 +1,99 @@
+﻿@page
+@using Ookii.Jumbo.Dfs
+@using Ookii.Jumbo.Dfs.FileSystem
+@model DfsWeb.Pages.IndexModel
+@{
+    DfsClient client = (DfsClient)FileSystemClient.Create();
+    DfsMetrics metrics = client.NameServer.GetMetrics();
+    ViewData["Title"] = metrics.NameServer.ToString();
+    bool safeMode = client.NameServer.SafeMode;
+}
+
+<h2>File system status</h2>
+<table>
+    <tr>
+        <th scope="row">Name server</th>
+        <td>@metrics.NameServer.ToString()</td>
+    </tr>
+    <tr>
+        <th scope="row">Total size</th>
+        <td>@metrics.TotalSize</td>
+    </tr>
+    <tr>
+        <th scope="row">Total capacity</th>
+        <td>@Utility.FormatSize(metrics.TotalCapacity)</td>
+    </tr>
+    <tr>
+        <th scope="row">DFS capacity used</th>
+        <td>@Utility.FormatSize(metrics.DfsCapacityUsed)</td>
+    </tr>
+    <tr>
+        <th scope="row">Available capacity</th>
+        <td>@Utility.FormatSize(metrics.AvailableCapacity)</td>
+    </tr>
+    <tr>
+        <th scope="row">Total blocks (excluding pending)</th>
+        <td><a asp-page="/BlockList">@metrics.TotalBlockCount</a></td>
+    </tr>
+    <tr>
+        <th scope="row">Under-replicated blocks</th>
+        <td><a asp-page="/BlockList" asp-route-kind="UnderReplicated">@metrics.PendingBlockCount</a></td>
+    </tr>
+    <tr>
+        <th scope="row">Pending blocks</th>
+        <td><a asp-page="/BlockList" asp-route-kind="Pending">@metrics.PendingBlockCount</a></td>
+    </tr>
+    <tr>
+        <th scope="row">Data servers</th>
+        <td>@metrics.DataServers.Count</td>
+    </tr>
+    <tr>
+        <th scope="row">Safe mode</th>
+        <td><a asp-page="/SetSafeMode" asp-route-safeMode="@(!safeMode)">@(safeMode ? "ON" : "OFF")</a></td>
+    </tr>
+</table>
+<p>
+    View name server log file: <a asp-page="LogFile" asp-route-maxsize="100KB">last 100KB</a>, <a asp-page="LogFile">all</a><br />
+    <a asp-page="FileSystem">Browse file system namespace.</a>
+</p>
+<h2>Data servers</h2>
+<table>
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Rack</th>
+        <th scope="col">Port</th>
+        <th scope="col">Last contact</th>
+        <th scope="col">Blocks</th>
+        <th scope="col">Disk space</th>
+        <th scope="col">Log file</th>
+    </tr>
+    @foreach (var server in metrics.DataServers.OrderBy(s => s.Address))
+    {
+        var lastContact = DateTime.UtcNow - server.LastContactUtc;
+        string style = null;
+        if (lastContact.TotalSeconds > 60)
+            style = "background-color: red";
+        else if (lastContact.TotalSeconds > 5)
+            style = "background-color: yellow";
+
+        <tr style="@style">
+            <td>@server.Address.HostName</td>
+            <td>@server.RackId</td>
+            <td>@server.Address.Port</td>
+            <td>@string.Format("{0:0.0}s ago", lastContact.TotalSeconds)</td>
+            <td><a asp-page="/BlockList" asp-route-dataServer="@server.Address.HostName" asp-route-port="@server.Address.Port">@server.BlockCount</a></td>
+            @{ 
+                style = null;
+                if (server.DiskSpaceFree < DfsConfiguration.GetConfiguration().NameServer.DataServerFreeSpaceThreshold)
+                {
+                    style = "background-color: yellow";
+                }
+            }
+            <td style="@style">Total: @Utility.FormatSize(server.DiskSpaceTotal) / Used: @Utility.FormatSize(server.DiskSpaceUsed) / Free: @Utility.FormatSize(server.DiskSpaceFree)</td>
+            <td>
+                <a asp-page="/LogFile" asp-route-dataServer="@server.Address.HostName" asp-route-port="@server.Address.Port" asp-route-maxSize="100KB">Last 100KB</a>,
+                <a asp-page="/LogFile" asp-route-dataServer="@server.Address.HostName" asp-route-port="@server.Address.Port">Full</a>
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace DfsWeb.Pages
+{
+    public class BlockListModel : PageModel
+    {
+        public void OnGet()
+        {
+
+        }
+    }
+}

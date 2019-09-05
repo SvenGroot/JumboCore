@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArgumentConversionErrorFormat" xml:space="preserve">
+    <value>The value '{0}' provided for argument '{1}' could not be interpreted as a {2}.</value>
+  </data>
+  <data name="ArrayNotLastArgument" xml:space="preserve">
+    <value>Only the last positional argument may be an array.</value>
+  </data>
+  <data name="DefaultArgumentDescriptionFormat" xml:space="preserve">
+    <value>{0,13} : {1}</value>
+    <comment>If you change this, you may also need to change the indent used in the code.</comment>
+  </data>
+  <data name="DefaultArraySuffix" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="DefaultOptionalArgumentFormat" xml:space="preserve">
+    <value>[{0}]</value>
+  </data>
+  <data name="DefaultOptionalArgumentWithDefaultValueFormat" xml:space="preserve">
+    <value>[{0}={1}]</value>
+  </data>
+  <data name="DefaultRequiredArgumentFormat" xml:space="preserve">
+    <value>&lt;{0}&gt;</value>
+  </data>
+  <data name="DefaultUsagePrefixFormat" xml:space="preserve">
+    <value>Usage: {0}</value>
+  </data>
+  <data name="EmptyArgumentName" xml:space="preserve">
+    <value>The argument name cannot be empty.</value>
+  </data>
+  <data name="EmptyNamedArgumentSwitch" xml:space="preserve">
+    <value>NamedArgumentSwitch may not be empty.</value>
+  </data>
+  <data name="IncorrectDefaultValueTypeFormat" xml:space="preserve">
+    <value>Default value does not have the same type as the argument for argument {0}.</value>
+  </data>
+  <data name="IndentOutOfRange" xml:space="preserve">
+    <value>The indent must be greater than or equal to zero.</value>
+  </data>
+  <data name="InvalidArrayRank" xml:space="preserve">
+    <value>Multi-dimensional arrays are not supported for command line arguments.</value>
+  </data>
+  <data name="InvalidOptionalArgumentOrder" xml:space="preserve">
+    <value>Command line constructor cannot have non-optional arguments after an optional argument.</value>
+  </data>
+  <data name="MaxLineLengthOutOfRange" xml:space="preserve">
+    <value>The maximum line length must be larger than zero.</value>
+  </data>
+  <data name="MaxLineLengthSmallerThanIndent" xml:space="preserve">
+    <value>The indent must be smaller than the maximum line length.</value>
+  </data>
+  <data name="MissingArgumentValueFormat" xml:space="preserve">
+    <value>Argument {0} has no value.</value>
+  </data>
+  <data name="MissingNamedArgumentAttribute" xml:space="preserve">
+    <value>Specified property is not a named argument.</value>
+  </data>
+  <data name="MultipleMarkedConstructors" xml:space="preserve">
+    <value>The command line arguments type has more than one constructor with the CommandLineConstructorAttribute attribute.</value>
+  </data>
+  <data name="NamedArgumentContainsSeparatorFormat" xml:space="preserve">
+    <value>Named argument '{0}' cannot contain a colon (:).</value>
+  </data>
+  <data name="NamedArgumentSwitchContainsSeparator" xml:space="preserve">
+    <value>NamedArgumentSwitch may not contain a colon (':').</value>
+  </data>
+  <data name="NoArgumentsFormat" xml:space="preserve">
+    <value>The type {0} specifies no named or positional command line arguments.</value>
+  </data>
+  <data name="NoConstructor" xml:space="preserve">
+    <value>Command line arguments type does not have any public constructors.</value>
+  </data>
+  <data name="NoMarkedConstructor" xml:space="preserve">
+    <value>The command line arguments type has more than one constructor, none of which has the CommandLineConstructorAttribute attribute.</value>
+  </data>
+  <data name="NoTypeConverterFormat" xml:space="preserve">
+    <value>Argument {0} has type {1} that cannot be parsed from a string.</value>
+  </data>
+  <data name="UnknownArgumentFormat" xml:space="preserve">
+    <value>Unknown argument {0}.</value>
+  </data>
+</root>
