@@ -9,6 +9,7 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Ookii.Jumbo.Jet.Tasks;
+using System.Runtime.Serialization;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -192,11 +193,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException("settings");
             if( taskDelegate == null )
                 throw new ArgumentNullException("taskDelegate");
-            BinaryFormatter formatter = new BinaryFormatter();
-            using( MemoryStream stream = new MemoryStream() )
+
+            settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName);
+            settings.Add(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, taskDelegate.Method.DeclaringType.AssemblyQualifiedName);
+            settings.Add(TaskConstants.JobBuilderDelegateMethodSettingKey, taskDelegate.Method.Name);
+            if (!taskDelegate.Method.IsStatic)
             {
-                formatter.Serialize(stream, taskDelegate);
-                settings.Add(TaskConstants.JobBuilderDelegateSettingKey, Convert.ToBase64String(stream.ToArray()));
+                BinaryFormatter formatter = new BinaryFormatter();
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, taskDelegate.Target);
+                    settings.Add(TaskConstants.JobBuilderDelegateTargetSettingKey, Convert.ToBase64String(stream.ToArray()));
+                }
             }
         }
         
@@ -209,15 +217,27 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             if( context != null )
             {
-                string base64Delegate = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateSettingKey, null);
-                if( base64Delegate != null )
+                string typeName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, null);
+                string methodName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateMethodSettingKey, null);
+                string delegateTypeName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateTypeSettingKey, null);
+                if (typeName != null && methodName != null && delegateTypeName != null)
                 {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    byte[] serializedDelegate = Convert.FromBase64String(base64Delegate);
-                    using( MemoryStream stream = new MemoryStream(serializedDelegate) )
+                    Type type = Type.GetType(typeName);
+                    MethodInfo method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                    Type delegateType = Type.GetType(delegateTypeName);
+                    object target = null;
+                    string targetBase64 = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateTargetSettingKey, null);
+                    if (targetBase64 != null)
                     {
-                        return formatter.Deserialize(stream);
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        byte[] serializedTarget = Convert.FromBase64String(targetBase64);
+                        using (MemoryStream stream = new MemoryStream(serializedTarget))
+                        {
+                            target = formatter.Deserialize(stream);
+                        }
                     }
+
+                    return method.CreateDelegate(delegateType, target);
                 }
             }
 

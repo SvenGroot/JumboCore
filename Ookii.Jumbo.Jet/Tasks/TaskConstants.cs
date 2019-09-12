@@ -48,11 +48,35 @@ namespace Ookii.Jumbo.Jet.Tasks
         public const string AccumulatorTaskKeyComparerSettingKey = "AccumulatorTask.KeyComparer";
 
         /// <summary>
-        /// The name of the setting in <see cref="Jobs.StageConfiguration.StageSettings"/> that specifies the delegate to
-        /// be called in any of the task types that use a delegate. The value of the setting is a base64-encoded binary serialization
-        /// of the delegateThis setting is used by the <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/>
-        /// and should not normally be used by your code.
+        /// The name of the setting in <see cref="Jobs.StageConfiguration.StageSettings"/> that specifies the delegate type
+        /// used in a task type that uses a delegate. The value of the setting is a  <see cref="String"/> that
+        /// specifies the assembly-qualified type name. This setting is used by the
+        /// <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> and should not normally be used by your code.
         /// </summary>
-        public const string JobBuilderDelegateSettingKey = "JobBuilder.Delegate";
+        public const string JobBuilderDelegateTypeSettingKey = "JobBuilder.DelegateType";
+
+        /// <summary>
+        /// The name of the setting in <see cref="Jobs.StageConfiguration.StageSettings"/> that specifies the type that declares
+        /// a method to be called using a delegate in a task type that uses a delegate. The value of the setting is a 
+        /// <see cref="String"/> that specifies the assembly-qualified type name. This setting is used by the
+        /// <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> and should not normally be used by your code.
+        /// </summary>
+        public const string JobBuilderDelegateMethodTypeSettingKey = "JobBuilder.DelegateMethodType";
+
+        /// <summary>
+        /// The name of the setting in <see cref="Jobs.StageConfiguration.StageSettings"/> that specifies the name of
+        /// a method to be called using a delegate in a task type that uses a delegate. The value of the setting is a 
+        /// <see cref="String"/> that specifies the method name. This setting is used by the
+        /// <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> and should not normally be used by your code.
+        /// </summary>
+        public const string JobBuilderDelegateMethodSettingKey = "JobBuilder.DelegateMethodSetting";
+
+        /// <summary>
+        /// The name of the setting in <see cref="Jobs.StageConfiguration.StageSettings"/> that specifies the target
+        /// for invoking a delegate in a task type that uses a delegate. The value of the setting is a 
+        /// <see cref="String"/> that specifies the base64-encoded binary serialization of the object. This setting is used by the
+        /// <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> and should not normally be used by your code.
+        /// </summary>
+        public const string JobBuilderDelegateTargetSettingKey = "JobBuilder.DelegateTargetSetting";
     }
 }

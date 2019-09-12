@@ -122,6 +122,28 @@ namespace Ookii.Jumbo.Test.Jet
         }
 
         [Test]
+        public void TestCreateDynamicTaskLambda()
+        {
+            DynamicTaskBuilder target = new DynamicTaskBuilder();
+            Action<RecordReader<int>, RecordWriter<int>> taskDelegate = (input, output) => output.WriteRecords(input.EnumerateRecords().Select(i => i * 5));
+            Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 0, RecordReuseMode.Allow);
+            TaskContext context = CreateConfiguration(taskType);
+            context.StageConfiguration.StageSettings = new SettingsDictionary();
+            DynamicTaskBuilder.SerializeDelegate(context.StageConfiguration.StageSettings, taskDelegate);
+            ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
+            List<int> data = Utilities.GenerateNumberData(10);
+            List<int> result;
+            using (EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data))
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
+            {
+                task.Run(input, output);
+                result = output.List.ToList();
+            }
+
+            CollectionAssert.AreEqual(data.Select(i => i * 5).ToList(), result);
+        }
+
+        [Test]
         public void TestCreateDynamicTaskInstanceMethod()
         {
             DynamicTaskBuilder target = new DynamicTaskBuilder();
