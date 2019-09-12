@@ -104,7 +104,7 @@ namespace Ookii.Jumbo
             public override int ReadByte()
             {
                 int result = base.ReadByte();
-                if (result > 0)
+                if (result >= 0)
                 {
                     ++_bytesRead;
                 }
