@@ -26,6 +26,7 @@ namespace Ookii.Jumbo.Test.Jet
         public const int TaskServerPort = 11001;
         public const int TaskServerFileServerPort = 11002;
 
+        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TestJetCluster));
         private readonly FileSystemClient _fileSystemClient;
         private readonly JetClient _jetClient;
 
@@ -64,16 +65,12 @@ namespace Ookii.Jumbo.Test.Jet
             JetConfiguration jetConfig = new JetConfiguration();
             jetConfig.JobServer.HostName = "localhost";
             jetConfig.JobServer.Port = JobServerPort;
-            if( Environment.OSVersion.Platform == PlatformID.Unix )
-                jetConfig.JobServer.ListenIPv4AndIPv6 = false;
             jetConfig.TaskServer.Port = TaskServerPort;
             jetConfig.TaskServer.TaskDirectory = Path.Combine(_path, "TaskServer");
             jetConfig.TaskServer.TaskSlots = taskSlots;
             jetConfig.TaskServer.FileServerPort = TaskServerFileServerPort;
             jetConfig.FileChannel.CompressionType = compressionType;
             jetConfig.FileChannel.DeleteIntermediateFiles = false;
-            if( Environment.OSVersion.Platform == PlatformID.Unix )
-                jetConfig.TaskServer.ListenIPv4AndIPv6 = false;
             DfsConfiguration dfsConfig = localFs ? new LocalFileSystemClient(_localFsRoot).Configuration : Dfs.TestDfsCluster.CreateClientConfig();
             //jetConfig.FileChannel.DeleteIntermediateFiles = false;
 
@@ -102,14 +99,16 @@ namespace Ookii.Jumbo.Test.Jet
 
         public void Shutdown()
         {
-            Utilities.TraceLineAndFlush("Jet cluster shutting down.");
+            _log.Info("Jet cluster shutting down.");
+            _log.Info("Stopping task server.");
             TaskServer.Shutdown();
             _taskServerThread.Join();
+            _log.Info("Stopping job server.");
             JobServer.Shutdown();
             if( _dfsCluster != null )
                 _dfsCluster.Shutdown();
             Thread.Sleep(5000);
-            Utilities.TraceLineAndFlush("Jet cluster shutdown complete.");
+            _log.Info("Jet cluster shutdown complete.");
         }
 
         public static JetConfiguration CreateClientConfig()

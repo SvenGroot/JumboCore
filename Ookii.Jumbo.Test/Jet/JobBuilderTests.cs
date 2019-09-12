@@ -140,6 +140,24 @@ namespace Ookii.Jumbo.Test.Jet
         private const string _outputPath = "/output";
         private const int _blockSize = 4194304;
 
+        private static readonly HashSet<string> _allowedAssemblyNames = new HashSet<string>(new string[] {
+            "Ookii.Jumbo.Test.dll",
+            "Microsoft.VisualStudio.TestPlatform.ObjectModel.dll",
+            "Microsoft.TestPlatform.PlatformAbstractions.dll",
+            "System.Runtime.Handles.dll",
+            "Microsoft.TestPlatform.CoreUtilities.dll",
+            "System.Xml.XPath.XmlDocument.dll",
+            "nunit.framework.dll",
+            "Microsoft.Win32.Registry.dll",
+            "Ookii.Jumbo.Test.Tasks.dll",
+            "NameServer.dll",
+            "DataServer.dll",
+            "JobServer.dll",
+            "TaskServer.dll",
+            "ICSharpCode.SharpZipLib.dll"
+        });
+
+
 
         [OneTimeSetUp]
         public void SetUp()
@@ -225,7 +243,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("ProcessRecordsTask", operation.TaskType.TaskType.Name);
 
@@ -248,7 +266,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("ProcessRecordsNoContextTask", operation.TaskType.TaskType.Name);
 
@@ -435,7 +453,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(13, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
 
             Assert.AreEqual(2, config.Stages.Count);
 
@@ -462,7 +480,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(13, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
 
             Assert.AreEqual(2, config.Stages.Count);
 
@@ -489,7 +507,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("CombineRecordsTask", sort.CombinerType.Name);
 
@@ -519,7 +537,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("CombineRecordsNoContextTask", sort.CombinerType.Name);
 
@@ -629,7 +647,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(aggregated, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("AccumulateRecordsTask", aggregated.TaskType.TaskType.Name);
 
@@ -654,7 +672,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(aggregated, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("AccumulateRecordsNoContextTask", aggregated.TaskType.TaskType.Name);
 
@@ -682,7 +700,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(reduced, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("MapRecordsTask", mapped.TaskType.TaskType.Name);
             Assert.AreEqual("ReduceRecordsTask", reduced.TaskType.TaskType.Name);
@@ -710,7 +728,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(reduced, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("MapRecordsNoContextTask", mapped.TaskType.TaskType.Name);
             Assert.AreEqual("ReduceRecordsNoContextTask", reduced.TaskType.TaskType.Name);
@@ -756,7 +774,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("GenerateRecordsTask", operation.TaskType.TaskType.Name);
 
@@ -779,7 +797,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("GenerateRecordsProgressContextTask", operation.TaskType.TaskType.Name);
 
@@ -802,7 +820,7 @@ namespace Ookii.Jumbo.Test.Jet
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
-            Assert.AreEqual(14, config.AssemblyFileNames.Count); // Includes generated assembly and the one from the method and all its references.
+            VerifyAssemblyNames(config.AssemblyFileNames);
             StringAssert.StartsWith("Ookii.Jumbo.Jet.Generated.", config.AssemblyFileNames.Last());
             Assert.AreEqual("GenerateRecordsNoContextTask", operation.TaskType.TaskType.Name);
 
@@ -828,7 +846,7 @@ namespace Ookii.Jumbo.Test.Jet
 
             JobConfiguration config = builder.CreateJob();
 
-            Assert.AreEqual(13, config.AssemblyFileNames.Count);
+            VerifyAssemblyNames(config.AssemblyFileNames);
 
             Assert.AreEqual(3, config.Stages.Count);
 
@@ -982,5 +1000,24 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(value, stage.GetSetting(settingName, null));
         }
 
+        private static void VerifyAssemblyNames(IEnumerable<string> names)
+        {
+            HashSet<string> seen = new HashSet<string>();
+            bool hasGenerated = false;
+            foreach (string name in names)
+            {
+                if (name.StartsWith("Ookii.Jumbo.Jet.Generated."))
+                {
+                    Assert.IsFalse(hasGenerated, "More than one generated assembly.");
+                    hasGenerated = true;
+                }
+                else
+                {
+                    Assert.IsFalse(seen.Contains(name), "Assembly name {0} duplicate", name);
+                    seen.Add(name);
+                    Assert.IsTrue(_allowedAssemblyNames.Contains(name), "Assembly name {0} not allowed", name);
+                }
+            }
+        }
     }
 }

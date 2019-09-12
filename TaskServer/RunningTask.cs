@@ -41,6 +41,7 @@ namespace TaskServerApplication
         private Thread _appDomainThread; // only used when running the task in an appdomain rather than a different process.
         private TaskServer _taskServer;
         private const int _processLaunchRetryCount = 10;
+        private bool _disposed;
 
         public event EventHandler ProcessExited;
 
@@ -164,7 +165,10 @@ namespace TaskServerApplication
 
         private void _process_Exited(object sender, EventArgs e)
         {
-            OnProcessExited(EventArgs.Empty);
+            if (!_disposed)
+            {
+                OnProcessExited(EventArgs.Empty);
+            }
         }
 
         private void RunTaskAppDomain()
@@ -196,6 +200,7 @@ namespace TaskServerApplication
 
         public void Dispose()
         {
+            _disposed = true;
             if( _process != null )
             {
                 _process.Dispose();

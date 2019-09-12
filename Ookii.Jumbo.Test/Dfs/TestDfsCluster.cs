@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
         public const int NameServerPort = 10000;
         public const int FirstDataServerPort = 10001;
-        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(DataServer));
+        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TestDfsCluster));
 
         private class DataServerInfo
         {
@@ -73,20 +73,25 @@ namespace Ookii.Jumbo.Test.Dfs
 
             public void Shutdown()
             {
+                _log.Info("Shutting down cluster.");
                 lock( _dataServers )
                 {
                     foreach( var info in _dataServers )
                     {
+                        _log.Info("Shutting down data server.");
                         info.Server.Abort();
                         info.Thread.Join();
                     }
                     _dataServers.Clear();
                 }
+
+                _log.Info("Shutting down name server.");
                 NameServer.Shutdown();
             }
 
             public ServerAddress ShutdownDataServer(int index)
             {
+                _log.Info("Shutting down data server.");
                 lock( _dataServers )
                 {
                     var info = _dataServers[index];
@@ -104,8 +109,6 @@ namespace Ookii.Jumbo.Test.Dfs
                 config.FileSystem.Url = new Uri("jdfs://localhost:" + NameServerPort);
                 config.DataServer.Port = port;
                 config.DataServer.BlockStorageDirectory = path;
-                if( Environment.OSVersion.Platform == PlatformID.Unix )
-                    config.DataServer.ListenIPv4AndIPv6 = false;
                 Thread t = new Thread(RunDataServerThread);
                 t.Name = "DataServer";
                 t.IsBackground = true;

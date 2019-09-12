@@ -131,7 +131,17 @@ namespace Ookii.Jumbo
             {
                 _running = false;
                 foreach( TcpListener listener in _listeners )
+                {
+                    // On Linux, the synchronous accept won't cancel if Stop is called without calling
+                    // shutdown first. On Windows, calling Shutdown throws.
+                    if (Environment.OSVersion.Platform == PlatformID.Unix)
+                    {
+                        listener.Server.Shutdown(SocketShutdown.Both);
+                    }
+
                     listener.Stop();
+                }
+
                 _listenerThreads = null;
             }
         }
