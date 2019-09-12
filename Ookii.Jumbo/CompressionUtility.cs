@@ -100,6 +100,17 @@ namespace Ookii.Jumbo
                 _bytesRead += bytesRead;
                 return bytesRead;
             }
+
+            public override int ReadByte()
+            {
+                int result = base.ReadByte();
+                if (result > 0)
+                {
+                    ++_bytesRead;
+                }
+
+                return result;
+            }
         }
 
         #endregion
