@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		common.config = common.config
 		dfs.config = dfs.config
+		Directory.Build.props = Directory.Build.props
+		jet.config = jet.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DfsShell", "DfsShell\DfsShell.csproj", "{7049AE4F-3AB9-46A5-A112-17949E744E92}"
@@ -30,15 +32,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DfsWeb", "DfsWeb\DfsWeb.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jet", "Jet", "{A8DAB872-405D-407D-A3EC-975ABFB5E6FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.Jumbo.Jet", "Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj", "{811AA6B5-0784-410F-9D6C-9AD2F1E0E8F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.Jumbo.Jet", "Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj", "{811AA6B5-0784-410F-9D6C-9AD2F1E0E8F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskHost", "TaskHost\TaskHost.csproj", "{9AE1B0D7-0D60-4267-B022-F7BD8E3ACCC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskHost", "TaskHost\TaskHost.csproj", "{9AE1B0D7-0D60-4267-B022-F7BD8E3ACCC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobServer", "JobServer\JobServer.csproj", "{A3B3C3FD-11D7-4AD6-948B-2817A608AE70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobServer", "JobServer\JobServer.csproj", "{A3B3C3FD-11D7-4AD6-948B-2817A608AE70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskServer", "TaskServer\TaskServer.csproj", "{4501DAF8-1381-426F-8948-4EA87BFCB839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskServer", "TaskServer\TaskServer.csproj", "{4501DAF8-1381-426F-8948-4EA87BFCB839}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.Jumbo.Test.Tasks", "Ookii.Jumbo.Test.Tasks\Ookii.Jumbo.Test.Tasks.csproj", "{7223174C-17E7-47CA-BE3C-6D49BFCF07E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.Jumbo.Test.Tasks", "Ookii.Jumbo.Test.Tasks\Ookii.Jumbo.Test.Tasks.csproj", "{7223174C-17E7-47CA-BE3C-6D49BFCF07E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

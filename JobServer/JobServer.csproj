@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>
