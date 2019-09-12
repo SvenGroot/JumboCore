@@ -6,15 +6,46 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
-//using Ookii.Jumbo.Dfs;
-//using Ookii.Jumbo.Test.Tasks;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Test.Tasks;
 using Ookii.Jumbo.IO;
+using log4net.Layout;
+using log4net.Appender;
+using log4net.Core;
+using NUnit.Framework;
+using System.Reflection;
 
 namespace Ookii.Jumbo.Test
 {
     static class Utilities
     {
         private static readonly string _testOutputPath = GetOutputPath();
+
+        class TestAppender : AppenderSkeleton
+        {
+            protected override void Append(LoggingEvent loggingEvent)
+            {
+                TestContext.Progress.Write(RenderLoggingEvent(loggingEvent));
+            }
+
+            protected override bool RequiresLayout
+            {
+                get { return true; }
+            }
+        }
+
+        public static void ConfigureLogging()
+        {
+            PatternLayout layout = new PatternLayout();
+            layout.ConversionPattern = PatternLayout.DetailConversionPattern;
+            layout.ActivateOptions();
+            TestAppender appender = new TestAppender();
+            appender.Layout = layout;
+            appender.Threshold = Level.All;
+            appender.ActivateOptions();
+            log4net.LogManager.ResetConfiguration(Assembly.GetCallingAssembly());
+            log4net.Config.BasicConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetCallingAssembly()), appender);
+        }
 
         private static string GetOutputPath()
         {
@@ -143,13 +174,13 @@ namespace Ookii.Jumbo.Test
             return data;
         }
 
-        //public static Packet GeneratePacket(int size, bool isLastPacket)
-        //{
-        //    Random rnd = new Random();
-        //    byte[] data = new byte[size];
-        //    rnd.NextBytes(data);
-        //    return new Packet(data, size, 0, isLastPacket);
-        //}
+        public static Packet GeneratePacket(int size, bool isLastPacket)
+        {
+            Random rnd = new Random();
+            byte[] data = new byte[size];
+            rnd.NextBytes(data);
+            return new Packet(data, size, 0, isLastPacket);
+        }
 
         public static void CopyStream(Stream src, Stream dest)
         {
@@ -224,26 +255,26 @@ namespace Ookii.Jumbo.Test
             Trace.Flush();
         }
 
-        //public static void GenerateJoinData(IList<Customer> customers, IList<Order> orders, int customerCount, int perCustomerRecordMax, int ordersPerCustomerMax)
-        //{
-        //    Random rnd = new Random();
-        //    string[] words = File.ReadAllLines("english-words.10");
-        //    int orderId = 0;
+        public static void GenerateJoinData(IList<Customer> customers, IList<Order> orders, int customerCount, int perCustomerRecordMax, int ordersPerCustomerMax)
+        {
+            Random rnd = new Random();
+            string[] words = File.ReadAllLines("english-words.10");
+            int orderId = 0;
 
-        //    for( int x = 1; x <= customerCount; ++x )
-        //    {
-        //        int records = rnd.Next(1, perCustomerRecordMax);
-        //        for( int y = 0; y < records; ++y )
-        //        {
-        //            customers.Add(new Customer() { Id = x, Name = words[rnd.Next(words.Length)] });
-        //        }
-        //        int orderCount = rnd.Next(0, ordersPerCustomerMax + 1);
-        //        for( int y = 0; y < orderCount; ++y )
-        //        {
-        //            orders.Add(new Order() { Id = ++orderId, CustomerId = x, ItemId = rnd.Next(100) });
-        //        }
-        //    }
-        //}
+            for (int x = 1; x <= customerCount; ++x)
+            {
+                int records = rnd.Next(1, perCustomerRecordMax);
+                for (int y = 0; y < records; ++y)
+                {
+                    customers.Add(new Customer() { Id = x, Name = words[rnd.Next(words.Length)] });
+                }
+                int orderCount = rnd.Next(0, ordersPerCustomerMax + 1);
+                for (int y = 0; y < orderCount; ++y)
+                {
+                    orders.Add(new Order() { Id = ++orderId, CustomerId = x, ItemId = rnd.Next(100) });
+                }
+            }
+        }
 
         private static readonly String[] _words = {
                                    "diurnalness", "Homoiousian",

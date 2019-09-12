@@ -316,7 +316,7 @@ namespace Ookii.Jumbo.Jet
         /// </para>
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public static void RunTask(Guid jobId, string jobDirectory, string dfsJobDirectory, TaskAttemptId taskAttemptId)
+        public static void RunTask(Guid jobId, string jobDirectory, string dfsJobDirectory, TaskAttemptId taskAttemptId, bool noLogConfig = false)
         {
             AssemblyResolver.Register();
 
@@ -324,7 +324,10 @@ namespace Ookii.Jumbo.Jet
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                InitializeTaskLog(jobId, jobDirectory, dfsJobDirectory, taskAttemptId);
+                if (!noLogConfig)
+                {
+                    InitializeTaskLog(jobId, jobDirectory, dfsJobDirectory, taskAttemptId);
+                }
 
                 DfsConfiguration dfsConfig;
                 JetConfiguration jetConfig;

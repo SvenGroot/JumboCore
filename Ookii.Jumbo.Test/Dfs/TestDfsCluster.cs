@@ -34,19 +34,6 @@ namespace Ookii.Jumbo.Test.Dfs
             public DataServer Server { get; set; }
         }
 
-        class TestAppender : AppenderSkeleton
-        {
-            protected override void Append(LoggingEvent loggingEvent)
-            {
-                TestContext.Progress.Write(RenderLoggingEvent(loggingEvent));
-            }
-
-            protected override bool RequiresLayout
-            {
-                get { return true; }
-            }
-        }
-
         private class ClusterRunner : MarshalByRefObject
         {
             private int _nextDataServerPort = FirstDataServerPort;
@@ -55,15 +42,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             public void Run(string imagePath, int replicationFactor, int dataServers, int? blockSize, bool format)
             {
-                PatternLayout layout = new PatternLayout();
-                layout.ConversionPattern = PatternLayout.DetailConversionPattern;
-                layout.ActivateOptions();
-                TestAppender appender = new TestAppender();
-                appender.Layout = layout;
-                appender.Threshold = Level.All;
-                appender.ActivateOptions();
-                log4net.LogManager.ResetConfiguration(Assembly.GetCallingAssembly());
-                log4net.Config.BasicConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetCallingAssembly()), appender);
+                Utilities.ConfigureLogging();
                 DfsConfiguration config = new DfsConfiguration();
                 config.FileSystem.Url = new Uri("jdfs://localhost:" + NameServerPort);
                 config.NameServer.ReplicationFactor = replicationFactor;

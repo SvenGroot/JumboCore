@@ -17,7 +17,27 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     /// </summary>
     public sealed partial class JobBuilder
     {
-        private static readonly Assembly[] _jumboAssemblies = { typeof(IWritable).Assembly, typeof(JetClient).Assembly, typeof(FileSystemClient).Assembly, typeof(log4net.ILog).Assembly, typeof(Ookii.CommandLine.CommandLineParser).Assembly };
+        private static HashSet<string> _dependencyAssemblies = GetDependencies();
+
+        private static HashSet<string> GetDependencies()
+        {
+            HashSet<string> result = new HashSet<string>();
+            GetDependencies(result, Assembly.GetExecutingAssembly());
+            return result;
+        }
+
+        private static void GetDependencies(HashSet<string> dependencies, Assembly assembly)
+        {
+            if (!dependencies.Add(assembly.FullName))
+            {
+                return;
+            }
+
+            foreach (var name in assembly.GetReferencedAssemblies())
+            {
+                GetDependencies(dependencies, Assembly.Load(name));
+            }
+        }
 
         private readonly List<IJobBuilderOperation> _operations = new List<IJobBuilderOperation>();
         private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
@@ -272,8 +292,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if( assembly == null )
                 throw new ArgumentNullException("assembly");
 
-            // For some reason Mono claims mscorlib is not in the GAC, so I'm special casing that.
-            if( !(assembly.GlobalAssemblyCache || assembly.GetName().Name == "mscorlib" || _jumboAssemblies.Contains(assembly)) &&
+            if( !(assembly.GlobalAssemblyCache || _dependencyAssemblies.Contains(assembly.FullName)) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)) )
             {
                 foreach( AssemblyName reference in assembly.GetReferencedAssemblies() )

@@ -12,9 +12,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataServer\DataServer.csproj" />
+    <ProjectReference Include="..\JobServer\JobServer.csproj" />
     <ProjectReference Include="..\NameServer\NameServer.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Test.Tasks\Ookii.Jumbo.Test.Tasks.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
+    <ProjectReference Include="..\TaskHost\TaskHost.csproj" />
+    <ProjectReference Include="..\TaskServer\TaskServer.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet publish --no-build &quot;$(ProjectDir)..\TaskHost\TaskHost.csproj&quot; -o &quot;$(ProjectDir)$(OutDir)&quot;" />
+  </Target>
 
 </Project>

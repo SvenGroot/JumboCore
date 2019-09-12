@@ -3,6 +3,8 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Jet;
@@ -96,11 +98,12 @@ namespace TaskServerApplication
                 {
                     try
                     {
-                        ProcessStartInfo startInfo = new ProcessStartInfo("TaskHost.exe", string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
+                        ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format("TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
                         startInfo.UseShellExecute = false;
                         startInfo.CreateNoWindow = true;
-                        string profileOutputFile = null;
-                        RuntimeEnvironment.ModifyProcessStartInfo(startInfo, profileOutputFile, null);
+                        //string profileOutputFile = null;
+                        //RuntimeEnvironment.ModifyProcessStartInfo(startInfo, profileOutputFile, null);
+                        startInfo.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                         _process = new Process();
                         _process.StartInfo = startInfo;
                         _process.EnableRaisingEvents = true;
@@ -175,21 +178,17 @@ namespace TaskServerApplication
 
         private void RunTaskAppDomainThread()
         {
-            AppDomain taskDomain = AppDomain.CreateDomain(FullTaskAttemptId);
+            TypeReference.ResolveTypes = true;
             try
             {
-                AppDomainTaskHost host = (AppDomainTaskHost)taskDomain.CreateInstanceAndUnwrap(typeof(AppDomainTaskHost).Assembly.FullName, typeof(AppDomainTaskHost).FullName);
-                host.Run(JobId, JobDirectory, DfsJobDirectory, TaskAttemptId);
+                TaskExecutionUtility.RunTask(JobId, JobDirectory, DfsJobDirectory, TaskAttemptId, true);
             }
             catch( Exception ex )
             {
                 _log.Error(string.Format("Error running task {0} in app domain", FullTaskAttemptId), ex);
                 _taskServer.ReportError(JobId, TaskAttemptId, ex.ToString());
             }
-            finally
-            {
-                AppDomain.Unload(taskDomain);
-            }
+
             OnProcessExited(EventArgs.Empty);
         }
 
