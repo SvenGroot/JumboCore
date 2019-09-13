@@ -78,6 +78,16 @@ namespace DfsShell.Commands
                 return _baseStream.Read(buffer, offset, count);
             }
 
+            public override int ReadByte()
+            {
+                if (Position + 1 > _size)
+                {
+                    return -1;
+                }
+
+                return _baseStream.ReadByte();
+            }
+
             public override long Seek(long offset, SeekOrigin origin)
             {
                 throw new NotSupportedException();
