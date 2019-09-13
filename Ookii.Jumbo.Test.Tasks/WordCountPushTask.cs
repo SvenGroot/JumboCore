@@ -1,5 +1,4 @@
-﻿// $Id$
-//
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
 using System;

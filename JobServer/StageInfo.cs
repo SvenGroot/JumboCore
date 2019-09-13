@@ -1,5 +1,4 @@
-﻿// $Id$
-//
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

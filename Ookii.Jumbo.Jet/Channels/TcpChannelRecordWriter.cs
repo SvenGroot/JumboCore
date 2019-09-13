@@ -1,5 +1,4 @@
-﻿// $Id$
-//
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;

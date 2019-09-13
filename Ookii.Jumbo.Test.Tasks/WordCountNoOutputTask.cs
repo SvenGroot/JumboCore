@@ -1,7 +1,6 @@
 ﻿using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
-// $Id$
-//
+// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
 using System.Linq;

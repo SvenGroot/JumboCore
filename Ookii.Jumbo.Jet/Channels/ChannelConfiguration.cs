@@ -1,5 +1,4 @@
-﻿// $Id$
-//
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Xml.Serialization;
 using Ookii.Jumbo.Jet.Jobs;
