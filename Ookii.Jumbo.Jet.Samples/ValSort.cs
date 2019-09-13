@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Samples
     ///   convenience, the job runner will print this message to the console.
     /// </para>
     /// </remarks>
-    [Description("Validates whether the input, using GenSort records, is correctly sorted."), CLSCompliant(false)]
+    [Description("Validates whether the input, using GenSort records, is correctly sorted.")]
     public class ValSort : JobBuilderJob
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(ValSort));

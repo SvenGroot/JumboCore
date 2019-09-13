@@ -8,6 +8,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
