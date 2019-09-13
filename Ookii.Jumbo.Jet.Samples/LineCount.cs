@@ -1,5 +1,4 @@
-﻿// $Id$
-
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.ComponentModel;
 using System.Linq;
 using Ookii.CommandLine;
