@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
+  </ItemGroup>
+
+</Project>
