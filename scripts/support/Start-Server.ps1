@@ -23,13 +23,25 @@ if ($Server -eq "DfsWeb") {
 }
 
 "Starting $Server"
-$process = Start-Process `
-    -FilePath $DOTNET_COMMAND `
-    -ArgumentList $arguments `
-    -WindowStyle "Hidden" `
-    -RedirectStandardOutput $outLog `
-    -RedirectStandardError $errLog `
-    -PassThru
+if ($IsWindows) {
+    $process = Start-Process `
+        -FilePath $DOTNET_COMMAND `
+        -ArgumentList $arguments `
+        -WindowStyle "Hidden" `
+        -RedirectStandardOutput $outLog `
+        -RedirectStandardError $errLog `
+        -WorkingDirectory $JUMBO_BIN_HOME `
+        -PassThru
+
+} else {
+    $process = Start-Process `
+        -FilePath $DOTNET_COMMAND `
+        -ArgumentList $arguments `
+        -RedirectStandardOutput $outLog `
+        -RedirectStandardError $errLog `
+        -WorkingDirectory $JUMBO_BIN_HOME `
+        -PassThru
+}
 
 $pidFile = Join-Path $JUMBO_PID "jumbo-$Server-$hostname.pid"
 Write-Verbose "Started $Server with pid $($process.Id), saving to $pidFile"
