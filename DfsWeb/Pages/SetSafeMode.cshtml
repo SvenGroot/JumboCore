@@ -1,0 +1,18 @@
+﻿@page
+@model DfsWeb.Pages.SetSafeModeModel
+@{
+    ViewData["Title"] = "Safe mode";
+}
+
+<h2>Safe mode</h2>
+<form method="post">
+    @if (Model.ErrorMessage != null)
+    {
+        <p class="error">@Model.ErrorMessage</p>
+    }
+    <p>
+        Safe mode is @(Model.SafeMode ? "ON" : "OFF").
+    </p>
+    <input asp-for="NewSafeMode" type="hidden" value="@(!Model.SafeMode)" />
+    <input type="submit" value="Turn safe mode @(Model.SafeMode ? "OFF" : "ON")" />
+</form>

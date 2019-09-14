@@ -1,4 +1,20 @@
 ﻿@page
 @model DfsWeb.Pages.BlockListModel
 
-Hello
+<h2>@ViewData["Title"]</h2>
+<p>
+    @if (Model.IncludeFiles)
+    {
+        <a href="BlockList?@Model.NewQueryString">Hide files.</a>
+    }
+    else
+    {
+        <a href="BlockList?@Model.NewQueryString&files=true">Show files.</a>
+    }
+</p>
+<ul class="blockList">
+    @foreach (var block in Model.Blocks)
+    {
+        <li>@block</li>
+    }
+</ul>
