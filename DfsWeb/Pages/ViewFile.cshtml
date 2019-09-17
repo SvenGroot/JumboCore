@@ -1,8 +1,5 @@
 ﻿@page
 @model DfsWeb.Pages.ViewFileModel
-@{
-    ViewData["Title"] = "View file";
-}
 
 <h2>@Model.HeaderText</h2>
-<pre>@Model.FileContents</pre>
+<pre class="@(Model.Error ? "error" : null)">@Model.FileContents</pre>
