@@ -1,0 +1,95 @@
+﻿@page
+@model JetWeb.Pages.IndexModel
+
+<h2>Job server status</h2>
+@if (Model.ErrorMessage != null)
+{
+    <p class="error" id="ErrorMessage" visible="false">@Model.ErrorMessage</p>
+}
+
+<table>
+    <tr>
+        <th scope="row">Job server</th>
+        <td id="JobServerColumn">@Model.Metrics.JobServer</td>
+    </tr>
+    <tr>
+        <th scope="row">Running jobs</th>
+        <td id="RunningJobsColumn">@Model.Metrics.RunningJobs.Count</td>
+    </tr>
+    <tr>
+        <th scope="row">Finished jobs</th>
+        <td id="FinishedJobsColumn">@Model.Metrics.FinishedJobs.Count</td>
+    </tr>
+    <tr>
+        <th scope="row">Failed jobs</th>
+        <td id="FailedJobsColumn">@Model.Metrics.FailedJobs.Count</td>
+    </tr>
+    <tr>
+        <th scope="row">Capacity</th>
+        <td id="CapacityColumn">@Model.Metrics.Capacity</td>
+    </tr>
+    <tr>
+        <th scope="row">Scheduler</th>
+        <td id="SchedulerColumn">@Model.Metrics.Scheduler</td>
+    </tr>
+    <tr>
+        <th scope="row">Task servers</th>
+        <td id="TaskServersColumn">@Model.Metrics.TaskServers.Count</td>
+    </tr>
+</table>
+<p>
+    View job server log file: <a asp-page="LogFile" asp-route-maxsize="100KB">last 100KB</a>, <a asp-page="LogFile">all</a><br />
+    <a asp-page="Archive">View archived jobs.</a>
+</p>
+<h2>Task servers</h2>
+<table id="TaskServerTable">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Port</th>
+        <th scope="col">Rack</th>
+        <th scope="col">Last contact</th>
+        <th scope="col">Task slots</th>
+        <th scope="col">Log file</th>
+    </tr>
+    @foreach (var server in Model.Metrics.TaskServers)
+    {
+        var lastContact = DateTime.UtcNow - server.LastContactUtc;
+        string style = null;
+        if (lastContact.TotalSeconds > 60)
+            style = "background-color: red";
+        else if (lastContact.TotalSeconds > 5)
+            style = "background-color: yellow";
+
+        <tr style="@style">
+            <td>@server.Address.HostName</td>
+            <td>@server.Address.Port</td>
+            <td>@(server.RackId ?? "(unknown)")</td>
+            <td>@string.Format("{0:0.0s}s ago", lastContact.TotalSeconds)</td>
+            <td>@server.TaskSlots</td>
+            <td>
+                <a asp-page="/LogFile" asp-route-taskServer="@server.Address.HostName" asp-route-port="@server.Address.Port" asp-route-maxSize="100KB">Last 100KB</a>,
+                <a asp-page="/LogFile" asp-route-taskServer="@server.Address.HostName" asp-route-port="@server.Address.Port">Full</a>
+            </td>
+        </tr>
+    }
+</table>
+<h2>Running jobs</h2>
+<table id="RunningJobsTable">
+    <tr>
+        <th scope="col" rowspan="2">Job ID</th>
+        <th scope="col" rowspan="2">Job Name</th>
+        <th scope="col" rowspan="2">Start time</th>
+        <th scope="col" rowspan="2">Duration</th>
+        <th scope="col" rowspan="2">Progress</th>
+        <th scope="colgroup" colspan="7">Tasks</th>
+    </tr>
+    <tr>
+        <th scope="col">Total</th>
+        <th scope="col">Running</th>
+        <th scope="col">Pending</th>
+        <th scope="col">Finished</th>
+        <th scope="col">Errors</th>
+        <th scope="col">Rack local</th>
+        <th scope="col">Non data local</th>
+    </tr>
+</table>

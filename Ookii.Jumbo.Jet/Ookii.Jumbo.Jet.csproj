@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Reference Include="Lokad.ILPack">
-      <HintPath>..\..\ILPack\test\Lokad.ILPack.Tests\bin\Debug\netcoreapp3.0\Lokad.ILPack.dll</HintPath>
+      <HintPath>..\..\ILPack\src\bin\Debug\netcoreapp2.1\Lokad.ILPack.dll</HintPath>
     </Reference>
   </ItemGroup>
 
