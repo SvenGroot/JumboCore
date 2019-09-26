@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Dfs
             : base(fileSystemId, DataServerHeartbeatCommand.ReplicateBlock)
         {
             if( blockAssignment == null )
-                throw new ArgumentNullException("blockAssignment");
+                throw new ArgumentNullException(nameof(blockAssignment));
 
             BlockAssignment = blockAssignment;
         }

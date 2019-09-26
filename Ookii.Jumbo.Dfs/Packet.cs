@@ -99,9 +99,9 @@ namespace Ookii.Jumbo.Dfs
         public void CopyFrom(byte[] data, int size, long sequenceNumber, bool isLastPacket)
         {
             if( data == null )
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             if( size < 0 || size > data.Length || size > PacketSize )
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
             if( !isLastPacket && size != PacketSize )
                 throw new ArgumentException("The packet has an invalid size.");
 
@@ -121,7 +121,7 @@ namespace Ookii.Jumbo.Dfs
         public void CopyFrom(Stream stream, long sequenceNumber, bool isLastPacket)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             int size = (int)Math.Min(PacketSize, stream.Length);
             if( !isLastPacket && size != PacketSize )
@@ -141,7 +141,7 @@ namespace Ookii.Jumbo.Dfs
         public void CopyFrom(Packet packet)
         {
             if( packet == null )
-                throw new ArgumentNullException("packet");
+                throw new ArgumentNullException(nameof(packet));
 
             Array.Copy(packet._data, _data, packet.Size);
             Size = packet.Size;
@@ -161,13 +161,13 @@ namespace Ookii.Jumbo.Dfs
         public int CopyTo(int sourceOffset, byte[] buffer, int destinationOffset, int count)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( sourceOffset < 0 || sourceOffset >= Size )
-                throw new ArgumentOutOfRangeException("sourceOffset");
+                throw new ArgumentOutOfRangeException(nameof(sourceOffset));
             if( destinationOffset < 0 )
-                throw new ArgumentOutOfRangeException("destinationOffset");
+                throw new ArgumentOutOfRangeException(nameof(destinationOffset));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( destinationOffset + count > buffer.Length )
                 throw new ArgumentException("The combined value of destOffset and count is larger than the buffer size.");
 
@@ -186,7 +186,7 @@ namespace Ookii.Jumbo.Dfs
         public void Read(BinaryReader reader, PacketFormatOption format, bool verifyChecksum)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
 
             uint expectedChecksum = reader.ReadUInt32();
             if( format == PacketFormatOption.ChecksumOnly )
@@ -231,7 +231,7 @@ namespace Ookii.Jumbo.Dfs
         public void Write(BinaryWriter writer, PacketFormatOption format)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
 
             writer.Write((uint)Checksum);
             if( format != PacketFormatOption.ChecksumOnly )
@@ -251,7 +251,7 @@ namespace Ookii.Jumbo.Dfs
         public void WriteDataOnly(Stream stream)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             stream.Write(_data, 0, Size);
         }

@@ -85,7 +85,7 @@ namespace Ookii.Jumbo.Dfs
         public static DfsConfiguration GetConfiguration(Configuration configuration)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
             DfsConfiguration config = (DfsConfiguration)configuration.GetSection("ookii.jumbo.dfs");
             return config ?? new DfsConfiguration();
         }

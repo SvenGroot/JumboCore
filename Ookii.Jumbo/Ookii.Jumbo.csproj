@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <CodeAnalysisRuleSet>Jumbo.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

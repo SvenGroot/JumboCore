@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Globalization;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -35,9 +36,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         protected JumboFileSystemEntry(string fullPath, string name, DateTime dateCreated)
         {
             if( fullPath == null )
-                throw new ArgumentNullException("fullPath");
+                throw new ArgumentNullException(nameof(fullPath));
             if( name == null )
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             _fullPath = fullPath;
             _name = name;
@@ -102,7 +103,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static JumboFileSystemEntry FromFileSystemInfo(FileSystemInfo info, string rootPath, bool includeChildren)
         {
             if( info == null )
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
 
             FileInfo file = info as FileInfo;
             if( file != null )
@@ -123,7 +124,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if( rootPath[rootPath.Length - 1] == Path.DirectorySeparatorChar || rootPath[rootPath.Length - 1] == Path.AltDirectorySeparatorChar )
                 length -= 1;
             if( fullPath.Length == length )
-                return Path.DirectorySeparatorChar.ToString(); // Root
+                return Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture); // Root
             else
                 return fullPath.Substring(length);
         }

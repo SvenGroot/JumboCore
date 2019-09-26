@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Dfs
         public BlockAssignment(Guid blockId, IEnumerable<ServerAddress> dataServers)
         {
             if( dataServers == null )
-                throw new ArgumentNullException("dataServers");
+                throw new ArgumentNullException(nameof(dataServers));
 
             BlockId = blockId;
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();

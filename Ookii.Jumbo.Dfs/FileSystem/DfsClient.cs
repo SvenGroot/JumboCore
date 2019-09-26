@@ -87,7 +87,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static INameServerClientProtocol CreateNameServerClient(DfsConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             return CreateNameServerClientInternal<INameServerClientProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
         }
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static INameServerHeartbeatProtocol CreateNameServerHeartbeatClient(DfsConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             return CreateNameServerClientInternal<INameServerHeartbeatProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
         }
@@ -127,7 +127,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static string GetDataServerLogFileContents(ServerAddress address, LogFileKind kind, int maxSize)
         {
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             return GetDataServerLogFileContents(address.HostName, address.Port, kind, maxSize);
         }
@@ -143,7 +143,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static string GetDataServerLogFileContents(string hostName, int port, LogFileKind kind, int maxSize)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
 
             using( TcpClient client = new TcpClient(hostName, port) )
             using( NetworkStream stream = client.GetStream() )
@@ -270,7 +270,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public bool WaitForSafeModeOff(int millisecondsTimeout, int millisecondsInterval)
         {
             if( millisecondsInterval < 0 )
-                throw new ArgumentOutOfRangeException("millisecondsInterval");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsInterval));
             Stopwatch sw = Stopwatch.StartNew();
 
             while( NameServer.SafeMode && (millisecondsTimeout == Timeout.Infinite || sw.ElapsedMilliseconds < millisecondsTimeout) )
@@ -292,9 +292,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public IEnumerable<string> GetLocationsForOffset(JumboFile file, long offset)
         {
             if( file == null )
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             if( offset < 0 || offset >= file.Size )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
 
             int blockIndex = (int)(offset / file.BlockSize);
             Guid blockId = file.Blocks[blockIndex];

@@ -41,11 +41,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             : base(fullPath, name, dateCreated)
         {
             if( size < 0 )
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
             if( blockSize < 0 )
-                throw new ArgumentOutOfRangeException("blockSize");
+                throw new ArgumentOutOfRangeException(nameof(blockSize));
             if( replicationFactor < 1 )
-                throw new ArgumentOutOfRangeException("replicationFactor");
+                throw new ArgumentOutOfRangeException(nameof(replicationFactor));
 
             _size = size;
             _blockSize = blockSize;
@@ -138,7 +138,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static JumboFile FromFileInfo(FileInfo file, string rootPath)
         {
             if( file == null )
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             if( !file.Exists )
                 throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "The file '{0}' does not exist.", file.FullName), file.FullName);
 
@@ -161,7 +161,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
             writer.WriteLine("Block size:       {0:#,0} bytes", BlockSize);

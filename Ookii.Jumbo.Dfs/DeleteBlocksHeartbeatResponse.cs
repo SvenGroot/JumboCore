@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Dfs
             : base(fileSystemId, DataServerHeartbeatCommand.DeleteBlocks)
         {
             if( blocks == null )
-                throw new ArgumentNullException("blocks");
+                throw new ArgumentNullException(nameof(blocks));
             Blocks = new List<Guid>(blocks);
         }
 

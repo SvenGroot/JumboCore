@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Dfs
         public BlockReportHeartbeatData(IEnumerable<Guid> blocks)
         {
             if( blocks == null )
-                throw new ArgumentNullException("blocks");
+                throw new ArgumentNullException(nameof(blocks));
             _blocks = new List<Guid>(blocks).AsReadOnly();
         }
 

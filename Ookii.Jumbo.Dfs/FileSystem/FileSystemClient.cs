@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         protected FileSystemClient(DfsConfiguration configuration)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
             _configuration = configuration;
         }
 
@@ -65,15 +65,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static void RegisterFileSystem(string scheme, Type fileSystemClientType)
         {
             if( scheme == null )
-                throw new ArgumentNullException("scheme");
+                throw new ArgumentNullException(nameof(scheme));
             if( fileSystemClientType == null )
-                throw new ArgumentNullException("fileSystemClientType");
+                throw new ArgumentNullException(nameof(fileSystemClientType));
             if( string.IsNullOrWhiteSpace(scheme) )
-                throw new ArgumentException("The scheme may not be empty.", "scheme");
+                throw new ArgumentException("The scheme may not be empty.", nameof(scheme));
             if( scheme.Equals("jdfs", StringComparison.OrdinalIgnoreCase) || scheme.Equals("file", StringComparison.OrdinalIgnoreCase) )
-                throw new ArgumentException("You cannot replace the jdfs or file schemes.", "scheme");
+                throw new ArgumentException("You cannot replace the jdfs or file schemes.", nameof(scheme));
             if( !fileSystemClientType.IsSubclassOf(typeof(FileSystemClient)) )
-                throw new ArgumentException("The specified type does not derive from FileSystemClient.", "fileSystemClientType");
+                throw new ArgumentException("The specified type does not derive from FileSystemClient.", nameof(fileSystemClientType));
 
             _fileSystemTypes[scheme] = fileSystemClientType;
         }
@@ -86,7 +86,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public static FileSystemClient Create(DfsConfiguration configuration)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
 
             if( configuration.FileSystem.Url.Scheme == "file" )
                 return new LocalFileSystemClient(configuration);
@@ -161,9 +161,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void UploadStream(Stream stream, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
             if( targetPath == null )
-                throw new ArgumentNullException("targetPath");
+                throw new ArgumentNullException(nameof(targetPath));
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             using( Stream outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None) )
             {
@@ -195,9 +195,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void UploadFile(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
             if( targetPath == null )
-                throw new ArgumentNullException("targetPath");
+                throw new ArgumentNullException(nameof(targetPath));
             if( localSourcePath == null )
-                throw new ArgumentNullException("localSourcePath");
+                throw new ArgumentNullException(nameof(localSourcePath));
             JumboDirectory dir = GetDirectoryInfo(targetPath);
             if( dir != null )
             {
@@ -233,15 +233,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void UploadDirectory(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
             if( localSourcePath == null )
-                throw new ArgumentNullException("localSourcePath");
+                throw new ArgumentNullException(nameof(localSourcePath));
             if( targetPath == null )
-                throw new ArgumentNullException("targetPath");
+                throw new ArgumentNullException(nameof(targetPath));
 
             string[] files = System.IO.Directory.GetFiles(localSourcePath);
 
             JumboDirectory directory = GetDirectoryInfo(targetPath);
             if( directory != null )
-                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the file system.", targetPath), "targetPath");
+                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the file system.", targetPath), nameof(targetPath));
             CreateDirectory(targetPath);
 
             foreach( string file in files )
@@ -270,9 +270,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void DownloadStream(string sourcePath, Stream stream, ProgressCallback progressCallback)
         {
             if( sourcePath == null )
-                throw new ArgumentNullException("sourcePath");
+                throw new ArgumentNullException(nameof(sourcePath));
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             using( Stream inputStream = OpenFile(sourcePath) )
             {
                 CopyStream(sourcePath, inputStream, stream, progressCallback);
@@ -300,9 +300,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void DownloadFile(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
             if( sourcePath == null )
-                throw new ArgumentNullException("sourcePath");
+                throw new ArgumentNullException(nameof(sourcePath));
             if( localTargetPath == null )
-                throw new ArgumentNullException("localTargetPath");
+                throw new ArgumentNullException(nameof(localTargetPath));
 
             if( Directory.Exists(localTargetPath) )
             {
@@ -342,9 +342,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public void DownloadDirectory(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
             if( sourcePath == null )
-                throw new ArgumentNullException("sourcePath");
+                throw new ArgumentNullException(nameof(sourcePath));
             if( localTargetPath == null )
-                throw new ArgumentNullException("localTargetPath");
+                throw new ArgumentNullException(nameof(localTargetPath));
 
             JumboDirectory dir = GetDirectoryInfo(sourcePath);
             if( dir == null )

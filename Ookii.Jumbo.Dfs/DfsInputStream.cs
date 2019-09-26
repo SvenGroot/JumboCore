@@ -49,9 +49,9 @@ namespace Ookii.Jumbo.Dfs
         public DfsInputStream(INameServerClientProtocol nameServer, string path)
         {
             if( nameServer == null )
-                throw new ArgumentNullException("nameServer");
+                throw new ArgumentNullException(nameof(nameServer));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             _nameServer = nameServer;
             _log.DebugFormat("Opening file {0} from the DFS.", path);
@@ -149,7 +149,7 @@ namespace Ookii.Jumbo.Dfs
             set
             {
                 if( value < 0 || value >= Length )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 Seek(value, SeekOrigin.Begin);
             }
@@ -214,7 +214,7 @@ namespace Ookii.Jumbo.Dfs
             set
             {
                 if( value < _position || value > Length )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 _endOffset = value;
                 if( value > 0 )
@@ -260,11 +260,11 @@ namespace Ookii.Jumbo.Dfs
                 throw new ObjectDisposedException(typeof(DfsInputStream).FullName);
             // These exceptions match the contract given in the Stream class documentation.
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( offset + count > buffer.Length )
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
@@ -326,7 +326,7 @@ namespace Ookii.Jumbo.Dfs
                 break;
             }
             if( newPosition < 0 || newPosition >= Length )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( newPosition != _position )
             {
                 CloseDataServerConnection();
@@ -367,7 +367,7 @@ namespace Ookii.Jumbo.Dfs
         public long OffsetFromBoundary(long position)
         {
             if( position < 0 || position > Length )
-                throw new ArgumentOutOfRangeException("position");
+                throw new ArgumentOutOfRangeException(nameof(position));
 
             return position % _file.BlockSize;
         }
@@ -384,9 +384,9 @@ namespace Ookii.Jumbo.Dfs
         public bool AreInsideSameBoundary(long position1, long position2)
         {
             if( position1 < 0 || position1 > Length )
-                throw new ArgumentOutOfRangeException("position1");
+                throw new ArgumentOutOfRangeException(nameof(position1));
             if( position2 < 0 || position2 > Length )
-                throw new ArgumentOutOfRangeException("position2");
+                throw new ArgumentOutOfRangeException(nameof(position2));
 
             return position1 / _file.BlockSize == position2 / _file.BlockSize;
         }

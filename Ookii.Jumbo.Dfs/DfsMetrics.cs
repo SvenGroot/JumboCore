@@ -113,7 +113,7 @@ namespace Ookii.Jumbo.Dfs
         public void PrintMetrics(TextWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Name server:      {0}", NameServer);
             writer.WriteLine("Total size:       {0:#,0} bytes", TotalSize);
             writer.WriteLine("Blocks:           {0} (excl. pending blocks)", TotalBlockCount);

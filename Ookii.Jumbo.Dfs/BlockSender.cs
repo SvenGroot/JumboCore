@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Dfs
         {
             _blockId = blockId;
             _clientWriter = clientWriter;
-            _dataServers = dataServers == null ? new ServerAddress[0] : dataServers.ToArray();
+            _dataServers = dataServers == null ? Array.Empty<ServerAddress>() : dataServers.ToArray();
             if( _dataServers.Length > 0 )
             {
                 ServerAddress server = _dataServers[0];
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Dfs
         public void SendPacket(Packet packet)
         {
             if( packet == null )
-                throw new ArgumentNullException("packet");
+                throw new ArgumentNullException(nameof(packet));
             ThrowIfErrorOccurred();
 
             if( _hasLastPacket )

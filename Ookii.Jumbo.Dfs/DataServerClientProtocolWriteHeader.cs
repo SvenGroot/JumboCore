@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Dfs
             : base(DataServerCommand.WriteBlock)
         {
             if( dataServers == null )
-                throw new ArgumentNullException("dataServers");
+                throw new ArgumentNullException(nameof(dataServers));
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();
         }
 

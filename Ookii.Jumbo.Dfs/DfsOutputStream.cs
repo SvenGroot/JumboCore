@@ -84,15 +84,15 @@ namespace Ookii.Jumbo.Dfs
         public DfsOutputStream(INameServerClientProtocol nameServer, string path, int blockSize, int replicationFactor, bool useLocalReplica, RecordStreamOptions recordOptions)
         {
             if( nameServer == null )
-                throw new ArgumentNullException("nameServer");
+                throw new ArgumentNullException(nameof(nameServer));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( blockSize < 0 )
-                throw new ArgumentOutOfRangeException("blockSize", "Block size must be zero or greater.");
+                throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be zero or greater.");
             if( blockSize % Packet.PacketSize != 0 )
-                throw new ArgumentException("Block size must be a multiple of the packet size.", "blockSize");
+                throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
             if( replicationFactor < 0 )
-                throw new ArgumentOutOfRangeException("replicationFactor", "Replication factor must be zero or greater.");
+                throw new ArgumentOutOfRangeException(nameof(replicationFactor), "Replication factor must be zero or greater.");
 
             if( blockSize == 0 )
             {
@@ -268,11 +268,11 @@ namespace Ookii.Jumbo.Dfs
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( offset + count > buffer.Length )
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 

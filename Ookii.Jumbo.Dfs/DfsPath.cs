@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Dfs
         public static bool IsPathRooted(string path)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             return path.Length > 0 && path[0] == DirectorySeparator;
         }
 
@@ -37,9 +37,9 @@ namespace Ookii.Jumbo.Dfs
         public static string Combine(string path1, string path2)
         {
             if( path1 == null )
-                throw new ArgumentNullException("path1");
+                throw new ArgumentNullException(nameof(path1));
             if( path2 == null )
-                throw new ArgumentNullException("path2");
+                throw new ArgumentNullException(nameof(path2));
 
             if( path2.Length == 0 )
                 return path1;
