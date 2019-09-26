@@ -50,7 +50,7 @@ namespace NameServerApplication
         public void PrintListing(TextWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 
@@ -70,7 +70,7 @@ namespace NameServerApplication
         public override void SaveToFileSystemImage(BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             base.SaveToFileSystemImage(writer);
             writer.Write(Children.Count);
             foreach( DfsFileSystemEntry entry in Children )
@@ -85,7 +85,7 @@ namespace NameServerApplication
         protected override void LoadFromFileSystemImage(BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             int childCount = reader.ReadInt32();
             _children.Clear();
             _children.Capacity = childCount;

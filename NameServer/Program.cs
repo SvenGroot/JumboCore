@@ -14,7 +14,7 @@ namespace NameServerApplication
     /// <summary>
     /// Contains the entry point for the NameServer.
     /// </summary>
-    class Program
+    static class Program
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Program));
 

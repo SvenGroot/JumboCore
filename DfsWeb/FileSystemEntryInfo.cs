@@ -18,6 +18,9 @@ public class FileSystemEntryInfo
 
     public FileSystemEntryInfo(JumboFileSystemEntry entry, bool includeChildren)
     {
+        if (entry == null)
+            throw new ArgumentNullException(nameof(entry));
+
         Name = entry.Name;
         DateCreated = entry.DateCreated.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         FullPath = entry.FullPath;
@@ -56,6 +59,8 @@ public class FileSystemEntryInfo
 
     public string DateCreated { get; set; }
 
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "This is fine for a json helper class.")]
     public FileSystemEntryInfo[] Children { get; set; }
 
     public string BlockSize { get; set; }

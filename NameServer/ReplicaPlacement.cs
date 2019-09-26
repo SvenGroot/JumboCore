@@ -19,9 +19,9 @@ namespace NameServerApplication
         public ReplicaPlacement(DfsConfiguration configuration, NetworkTopology topology)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
             if( topology == null )
-                throw new ArgumentNullException("topology");
+                throw new ArgumentNullException(nameof(topology));
 
             _configuration = configuration;
             _topology = topology;
@@ -56,13 +56,13 @@ namespace NameServerApplication
             if( writerHostName != null )
             {
                 if( currentDataServers.Count > 0 )
-                    throw new ArgumentException("Cannot specify a writer for a re-replication block assignment.", "writerHostName");
+                    throw new ArgumentException("Cannot specify a writer for a re-replication block assignment.", nameof(writerHostName));
                 writerRackId = _topology.ResolveNode(writerHostName);
             }
             else
             {
                 if( currentDataServers.Count == 0 )
-                    throw new ArgumentException("No writer specified for a first replication.", "writerHostName");
+                    throw new ArgumentException("No writer specified for a first replication.", nameof(writerHostName));
                 writerHostName = currentDataServers[0].Address.HostName;
                 writerRackId = currentDataServers[0].Rack.RackId;
             }

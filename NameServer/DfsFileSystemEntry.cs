@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Dfs;
+using System.Globalization;
 
 namespace NameServerApplication
 {
@@ -34,9 +35,9 @@ namespace NameServerApplication
         protected DfsFileSystemEntry(DfsDirectory parent, string name, DateTime dateCreated)
         {
             if( name == null )
-                throw new ArgumentNullException("name");
-            if( name.Contains(DfsPath.DirectorySeparator) )
-                throw new ArgumentException("File or directory name cannot contain directory separator.", "name");
+                throw new ArgumentNullException(nameof(name));
+            if( name.Contains(DfsPath.DirectorySeparator, StringComparison.Ordinal) )
+                throw new ArgumentException("File or directory name cannot contain directory separator.", nameof(name));
 
             Name = name;
             DateCreated = dateCreated;
@@ -71,7 +72,7 @@ namespace NameServerApplication
             get
             {
                 if( Parent == null )
-                    return DfsPath.DirectorySeparator.ToString();
+                    return DfsPath.DirectorySeparator.ToString(CultureInfo.InvariantCulture);
                 else
                 {
                     StringBuilder path = new StringBuilder();
@@ -89,7 +90,7 @@ namespace NameServerApplication
         public void MoveTo(DfsDirectory newParent, string newName)
         {
             if( newParent == null )
-                throw new ArgumentNullException("newParent");
+                throw new ArgumentNullException(nameof(newParent));
 
             if( Parent == null )
                 throw new InvalidOperationException("You cannot move an entry without an existing parent.");
@@ -119,7 +120,7 @@ namespace NameServerApplication
         public virtual void SaveToFileSystemImage(BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.Write(GetType().FullName);
             writer.Write(Name);
             writer.Write(DateCreated.Ticks);
@@ -135,7 +136,7 @@ namespace NameServerApplication
         public static DfsFileSystemEntry LoadFromFileSystemImage(BinaryReader reader, DfsDirectory parent, Action<long> notifyFileSizeCallback)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             string className = reader.ReadString();
             string name = reader.ReadString();
             DateTime dateCreated = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);

@@ -102,6 +102,18 @@ namespace DfsShell.Commands
             {
                 throw new NotSupportedException();
             }
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+                if (disposing)
+                {
+                    if (_baseStream != null)
+                    {
+                        _baseStream.Dispose();
+                    }
+                }
+            }
         }
 
 
@@ -112,7 +124,7 @@ namespace DfsShell.Commands
         public PrintFileCommand([Description("The path of the text file on the DFS."), ArgumentName("Path")] string path)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             _path = path;
         }

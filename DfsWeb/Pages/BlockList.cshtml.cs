@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +36,16 @@ namespace DfsWeb.Pages
             Guid[] blocks;
             if (DataServer == null)
             {
-                ViewData["Title"] = string.Format("Block list ({0})", Kind);
+                ViewData["Title"] = $"Block list ({Kind})";
                 blocks = client.NameServer.GetBlocks(Kind);
                 NewQueryString = "kind=" + Kind.ToString();
             }
             else
             {
                 ServerAddress address = new ServerAddress(DataServer, Port);
-                ViewData["Title"] = string.Format("Block list for {0}", address);
+                ViewData["Title"] = $"Block list for {address}";
                 blocks = client.NameServer.GetDataServerBlocks(address);
-                NewQueryString = string.Format("dataServer={0}&port={1}", DataServer, Port);
+                NewQueryString = FormattableString.Invariant($"dataServer={DataServer}&port={Port}");
             }
 
             if (blocks != null)
@@ -52,9 +53,9 @@ namespace DfsWeb.Pages
                 foreach (Guid blockId in blocks)
                 {
                     if (IncludeFiles)
-                        Blocks.Add(string.Format("{0:B}: {1}", blockId, client.NameServer.GetFileForBlock(blockId)));
+                        Blocks.Add($"{blockId:B}: {client.NameServer.GetFileForBlock(blockId)}");
                     else
-                        Blocks.Add(blockId.ToString("B"));
+                        Blocks.Add(blockId.ToString("B", CultureInfo.CurrentCulture));
                 }
             }
 

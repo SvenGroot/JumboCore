@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace DfsWeb
 {
+#pragma warning disable CA1822 // Mark members as static - members must be instance.
+
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -19,9 +22,13 @@ namespace DfsWeb
             services.AddMvc(options => options.EnableEndpointRouting = false);
         }
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (env == null)
+                throw new ArgumentNullException(nameof(env));
+
             if (env.EnvironmentName == Environments.Development)
             {
                 app.UseDeveloperExceptionPage();
@@ -32,4 +39,6 @@ namespace DfsWeb
             app.UseMvc();
         }
     }
+
+#pragma warning restore CA1822 // Mark members as static
 }

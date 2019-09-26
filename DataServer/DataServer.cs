@@ -43,7 +43,7 @@ namespace DataServerApplication
         public DataServer(DfsConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             _config = config;
             _blockStorageDirectory = config.DataServer.BlockStorageDirectory;
@@ -241,7 +241,7 @@ namespace DataServerApplication
             }
             else if( _fileSystemId != response.FileSystemId )
             {
-                throw new InvalidOperationException(string.Format("NameServer reported file system ID {0:B}; expecting {1:B}.", response.FileSystemId, _fileSystemId));
+                throw new InvalidOperationException($"NameServer reported file system ID {response.FileSystemId:B}; expecting {_fileSystemId:B}.");
             }
         }
 
@@ -265,7 +265,7 @@ namespace DataServerApplication
                 {
                     _fileSystemId = new Guid(File.ReadAllBytes(fsIdFile));
                     _log.InfoFormat("File system ID: {0:B}.", _fileSystemId);
-                    _log.InfoFormat("Loading block list...");
+                    _log.Info("Loading block list...");
 
                     foreach( string file in files )
                     {
@@ -289,7 +289,7 @@ namespace DataServerApplication
                 {
                     if( files.Length > 0 )
                         throw new InvalidOperationException("DataServer is not part of a file system but block directory is not empty.");
-                    _log.InfoFormat("DataServer is not yet part of a file system.");
+                    _log.Info("DataServer is not yet part of a file system.");
                     _fileSystemId = Guid.Empty;
                 }
             }
@@ -313,7 +313,7 @@ namespace DataServerApplication
                 }
                 catch( IOException ex )
                 {
-                    _log.Error(string.Format("Failed to delete block {0}.", block), ex);
+                    _log.Error(FormattableString.Invariant($"Failed to delete block {block}."), ex);
                 }
             }
             StatusHeartbeatData statusData = new StatusHeartbeatData();
@@ -341,6 +341,7 @@ namespace DataServerApplication
             return Path.Combine(_blockStorageDirectory, blockID.ToString());
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Failures should be logged and not cause a crash.")]
         private void ReplicateBlocksThread()
         {
             while( _running )
@@ -387,20 +388,5 @@ namespace DataServerApplication
                 }
             }
         }
-
-	  /*private void StatusUpdateThread()
-        {
-            int interval = _config.DataServer.StatusUpdateInterval * 1000;
-            while( _running )
-            {
-                if( _abortEvent.WaitOne(interval, false) )
-                    return;
-
-                StatusHeartbeatData data = new StatusHeartbeatData();
-                GetDiskUsage(data);
-                _log.InfoFormat("Sending updated disk space status to the name server: total = {0}, free = {1}, DFS used = {2}.", data.DiskSpaceTotal, data.DiskSpaceFree, data.DiskSpaceUsed);
-                AddDataForNextHeartbeat(data);
-            }
-			}*/
     }
 }

@@ -24,9 +24,9 @@ namespace DfsShell.Commands
                               [Description("The path of the DFS file or directory to upload to."), ArgumentName("DfsPath")] string dfsPath)
         {
             if( localPath == null )
-                throw new ArgumentNullException("localPath");
+                throw new ArgumentNullException(nameof(localPath));
             if( dfsPath == null )
-                throw new ArgumentNullException("dfsPath");
+                throw new ArgumentNullException(nameof(dfsPath));
 
             _localPath = localPath;
             _dfsPath = dfsPath;
@@ -141,7 +141,7 @@ namespace DfsShell.Commands
 
             JumboDirectory directory = Client.GetDirectoryInfo(dfsPath);
             if( directory != null )
-                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the DFS.", dfsPath), "dfsPath");
+                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the DFS.", dfsPath), nameof(dfsPath));
             Client.CreateDirectory(dfsPath);
 
             foreach( string file in files )

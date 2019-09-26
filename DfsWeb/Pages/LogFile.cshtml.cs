@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -51,24 +52,24 @@ namespace DfsWeb.Pages
 
             int maxSize = Int32.MaxValue;
             if (MaxSize != null)
-                maxSize = (int)BinarySize.Parse(MaxSize);
+                maxSize = (int)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
 
             if (DataServer == null)
             {
                 DfsClient client = (DfsClient)FileSystemClient.Create();
                 DfsMetrics metrics = client.NameServer.GetMetrics();
-                ViewData["Title"] = string.Format("Name server {0} log file", metrics.NameServer);
+                ViewData["Title"] = $"Name server {metrics.NameServer} log file";
                 string log = client.NameServer.GetLogFileContents(logKind, maxSize);
                 LogFileContents = FormatLogFile(log);
             }
             else
             {
-                ViewData["Title"] = string.Format("Data server {0}:{1} log file", DataServer, Port);
+                ViewData["Title"] = $"Data server {DataServer}:{Port} log file";
                 LogFileContents = FormatLogFile(DfsClient.GetDataServerLogFileContents(DataServer, Port, logKind, maxSize));
             }
         }
 
-        private HtmlString FormatLogFile(string log)
+        private static HtmlString FormatLogFile(string log)
         {
             StringBuilder result = new StringBuilder(log.Length);
             using (StringReader reader = new StringReader(log))
@@ -76,10 +77,10 @@ namespace DfsWeb.Pages
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (line.Contains(" WARN "))
-                        result.AppendFormat("<span class=\"logWarning\">{0}</span>", HttpUtility.HtmlEncode(line));
-                    else if (line.Contains(" ERROR "))
-                        result.AppendFormat("<span class=\"logError\">{0}</span>", HttpUtility.HtmlEncode(line));
+                    if (line.Contains(" WARN ", StringComparison.Ordinal))
+                        result.AppendFormat(CultureInfo.CurrentCulture, "<span class=\"logWarning\">{0}</span>", HttpUtility.HtmlEncode(line));
+                    else if (line.Contains(" ERROR ", StringComparison.Ordinal))
+                        result.AppendFormat(CultureInfo.CurrentCulture, "<span class=\"logError\">{0}</span>", HttpUtility.HtmlEncode(line));
                     else
                         result.Append(HttpUtility.HtmlEncode(line));
 

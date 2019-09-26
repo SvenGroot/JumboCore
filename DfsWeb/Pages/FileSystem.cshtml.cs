@@ -9,9 +9,5 @@ namespace DfsWeb.Pages
 {
     public class FileSystemModel : PageModel
     {
-        public void OnGet()
-        {
-
-        }
     }
 }

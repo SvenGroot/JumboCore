@@ -40,7 +40,7 @@ namespace NameServerApplication
         private FileSystem(DfsConfiguration configuration, bool readExistingFileSystem, bool readOnly)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
 
             if( string.IsNullOrWhiteSpace(configuration.NameServer.ImageDirectory) )
                 throw new InvalidOperationException("NameServer image directory not configured.");
@@ -79,7 +79,7 @@ namespace NameServerApplication
                     _root = (DfsDirectory)DfsFileSystemEntry.LoadFromFileSystemImage(reader, null, NotifyFileSizeCallback);
                     LoadPendingFiles(reader);
                 }
-                _log.InfoFormat("File system loaded.");
+                _log.Info("File system loaded.");
             }
             else
             {
@@ -137,7 +137,7 @@ namespace NameServerApplication
                 string imageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
                 fs.SaveToFileSystemImage(imageFile);
             }
-            _log.InfoFormat("File system successfully formatted.");
+            _log.Info("File system successfully formatted.");
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace NameServerApplication
         public BlockInfo CreateFile(string path, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool appendBlock)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             _log.DebugFormat("CreateFile: path = \"{0}\"", path);
 
@@ -268,7 +268,7 @@ namespace NameServerApplication
                 DfsFileSystemEntry entry;
                 FindEntry(path, out name, out parent, out entry);
                 if( entry != null )
-                    throw new ArgumentException("The specified directory already has a file or directory with the specified name.", "name");
+                    throw new ArgumentException("The specified directory already has a file or directory with the specified name.", nameof(path));
                 
                 PendingFile file = CreateFile(parent, name, dateCreated, blockSize, replicationFactor, recordOptions);
                 try
@@ -306,7 +306,7 @@ namespace NameServerApplication
         public JumboFile GetFileInfo(string path)
         {
             if( path == null )
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(path));
 
             _log.DebugFormat("GetFileInfo: path = \"{0}\"", path);
 
@@ -335,7 +335,7 @@ namespace NameServerApplication
         public JumboFileSystemEntry GetFileSystemEntryInfo(string path)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             _log.DebugFormat("GetFileSystemEntryInfo: path = \"{0}\"", path);
 
@@ -367,7 +367,7 @@ namespace NameServerApplication
             {
                 PendingFile file;
                 if( !(_pendingFiles.TryGetValue(path, out file) && file.File.IsOpenForWriting) )
-                    throw new InvalidOperationException(string.Format("The file '{0}' does not exist or is not open for writing.", path));
+                    throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
                 if( availableServers >= 0 && file.File.ReplicationFactor > availableServers )
                     throw new InvalidOperationException("Insufficient data servers.");
 
@@ -389,7 +389,7 @@ namespace NameServerApplication
             {
                 PendingFile file;
                 if( !_pendingFiles.TryGetValue(path, out file) )
-                    throw new InvalidOperationException(string.Format("The file '{0}' does not exist or is not open for writing.", path));
+                    throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
 
                 if( file.PendingBlock == null || file.PendingBlock != blockID )
                     throw new InvalidOperationException("No block to commit.");
@@ -424,7 +424,7 @@ namespace NameServerApplication
             {
                 PendingFile file;
                 if( !(_pendingFiles.TryGetValue(path, out file) && file.File.IsOpenForWriting) )
-                    throw new InvalidOperationException(string.Format("The file '{0}' does not exist or is not open for writing.", path));
+                    throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
 
                 if( file.PendingBlock != null )
                 {
@@ -483,9 +483,9 @@ namespace NameServerApplication
         public void Move(string from, string to)
         {
             if( from == null )
-                throw new ArgumentNullException("from");
+                throw new ArgumentNullException(nameof(from));
             if( to == null )
-                throw new ArgumentNullException("to");
+                throw new ArgumentNullException(nameof(to));
             _log.DebugFormat("Move: from = \"{0}\", to = \"{1}\"", from, to);
             lock( _root )
             {
@@ -495,7 +495,7 @@ namespace NameServerApplication
                 FindEntry(from, out fromName, out fromParent, out fromEntry);
 
                 if( fromEntry == null )
-                    throw new ArgumentException(string.Format("The file or directory \"{0}\" does not exist.", from));
+                    throw new ArgumentException($"The file or directory \"{from}\" does not exist.");
 
                 string toName;
                 DfsFileSystemEntry toEntry;
@@ -507,7 +507,7 @@ namespace NameServerApplication
                     toParent = (DfsDirectory)toEntry;
                 }
                 else if( toEntry != null )
-                    throw new ArgumentException(string.Format("The path \"{0}\" is an existing file.", to));
+                    throw new ArgumentException($"The path \"{to}\" is an existing file.");
 
                 Move(fromEntry, toParent, toName);
             }
@@ -622,7 +622,7 @@ namespace NameServerApplication
             }
         }
 
-        private Guid NewBlockID()
+        private static Guid NewBlockID()
         {
             return Guid.NewGuid();
         }
@@ -679,7 +679,7 @@ namespace NameServerApplication
             file = FindEntry(parent, name);
         }
         
-        private DfsFileSystemEntry FindEntry(DfsDirectory parent, string name)
+        private static DfsFileSystemEntry FindEntry(DfsDirectory parent, string name)
         {
             return (from child in parent.Children
                     where child.Name == name
@@ -690,7 +690,7 @@ namespace NameServerApplication
         {
             int index = path.LastIndexOf(DfsPath.DirectorySeparator);
             if( index == -1 )
-                throw new ArgumentException("Path is not rooted.", "path");
+                throw new ArgumentException("Path is not rooted.", nameof(path));
             directory = path.Substring(0, index);
             name = path.Substring(index + 1);
             if( directory.Length == 0 )
@@ -700,9 +700,9 @@ namespace NameServerApplication
         private DfsDirectory GetDirectoryInternal(string path, bool create, DateTime creationDate)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
-            if( !path.StartsWith("/") )
-                throw new ArgumentException("Path is not an absolute path.", "path");
+                throw new ArgumentNullException(nameof(path));
+            if( !DfsPath.IsPathRooted(path) )
+                throw new ArgumentException("Path is not an absolute path.", nameof(path));
 
             string[] components = path.Split(DfsPath.DirectorySeparator);
 
@@ -714,7 +714,7 @@ namespace NameServerApplication
                 // First check for empty components so we don't have to roll back changes if there are any.
                 // Count must be 1 because the first component will always be empty.
                 if( (from c in components where c.Length == 0 select c).Count() > 1 )
-                    throw new ArgumentException("Path contains an empty components.", "path");
+                    throw new ArgumentException("Path contains an empty components.", nameof(path));
 
                 DfsDirectory currentDirectory = _root;
                 for( int x = 1; x < components.Length; ++x )
@@ -735,7 +735,7 @@ namespace NameServerApplication
                         currentDirectory = entry as DfsDirectory;
                         // There is no need to rollback changes here since no changes can have been made yet if this happens.
                         if( currentDirectory == null )
-                            throw new ArgumentException("Path contains a file name.", "path");
+                            throw new ArgumentException("Path contains a file name.", nameof(path));
                     }
                 }
                 return currentDirectory;
@@ -752,11 +752,11 @@ namespace NameServerApplication
         private PendingFile CreateFile(DfsDirectory parent, string name, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
         {
             if( blockSize <= 0 )
-                throw new ArgumentOutOfRangeException("blockSize", "File block size must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(blockSize), "File block size must be larger than zero.");
             if( blockSize % Packet.PacketSize != 0 )
-                throw new ArgumentException("Block size must be a multiple of the packet size.", "blockSize");
+                throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
             if( replicationFactor <= 0 )
-                throw new ArgumentOutOfRangeException("replicationFactor", "Replication factor must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(replicationFactor), "Replication factor must be larger than zero.");
 
             _log.InfoFormat("Creating file \"{0}\" inside \"{1}\" with block size {2}.", name, parent.FullPath, blockSize);
             _editLog.LogCreateFile(AppendPath(parent.FullPath, name), dateCreated, blockSize, replicationFactor, recordOptions);
@@ -824,7 +824,7 @@ namespace NameServerApplication
             OnFileDeleted(new FileDeletedEventArgs(file, pendingBlock));
         }
 
-        private string AppendPath(string parent, string child)
+        private static string AppendPath(string parent, string child)
         {
             return DfsPath.Combine(parent, child);
         }

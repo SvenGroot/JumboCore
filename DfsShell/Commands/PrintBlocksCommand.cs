@@ -8,6 +8,7 @@ using System.ComponentModel;
 using Ookii.Jumbo.Dfs;
 using System.Runtime.InteropServices;
 using Ookii.Jumbo.Dfs.FileSystem;
+using System.Globalization;
 
 namespace DfsShell.Commands
 {
@@ -37,7 +38,7 @@ namespace DfsShell.Commands
                     if( ShowFiles )
                         Console.WriteLine("{0:B}: {1}", blockId, dfsClient.NameServer.GetFileForBlock(blockId));
                     else
-                        Console.WriteLine(blockId.ToString("B"));
+                        Console.WriteLine(blockId.ToString("B", CultureInfo.CurrentCulture));
                 }
             }
         }

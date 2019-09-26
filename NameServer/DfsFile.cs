@@ -34,11 +34,11 @@ namespace NameServerApplication
             : base(parent, name, dateCreated)
         {
             if( blockSize <= 0 )
-                throw new ArgumentOutOfRangeException("blockSize", "File block size must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(blockSize), "File block size must be larger than zero.");
             if( blockSize % Packet.PacketSize != 0 )
-                throw new ArgumentException("Block size must be a multiple of the packet size.", "blockSize");
+                throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
             if( replicationFactor <= 0 )
-                throw new ArgumentOutOfRangeException("replicationFactor", "A block must have at least one replica.");
+                throw new ArgumentOutOfRangeException(nameof(replicationFactor), "A block must have at least one replica.");
 
             BlockSize = blockSize;
             ReplicationFactor = replicationFactor;
@@ -115,7 +115,7 @@ namespace NameServerApplication
         public override void SaveToFileSystemImage(System.IO.BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             base.SaveToFileSystemImage(writer);
             writer.Write(Size);
             writer.Write(IsOpenForWriting);
@@ -164,7 +164,7 @@ namespace NameServerApplication
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
             writer.WriteLine("Block size:       {0:#,0} bytes", BlockSize);
@@ -184,7 +184,7 @@ namespace NameServerApplication
         protected override void LoadFromFileSystemImage(System.IO.BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             Size = reader.ReadInt64();
             IsOpenForWriting = reader.ReadBoolean();
             BlockSize = reader.ReadInt32();

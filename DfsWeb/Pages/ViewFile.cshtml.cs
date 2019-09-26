@@ -100,6 +100,18 @@ namespace DfsWeb.Pages
             {
                 throw new NotSupportedException();
             }
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+                if (disposing)
+                {
+                    if (_baseStream != null)
+                    {
+                        _baseStream.Dispose();
+                    }
+                }
+            }
         }
 
 
@@ -120,6 +132,7 @@ namespace DfsWeb.Pages
 
         public bool Error { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public void OnGet()
         {
             long maxSize = MaxSize == null ? 100 * BinarySize.Kilobyte : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);

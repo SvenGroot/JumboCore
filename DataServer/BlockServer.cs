@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Diagnostics;
 using Ookii.Jumbo;
+using System.Globalization;
 
 namespace DataServerApplication
 {
@@ -27,12 +28,13 @@ namespace DataServerApplication
             : base(localAddresses, port)
         {
             if( dataServer == null )
-                throw new ArgumentNullException("dataServer");
-            _log.InfoFormat("Starting block server on {0}", localAddresses);
+                throw new ArgumentNullException(nameof(dataServer));
+            _log.InfoFormat(CultureInfo.InvariantCulture, "Starting block server on {0}", localAddresses);
 
             _dataServer = dataServer;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions should be logged and not cause a crash.")]
         protected override void HandleConnection(TcpClient client)
         {
             try
@@ -89,7 +91,7 @@ namespace DataServerApplication
                 {
                     if( header.DataServers.Count == 0 || !header.DataServers[0].Equals(_dataServer.LocalAddress) )
                     {
-                        _log.ErrorFormat("This server was not the first server in the list of remaining servers for the block.");
+                        _log.Error("This server was not the first server in the list of remaining servers for the block.");
                         clientWriter.WriteResult(DataServerClientProtocolResult.Error);
                         return;
                     }
@@ -114,13 +116,16 @@ namespace DataServerApplication
                 catch( Exception ex )
                 {
                     _log.Error("Error occurred receiving block.", ex);
+#pragma warning disable CA1031 // Do not catch general exception types - Okay to hide inner exception and rethrow the outer.
                     try
                     {
-                        SendErrorResultAndWaitForConnectionClosed(clientWriter, clientReader, acceptedHeader);
+                        SendErrorResultAndWaitForConnectionClosed(clientWriter, acceptedHeader);
                     }
-                    catch( Exception )
+                    catch
                     {
                     }
+#pragma warning restore CA1031 // Do not catch general exception types
+
                     throw;
                 }
                 finally
@@ -131,7 +136,7 @@ namespace DataServerApplication
 
         }
 
-        private static void SendErrorResultAndWaitForConnectionClosed(BinaryWriter clientWriter, BinaryReader reader, bool useSequenceError)
+        private static void SendErrorResultAndWaitForConnectionClosed(BinaryWriter clientWriter, bool useSequenceError)
         {
             if( useSequenceError )
                 clientWriter.Write(-1L);
@@ -154,7 +159,7 @@ namespace DataServerApplication
                 {
                     _log.Error(ex.Message);
                     forwarder.Cancel();
-                    SendErrorResultAndWaitForConnectionClosed(clientWriter, clientReader, true);
+                    SendErrorResultAndWaitForConnectionClosed(clientWriter, true);
                     return false;
                 }
 
@@ -164,7 +169,7 @@ namespace DataServerApplication
                 {
                     if( !CheckForwarderError(header, forwarder) )
                     {
-                        SendErrorResultAndWaitForConnectionClosed(clientWriter, clientReader, true);
+                        SendErrorResultAndWaitForConnectionClosed(clientWriter, true);
                         return false;
                     }
                     forwarder.SendPacket(packet);

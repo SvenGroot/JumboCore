@@ -22,9 +22,9 @@ namespace DfsShell.Commands
                           [Optional, DefaultParameterValue("."), Description("The local path where the file should be stored. The default value is the current directory."), ArgumentName("LocalPath")] string localPath)
         {
             if( dfsPath == null )
-                throw new ArgumentNullException("dfsPath");
+                throw new ArgumentNullException(nameof(dfsPath));
             if( localPath == null )
-                throw new ArgumentNullException("localPath");
+                throw new ArgumentNullException(nameof(localPath));
 
             _dfsPath = dfsPath;
             _localPath = localPath;

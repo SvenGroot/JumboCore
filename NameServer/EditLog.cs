@@ -351,7 +351,7 @@ namespace NameServerApplication
         public void LogCreateDirectory(string path, DateTime date)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CreateDirectoryEditLogEntry(date, path));
         }
@@ -359,7 +359,7 @@ namespace NameServerApplication
         public void LogCreateFile(string path, DateTime date, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CreateFileEditLogEntry(date, path, blockSize, replicationFactor, recordOptions));
         }
@@ -367,7 +367,7 @@ namespace NameServerApplication
         public void LogAppendBlock(string path, DateTime date, Guid blockId)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new AppendBlockEditLogEntry(date, path, blockId));
         }
@@ -375,7 +375,7 @@ namespace NameServerApplication
         public void LogCommitBlock(string path, DateTime date, Guid blockId, int size)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CommitBlockEditLogEntry(date, path, blockId, size));
         }
@@ -383,7 +383,7 @@ namespace NameServerApplication
         public void LogCommitFile(string path)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CommitFileEditLogEntry(DateTime.UtcNow, path));
         }
@@ -391,7 +391,7 @@ namespace NameServerApplication
         public void LogDelete(string path, bool recursive)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             LogMutation(new DeleteEditLogEntry(DateTime.UtcNow, path, recursive));
         }
@@ -399,9 +399,9 @@ namespace NameServerApplication
         public void LogMove(string from, string to)
         {
             if( from == null )
-                throw new ArgumentNullException("from");
+                throw new ArgumentNullException(nameof(from));
             if( to == null )
-                throw new ArgumentNullException("to");
+                throw new ArgumentNullException(nameof(to));
 
             LogMutation(new MoveEditLogEntry(DateTime.UtcNow, from, to));
         }
@@ -497,7 +497,7 @@ namespace NameServerApplication
             }
         }
 
-        private void HandleLoggingError(Exception ex)
+        private static void HandleLoggingError(Exception ex)
         {
             _log.Error("Unable to log file system mutation.", ex);
         }

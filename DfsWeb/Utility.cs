@@ -13,10 +13,10 @@ namespace DfsWeb
         {
             if (bytes < BinarySize.Kilobyte)
             {
-                return new HtmlString(string.Format("{0:#,0} bytes", bytes));
+                return new HtmlString($"{bytes:#,0} bytes");
             }
 
-            return new HtmlString(string.Format("<abbr title=\"{1:#,0} bytes\">{0:#,0.# SB}</abbr>", (BinarySize)bytes, bytes));
+            return new HtmlString($"<abbr title=\"{bytes:#,0} bytes\">{(BinarySize)bytes:#,0.# SB}</abbr>");
         }
     }
 }

@@ -11,13 +11,14 @@ using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Rpc;
 using Ookii.Jumbo.Topology;
 using Ookii.Jumbo.Dfs.FileSystem;
+using System.Globalization;
 
 namespace NameServerApplication
 {
     /// <summary>
     /// RPC server for the NameServer.
     /// </summary>
-    public class NameServer : MarshalByRefObject, INameServerClientProtocol, INameServerHeartbeatProtocol
+    public sealed class NameServer : MarshalByRefObject, INameServerClientProtocol, INameServerHeartbeatProtocol, IDisposable
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(NameServer));
 
@@ -46,9 +47,9 @@ namespace NameServerApplication
         private NameServer(JumboConfiguration jumboConfig, DfsConfiguration dfsConfig)
         {
             if( jumboConfig == null )
-                throw new ArgumentNullException("jumboConfig");
+                throw new ArgumentNullException(nameof(jumboConfig));
             if( dfsConfig == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(dfsConfig));
 
             Configuration = dfsConfig;
             _localAddress = new ServerAddress(ServerContext.LocalHostName, dfsConfig.FileSystem.Url.Port);
@@ -87,9 +88,9 @@ namespace NameServerApplication
         public static void Run(JumboConfiguration jumboConfig, DfsConfiguration dfsConfig)
         {
             if( jumboConfig == null )
-                throw new ArgumentNullException("jumboConfig");
+                throw new ArgumentNullException(nameof(jumboConfig));
             if( dfsConfig == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(dfsConfig));
 
             _log.Info("---- NameServer is starting ----");
             _log.LogEnvironmentInformation();
@@ -103,6 +104,7 @@ namespace NameServerApplication
         {
             RpcHelper.UnregisterServerChannels(Instance.Configuration.FileSystem.Url.Port);
             Instance.ShutdownInternal();
+            Instance.Dispose();
             Instance = null;
             _log.Info("---- NameServer has shut down ----");
         }
@@ -115,6 +117,9 @@ namespace NameServerApplication
 
         public void CheckBlockReplication(IEnumerable<Guid> blocks)
         {
+            if (blocks == null)
+                throw new ArgumentNullException(nameof(blocks));
+
             // I believe this is what Hadoop does, but is it the right thing to do?
             lock( _underReplicatedBlocks )
             {
@@ -200,11 +205,11 @@ namespace NameServerApplication
                     _safeMode = value;
                     if( _safeMode )
                     {
-                        _log.InfoFormat("Safemode is ON.");
+                        _log.Info("Safemode is ON.");
                     }
                     else
                     {
-                        _log.InfoFormat("Safemode is OFF.");
+                        _log.Info("Safemode is OFF.");
                         _dataServerMonitorEvent.Set(); // Force an immediate replication check if safe mode is disabled prematurely.
                     }
                 }
@@ -357,7 +362,7 @@ namespace NameServerApplication
                 }
             }
 
-            throw new ArgumentException("Invalid block kind.", "kind");
+            throw new ArgumentException("Invalid block kind.", nameof(kind));
         }
 
         public DfsMetrics GetMetrics()
@@ -404,9 +409,9 @@ namespace NameServerApplication
         {
             _log.DebugFormat("GetDataServerBlockCount, dataServer = {0}", dataServer);
             if( dataServer == null )
-                throw new ArgumentNullException("dataServer");
+                throw new ArgumentNullException(nameof(dataServer));
             if( blocks == null )
-                throw new ArgumentNullException("blocks");
+                throw new ArgumentNullException(nameof(blocks));
             lock( _dataServers )
             {
                 DataServerInfo server;
@@ -424,7 +429,7 @@ namespace NameServerApplication
         {
             _log.DebugFormat("GetDataServerBlocks, dataServer = {0}", dataServer);
             if( dataServer == null )
-                throw new ArgumentNullException("dataServer");
+                throw new ArgumentNullException(nameof(dataServer));
 
             lock( _dataServers )
             {
@@ -437,9 +442,9 @@ namespace NameServerApplication
         {
             _log.DebugFormat("GetDataServerBlockCount, dataServer = {0}", dataServer);
             if( dataServer == null )
-                throw new ArgumentNullException("dataServer");
+                throw new ArgumentNullException(nameof(dataServer));
             if( blocks == null )
-                throw new ArgumentNullException("blocks");
+                throw new ArgumentNullException(nameof(blocks));
             lock( _dataServers )
             {
                 DataServerInfo server = _dataServers[dataServer];
@@ -455,7 +460,7 @@ namespace NameServerApplication
         public void RemoveDataServer(ServerAddress dataServer)
         {
             if( dataServer == null )
-                throw new ArgumentNullException("dataServer");
+                throw new ArgumentNullException(nameof(dataServer));
 
             DataServerInfo info;
             lock( _dataServers )
@@ -482,7 +487,7 @@ namespace NameServerApplication
         {
             //_log.Debug("Data server heartbeat received.");
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             DataServerInfo dataServer;
             List<HeartbeatResponse> responseList = null;
@@ -631,7 +636,7 @@ namespace NameServerApplication
             StatusHeartbeatData status = data as StatusHeartbeatData;
             if( status != null )
             {
-                _log.InfoFormat("Data server {0} status: {1}B used, {2}B free, {3}B total.", dataServer.Address, status.DiskSpaceUsed, status.DiskSpaceFree, status.DiskSpaceTotal);
+                _log.InfoFormat(CultureInfo.InvariantCulture, "Data server {0} status: {1}B used, {2}B free, {3}B total.", dataServer.Address, status.DiskSpaceUsed, status.DiskSpaceFree, status.DiskSpaceTotal);
                 dataServer.DiskSpaceFree = status.DiskSpaceFree;
                 dataServer.DiskSpaceUsed = status.DiskSpaceUsed;
                 dataServer.DiskSpaceTotal = status.DiskSpaceTotal;
@@ -983,6 +988,24 @@ namespace NameServerApplication
         private void CreateCheckpointTimerCallback(object state)
         {
             CreateCheckpoint();
+        }
+
+        public void Dispose()
+        {
+            if (_fileSystem != null)
+            {
+                _fileSystem.Dispose();
+            }
+
+            if (_dataServerMonitorEvent != null)
+            {
+                _dataServerMonitorEvent.Dispose();
+            }
+
+            if (_checkpointTimer != null)
+            {
+                _checkpointTimer.Dispose();
+            }
         }
     }
 }

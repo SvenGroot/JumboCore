@@ -16,7 +16,7 @@ namespace DataServerApplication
         private static DataServer _server;
         private static Thread _serverThread;
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             JumboConfiguration.GetConfiguration().Log.ConfigureLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

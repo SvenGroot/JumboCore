@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Ookii.Jumbo.Dfs.FileSystem;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+#pragma warning disable CA1822 // Mark members as static
 
 namespace DfsWeb.Api
 {
@@ -21,3 +21,5 @@ namespace DfsWeb.Api
         }
     }
 }
+
+#pragma warning restore CA1822 // Mark members as static
