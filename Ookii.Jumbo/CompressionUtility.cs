@@ -126,7 +126,7 @@ namespace Ookii.Jumbo
         public static Stream CreateCompressor(this Stream target, CompressionType type)
         {
             if( target == null )
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
 
             switch( type )
             {
@@ -151,7 +151,7 @@ namespace Ookii.Jumbo
         public static Stream CreateDecompressor(this Stream source, CompressionType type, long uncompressedSize)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             switch( type )
             {

@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Rpc
         public RpcServer(IPAddress[] localAddresses, int port)
         {
             if( localAddresses == null )
-                throw new ArgumentNullException("localAddresses");
+                throw new ArgumentNullException(nameof(localAddresses));
             if( localAddresses.Length == 0 )
                 throw new ArgumentException("You must specify a local address to listen on.");
 

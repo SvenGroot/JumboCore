@@ -21,9 +21,9 @@ namespace Ookii.Jumbo
         public static void AddRange<T>(this Collection<T> target, IEnumerable<T> collection)
         {
             if( target == null )
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             if( collection == null )
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
 
             ExtendedCollection<T> extendedCollection = target as ExtendedCollection<T>;
             if( extendedCollection != null )

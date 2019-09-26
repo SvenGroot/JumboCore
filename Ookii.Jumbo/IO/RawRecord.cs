@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.IO
         public void Write(BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             if( Buffer == null )
                 WritableUtility.Write7BitEncodedInt32(writer, 0);
             else
@@ -101,7 +101,7 @@ namespace Ookii.Jumbo.IO
         public void Read(BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             Offset = 0;
             Count = WritableUtility.Read7BitEncodedInt32(reader);
             if( Buffer == null || Buffer.Length < Count )

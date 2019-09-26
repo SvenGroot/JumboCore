@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.Topology
         public TopologyNode(ServerAddress address)
         {
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             _address = address;
         }
@@ -63,7 +63,7 @@ namespace Ookii.Jumbo.Topology
         public int DistanceFrom(TopologyNode node)
         {
             if( node == null )
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException(nameof(node));
 
             return DistanceFrom(node.Address.HostName, node.Rack.RackId);
         }

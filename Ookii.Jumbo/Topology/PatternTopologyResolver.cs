@@ -67,7 +67,7 @@ namespace Ookii.Jumbo.Topology
         public string ResolveNode(string hostName)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
 
             foreach( RackInfo rack in _racks )
             {

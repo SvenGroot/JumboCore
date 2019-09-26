@@ -175,7 +175,7 @@ namespace Ookii.Jumbo
         public static void ModifyProcessStartInfo(ProcessStartInfo startInfo, string profileOutputFile, string profileOptions)
         {
             if( startInfo == null )
-                throw new ArgumentNullException("startInfo");
+                throw new ArgumentNullException(nameof(startInfo));
             if( RuntimeType == RuntimeEnvironmentType.Mono && profileOutputFile != null )
             {
                 startInfo.Arguments = startInfo.FileName + " " + startInfo.Arguments;
@@ -194,7 +194,7 @@ namespace Ookii.Jumbo
         public static void LogEnvironmentInformation(this log4net.ILog log)
         {
             if( log == null )
-                throw new ArgumentNullException("log");
+                throw new ArgumentNullException(nameof(log));
 
             if( log.IsInfoEnabled )
             {
@@ -228,7 +228,7 @@ namespace Ookii.Jumbo
         public static void MarkFileAsExecutable(string fileName)
         {
             if( fileName == null )
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
 
             if( RuntimeType == RuntimeEnvironmentType.Mono && Environment.OSVersion.Platform == PlatformID.Unix )
             {

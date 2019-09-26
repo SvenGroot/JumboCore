@@ -25,9 +25,9 @@ namespace Ookii.Jumbo
         public static Stream GetLogFileStream(string serverName, LogFileKind kind, int maxSize)
         {
             if( serverName == null )
-                throw new ArgumentNullException("serverName");
+                throw new ArgumentNullException(nameof(serverName));
             if( maxSize < 0 )
-                throw new ArgumentException("maxSize must be zero or higher positive.", "maxSize");
+                throw new ArgumentException("maxSize must be zero or higher positive.", nameof(maxSize));
 
             string fileName = null;
             switch( kind )

@@ -30,10 +30,10 @@ namespace Ookii.Jumbo
         public static void Randomize<T>(this IList<T> list, Random random)
         {
             if( list == null )
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
 
             if( random == null )
-                throw new ArgumentNullException("random");
+                throw new ArgumentNullException(nameof(random));
             int n = list.Count;        // The number of items left to shuffle (loop invariant).
             while( n > 1 )
             {
@@ -55,9 +55,9 @@ namespace Ookii.Jumbo
         public static string ToDelimitedString<T>(this IEnumerable<T> list, string delimiter)
         {
             if( list == null )
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             if( delimiter == null )
-                throw new ArgumentNullException("delimiter");
+                throw new ArgumentNullException(nameof(delimiter));
 
             StringBuilder result = new StringBuilder();
             bool first = true;
@@ -93,7 +93,7 @@ namespace Ookii.Jumbo
         public static int GetSequenceHashCode<T>(this IEnumerable<T> list)
         {
             if( list == null )
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             int hash = 0x218A9B2C;
             foreach( var item in list )
             {
@@ -114,7 +114,7 @@ namespace Ookii.Jumbo
         public static void Swap<T>(this IList<T> list, int index1, int index2)
         {
             if( list == null )
-                throw new ArgumentNullException("list");
+                throw new ArgumentNullException(nameof(list));
             if( index1 != index2 )
             {
                 T temp = list[index1];

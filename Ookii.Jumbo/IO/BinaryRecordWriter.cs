@@ -40,7 +40,7 @@ namespace Ookii.Jumbo.IO
         protected override void WriteRecordInternal(T record)
         {
             if( record == null )
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
             CheckDisposed();
 
             ValueWriter<T>.WriteValue(record, _writer);

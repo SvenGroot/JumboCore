@@ -84,15 +84,15 @@ namespace Ookii.Jumbo
         public static void Copy(byte[] source, int sourceIndex, UnmanagedBuffer destination, int destinationIndex, int count)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if( sourceIndex < 0 )
-                throw new ArgumentOutOfRangeException("sourceIndex");
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if( destinationIndex < 0 )
-                throw new ArgumentOutOfRangeException("destinationIndex");
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( sourceIndex + count > source.Length )
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
             if( destinationIndex + count > destination.Size )
@@ -115,15 +115,15 @@ namespace Ookii.Jumbo
         public static long CopyCircular(byte[] source, int sourceIndex, UnmanagedBuffer destination, long destinationIndex, int count)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if( sourceIndex < 0 )
-                throw new ArgumentOutOfRangeException("sourceIndex");
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if( destinationIndex < 0 )
-                throw new ArgumentOutOfRangeException("destinationIndex");
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( sourceIndex + count > source.Length )
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
             long end = destinationIndex + count;
@@ -161,15 +161,15 @@ namespace Ookii.Jumbo
         public static void Copy(UnmanagedBuffer source, int sourceIndex, byte[] destination, int destinationIndex, int count)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if( sourceIndex < 0 )
-                throw new ArgumentOutOfRangeException("sourceIndex");
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if( destinationIndex < 0 )
-                throw new ArgumentOutOfRangeException("destinationIndex");
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( sourceIndex + count > source.Size )
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
             if( destinationIndex + count > destination.Length )
@@ -192,15 +192,15 @@ namespace Ookii.Jumbo
         public static long CopyCircular(UnmanagedBuffer source, long sourceIndex, byte[] destination, int destinationIndex, int count)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if( sourceIndex < 0 )
-                throw new ArgumentOutOfRangeException("sourceIndex");
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if( destinationIndex < 0 )
-                throw new ArgumentOutOfRangeException("destinationIndex");
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( destinationIndex + count > destination.Length )
                 throw new ArgumentException("destinationIndex + count is larger than the destination array.");
 

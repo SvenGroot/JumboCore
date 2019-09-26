@@ -87,5 +87,21 @@ namespace Ookii.Jumbo.IO
             // We always allow record reuse for raw record readers. Don't specify that the input contains record sizes, because those are used by the records themselves here.
             return new BinaryRecordReader<RawRecord>(_stream, true) { SourceName = _sourceName };
         }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                if (_stream != null)
+                {
+                    _stream.Dispose();
+                }
+            }
+        }
     }
 }

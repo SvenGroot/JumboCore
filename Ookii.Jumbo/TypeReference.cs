@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -10,7 +11,7 @@ namespace Ookii.Jumbo
     /// <summary>
     /// Represents a reference to a <see cref="Type"/> that will be serialized to XML using the type name.
     /// </summary>
-    public struct TypeReference : IXmlSerializable
+    public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
     {
         private static bool _resolveTypes = true;
         private string _typeName;
@@ -61,6 +62,7 @@ namespace Ookii.Jumbo
             set { _resolveTypes = value; }
         }
 
+
         /// <summary>
         /// Gets or sets the type that this <see cref="TypeReference" /> references.
         /// </summary>
@@ -68,13 +70,14 @@ namespace Ookii.Jumbo
         /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
         /// </value>
         /// <exception cref="System.InvalidOperationException">Resolving type references is disabled.</exception>
+        [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
         public Type ReferencedType
         {
             get
             {
-                if( _type == null && _typeName != null )
+                if (_type == null && _typeName != null)
                 {
-                    if( ResolveTypes )
+                    if (ResolveTypes)
                         _type = Type.GetType(_typeName, true);
                     else
                         throw new InvalidOperationException("Resolving type references is disabled.");
@@ -106,11 +109,13 @@ namespace Ookii.Jumbo
             return TypeName ?? string.Empty;
         }
 
+
         /// <summary>
         /// Implicitly converts a <see cref="Type"/> to a <see cref="TypeReference"/>.
         /// </summary>
         /// <param name="type">The type to reference.</param>
         /// <returns>An instance of <see cref="TypeReference"/> that references <paramref name="type"/>.</returns>
+        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Constructor is the alternative.")]
         public static implicit operator TypeReference(Type type)
         {
             return new TypeReference(type);
@@ -123,7 +128,7 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            if( obj is TypeReference )
+            if (obj is TypeReference)
             {
                 TypeReference right = (TypeReference)obj;
                 return right.ReferencedType == ReferencedType;
@@ -138,7 +143,7 @@ namespace Ookii.Jumbo
         /// <returns>A hash code for the current <see cref="Object"/>.</returns>
         public override int GetHashCode()
         {
-            if( ReferencedType == null )
+            if (ReferencedType == null)
                 return 0;
             else
                 return ReferencedType.GetHashCode();
@@ -175,9 +180,9 @@ namespace Ookii.Jumbo
 
         void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
         {
-            if( reader == null )
-                throw new ArgumentNullException("reader");
-            if( reader.IsEmptyElement )
+            if (reader == null)
+                throw new ArgumentNullException(nameof(reader));
+            if (reader.IsEmptyElement)
                 reader.ReadStartElement();
             else
             {
@@ -189,9 +194,18 @@ namespace Ookii.Jumbo
 
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
         {
-            if( writer == null )
-                throw new ArgumentNullException("writer");
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteString(TypeName);
+        }
+
+        #endregion
+
+        #region IEquatable Members
+
+        public bool Equals([AllowNull] TypeReference other)
+        {
+            return other != null && ReferencedType == other.ReferencedType;
         }
 
         #endregion

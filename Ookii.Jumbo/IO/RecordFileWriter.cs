@@ -31,7 +31,7 @@ namespace Ookii.Jumbo.IO
             : base(stream)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             _writer = new BinaryWriter(stream);
             _header = new RecordFileHeader(typeof(T), false); // TODO: Make the value of useStrongName configurable.
@@ -57,7 +57,7 @@ namespace Ookii.Jumbo.IO
             CheckDisposed();
 
             if( record == null )
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
 
             WriteRecordMarkerIfNecessary();
 

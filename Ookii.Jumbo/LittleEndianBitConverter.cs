@@ -28,9 +28,9 @@ namespace Ookii.Jumbo
         public static short ToInt16(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 2 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             return (short)(buffer[offset] | (buffer[offset + 1] << 8));
         }
 
@@ -44,9 +44,9 @@ namespace Ookii.Jumbo
         public static ushort ToUInt16(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 2 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             return (ushort)(buffer[offset] | (buffer[offset + 1] << 8));
         }
 
@@ -59,9 +59,9 @@ namespace Ookii.Jumbo
         public static int ToInt32(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 4 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             return (buffer[offset]) | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24);
         }
 
@@ -75,9 +75,9 @@ namespace Ookii.Jumbo
         public static uint ToUInt32(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 4 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             return (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
         }
 
@@ -90,9 +90,9 @@ namespace Ookii.Jumbo
         public static long ToInt64(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 8 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
             return ((long)high << 32) | low;
@@ -108,9 +108,9 @@ namespace Ookii.Jumbo
         public static ulong ToUInt64(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 8 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
             return ((ulong)high << 32) | low;
@@ -125,9 +125,9 @@ namespace Ookii.Jumbo
         public static unsafe float ToSingle(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 4 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             uint bits = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             return *(float*)&bits;
         }
@@ -141,9 +141,9 @@ namespace Ookii.Jumbo
         public static unsafe double ToDouble(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 8 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
             ulong bits = ((ulong)high << 32) | low;
@@ -159,9 +159,9 @@ namespace Ookii.Jumbo
         public static decimal ToDecimal(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 16 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             int[] bits = new[] 
             { 
                 (buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24)),
@@ -181,9 +181,9 @@ namespace Ookii.Jumbo
         public static DateTime ToDateTime(byte[] buffer, int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset > buffer.Length - 12 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             DateTimeKind kind = (DateTimeKind)ToInt32(buffer, offset);
             long ticks = ToInt64(buffer, offset + 4);
             return new DateTime(ticks, kind);
@@ -199,9 +199,9 @@ namespace Ookii.Jumbo
         public static int ToInt32From7BitEncoding(byte[] buffer, ref int offset)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 || offset >= buffer.Length )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             byte currentByte;
             int result = 0;
             int bits = 0;

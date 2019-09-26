@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Rpc
         public RpcStream(Socket socket)
         {
             if( socket == null )
-                throw new ArgumentNullException("socket");
+                throw new ArgumentNullException(nameof(socket));
 
             _baseStream = new NetworkStream(socket);
         }
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Rpc
         public RpcStream(TcpClient client)
         {
             if( client == null )
-                throw new ArgumentNullException("client");
+                throw new ArgumentNullException(nameof(client));
 
             _baseStream = client.GetStream();
         }

@@ -93,7 +93,7 @@ namespace Ookii.Jumbo
         public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
         {
             if( !(value is BinarySize) )
-                throw new ArgumentException("Cannot convert argument: incorrect type.", "value");
+                throw new ArgumentException("Cannot convert argument: incorrect type.", nameof(value));
 
             BinarySize realValue = (BinarySize)value;
             if( destinationType == typeof(string) )

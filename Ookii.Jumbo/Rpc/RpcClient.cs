@@ -27,6 +27,7 @@ namespace Ookii.Jumbo.Rpc
             _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Object is not owned")]
         public static object SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, object[] parameters)
         {
             // This method is public only because the dynamic assemblies must be able to access it.

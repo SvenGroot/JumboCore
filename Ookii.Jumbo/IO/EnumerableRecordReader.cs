@@ -28,9 +28,9 @@ namespace Ookii.Jumbo.IO
         public EnumerableRecordReader(IEnumerable<T> source, int count)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             _enumerator = source.GetEnumerator();
             _count = count;
         }
@@ -74,6 +74,22 @@ namespace Ookii.Jumbo.IO
             {
                 CurrentRecord = default(T);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                if (_enumerator != null)
+                {
+                    _enumerator.Dispose();
+                }
             }
         }
     }

@@ -70,7 +70,7 @@ namespace Ookii.Jumbo.IO
         public void Insert(int index, T item)
         {
             if( item == null )
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             _items.Insert(index, item);
         }
 
@@ -97,7 +97,7 @@ namespace Ookii.Jumbo.IO
             set
             {
                 if( value == null )
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 _items[index] = value;
             }
         }
@@ -109,7 +109,7 @@ namespace Ookii.Jumbo.IO
         public void Add(T item)
         {
             if( item == null )
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             _items.Add(item);
         }
 

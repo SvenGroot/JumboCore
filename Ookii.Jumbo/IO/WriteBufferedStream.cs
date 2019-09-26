@@ -36,11 +36,11 @@ namespace Ookii.Jumbo.IO
         public WriteBufferedStream(Stream stream, int bufferSize)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             if( bufferSize <= 0 )
-                throw new ArgumentOutOfRangeException("bufferSize", "Buffer size must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
             if( !stream.CanWrite )
-                throw new ArgumentException("You must use a writable stream.", "stream");
+                throw new ArgumentException("You must use a writable stream.", nameof(stream));
             _stream = stream;
             _buffer = new byte[bufferSize];
         }
@@ -177,11 +177,11 @@ namespace Ookii.Jumbo.IO
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( offset < 0 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( offset + count > buffer.Length )
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 

@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.IO
         public RawComparerAttribute(Type rawComparerTypeName)
         {
             if( rawComparerTypeName == null )
-                throw new ArgumentNullException("rawComparerTypeName");
+                throw new ArgumentNullException(nameof(rawComparerTypeName));
             _rawComparerTypeName = rawComparerTypeName.AssemblyQualifiedName;
         }
 

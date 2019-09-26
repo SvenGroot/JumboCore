@@ -119,6 +119,22 @@ namespace Ookii.Jumbo.IO
                 HasRecords = true;
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                if (_currentReader != null)
+                {
+                    _currentReader.Dispose();
+                }
+            }
+        }
+
         void _currentReader_HasRecordsChanged(object sender, EventArgs e)
         {
             // If the reader has finished, HasRecords will be updated by WaitForReaders (or if we're out of readers, by the RecordReader<T> itself).

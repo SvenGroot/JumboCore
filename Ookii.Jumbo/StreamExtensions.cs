@@ -31,9 +31,9 @@ namespace Ookii.Jumbo
         public static void CopyTo(this Stream source, Stream destination, int bufferSize)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             byte[] buffer = new byte[bufferSize];
             int bytesRead = 0;
             do
@@ -67,9 +67,9 @@ namespace Ookii.Jumbo
         public static void CopySize(this Stream source, Stream destination, long size, int bufferSize)
         {
             if( source == null )
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if( destination == null )
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             byte[] buffer = new byte[bufferSize];
             long bytesLeft = size;
             while( bytesLeft > 0 )

@@ -136,6 +136,17 @@ namespace Ookii.Jumbo.IO
         }
 
         /// <summary>
+        /// Determines whether one specified <see cref="Pair{TKey, TValue}"/> is less than or equal to another specified <see cref="Pair{TKey, TValue}"/>
+        /// </summary>
+        /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator <=(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        {
+            return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) <= 0;
+        }
+
+        /// <summary>
         /// Determines whether one specified <see cref="Pair{TKey, TValue}"/> is greater than another specified <see cref="Pair{TKey, TValue}"/>
         /// </summary>
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
@@ -144,6 +155,17 @@ namespace Ookii.Jumbo.IO
         public static bool operator >(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
         {
             return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) > 0;
+        }
+
+        /// <summary>
+        /// Determines whether one specified <see cref="Pair{TKey, TValue}"/> is greater than or equal to another specified <see cref="Pair{TKey, TValue}"/>
+        /// </summary>
+        /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >=(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        {
+            return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) >= 0;
         }
 
         #region IWritable Members
@@ -155,7 +177,7 @@ namespace Ookii.Jumbo.IO
         public void Write(System.IO.BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             if( Key == null || Value == null )
                 throw new InvalidOperationException("Key and value may not be null.");
             if( _keyWriter == null )
@@ -176,7 +198,7 @@ namespace Ookii.Jumbo.IO
         public void Read(System.IO.BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             if( _keyWriter == null )
             {
                 if( Key == null )

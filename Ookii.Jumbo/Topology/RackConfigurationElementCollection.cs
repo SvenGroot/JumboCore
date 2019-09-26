@@ -11,6 +11,7 @@ namespace Ookii.Jumbo.Topology
     /// Represents a collection of <see cref="RackConfigurationElement"/> objects in a configuration file.
     /// </summary>
     [ConfigurationCollection(typeof(RackConfigurationElement), AddItemName = "rack")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Base class is non-generic collection.")]
     public class RackConfigurationElementCollection : ConfigurationElementCollection
     {
         /// <summary>
@@ -47,6 +48,9 @@ namespace Ookii.Jumbo.Topology
         /// <returns>The <see cref="RackConfigurationElement.RackId"/> property value.</returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
             return ((RackConfigurationElement)element).RackId;
         }
 

@@ -40,9 +40,9 @@ namespace Ookii.Jumbo.Rpc
         private static Type CreateProxy(Type interfaceType)
         {
             if( interfaceType == null )
-                throw new ArgumentNullException("interfaceType");
+                throw new ArgumentNullException(nameof(interfaceType));
             if( !interfaceType.IsInterface )
-                throw new ArgumentException("Type is not an interface.", "interfaceType");
+                throw new ArgumentException("Type is not an interface.", nameof(interfaceType));
             if( interfaceType.IsGenericType || interfaceType.IsGenericTypeDefinition )
                 throw new ArgumentException("Generic types are not supported.");
 

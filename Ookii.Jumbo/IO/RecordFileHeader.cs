@@ -71,7 +71,7 @@ namespace Ookii.Jumbo.IO
         public RecordFileHeader(Type recordType, bool useStrongName)
         {
             if( recordType == null )
-                throw new ArgumentNullException("recordType");
+                throw new ArgumentNullException(nameof(recordType));
 
             Version = RecordFile.CurrentVersion;
             if( useStrongName )
@@ -134,7 +134,7 @@ namespace Ookii.Jumbo.IO
         void IWritable.Write(System.IO.BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.Write(_headerStart);
             writer.Write(RecordTypeName);
             writer.Write(RecordMarker);
@@ -143,7 +143,7 @@ namespace Ookii.Jumbo.IO
         void IWritable.Read(System.IO.BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
 
             byte[] headerStart = reader.ReadBytes(_headerStart.Length);
             if( !(headerStart[0] == _headerStart[0] &&

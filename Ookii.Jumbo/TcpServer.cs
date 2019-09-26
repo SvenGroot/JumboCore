@@ -46,11 +46,11 @@ namespace Ookii.Jumbo
         protected TcpServer(IPAddress[] localAddresses, int port, int maxConnections)
         {
             if( localAddresses == null )
-                throw new ArgumentNullException("localAddresses");
+                throw new ArgumentNullException(nameof(localAddresses));
             if( localAddresses.Length == 0 )
-                throw new ArgumentException("You must specify at least one address to listen on.", "localAddresses");
+                throw new ArgumentException("You must specify at least one address to listen on.", nameof(localAddresses));
             if( maxConnections < 0 )
-                throw new ArgumentOutOfRangeException("maxConnections", "The maximum number of connections must be zero or more.");
+                throw new ArgumentOutOfRangeException(nameof(maxConnections), "The maximum number of connections must be zero or more.");
 
             _listeners = new TcpListener[localAddresses.Length];
             for( int x = 0; x < localAddresses.Length; ++x )

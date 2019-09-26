@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.IO
         public static Type GetRecordType(Type recordWriterType)
         {
             if( recordWriterType == null )
-                throw new ArgumentNullException("recordWriterType");
+                throw new ArgumentNullException(nameof(recordWriterType));
             Type baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
             return baseType.GetGenericArguments()[0];
         }
@@ -109,10 +109,10 @@ namespace Ookii.Jumbo.IO
             try
             {
                 if( record == null )
-                    throw new ArgumentNullException("record");
+                    throw new ArgumentNullException(nameof(record));
                 // Skip the type check if the record type is sealed.
                 if( !_recordTypeIsSealed && record.GetType() != typeof(T) )
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The record was type {0} rather than {1}.", record.GetType(), typeof(T)), "record");
+                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The record was type {0} rather than {1}.", record.GetType(), typeof(T)), nameof(record));
                 if( _finishedWriting )
                     throw new InvalidOperationException("Cannot write additional records after the FinishWriting method has been called.");
                 WriteRecordInternal(record);
@@ -139,7 +139,7 @@ namespace Ookii.Jumbo.IO
         public void WriteRecords(IEnumerable<T> records)
         {
             if( records == null )
-                throw new ArgumentNullException("records");
+                throw new ArgumentNullException(nameof(records));
 
             foreach( T record in records )
                 WriteRecord(record);

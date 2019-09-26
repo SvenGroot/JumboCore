@@ -26,13 +26,13 @@ namespace Ookii.Jumbo.Rpc
         protected RpcProxyBase(string hostName, int port, string objectName, string interfaceName)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
             if( objectName == null )
-                throw new ArgumentNullException("objectName");
+                throw new ArgumentNullException(nameof(objectName));
             if( interfaceName == null )
-                throw new ArgumentNullException("interfaceName");
+                throw new ArgumentNullException(nameof(interfaceName));
             if( port < 1 || port > ushort.MaxValue )
-                throw new ArgumentOutOfRangeException("port");
+                throw new ArgumentOutOfRangeException(nameof(port));
 
             _hostName = hostName;
             _port = port;

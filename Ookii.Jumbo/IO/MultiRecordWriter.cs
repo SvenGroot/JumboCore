@@ -24,9 +24,9 @@ namespace Ookii.Jumbo.IO
         public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
         {
             if( writers == null )
-                throw new ArgumentNullException("writers");
+                throw new ArgumentNullException(nameof(writers));
             if( partitioner == null )
-                throw new ArgumentNullException("partitioner");
+                throw new ArgumentNullException(nameof(partitioner));
             _writers = writers.ToArray();
             if( _writers.Length == 0 )
                 throw new ArgumentException("You must provide at least one record writer.");

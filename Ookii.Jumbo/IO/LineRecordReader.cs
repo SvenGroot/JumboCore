@@ -148,7 +148,7 @@ namespace Ookii.Jumbo.IO
             : base(stream, offset, size)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             _reader = new LineReader(stream, _bufferSize);
             _position = offset;
             _end = offset + size;

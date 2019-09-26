@@ -218,7 +218,7 @@ namespace Ookii.Jumbo
         public static BinarySize Parse(string value, IFormatProvider provider)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             if( value.Length == 0 )
                 return new BinarySize();
 
@@ -489,11 +489,39 @@ namespace Ookii.Jumbo
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator byte(BinarySize value)
+        public byte ToByte()
         {
             checked
             {
-                return (byte)value.Value;
+                return (byte)Value;
+            }
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Byte"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator byte(BinarySize value)
+        {
+            return value.ToByte();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.SByte"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [CLSCompliant(false)]
+        public sbyte ToSByte()
+        {
+            checked
+            {
+                return (sbyte)Value;
             }
         }
 
@@ -507,9 +535,21 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static explicit operator sbyte(BinarySize value)
         {
+            return value.ToSByte();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int16"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public short ToInt16()
+        {
             checked
             {
-                return (sbyte)value.Value;
+                return (short)Value;
             }
         }
 
@@ -522,9 +562,22 @@ namespace Ookii.Jumbo
         /// </returns>
         public static explicit operator short(BinarySize value)
         {
+            return value.ToInt16();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt16"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [CLSCompliant(false)]
+        public ushort ToUInt16()
+        {
             checked
             {
-                return (short)value.Value;
+                return (ushort)Value;
             }
         }
 
@@ -538,9 +591,21 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static explicit operator ushort(BinarySize value)
         {
+            return value.ToUInt16();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int32"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public int ToInt32()
+        {
             checked
             {
-                return (ushort)value.Value;
+                return (int)Value;
             }
         }
 
@@ -553,9 +618,22 @@ namespace Ookii.Jumbo
         /// </returns>
         public static explicit operator int(BinarySize value)
         {
+            return value.ToInt32();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt32"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [CLSCompliant(false)]
+        public uint ToUInt32()
+        {
             checked
             {
-                return (int)value.Value;
+                return (uint)Value;
             }
         }
 
@@ -569,33 +647,75 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static explicit operator uint(BinarySize value)
         {
+            return value.ToUInt32();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int64"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public long ToInt64()
+        {
+            return Value;
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int16"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static explicit operator long(BinarySize value)
+        {
+            return value.ToInt64();
+        }
+
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt64"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        [CLSCompliant(false)]
+        public ulong ToUInt64()
+        {
             checked
             {
-                return (uint)value.Value;
+                return (ushort)Value;
             }
         }
 
         /// <summary>
-        /// Converts the specified <see cref="BinarySize"/> to an <see cref="Int64"/>.
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt64"/>.
         /// </summary>
-        /// <param name="value">The <see cref="BinarySize"/> to convert.</param>
-        /// <returns>The value of the <see cref="BinarySize"/> in bytes.</returns>
-        public static explicit operator long(BinarySize value)
-        {
-            return value.Value;
-        }
-
-        /// <summary>
-        /// Converts the specified <see cref="BinarySize"/> to an <see cref="UInt64"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="BinarySize"/> to convert.</param>
-        /// <returns>The value of the <see cref="BinarySize"/> in bytes.</returns>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
         [CLSCompliant(false)]
         public static explicit operator ulong(BinarySize value)
         {
+            return value.ToUInt64();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Decimal"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public decimal ToDecimal()
+        {
             checked
             {
-                return (ulong)value.Value;
+                return (decimal)Value;
             }
         }
 
@@ -608,9 +728,21 @@ namespace Ookii.Jumbo
         /// </returns>
         public static explicit operator decimal(BinarySize value)
         {
+            return value.ToDecimal();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Single"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public float ToSingle()
+        {
             checked
             {
-                return (decimal)value.Value;
+                return (float)Value;
             }
         }
 
@@ -623,9 +755,21 @@ namespace Ookii.Jumbo
         /// </returns>
         public static explicit operator float(BinarySize value)
         {
+            return value.ToSingle();
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Double"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public double ToDouble()
+        {
             checked
             {
-                return (float)value.Value;
+                return (double)Value;
             }
         }
 
@@ -638,11 +782,10 @@ namespace Ookii.Jumbo
         /// </returns>
         public static explicit operator double(BinarySize value)
         {
-            checked
-            {
-                return (double)value.Value;
-            }
+            return value.ToDouble();
         }
+
+#pragma warning disable CA2225 // Operator overloads have named alternates - constructor is named alternative.
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Byte"/> to <see cref="Ookii.Jumbo.BinarySize"/>.
@@ -792,6 +935,8 @@ namespace Ookii.Jumbo
             }
         }
 
+#pragma warning restore CA2225 // Operator overloads have named alternates
+
         #endregion
 
 
@@ -837,7 +982,7 @@ namespace Ookii.Jumbo
             else if( obj is BinarySize )
                 return CompareTo((BinarySize)obj);
             else
-                throw new ArgumentException("The specified value is not a ByteSize.", "obj");
+                throw new ArgumentException("The specified value is not a ByteSize.", nameof(obj));
         }
 
         #endregion
@@ -956,7 +1101,7 @@ namespace Ookii.Jumbo
             case "P":
                 return Petabyte;
             default:
-                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Unrecognized unit {0}.", unit), "unit");
+                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Unrecognized unit {0}.", unit), nameof(unit));
             }
         }
 

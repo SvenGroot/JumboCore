@@ -22,7 +22,7 @@ namespace Ookii.Jumbo
         public DriveSpaceInfo(string drivePath)
         {
             if( drivePath == null )
-                throw new ArgumentNullException("drivePath");
+                throw new ArgumentNullException(nameof(drivePath));
 
             if( RuntimeEnvironment.RuntimeType == RuntimeEnvironmentType.Mono )
                 GetDriveSpaceMono(drivePath);

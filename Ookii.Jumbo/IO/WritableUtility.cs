@@ -459,7 +459,7 @@ namespace Ookii.Jumbo.IO
         public static void Write7BitEncodedInt32(BinaryWriter writer, int value)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             uint uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
             while( uintValue >= 0x80 )
             {
@@ -477,7 +477,7 @@ namespace Ookii.Jumbo.IO
         public static int Read7BitEncodedInt32(BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             byte currentByte;
             int result = 0;
             int bits = 0;

@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.IO
             : base(partitions, totalInputCount, allowRecordReuse, bufferSize, compressionType)
         {
             if( totalInputCount != 2 )
-                throw new ArgumentOutOfRangeException("totalInputCount", "InnerJoinRecordReader must have exactly two input readers.");
+                throw new ArgumentOutOfRangeException(nameof(totalInputCount), "InnerJoinRecordReader must have exactly two input readers.");
             if( PartitionCount != 1 )
                 throw new NotSupportedException("You cannot use multiple partitions with the InnerJoinRecordReader.");
             _needOuterClone = allowRecordReuse && !typeof(TOuter).IsValueType;
@@ -167,7 +167,7 @@ namespace Ookii.Jumbo.IO
         public override void AddInput(IList<RecordInput> partitions)
         {
             if( partitions == null )
-                throw new ArgumentNullException("partitions");
+                throw new ArgumentNullException(nameof(partitions));
             IRecordReader reader = partitions[0].Reader;
             switch( CurrentInputCount )
             {

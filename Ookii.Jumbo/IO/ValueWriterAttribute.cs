@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.IO
         public ValueWriterAttribute(Type valueWriterTypeName)
         {
             if( valueWriterTypeName == null )
-                throw new ArgumentNullException("valueWriterTypeName");
+                throw new ArgumentNullException(nameof(valueWriterTypeName));
             _valueWriterTypeName = valueWriterTypeName.AssemblyQualifiedName;
         }
 

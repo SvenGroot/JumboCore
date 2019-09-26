@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.IO
         public static IEnumerable<Type> GetAcceptedInputTypes(Type type)
         {
             if( type == null )
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             Type baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
 
             return GetAcceptedInputTypesCore(type, baseType);
@@ -213,11 +213,11 @@ namespace Ookii.Jumbo.IO
             : base(false)
         {
             if( partitions == null )
-                throw new ArgumentNullException("partitions");
+                throw new ArgumentNullException(nameof(partitions));
             if( totalInputCount < 1 )
-                throw new ArgumentOutOfRangeException("totalInputCount", "Multi input record reader must have at least one input.");
+                throw new ArgumentOutOfRangeException(nameof(totalInputCount), "Multi input record reader must have at least one input.");
             if( bufferSize <= 0 )
-                throw new ArgumentOutOfRangeException("bufferSize", "Buffer size must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
 
             foreach( int partitionNumber in partitions )
             {
@@ -443,7 +443,7 @@ namespace Ookii.Jumbo.IO
         public virtual void AddInput(IList<RecordInput> partitions)
         {
             if( partitions == null )
-                throw new ArgumentNullException("partitions");
+                throw new ArgumentNullException(nameof(partitions));
 
             lock( _partitions )
             {
@@ -474,9 +474,9 @@ namespace Ookii.Jumbo.IO
         public virtual void AssignAdditionalPartitions(IList<int> newPartitions)
         {
             if( newPartitions == null )
-                throw new ArgumentNullException("newPartitions");
+                throw new ArgumentNullException(nameof(newPartitions));
             if( newPartitions.Count == 0 )
-                throw new ArgumentException("The list of new partitions is empty.", "newPartitions");
+                throw new ArgumentException("The list of new partitions is empty.", nameof(newPartitions));
 
             lock( _partitions )
             {
@@ -509,7 +509,7 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
             if( inputCount <= 0 )
-                throw new ArgumentOutOfRangeException("inputCount", "inputCount must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(inputCount), "inputCount must be greater than zero.");
             if( inputCount > TotalInputCount )
                 inputCount = TotalInputCount;
             Stopwatch sw = null;

@@ -91,11 +91,11 @@ namespace Ookii.Jumbo.IO
         protected StreamRecordReader(Stream stream, long offset, long size, bool seekToOffset)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             if( offset < 0 || (offset > 0 && offset >= stream.Length) )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( size < 0 )
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
             if( offset + size > stream.Length )
                 throw new ArgumentException("Offset + size is beyond the end of the stream.");
 

@@ -25,7 +25,6 @@ namespace Ookii.Jumbo.IO
     public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<Utf8String>, IComparable, ICloneable
     {
         private static readonly Encoding _encoding = Encoding.UTF8;
-        private static readonly byte[] _emptyArray = new byte[0];
         private byte[] _utf8Bytes;
         private int _byteLength;
 
@@ -34,7 +33,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         public Utf8String()
         {
-            _utf8Bytes = _emptyArray;
+            _utf8Bytes = Array.Empty<byte>();
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace Ookii.Jumbo.IO
             set
             {
                 if( value < 0 )
-                    throw new ArgumentOutOfRangeException("value", "Length less than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Length less than zero.");
                 if( value > _byteLength )
                     throw new ArgumentException("Cannot increase string length.");
                 _byteLength = value;
@@ -100,7 +99,7 @@ namespace Ookii.Jumbo.IO
             set
             {
                 if( value < _byteLength )
-                    throw new ArgumentOutOfRangeException("value", "New capacity is too small");
+                    throw new ArgumentOutOfRangeException(nameof(value), "New capacity is too small");
                 int capacity = GetCapacityNeeded(value);
                 byte[] newArray = new byte[capacity];
                 Array.Copy(_utf8Bytes, newArray, _byteLength);
@@ -145,7 +144,7 @@ namespace Ookii.Jumbo.IO
         public void Set(byte[] value)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             Set(value, 0, value.Length);
         }
 
@@ -158,7 +157,7 @@ namespace Ookii.Jumbo.IO
         public void Set(byte[] value, int index, int count)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             int capacityNeeded = GetCapacityNeeded(count);
             if( _utf8Bytes == null || _utf8Bytes.Length < capacityNeeded )
                 _utf8Bytes = new byte[capacityNeeded];
@@ -173,7 +172,7 @@ namespace Ookii.Jumbo.IO
         public void Set(Utf8String value)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             Set(value._utf8Bytes, 0, value._byteLength);
         }
 
@@ -184,7 +183,7 @@ namespace Ookii.Jumbo.IO
         public void Append(Utf8String value)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             Append(value._utf8Bytes, 0, value.ByteLength);
         }
 
@@ -197,7 +196,7 @@ namespace Ookii.Jumbo.IO
         public void Append(byte[] value, int index, int count)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             if( Capacity == 0 )
             {
@@ -238,7 +237,7 @@ namespace Ookii.Jumbo.IO
         public void Write(Stream stream)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             stream.Write(_utf8Bytes, 0, _byteLength);
         }
@@ -285,9 +284,9 @@ namespace Ookii.Jumbo.IO
         public static int GetLength(byte[] buffer, int index)
         {
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( index < 0 || index >= buffer.Length )
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
 
             int offset = index;
             int length = LittleEndianBitConverter.ToInt32From7BitEncoding(buffer, ref offset);
@@ -328,6 +327,17 @@ namespace Ookii.Jumbo.IO
         }
 
         /// <summary>
+        /// Determines whether one specified <see cref="Utf8String"/> is less than or equal to another specified <see cref="Utf8String"/>
+        /// </summary>
+        /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator <=(Utf8String left, Utf8String right)
+        {
+            return Comparer<Utf8String>.Default.Compare(left, right) <= 0;
+        }
+
+        /// <summary>
         /// Determines whether one specified <see cref="Utf8String"/> is greater than another specified <see cref="Utf8String"/>
         /// </summary>
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
@@ -336,6 +346,17 @@ namespace Ookii.Jumbo.IO
         public static bool operator >(Utf8String left, Utf8String right)
         {
             return Comparer<Utf8String>.Default.Compare(left, right) > 0;
+        }
+
+        /// <summary>
+        /// Determines whether one specified <see cref="Utf8String"/> is greater than or equal to another specified <see cref="Utf8String"/>
+        /// </summary>
+        /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >=(Utf8String left, Utf8String right)
+        {
+            return Comparer<Utf8String>.Default.Compare(left, right) >= 0;
         }
 
         #region IEquatable<Utf8StringWritable> Members
@@ -403,7 +424,7 @@ namespace Ookii.Jumbo.IO
         public void Read(System.IO.BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             int length = WritableUtility.Read7BitEncodedInt32(reader);
 			if( length <= Capacity )
 			{
@@ -428,7 +449,7 @@ namespace Ookii.Jumbo.IO
         public void Write(System.IO.BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             WritableUtility.Write7BitEncodedInt32(writer, _byteLength);
             writer.Write(_utf8Bytes, 0, _byteLength);
         }

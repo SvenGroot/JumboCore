@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.IO
             : base(stream, offset, size, false)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             
             _reader = new BinaryReader(stream);
             ((IWritable)_header).Read(_reader);

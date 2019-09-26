@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.IO
         protected RecordInput(IRecordReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             _reader = reader;
         }
 
@@ -49,6 +49,7 @@ namespace Ookii.Jumbo.IO
         /// </value>
         public abstract bool IsRawReaderSupported { get; }
 
+
         /// <summary>
         /// Gets the record reader for this input.
         /// </summary>
@@ -58,6 +59,7 @@ namespace Ookii.Jumbo.IO
         ///   If the reader had not yet been created, it will be created by accessing this property.
         /// </para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive")]
         public IRecordReader Reader
         {
             get

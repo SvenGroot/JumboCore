@@ -45,7 +45,7 @@ namespace Ookii.Jumbo.Topology
         public void AddNode(TopologyNode node)
         {
             if( node == null )
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException(nameof(node));
 
             string rackId = ResolveNode(node.Address.HostName);
             _log.InfoFormat("Node {0} was resolved to rack {1}.", node.Address, rackId);
@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Topology
         public static void RemoveNode(TopologyNode node)
         {
             if( node == null )
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException(nameof(node));
 
             if( node.Rack == null )
                 throw new ArgumentException("The specified node is not part of a rack.");

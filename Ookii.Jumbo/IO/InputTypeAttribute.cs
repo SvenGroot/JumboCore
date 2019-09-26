@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.IO
         public InputTypeAttribute(Type acceptedType)
         {
             if( acceptedType == null )
-                throw new ArgumentNullException("acceptedType");
+                throw new ArgumentNullException(nameof(acceptedType));
 
             _acceptedType = acceptedType;
         }

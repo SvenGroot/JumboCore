@@ -77,9 +77,9 @@ namespace Ookii.Jumbo
         protected UdpServer(IPAddress[] localAddresses, int port, bool allowAddressReuse)
         {
             if( localAddresses == null )
-                throw new ArgumentNullException("localAddresses");
+                throw new ArgumentNullException(nameof(localAddresses));
             if( localAddresses.Length == 0 )
-                throw new ArgumentException("You must specify at least one address to bind to.", "localAddresses");
+                throw new ArgumentException("You must specify at least one address to bind to.", nameof(localAddresses));
 
             _callback = new AsyncCallback(ReceiveFromCallback);
             _sockets = new SlimUdpClient[localAddresses.Length];

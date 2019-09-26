@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Topology
             public TextNode(string text)
             {
                 if( text == null )
-                    throw new ArgumentNullException("text");
+                    throw new ArgumentNullException(nameof(text));
 
                 _text = text;
             }
@@ -69,10 +69,10 @@ namespace Ookii.Jumbo.Topology
             public override int Match(string value, int index, bool matchCase)
             {
                 if( value == null )
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 // We want to return -1 if index == length! This is caught by the end > length comparison below.
                 if( index < 0 || index > value.Length )
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
                 int end = index + _text.Length;
                 if( end > value.Length )
@@ -103,13 +103,13 @@ namespace Ookii.Jumbo.Topology
             public RangeNode(int minInclusive, int maxInclusive, int minCharCount, int maxCharCount)
             {
                 if( minInclusive < 0 )
-                    throw new ArgumentOutOfRangeException("minInclusive");
+                    throw new ArgumentOutOfRangeException(nameof(minInclusive));
                 if( maxInclusive < minInclusive )
-                    throw new ArgumentOutOfRangeException("maxInclusive");
+                    throw new ArgumentOutOfRangeException(nameof(maxInclusive));
                 if( minCharCount < 1 )
-                    throw new ArgumentOutOfRangeException("minCharCount");
+                    throw new ArgumentOutOfRangeException(nameof(minCharCount));
                 if( maxCharCount < minCharCount )
-                    throw new ArgumentOutOfRangeException("maxCharCount");
+                    throw new ArgumentOutOfRangeException(nameof(maxCharCount));
 
                 _minInclusive = minInclusive;
                 _maxInclusive = maxInclusive;
@@ -120,10 +120,10 @@ namespace Ookii.Jumbo.Topology
             public override int Match(string value, int index, bool matchCase)
             {
                 if( value == null )
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 // We want to return -1 if index == length. This is caught by the loop and min char count check below.
                 if( index < 0 || index > value.Length )
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
                 int start = index;
                 while( index < value.Length && char.IsNumber(value, index) )
@@ -157,7 +157,7 @@ namespace Ookii.Jumbo.Topology
             public void AddChoice(List<BaseNode> choice)
             {
                 if( choice == null )
-                    throw new ArgumentNullException("choice");
+                    throw new ArgumentNullException(nameof(choice));
 
                 _choices.Add(choice);
             }
@@ -170,9 +170,9 @@ namespace Ookii.Jumbo.Topology
             public override int Match(string value, int index, bool matchCase)
             {
                 if( value == null )
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 if( index < 0 || index > value.Length )
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
                 foreach( List<BaseNode> choice in _choices )
                 {
@@ -232,7 +232,7 @@ namespace Ookii.Jumbo.Topology
         public RangeExpression(string pattern)
         {
             if( pattern == null )
-                throw new ArgumentNullException("pattern");
+                throw new ArgumentNullException(nameof(pattern));
 
             _nodes = ParsePattern(pattern);
         }
@@ -256,7 +256,7 @@ namespace Ookii.Jumbo.Topology
         public bool Match(string value, bool matchCase)
         {
             if( value == null )
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             int index = 0;
             foreach( BaseNode node in _nodes )

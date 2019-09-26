@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.IO
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer)
         {
             if( index == null )
-                throw new ArgumentNullException("index");
+                throw new ArgumentNullException(nameof(index));
             Sort(index, buffer, comparer, 0, index.Length);
         }
 
@@ -36,15 +36,15 @@ namespace Ookii.Jumbo.IO
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer, int offset, int count)
         {
             if( index == null )
-                throw new ArgumentNullException("index");
+                throw new ArgumentNullException(nameof(index));
             if( buffer == null )
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if( comparer == null )
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
             if( offset < 0 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( count < 0 )
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             if( offset + count > index.Length )
                 throw new ArgumentException("The sum of offset and count is greater than the index length.");
             SortCore(buffer, index, comparer, offset, offset + count);

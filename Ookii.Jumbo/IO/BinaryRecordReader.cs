@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.IO
                 if( RecordInputStream == null || (RecordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
                     RecordInputStream.OffsetFromBoundary(offset) != 0 )
                 {
-                    throw new ArgumentException("BinaryRecordReader only supports offsets that are zero or at the start of a block if RecordStreamOptions.DoNotCrossBoundary is enabled.", "offset");
+                    throw new ArgumentException("BinaryRecordReader only supports offsets that are zero or at the start of a block if RecordStreamOptions.DoNotCrossBoundary is enabled.", nameof(offset));
                 }
             }
 

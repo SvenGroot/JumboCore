@@ -33,9 +33,9 @@ namespace Ookii.Jumbo
         public ServerAddress(string hostName, int port)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
             if( port <= 0 || port > 0xFFFF )
-                throw new ArgumentOutOfRangeException("port");
+                throw new ArgumentOutOfRangeException(nameof(port));
             _hostName = hostName;
             _port = port;
         }
@@ -47,16 +47,16 @@ namespace Ookii.Jumbo
         public ServerAddress(string address)
         {
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
             string[] parts = address.Split(':');
             if( parts.Length != 2 )
-                throw new ArgumentException("Invalid server address string.", "address");
+                throw new ArgumentException("Invalid server address string.", nameof(address));
 
             _hostName = parts[0];
             _port = Convert.ToInt32(parts[1], System.Globalization.CultureInfo.InvariantCulture);
 
             if( Port <= 0 || Port > 0xFFFF )
-                throw new ArgumentOutOfRangeException("address", "Invalid port number in server address string");
+                throw new ArgumentOutOfRangeException(nameof(address), "Invalid port number in server address string");
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo
         /// <returns>A hash code that identifies this object.</returns>
         public override int GetHashCode()
         {
-            return HostName.GetHashCode() ^ Port;
+            return HostName.GetHashCode(StringComparison.Ordinal) ^ Port;
         }
 
         /// <summary>
@@ -143,6 +143,17 @@ namespace Ookii.Jumbo
         }
 
         /// <summary>
+        /// Determines whether one specified <see cref="ServerAddress"/> is less than or equal to another specified <see cref="ServerAddress"/>
+        /// </summary>
+        /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator <=(ServerAddress left, ServerAddress right)
+        {
+            return Comparer<ServerAddress>.Default.Compare(left, right) <= 0;
+        }
+
+        /// <summary>
         /// Determines whether one specified <see cref="ServerAddress"/> is greater than another specified <see cref="ServerAddress"/>
         /// </summary>
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
@@ -151,6 +162,18 @@ namespace Ookii.Jumbo
         public static bool operator >(ServerAddress left, ServerAddress right)
         {
             return Comparer<ServerAddress>.Default.Compare(left, right) > 0;
+        }
+
+
+        /// <summary>
+        /// Determines whether one specified <see cref="ServerAddress"/> is greater than or equal to another specified <see cref="ServerAddress"/>
+        /// </summary>
+        /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
+        /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >=(ServerAddress left, ServerAddress right)
+        {
+            return Comparer<ServerAddress>.Default.Compare(left, right) >= 0;
         }
 
         #region IComparable<ServerAddress> Members
