@@ -6,18 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Lokad.ILPack" Version="0.1.3" />
     <PackageReference Include="Ookii.CommandLine" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Lokad.ILPack">
-      <HintPath>..\lib\ilpack\Lokad.ILPack.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
