@@ -53,11 +53,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             : base(builder, MakeGenericTaskType(taskType, input))
         {
             if( builder == null )
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
             if( taskType == null )
-                throw new ArgumentNullException("taskType");
+                throw new ArgumentNullException(nameof(taskType));
             if( noInputTaskCount < 0 )
-                throw new ArgumentOutOfRangeException("noInputTaskCount");
+                throw new ArgumentOutOfRangeException(nameof(noInputTaskCount));
             if( noInputTaskCount == 0 && input == null )
                 throw new ArgumentException("You must specify either an input or a task count larger than zero.");
 
@@ -96,7 +96,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
             if( compiler == null )
-                throw new ArgumentNullException("compiler");
+                throw new ArgumentNullException(nameof(compiler));
             if( _dataInput != null )
                 return compiler.CreateStage(StageId, TaskType.TaskType, _dataInput, Output);
             else

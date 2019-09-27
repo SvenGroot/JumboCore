@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Jet
         public AdditionalProgressCounterAttribute(string displayName)
         {
             if( displayName == null )
-                throw new ArgumentNullException("displayName");
+                throw new ArgumentNullException(nameof(displayName));
 
             _displayName = displayName;
         }

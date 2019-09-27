@@ -71,17 +71,17 @@ namespace Ookii.Jumbo.Jet.IO
         public FileDataOutput(DfsConfiguration dfsConfiguration, Type recordWriterType, string outputPath, int blockSize = 0, int replicationFactor = 0, RecordStreamOptions recordOptions = RecordStreamOptions.None)
         {
             if( dfsConfiguration == null )
-                throw new ArgumentNullException("dfsConfiguration");
+                throw new ArgumentNullException(nameof(dfsConfiguration));
             if( recordWriterType == null )
-                throw new ArgumentNullException("recordWriterType");
+                throw new ArgumentNullException(nameof(recordWriterType));
             if( outputPath == null )
-                throw new ArgumentNullException("outputPath");
+                throw new ArgumentNullException(nameof(outputPath));
             if( blockSize < 0 )
-                throw new ArgumentOutOfRangeException("blockSize");
+                throw new ArgumentOutOfRangeException(nameof(blockSize));
             if( replicationFactor < 0 )
-                throw new ArgumentOutOfRangeException("replicationFactor");
+                throw new ArgumentOutOfRangeException(nameof(replicationFactor));
             if( recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), false) == null )
-                throw new ArgumentException("The type is not a record writer.", "recordWriterType");
+                throw new ArgumentException("The type is not a record writer.", nameof(recordWriterType));
             if( FileSystemClient.Create(dfsConfiguration).GetDirectoryInfo(outputPath) == null )
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, "The directory '{0}' does not exist.", outputPath));
 
@@ -132,7 +132,7 @@ namespace Ookii.Jumbo.Jet.IO
         public void NotifyAddedToStage(StageConfiguration stage)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
             if( _outputPath == null )
                 throw new InvalidOperationException("No data output configuration is stored in this instance.");
 
@@ -172,7 +172,7 @@ namespace Ookii.Jumbo.Jet.IO
         public static string GetOutputPath(StageConfiguration stage, int partitionNumber)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
             string outputPathFormat = stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null);
             if( outputPathFormat == null )
                 throw new InvalidOperationException("The stage settings do not contain an output path format.");

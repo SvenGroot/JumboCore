@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Jet
         public PartitionMerger(MergeRecordReader<T> reader, int partitionNumber, IComparer<T> comparer)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             _reader = reader;
             _partitionNumber = partitionNumber;
             _comparer = comparer;

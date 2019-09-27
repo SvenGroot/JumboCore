@@ -18,17 +18,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="accumulatorTaskType">The type of the accumulator task used to collect the aggregated values. May be a generic type definition with one or two generic parameters.</param>
         /// <param name="keyComparerType">Type of the <see cref="IEqualityComparer{T}"/> to use to compare the aggregation keys, 
         /// or <see langword="null" /> to use <see cref="EqualityComparer{T}.Default"/>. May be a generic type definition with one type parameter, which will be set to the key type.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive.")]
         public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type keyComparerType = null)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if( accumulatorTaskType == null )
-                throw new ArgumentNullException("accumulatorTaskType");
+                throw new ArgumentNullException(nameof(accumulatorTaskType));
 
             if( accumulatorTaskType.IsGenericTypeDefinition )
             {
                 if( !(input.RecordType.IsGenericType && input.RecordType.GetGenericTypeDefinition() == typeof(Pair<,>)) )
-                    throw new ArgumentException("The input record type must be Pair<TKey,TValue> for group aggregation.", "input");
+                    throw new ArgumentException("The input record type must be Pair<TKey,TValue> for group aggregation.", nameof(input));
 
                 accumulatorTaskType = ConstructGenericAccumulatorTaskType(input.RecordType, accumulatorTaskType);
             }
@@ -42,7 +43,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
                 Type comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true);
                 if( comparerBaseType.GetGenericArguments()[0] != taskBaseType.GetGenericArguments()[0] )
-                    throw new ArgumentException("Comparer type is not an IEqualityComparer for the key type.", "keyComparerType");
+                    throw new ArgumentException("Comparer type is not an IEqualityComparer for the key type.", nameof(keyComparerType));
             }
 
             CheckIfInputBelongsToJobBuilder(input);
@@ -136,9 +137,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             where TKey : IComparable<TKey> // Needed to satisfy requirement on AccumulatorTask
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if( accumulator == null )
-                throw new ArgumentNullException("accumulator");
+                throw new ArgumentNullException(nameof(accumulator));
             CheckIfInputBelongsToJobBuilder(input);
 
             Type taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), accumulator, 0, recordReuse);
@@ -164,7 +165,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     arguments = new[] { recordType.GetGenericArguments()[1] };
                     break;
                 default:
-                    throw new ArgumentException("Could not determine whether to use the key or value type to construct the generic type.", "accumulatorTaskType");
+                    throw new ArgumentException("Could not determine whether to use the key or value type to construct the generic type.", nameof(accumulatorTaskType));
                 }
                 break;
             case 2:
@@ -172,7 +173,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 arguments = recordType.GetGenericArguments();
                 break;
             default:
-                throw new ArgumentException("The accumulator type has an unsupported number of generic type parameters.", "accumulatorTaskType");
+                throw new ArgumentException("The accumulator type has an unsupported number of generic type parameters.", nameof(accumulatorTaskType));
             }
             accumulatorTaskType = accumulatorTaskType.MakeGenericType(arguments);
             return accumulatorTaskType;

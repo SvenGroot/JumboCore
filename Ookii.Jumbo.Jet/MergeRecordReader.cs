@@ -161,7 +161,7 @@ namespace Ookii.Jumbo.Jet
         public override void AddInput(IList<RecordInput> partitions)
         {
             if( partitions == null )
-                throw new ArgumentNullException("partitions");
+                throw new ArgumentNullException(nameof(partitions));
             CheckDisposed();
             base.AddInput(partitions);
 
@@ -184,6 +184,9 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public override void AssignAdditionalPartitions(IList<int> newPartitions)
         {
+            if (newPartitions == null)
+                throw new ArgumentNullException(nameof(newPartitions));
+
             CheckDisposed();
             // Have to check both because _partitionMergers can be null before NotifyConfigurationChanged is called.
             lock( _finalPassLock )
@@ -286,6 +289,10 @@ namespace Ookii.Jumbo.Jet
                     // Dispose shouldn't get called on a thread different from the one that calls ReadRecord, but just to be safe.
                     lock( _finalPassLock )
                         Monitor.PulseAll(_finalPassLock);
+
+                    _currentPartitionFinalPass?.Dispose();
+                    _cancelEvent?.Dispose();
+                    _inputAddedEvent?.Dispose();
                 }
             }
             finally

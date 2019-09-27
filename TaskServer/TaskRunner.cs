@@ -27,7 +27,7 @@ namespace TaskServerApplication
         public TaskRunner(TaskServer taskServer)
         {
             if( taskServer == null )
-                throw new ArgumentNullException("taskServer");
+                throw new ArgumentNullException(nameof(taskServer));
             _taskServer = taskServer;
             _createProcessDelay = _taskServer.Configuration.TaskServer.ProcessCreationDelay;
             _fileSystemClient = FileSystemClient.Create(taskServer.DfsConfiguration);
@@ -118,7 +118,7 @@ namespace TaskServerApplication
         public void ReportProgress(string fullTaskAttemptId, TaskProgress progress)
         {
             if( fullTaskAttemptId == null )
-                throw new ArgumentNullException("fullTaskAttemptId");
+                throw new ArgumentNullException(nameof(fullTaskAttemptId));
 
             lock( _runningTasks )
             {
@@ -137,7 +137,7 @@ namespace TaskServerApplication
         public void ReportCompletion(string fullTaskId, TaskMetrics metrics)
         {
             if( fullTaskId == null )
-                throw new ArgumentNullException("fullTaskID");
+                throw new ArgumentNullException(nameof(fullTaskId));
 
             lock( _runningTasks )
             {
@@ -156,7 +156,7 @@ namespace TaskServerApplication
         public void ReportError(string fullTaskId, string failureReason)
         {
             if( fullTaskId == null )
-                throw new ArgumentNullException("fullTaskId");
+                throw new ArgumentNullException(nameof(fullTaskId));
 
             lock( _runningTasks )
             {
@@ -197,7 +197,7 @@ namespace TaskServerApplication
         public TaskAttemptStatus GetTaskStatus(string fullTaskID)
         {
             if( fullTaskID == null )
-                throw new ArgumentNullException("fullTaskID");
+                throw new ArgumentNullException(nameof(fullTaskID));
 
             lock( _runningTasks )
             {
@@ -214,7 +214,7 @@ namespace TaskServerApplication
         public void RegisterTcpChannelPort(string fullTaskId, int port)
         {
             if( fullTaskId == null )
-                throw new ArgumentNullException("fullTaskId");
+                throw new ArgumentNullException(nameof(fullTaskId));
 
             lock( _runningTasks )
             {
@@ -226,7 +226,7 @@ namespace TaskServerApplication
         public int GetTcpChannelPort(string fullTaskId)
         {
             if( fullTaskId == null )
-                throw new ArgumentNullException("fullTaskId");
+                throw new ArgumentNullException(nameof(fullTaskId));
 
             lock( _runningTasks )
             {
@@ -260,6 +260,7 @@ namespace TaskServerApplication
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the task server.")]
         private void RunTask(RunTaskJetHeartbeatResponse task)
         {
             _log.InfoFormat("Running task {{{0}}}_{1}.", task.Job.JobId, task.TaskAttemptId);

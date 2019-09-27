@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using Ookii.Jumbo.Jet.Channels;
 using System.Diagnostics;
 using Ookii.Jumbo.Jet;
+using System.Globalization;
 
 namespace TaskServerApplication
 {
@@ -47,56 +48,57 @@ namespace TaskServerApplication
             : base(localAddresses, port, maxConnections)
         {
             if( taskServer == null )
-                throw new ArgumentNullException("taskServer");
+                throw new ArgumentNullException(nameof(taskServer));
             _taskServer = taskServer;
             _indexCache = new PartitionFileIndexCache(maxCacheSize);
             _bufferSize = (int)taskServer.Configuration.FileChannel.ReadBufferSize.Value;
         }
 
-        protected override void HandleConnection(System.Net.Sockets.TcpClient client)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the server.")]
+        protected override void HandleConnection(TcpClient client)
         {
             try
             {
-                using( NetworkStream stream = client.GetStream() )
-                using( BinaryReader reader = new BinaryReader(stream) )
-                using( BinaryWriter writer = new BinaryWriter(stream) )
+                using NetworkStream stream = client.GetStream();
+                using BinaryReader reader = new BinaryReader(stream);
+                using BinaryWriter writer = new BinaryWriter(stream);
+                try
                 {
+                    byte[] guidBytes = reader.ReadBytes(16);
+                    Guid jobId = new Guid(guidBytes);
+
+                    int partitionCount = reader.ReadInt32();
+                    int[] partitions = new int[partitionCount];
+                    for (int x = 0; x < partitionCount; ++x)
+                        partitions[x] = reader.ReadInt32();
+
+                    int taskCount = reader.ReadInt32();
+                    string[] tasks = new string[taskCount];
+                    for (int x = 0; x < taskCount; ++x)
+                    {
+                        tasks[x] = reader.ReadString();
+                    }
+
+                    Stopwatch sw = _log.IsDebugEnabled ? Stopwatch.StartNew() : null;
+                    SendSingleFileOutput(writer, jobId, partitions, tasks);
+                    if (_log.IsDebugEnabled)
+                    {
+                        sw.Stop();
+                        _log.DebugFormat(CultureInfo.InvariantCulture, "Sent tasks {0} partitions {1} to client {2} in {3}ms", tasks.ToDelimitedString(","), partitions.ToDelimitedString(","), client.Client.RemoteEndPoint, sw.ElapsedMilliseconds);
+                    }
+                }
+                catch (Exception)
+                {
+
                     try
                     {
-                        byte[] guidBytes = reader.ReadBytes(16);
-                        Guid jobId = new Guid(guidBytes);
-
-                        int partitionCount = reader.ReadInt32();
-                        int[] partitions = new int[partitionCount];
-                        for( int x = 0; x < partitionCount; ++x )
-                            partitions[x] = reader.ReadInt32();
-
-                        int taskCount = reader.ReadInt32();
-                        string[] tasks = new string[taskCount];
-                        for( int x = 0; x < taskCount; ++x )
-                        {
-                            tasks[x] = reader.ReadString();
-                        }
-
-                        Stopwatch sw = _log.IsDebugEnabled ? Stopwatch.StartNew() : null;
-                        SendSingleFileOutput(writer, jobId, partitions, tasks);
-                        if( _log.IsDebugEnabled )
-                        {
-                            sw.Stop();
-                            _log.DebugFormat("Sent tasks {0} partitions {1} to client {2} in {3}ms", tasks.ToDelimitedString(","), partitions.ToDelimitedString(","), client.Client.RemoteEndPoint, sw.ElapsedMilliseconds);
-                        }
+                        writer.Write(-1L);
                     }
-                    catch( Exception )
+                    catch (Exception)
                     {
-                        try
-                        {
-                            writer.Write(-1L);
-                        }
-                        catch( Exception )
-                        {
-                        }
-                        throw;
                     }
+
+                    throw;
                 }
             }
             catch( Exception ex )

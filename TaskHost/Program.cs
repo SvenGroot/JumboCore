@@ -13,10 +13,11 @@ using System.Threading;
 using Ookii.Jumbo;
 using System.Diagnostics;
 using Ookii.Jumbo.Rpc;
+using System.Globalization;
 
 namespace TaskHost
 {
-    public static class Program
+    static class Program
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Program));
 
@@ -34,7 +35,7 @@ namespace TaskHost
             string jobDirectory = args[1];
             string taskId = args[2];
             string dfsJobDirectory = args[3];
-            int attempt = Convert.ToInt32(args[4]);
+            int attempt = Convert.ToInt32(args[4], CultureInfo.InvariantCulture);
             TaskAttemptId taskAttemptId = new TaskAttemptId(new TaskId(taskId), attempt);
 
             TaskExecutionUtility.RunTask(jobId, jobDirectory, dfsJobDirectory, taskAttemptId);

@@ -20,7 +20,7 @@ using Ookii.Jumbo.Topology;
 
 namespace JobServerApplication
 {
-    public class JobServer : IJobServerHeartbeatProtocol, IJobServerClientProtocol, IJobServerTaskProtocol
+    public sealed class JobServer : IJobServerHeartbeatProtocol, IJobServerClientProtocol, IJobServerTaskProtocol, IDisposable
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(JobServer));
 
@@ -48,11 +48,11 @@ namespace JobServerApplication
         private JobServer(JumboConfiguration jumboConfiguration, JetConfiguration jetConfiguration, DfsConfiguration dfsConfiguration)
         {
             if( jumboConfiguration == null )
-                throw new ArgumentNullException("jumboConfiguration");
+                throw new ArgumentNullException(nameof(jumboConfiguration));
             if( jetConfiguration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(jetConfiguration));
             if( dfsConfiguration == null )
-                throw new ArgumentNullException("dfsConfiguration");
+                throw new ArgumentNullException(nameof(dfsConfiguration));
 
             Configuration = jetConfiguration;
             _topology = new NetworkTopology(jumboConfiguration);
@@ -101,7 +101,7 @@ namespace JobServerApplication
         public static void Run(JumboConfiguration jumboConfiguration, JetConfiguration jetConfiguration, DfsConfiguration dfsConfiguration)
         {
             if( jetConfiguration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(jetConfiguration));
 
             _log.Info("-----Job server is starting-----");
             _log.LogEnvironmentInformation();
@@ -124,6 +124,7 @@ namespace JobServerApplication
             RpcHelper.AbortRetries();
             RpcHelper.CloseConnections();
             Instance.ShutdownInternal();
+            Instance.Dispose();
             Instance = null;
         }
 
@@ -133,7 +134,7 @@ namespace JobServerApplication
         {
             _log.Debug("CreateJob");
             Guid jobID = Guid.NewGuid();
-            string path = _fileSystemClient.Path.Combine(Configuration.JobServer.JetDfsPath, string.Format("job_{{{0}}}", jobID));
+            string path = _fileSystemClient.Path.Combine(Configuration.JobServer.JetDfsPath, FormattableString.Invariant($"job_{jobID:B}"));
             _fileSystemClient.CreateDirectory(path);
             _fileSystemClient.CreateDirectory(_fileSystemClient.Path.Combine(path, "temp"));
             Job job = new Job(jobID, path);
@@ -170,7 +171,7 @@ namespace JobServerApplication
             }
             catch( Exception ex )
             {
-                _log.Error(string.Format("Could not load job config file {0}.", configFile), ex);
+                _log.Error($"Could not load job config file {configFile}.", ex);
                 throw;
             }
 
@@ -226,7 +227,7 @@ namespace JobServerApplication
         {
             _log.DebugFormat("GetTaskServerForTask, jobID = {{{0}}}, taskID = \"{1}\"", jobID, taskID);
             if( taskID == null )
-            throw new ArgumentNullException("taskID");
+            throw new ArgumentNullException(nameof(taskID));
             JobInfo job = _jobs[jobID];
             TaskInfo task = job.GetTask(taskID);
             TaskServerInfo server = task.Server; // For thread-safety, we should do only one read of the property.
@@ -236,9 +237,9 @@ namespace JobServerApplication
         public CompletedTask[] CheckTaskCompletion(Guid jobId, string[] taskIds)
         {
             if( taskIds == null )
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(taskIds));
             if( taskIds.Length == 0 )
-                throw new ArgumentException("You must specify at least one task.", "tasks");
+                throw new ArgumentException("You must specify at least one task.", nameof(taskIds));
 
             // This method is safe without locking because none of the state of the job it accesses can be changed after the job is created.
             // The exception is task.State, but since that's a single integer value and we're only reading it that's not an issue either.
@@ -392,7 +393,7 @@ namespace JobServerApplication
         public int[] GetPartitionsForTask(Guid jobId, TaskId taskId)
         {
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
 
             JobInfo job;
             if( !_jobs.TryGetValue(jobId, out job) )
@@ -404,7 +405,7 @@ namespace JobServerApplication
         public bool NotifyStartPartitionProcessing(Guid jobId, TaskId taskId, int partitionNumber)
         {
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
 
             JobInfo job;
             if( !_jobs.TryGetValue(jobId, out job) )
@@ -419,7 +420,7 @@ namespace JobServerApplication
         public int[] GetAdditionalPartitions(Guid jobId, TaskId taskId)
         {
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
 
             JobInfo job;
             if( !_jobs.TryGetValue(jobId, out job) )
@@ -442,7 +443,7 @@ namespace JobServerApplication
         public JetHeartbeatResponse[] Heartbeat(Ookii.Jumbo.ServerAddress address, JetHeartbeatData[] data)
         {
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             TaskServerInfo server = _taskServers.GetOrAdd(address, key => new TaskServerInfo(key));
 
@@ -570,7 +571,7 @@ namespace JobServerApplication
             }
 
             _log.WarnFormat("Task server {0} sent unknown heartbeat type {1}.", server.Address, data.GetType());
-            throw new ArgumentException(string.Format("Unknown heartbeat type {0}.", data.GetType()));
+            throw new ArgumentException($"Unknown heartbeat type {data.GetType()}.");
         }
 
         private void ProcessStatusHeartbeat(TaskServerInfo server, InitialStatusJetHeartbeatData data)
@@ -767,7 +768,7 @@ namespace JobServerApplication
                 _schedulerRequests.Add(evt, _cancellation.Token);
                 if( !evt.Wait(_schedulerTimeoutMilliseconds, _cancellation.Token) )
                 {
-                    _log.ErrorFormat("The scheduler timed out while waiting for scheduling run.");
+                    _log.Error("The scheduler timed out while waiting for scheduling run.");
                     lock( _schedulerThreadLock )
                     {
                         AbortSchedulerThread();
@@ -886,7 +887,7 @@ namespace JobServerApplication
                 lock( _finishedJobs )
                 {
                     if( !_finishedJobs.TryGetValue(jobId, out job) )
-                        throw new ArgumentException("Job not found.", "jobId");
+                        throw new ArgumentException("Job not found.", nameof(jobId));
                 }
             }
                 
@@ -912,10 +913,11 @@ namespace JobServerApplication
             }
             catch( OperationCanceledException )
             {
-                _log.InfoFormat("Scheduler thread shut down due to cancellation.");
+                _log.Info("Scheduler thread shut down due to cancellation.");
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Error should fail the job not the server.")]
         private void DoSchedulingRun(List<JobInfo> jobs)
         {
             lock( _orderedJobs )
@@ -1018,6 +1020,13 @@ namespace JobServerApplication
                 _fileSystemClient.DownloadFile(job.Job.GetJobConfigurationFilePath(_fileSystemClient), Path.Combine(archiveDir, jobStatus.JobId + "_config.xml"));
                 jobStatus.ToXml().Save(Path.Combine(archiveDir, jobStatus.JobId + "_summary.xml"));
             }
+        }
+
+        public void Dispose()
+        {
+            _broadcaster?.Dispose();
+            _cancellation?.Dispose();
+            _schedulerRequests?.Dispose();
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Ookii.Jumbo.Jet
         public static JetConfiguration GetConfiguration(Configuration configuration)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
             JetConfiguration config = (JetConfiguration)configuration.GetSection("ookii.jumbo.jet");
             return config ?? new JetConfiguration();
         }

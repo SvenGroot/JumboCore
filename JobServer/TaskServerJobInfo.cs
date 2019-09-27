@@ -23,9 +23,9 @@ namespace JobServerApplication
         public TaskServerJobInfo(TaskServerInfo taskServer, JobInfo job)
         {
             if( taskServer == null )
-                throw new ArgumentNullException("taskServer");
+                throw new ArgumentNullException(nameof(taskServer));
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
             _taskServer = taskServer;
             _job = job;
         }
@@ -104,9 +104,9 @@ namespace JobServerApplication
         ITaskInfo ITaskServerJobInfo.FindDataInputTaskToSchedule(IStageInfo stage, int distance)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
             if( !stage.Configuration.HasDataInput )
-                throw new ArgumentException("Stage does not have data input.", "stage");
+                throw new ArgumentException("Stage does not have data input.", nameof(stage));
             if( !stage.IsReadyForScheduling )
                 return null;
 
@@ -135,7 +135,7 @@ namespace JobServerApplication
         void ITaskServerJobInfo.AssignTask(ITaskInfo task, int? dataDistance)
         {
             if( task == null )
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             TaskInfo taskInfo = (TaskInfo)task;
             TaskServer.SchedulerInfo.AssignTask(_job, taskInfo);
 
@@ -147,7 +147,7 @@ namespace JobServerApplication
         int ITaskServerJobInfo.GetLocalTaskCount(IStageInfo stage)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
             return (from task in GetLocalTasks()
                     where task.Stage == stage && !task.SchedulerInfo.BadServers.Contains(_taskServer)
                     select task).Count();   

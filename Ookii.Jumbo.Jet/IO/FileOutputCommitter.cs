@@ -26,11 +26,11 @@ namespace Ookii.Jumbo.Jet.IO
         public FileOutputCommitter(IRecordWriter recordWriter, string tempFileName, string outputFileName)
         {
             if( recordWriter == null )
-                throw new ArgumentNullException("recordWriter");
+                throw new ArgumentNullException(nameof(recordWriter));
             if( tempFileName == null )
-                throw new ArgumentNullException("tempFileName");
+                throw new ArgumentNullException(nameof(tempFileName));
             if( outputFileName == null )
-                throw new ArgumentNullException("outputFileName");
+                throw new ArgumentNullException(nameof(outputFileName));
 
             _recordWriter = recordWriter;
             _tempFileName = tempFileName;
@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Jet.IO
         public void Commit(FileSystemClient fileSystem)
         {
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
 
             fileSystem.Move(_tempFileName, _outputFileName);
         }

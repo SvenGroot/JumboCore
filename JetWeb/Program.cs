@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JetWeb
 {
-    public class Program
+    static class Program
     {
         public static void Main(string[] args)
         {

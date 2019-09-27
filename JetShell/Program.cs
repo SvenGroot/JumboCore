@@ -20,6 +20,7 @@ namespace JetShell
 {
     static class Program
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Logging all errors.")]
         public static int Main(string[] args)
         {
             AssemblyResolver.Register();

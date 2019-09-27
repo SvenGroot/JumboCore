@@ -174,7 +174,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         protected void CheckAndCreateOutputPath(string outputPath)
         {
             if( outputPath == null )
-                throw new ArgumentNullException("outputPath");
+                throw new ArgumentNullException(nameof(outputPath));
 
             if( OverwriteOutput )
             {
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             {
                 JumboDirectory outputDir = FileSystemClient.GetDirectoryInfo(outputPath);
                 if( outputDir != null )
-                    throw new ArgumentException("The specified output path already exists on the DFS.", "outputPath");
+                    throw new ArgumentException("The specified output path already exists on the DFS.", nameof(outputPath));
             }
             FileSystemClient.CreateDirectory(outputPath);
         }
@@ -198,7 +198,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             JumboFileSystemEntry input = FileSystemClient.GetFileSystemEntryInfo(inputPath);
             if( input == null )
-                throw new ArgumentException("The specified input path doesn't exist.", "inputPath");
+                throw new ArgumentException("The specified input path doesn't exist.", nameof(inputPath));
             return input;
         }
 
@@ -211,7 +211,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         protected void ApplyJobPropertiesAndSettings(JobConfiguration jobConfiguration)
         {
             if( jobConfiguration == null )
-                throw new ArgumentNullException("jobConfiguration");
+                throw new ArgumentNullException(nameof(jobConfiguration));
 
             ApplySettingProperties(jobConfiguration);
 
@@ -312,7 +312,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             compoundStageId = null;
 
-            int colonIndex = propOrSettingKey.IndexOf(':');
+            int colonIndex = propOrSettingKey.IndexOf(':', StringComparison.Ordinal);
             if( colonIndex >= 0 )
             {
                 compoundStageId = propOrSettingKey.Substring(0, colonIndex);

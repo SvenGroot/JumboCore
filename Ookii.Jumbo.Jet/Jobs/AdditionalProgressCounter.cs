@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Globalization;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo.Jet.Jobs
@@ -30,7 +31,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>
         /// 	<see langword="true"/> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <see langword="false"/>.
         /// </returns>
-        /// <exception cref="T:System.NullReferenceException">
+        /// <exception cref="System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
         public override bool Equals(object obj)
@@ -50,7 +51,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </returns>
         public override int GetHashCode()
         {
-            return TypeName == null ? 0 : TypeName.GetHashCode();
+            return TypeName == null ? 0 : TypeName.GetHashCode(StringComparison.Ordinal);
         }
     }
 }

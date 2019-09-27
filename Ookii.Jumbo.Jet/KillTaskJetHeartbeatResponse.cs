@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet
             : base(TaskServerHeartbeatCommand.KillTask)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskAttemptId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
 
             _jobId = jobId;
             _taskAttemptId = taskAttemptId;

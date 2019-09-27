@@ -63,7 +63,7 @@ namespace Ookii.Jumbo.Jet.IO
             : this(dfsConfiguration, recordReaderType, EnumerateFiles(fileOrDirectory), minSplitSize, maxSplitSize)
         {
             if( fileOrDirectory == null )
-                throw new ArgumentNullException("fileOrDirectory");
+                throw new ArgumentNullException(nameof(fileOrDirectory));
             _inputPath = fileOrDirectory.FullPath;
         }
 
@@ -78,19 +78,19 @@ namespace Ookii.Jumbo.Jet.IO
         public FileDataInput(DfsConfiguration dfsConfiguration, Type recordReaderType, IEnumerable<JumboFile> inputFiles, int minSplitSize = 1, int maxSplitSize = Int32.MaxValue)
         {
             if( dfsConfiguration == null )
-                throw new ArgumentNullException("dfsConfiguration");
+                throw new ArgumentNullException(nameof(dfsConfiguration));
             if( recordReaderType == null )
-                throw new ArgumentNullException("recordReaderType");
+                throw new ArgumentNullException(nameof(recordReaderType));
             if( inputFiles == null )
-                throw new ArgumentNullException("inputFiles");
+                throw new ArgumentNullException(nameof(inputFiles));
             if( maxSplitSize <= 0 )
-                throw new ArgumentOutOfRangeException("maxSplitSize");
+                throw new ArgumentOutOfRangeException(nameof(maxSplitSize));
             if( minSplitSize <= 0 )
-                throw new ArgumentOutOfRangeException("minSplitSize");
+                throw new ArgumentOutOfRangeException(nameof(minSplitSize));
             if( minSplitSize > maxSplitSize )
                 throw new ArgumentException("Minimum split size must be less than or equal to maximum split size.");
             if( recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false) == null )
-                throw new ArgumentException("The type is not a record reader.", "recordReaderType");
+                throw new ArgumentException("The type is not a record reader.", nameof(recordReaderType));
 
             FileSystemClient fileSystem = FileSystemClient.Create(dfsConfiguration);
             IFileSystemWithLocality localityFileSystem = fileSystem as IFileSystemWithLocality;
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo.Jet.IO
             }
 
             if( taskInputs.Count == 0 )
-                throw new ArgumentException("The specified input path contains no non-empty splits.", "inputFiles");
+                throw new ArgumentException("The specified input path contains no non-empty splits.", nameof(inputFiles));
             // Sort by descending split size, so biggest splits are done first. Using OrderBy because that does a stable sort.
             _taskInputs = taskInputs.OrderByDescending(input => input.Size).Cast<ITaskInput>().ToList();
             _recordReaderType = recordReaderType;
@@ -151,7 +151,7 @@ namespace Ookii.Jumbo.Jet.IO
         public IRecordReader CreateRecordReader(ITaskInput input)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             FileTaskInput fileInput = (FileTaskInput)input;
             return (IRecordReader)JetActivator.CreateInstance(_recordReaderType, DfsConfiguration, JetConfiguration, TaskContext, FileSystemClient.Create(DfsConfiguration).OpenFile(fileInput.Path), fileInput.Offset, fileInput.Size, TaskContext == null ? false : TaskContext.StageConfiguration.AllowRecordReuse);
@@ -164,7 +164,7 @@ namespace Ookii.Jumbo.Jet.IO
         public void NotifyAddedToStage(Jobs.StageConfiguration stage)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
 
             stage.AddSetting(RecordReaderTypeSettingKey, _recordReaderType.AssemblyQualifiedName);
             // This setting is added for informational purposes only (so someone reading the job config can see what the input path was).
@@ -199,7 +199,7 @@ namespace Ookii.Jumbo.Jet.IO
         private static IEnumerable<JumboFile> EnumerateFiles(JumboFileSystemEntry entry)
         {
             if( entry == null )
-                throw new ArgumentNullException("entry");
+                throw new ArgumentNullException(nameof(entry));
 
             JumboDirectory directory = entry as JumboDirectory;
             if( directory != null )

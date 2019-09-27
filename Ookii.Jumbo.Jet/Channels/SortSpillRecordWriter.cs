@@ -164,13 +164,13 @@ namespace Ookii.Jumbo.Jet.Channels
             : base(partitioner, bufferSize, limit, SpillRecordWriterOptions.None)
         {
             if( outputPath == null )
-                throw new ArgumentNullException("outputPath");
+                throw new ArgumentNullException(nameof(outputPath));
             if( writeBufferSize < 0 )
-                throw new ArgumentOutOfRangeException("writeBufferSize");
+                throw new ArgumentOutOfRangeException(nameof(writeBufferSize));
             if( minSpillsForCombineDuringMerge < 0 )
-                throw new ArgumentOutOfRangeException("minSpillsForCombineDuringMerge");
+                throw new ArgumentOutOfRangeException(nameof(minSpillsForCombineDuringMerge));
             if( partitioner == null )
-                throw new ArgumentNullException("partitioner");
+                throw new ArgumentNullException(nameof(partitioner));
             _outputPath = outputPath;
             _partitions = partitioner.Partitions;
             _outputPathBase = Path.Combine(Path.GetDirectoryName(_outputPath), Path.GetFileNameWithoutExtension(_outputPath));
@@ -233,10 +233,12 @@ namespace Ookii.Jumbo.Jet.Channels
             }
         }
 
+
         /// <summary>
         /// Writes the spill data to the output.
         /// </summary>
         /// <param name="finalSpill">If set to <see langword="true"/>, this is the final spill.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
         protected override void SpillOutput(bool finalSpill)
         {
             string spillFile = string.Format(CultureInfo.InvariantCulture, "{0}_spill{1}.tmp", _outputPathBase, SpillCount);

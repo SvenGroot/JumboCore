@@ -14,7 +14,7 @@ using Ookii.Jumbo.Rpc;
 
 namespace TaskServerApplication
 {
-    public class TaskServer : ITaskServerUmbilicalProtocol, ITaskServerClientProtocol
+    public sealed class TaskServer : ITaskServerUmbilicalProtocol, ITaskServerClientProtocol, IDisposable
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TaskServer));
 
@@ -37,7 +37,7 @@ namespace TaskServerApplication
         private TaskServer(JetConfiguration config, DfsConfiguration dfsConfiguration)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             Configuration = config;
             DfsConfiguration = dfsConfiguration;
@@ -99,6 +99,7 @@ namespace TaskServerApplication
 
                 RpcHelper.UnregisterServerChannels(Instance.Configuration.TaskServer.Port);
 
+                Instance.Dispose();
                 Instance = null;
             }
         }
@@ -120,7 +121,7 @@ namespace TaskServerApplication
         public void ReportCompletion(Guid jobID, TaskAttemptId taskAttemptId, TaskMetrics metrics)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskID");
+                throw new ArgumentNullException(nameof(taskAttemptId));
             string fullTaskID = Job.CreateFullTaskId(jobID, taskAttemptId);
             _log.DebugFormat("ReportCompletion, fullTaskID = \"{0}\"", fullTaskID);
             _taskRunner.ReportCompletion(fullTaskID, metrics);
@@ -134,16 +135,16 @@ namespace TaskServerApplication
         public void ReportError(Guid jobId, TaskAttemptId taskAttemptId, string failureReason)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskAttemptId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
             _taskRunner.ReportError(Job.CreateFullTaskId(jobId, taskAttemptId), failureReason);
         }
 
         public void RegisterTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId, int port)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
             if( port <= 0 )
-                throw new ArgumentOutOfRangeException("port", "Port must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(port), "Port must be greater than zero.");
 
             string fullTaskId = Job.CreateFullTaskId(jobId, taskAttemptId);
             _log.InfoFormat("Task {0} has is registering TCP channel port {1}.", fullTaskId, port);
@@ -191,6 +192,9 @@ namespace TaskServerApplication
 
         public string GetTaskLogFileContents(Guid jobId, TaskAttemptId taskAttemptId, int maxSize)
         {
+            if (taskAttemptId == null)
+                throw new ArgumentNullException(nameof(taskAttemptId));
+
             _log.DebugFormat("GetTaskLogFileContents; jobId = {{{0}}}, taskAttemptId = \"{1}\", maxSize = {2}", jobId, taskAttemptId, maxSize);
             string jobDirectory = GetJobDirectory(jobId);
             string logFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + ".log");
@@ -245,6 +249,9 @@ namespace TaskServerApplication
 
         public string GetTaskProfileOutput(Guid jobId, TaskAttemptId taskAttemptId)
         {
+            if (taskAttemptId == null)
+                throw new ArgumentNullException(nameof(taskAttemptId));
+            
             _log.DebugFormat("GetTaskProfileOutput; jobId = {{{0}}}, taskAttemptId = \"{1}\"", jobId, taskAttemptId);
             string jobDirectory = GetJobDirectory(jobId);
             string profileOutputFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + "_profile.txt");
@@ -262,7 +269,7 @@ namespace TaskServerApplication
         public int GetTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskAttemptId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
             _log.DebugFormat("GetTcpChannelPort; jobId = {{{0}}}, taskId = \"{1}\"", jobId, taskAttemptId);
             return _taskRunner.GetTcpChannelPort(Job.CreateFullTaskId(jobId, taskAttemptId));
         }
@@ -289,7 +296,7 @@ namespace TaskServerApplication
             _shutdownEvent.Set();
             RpcHelper.AbortRetries();
             RpcHelper.CloseConnections();
-            _log.InfoFormat("-----Task server is shutting down-----");
+            _log.Info("-----Task server is shutting down-----");
         }
 
         private void SendHeartbeat()
@@ -355,7 +362,7 @@ namespace TaskServerApplication
         {
             foreach( string file in System.IO.Directory.GetFiles(directory) )
             {
-                if( file.EndsWith(".output") || file.EndsWith(".input") )
+                if( file.EndsWith(".output", StringComparison.Ordinal) || file.EndsWith(".input", StringComparison.Ordinal) )
                 {
                     _log.DebugFormat("Job {0} cleanup: deleting file {1}.", jobId, file);
                     System.IO.File.Delete(file);
@@ -411,6 +418,12 @@ namespace TaskServerApplication
                 }
             }
             return job;
+        }
+
+        public void Dispose()
+        {
+            _heartbeatEvent?.Dispose();
+            _shutdownEvent?.Dispose();
         }
     }
 }

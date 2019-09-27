@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public InputStageInfo(StageConfiguration inputStage)
         {
             if( inputStage == null )
-                throw new ArgumentNullException("inputStage");
+                throw new ArgumentNullException(nameof(inputStage));
 
             InputStage = inputStage;
             PartitionsPerTask = 1;
@@ -122,7 +122,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 // The output of the stage multi input record reader type must match the input type of the stage.
                 recordType = RecordReader.GetRecordType(stageMultiInputRecordReaderType);
                 if( recordType != inputType )
-                    throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified stage multi input record reader type {0} doesn't return objects of type {1}.", stageMultiInputRecordReaderType, inputType), "stageMultiInputRecordReaderType");
+                    throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified stage multi input record reader type {0} doesn't return objects of type {1}.", stageMultiInputRecordReaderType, inputType), nameof(stageMultiInputRecordReaderType));
 
                 acceptedInputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType);
             }

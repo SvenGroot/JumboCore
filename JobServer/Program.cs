@@ -8,11 +8,11 @@ using Ookii.Jumbo;
 
 namespace JobServerApplication
 {
-    class Program
+    static class Program
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Program));
 
-        public static void Main(string[] args)
+        public static void Main()
         {
             JumboConfiguration.GetConfiguration().Log.ConfigureLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

@@ -297,9 +297,9 @@ namespace Ookii.Jumbo.Jet.Channels
             : base(taskExecution, inputStage)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
             if( inputStage == null )
-                throw new ArgumentNullException("inputStage");
+                throw new ArgumentNullException(nameof(inputStage));
             _jobDirectory = taskExecution.Context.LocalJobDirectory;
             _jobID = taskExecution.Context.JobId;
             _jobServer = taskExecution.JetClient.JobServer;
@@ -497,6 +497,9 @@ namespace Ookii.Jumbo.Jet.Channels
                 ((IDisposable)_allInputTasksCompleted).Dispose();
                 if( _taskCompletionBroadcastServer != null )
                     _taskCompletionBroadcastServer.Dispose();
+
+                _memoryStorage?.Dispose();
+                _reader?.Dispose();
             }
             lock( _orderedServers )
             {
@@ -745,6 +748,7 @@ namespace Ookii.Jumbo.Jet.Channels
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
         private int DownloadFiles(InputServer server, IMultiInputRecordReader targetReader)
         {
             int port = server.FileServerPort;
@@ -762,24 +766,22 @@ namespace Ookii.Jumbo.Jet.Channels
                     foreach( CompletedTask task in server.TasksToDownload )
                     {
                         long size = connection.Reader.ReadInt64();
-                        using( FileChannelMemoryStorageManager.Reservation reservation = _memoryStorage == null ? null : _memoryStorage.WaitForSpaceAndReserve(size, connection, _memoryStorageWaitTimeout) )
+                        using FileChannelMemoryStorageManager.Reservation reservation = _memoryStorage?.WaitForSpaceAndReserve(size, connection, _memoryStorageWaitTimeout);
+                        if (reservation != null && reservation.Waited)
                         {
-                            if( reservation != null && reservation.Waited )
-                            {
-                                if( !connection.Connect(_jobID, ActivePartitions, downloadedTaskCount) )
-                                    return downloadedTaskCount;
-                                if( size != connection.Reader.ReadInt64() )
-                                    throw new InvalidOperationException("Task output size changed after reconnect.");
-                            }
-
-                            List<RecordInput> downloadedFiles = new List<RecordInput>(ActivePartitions.Count);
-                            foreach( int partition in ActivePartitions )
-                            {
-                                DownloadPartition(task, downloadedFiles, connection, partition, reservation);
-                            }
-                            targetReader.AddInput(downloadedFiles);
-                            ++downloadedTaskCount;
+                            if (!connection.Connect(_jobID, ActivePartitions, downloadedTaskCount))
+                                return downloadedTaskCount;
+                            if (size != connection.Reader.ReadInt64())
+                                throw new InvalidOperationException("Task output size changed after reconnect.");
                         }
+
+                        List<RecordInput> downloadedFiles = new List<RecordInput>(ActivePartitions.Count);
+                        foreach (int partition in ActivePartitions)
+                        {
+                            DownloadPartition(task, downloadedFiles, connection, partition, reservation);
+                        }
+                        targetReader.AddInput(downloadedFiles);
+                        ++downloadedTaskCount;
                     }
                     _log.Debug("Download complete.");
 

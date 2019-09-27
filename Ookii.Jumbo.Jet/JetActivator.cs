@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet
         public static object CreateInstance(Type type, DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, TaskContext taskAttemptConfiguration, params object[] args)
         {
             if( type == null )
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             object instance = Activator.CreateInstance(type, args);
 
             ApplyConfiguration(instance, dfsConfiguration, jetConfiguration, taskAttemptConfiguration);
@@ -74,7 +74,7 @@ namespace Ookii.Jumbo.Jet
         public static void ApplyConfiguration(object target, DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, TaskContext taskAttemptConfiguration)
         {
             if( target == null )
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
 
             IConfigurable configurable = target as IConfigurable;
             if( configurable != null )

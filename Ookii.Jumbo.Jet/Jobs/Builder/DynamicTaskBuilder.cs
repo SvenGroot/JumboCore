@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Ookii.Jumbo.Jet.Tasks;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -87,11 +88,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public Type CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
         {
             if( methodToOverride == null )
-                throw new ArgumentNullException("methodToOverride");
+                throw new ArgumentNullException(nameof(methodToOverride));
             if( methodToOverride.DeclaringType.FindGenericInterfaceType(typeof(ITask<,>), false) == null )
-                throw new ArgumentException("The method that declares the method to override is not a task.", "methodToOverride");
+                throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
             if( taskMethodDelegate == null )
-                throw new ArgumentNullException("taskMethodDelegate");
+                throw new ArgumentNullException(nameof(taskMethodDelegate));
 
             var cacheKey = Tuple.Create(methodToOverride, taskMethodDelegate, skipParameters, recordReuseMode);
             Type cachedTask;
@@ -148,7 +149,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public static bool CanCallTargetMethodDirectly(Delegate target)
         {
             if( target == null )
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
 
             return target.Method.IsPublic && target.Method.IsStatic;
         }
@@ -189,9 +190,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public static void SerializeDelegate(SettingsDictionary settings, Delegate taskDelegate)
         {
             if( settings == null )
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             if( taskDelegate == null )
-                throw new ArgumentNullException("taskDelegate");
+                throw new ArgumentNullException(nameof(taskDelegate));
 
             settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName);
             settings.Add(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, taskDelegate.Method.DeclaringType.AssemblyQualifiedName);
@@ -253,7 +254,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if( _assembly == null )
             {
                 // Use a Guid to ensure a unique name.
-                AssemblyName name = new AssemblyName("Ookii.Jumbo.Jet.Generated." + Guid.NewGuid().ToString("N"));
+                AssemblyName name = new AssemblyName("Ookii.Jumbo.Jet.Generated." + Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                 _dynamicAssemblyDirectory = Path.GetTempPath();
                 _assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
                 _module = _assembly.DefineDynamicModule(name.Name);
@@ -263,7 +264,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static void ValidateParameters(int skipParameters, ParameterInfo[] parameters, ParameterInfo[] delegateParameters)
         {
             if( skipParameters < 0 || skipParameters > parameters.Length )
-                throw new ArgumentOutOfRangeException("skipParameters");
+                throw new ArgumentOutOfRangeException(nameof(skipParameters));
             if( delegateParameters.Length < parameters.Length - skipParameters || delegateParameters.Length > parameters.Length - skipParameters + 1 )
                 throw new ArgumentException("The delegate method doesn't have the correct number of parameters.");
             for( int x = 0; x < delegateParameters.Length; ++x )
@@ -285,7 +286,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     ConstructorInfo ctor = allowRecordReuseAttributeType.GetConstructor(Type.EmptyTypes);
                     PropertyInfo passThrough = allowRecordReuseAttributeType.GetProperty("PassThrough");
 
-                    CustomAttributeBuilder allowRecordReuseBuilder = new CustomAttributeBuilder(ctor, new object[] { }, new[] { passThrough }, new object[] { mode == RecordReuseMode.PassThrough || (allowRecordReuse != null && allowRecordReuse.PassThrough) });
+                    CustomAttributeBuilder allowRecordReuseBuilder = new CustomAttributeBuilder(ctor, Array.Empty<object>(), new[] { passThrough }, new object[] { mode == RecordReuseMode.PassThrough || (allowRecordReuse != null && allowRecordReuse.PassThrough) });
                     taskTypeBuilder.SetCustomAttribute(allowRecordReuseBuilder);
                 }
             }
@@ -293,7 +294,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if( Attribute.IsDefined(taskMethod, typeof(ProcessAllInputPartitionsAttribute)) )
             {
                 ConstructorInfo ctor = typeof(ProcessAllInputPartitionsAttribute).GetConstructor(Type.EmptyTypes);
-                CustomAttributeBuilder partitionAttribute = new CustomAttributeBuilder(ctor, new object[0]);
+                CustomAttributeBuilder partitionAttribute = new CustomAttributeBuilder(ctor, Array.Empty<object>());
 
                 taskTypeBuilder.SetCustomAttribute(partitionAttribute);
             }

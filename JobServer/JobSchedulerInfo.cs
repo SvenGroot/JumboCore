@@ -68,7 +68,7 @@ namespace JobServerApplication
         public void AddRackTasks(string rackId, List<TaskInfo> tasks)
         {
             if( tasks == null )
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             _rackTasks.Add(rackId, tasks);
         }

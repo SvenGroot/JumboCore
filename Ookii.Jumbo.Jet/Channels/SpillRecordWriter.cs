@@ -177,15 +177,15 @@ namespace Ookii.Jumbo.Jet.Channels
             private static int CopyCircular(byte[] source, int sourceIndex, byte[] destination, int destinationIndex, int count)
             {
                 if( source == null )
-                    throw new ArgumentNullException("source");
+                    throw new ArgumentNullException(nameof(source));
                 if( destination == null )
-                    throw new ArgumentNullException("destination");
+                    throw new ArgumentNullException(nameof(destination));
                 if( sourceIndex < 0 )
-                    throw new ArgumentOutOfRangeException("sourceIndex");
+                    throw new ArgumentOutOfRangeException(nameof(sourceIndex));
                 if( destinationIndex < 0 )
-                    throw new ArgumentOutOfRangeException("destinationIndex");
+                    throw new ArgumentOutOfRangeException(nameof(destinationIndex));
                 if( count < 0 )
-                    throw new ArgumentOutOfRangeException("count");
+                    throw new ArgumentOutOfRangeException(nameof(count));
                 if( sourceIndex + count > source.Length )
                     throw new ArgumentException("sourceIndex + count is larger than the source array.");
                 int end = destinationIndex + count;
@@ -208,6 +208,15 @@ namespace Ookii.Jumbo.Jet.Channels
                     Array.Copy(source, sourceIndex + firstCount, destination, 0, end);
                 }
                 return end % destination.Length;
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+                if (disposing)
+                {
+                    _freeBufferEvent?.Dispose();
+                }
             }
         }
 
@@ -252,11 +261,11 @@ namespace Ookii.Jumbo.Jet.Channels
         protected SpillRecordWriter(IPartitioner<T> partitioner, int bufferSize, int limit, SpillRecordWriterOptions options)
         {
             if( partitioner == null )
-                throw new ArgumentNullException("partitioner");
+                throw new ArgumentNullException(nameof(partitioner));
             if( bufferSize < 0 )
-                throw new ArgumentOutOfRangeException("bufferSize");
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
             if( limit < 1 || limit > bufferSize )
-                throw new ArgumentOutOfRangeException("limit");
+                throw new ArgumentOutOfRangeException(nameof(limit));
             _partitioner = partitioner;
             _buffer = new CircularBufferStream(this, bufferSize);
             _bufferWriter = new BinaryWriter(_buffer);
@@ -335,6 +344,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </para>
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
         protected byte[] SpillBuffer
         {
             get
@@ -500,7 +510,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected void WritePartition(int partition, Stream outputStream)
         {
             if( outputStream == null )
-                throw new ArgumentNullException("outputStream");
+                throw new ArgumentNullException(nameof(outputStream));
             RecordIndexEntry[] index = _spillIndices[partition];
             if( index != null )
             {
@@ -527,7 +537,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected void WritePartition(int partition, RecordWriter<RawRecord> output)
         {
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             if( _record == null )
                 _record = new RawRecord();
 
@@ -586,6 +596,8 @@ namespace Ookii.Jumbo.Jet.Channels
                 {
                     ((IDisposable)_bufferWriter).Dispose();
                     _buffer.Dispose();
+                    _cancelEvent?.Dispose();
+                    _spillWaitingEvent?.Dispose();
                 }
             }
         }

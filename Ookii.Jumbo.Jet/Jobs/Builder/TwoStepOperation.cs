@@ -51,7 +51,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             : base(builder, CreateExtraStepForDataInput(builder, input), taskType)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             if( secondStepTaskType != null )
             {
@@ -114,7 +114,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
             if( compiler == null )
-                throw new ArgumentNullException("compiler");
+                throw new ArgumentNullException(nameof(compiler));
             // We don't need an extra step if each of our tasks would get only a single input segment, i.e. when
             // our input channel is a pipeline or has only one task.
             if( InputChannel.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1 )

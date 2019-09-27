@@ -70,7 +70,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         public override void Finish(PrepartitionedRecordWriter<T> output)
         {
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             bool parallelSort = TaskContext == null ? true : TaskContext.GetSetting(TaskConstants.SortTaskUseParallelSortSettingKey, true);
 

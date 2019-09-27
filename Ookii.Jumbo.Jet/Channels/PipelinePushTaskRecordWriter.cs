@@ -16,9 +16,9 @@ namespace Ookii.Jumbo.Jet.Channels
         public PipelinePushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             _taskExecution = taskExecution;
             _task = (PushTask<TRecord, TPipelinedTaskOutput>)taskExecution.Task;

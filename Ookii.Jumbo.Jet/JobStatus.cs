@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -170,14 +171,24 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A string representation of this <see cref="JobStatus"/>.</returns>
         public override string ToString()
         {
+            return ToString(null);
+        }
+
+        /// <summary>
+        /// Gets a string representation of this <see cref="JobStatus"/> using a specific format provider.
+        /// </summary>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>A string representation of this <see cref="JobStatus"/>.</returns>
+        public string ToString(IFormatProvider provider)
+        {
             StringBuilder result = new StringBuilder(100);
-            result.AppendFormat("{0:P1}; finished: {1}/{2} tasks", Progress, FinishedTaskCount, TaskCount);
-            foreach( StageStatus stage in Stages )
+            result.AppendFormat(provider, "{0:P1}; finished: {1}/{2} tasks", Progress, FinishedTaskCount, TaskCount);
+            foreach (StageStatus stage in Stages)
             {
-                result.AppendFormat("; {0}: {1:P1}", stage.StageId, stage.Progress);
+                result.AppendFormat(provider, "; {0}: {1:P1}", stage.StageId, stage.Progress);
             }
-            if( ErrorTaskCount > 0 )
-                result.AppendFormat(" ({0} errors)", ErrorTaskCount);
+            if (ErrorTaskCount > 0)
+                result.AppendFormat(provider, " ({0} errors)", ErrorTaskCount);
 
             return result.ToString();
         }
@@ -251,9 +262,9 @@ namespace Ookii.Jumbo.Jet
         public static JobStatus FromXml(XElement job)
         {
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
             if( job.Name != "Job" )
-                throw new ArgumentException("Invalid job element.", "job");
+                throw new ArgumentException("Invalid job element.", nameof(job));
 
             XElement jobInfo = job.Element("JobInfo");
             JobStatus jobStatus = new JobStatus()

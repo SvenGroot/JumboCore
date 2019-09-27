@@ -102,7 +102,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         protected FileOutput WriteOutput(IJobBuilderOperation operation, string outputPath, Type recordWriterType)
         {
             if( operation == null )
-                throw new ArgumentNullException("operation");
+                throw new ArgumentNullException(nameof(operation));
             FileOutput output = operation.JobBuilder.Write(operation, outputPath, recordWriterType);
             output.BlockSize = (int)BlockSize;
             output.ReplicationFactor = ReplicationFactor;

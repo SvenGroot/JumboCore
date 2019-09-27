@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -13,27 +14,6 @@ namespace TaskServerApplication
 {
     sealed class RunningTask : IDisposable
     {
-        #region Nested types
-
-        private sealed class AppDomainTaskHost : MarshalByRefObject
-        {
-            private static log4net.ILog _log = log4net.LogManager.GetLogger(typeof(AppDomainTaskHost));
-
-            public void Run(Guid jobId, string jobDirectory, string dfsJobDirectory, TaskAttemptId taskAttemptId)
-            {
-                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
-                TaskExecutionUtility.RunTask(jobId, jobDirectory, dfsJobDirectory, taskAttemptId);
-            }
-
-            private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-            {
-                _log.Fatal("An unexpected error occurred running a task in an AppDomain.", (Exception)e.ExceptionObject);
-            }
-        }
-
-        #endregion
-
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RunningTask));
 
         private Process _process;
@@ -98,7 +78,7 @@ namespace TaskServerApplication
                 {
                     try
                     {
-                        ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format("TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
+                        ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format(CultureInfo.InvariantCulture, "TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
                         startInfo.UseShellExecute = false;
                         startInfo.CreateNoWindow = true;
                         //string profileOutputFile = null;
@@ -120,7 +100,7 @@ namespace TaskServerApplication
                     catch( Win32Exception ex )
                     {
                         --retriesLeft;
-                        _log.Error(string.Format("Could not create host process for task {0}, {1} retries left.", FullTaskAttemptId, retriesLeft), ex);
+                        _log.Error(string.Format(CultureInfo.InvariantCulture, "Could not create host process for task {0}, {1} retries left.", FullTaskAttemptId, retriesLeft), ex);
                         Thread.Sleep(1000);
                     }
                 } while( !success && retriesLeft > 0 );
@@ -179,6 +159,7 @@ namespace TaskServerApplication
             _appDomainThread.Start();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the task server.")]
         private void RunTaskAppDomainThread()
         {
             TypeReference.ResolveTypes = true;
@@ -188,7 +169,7 @@ namespace TaskServerApplication
             }
             catch( Exception ex )
             {
-                _log.Error(string.Format("Error running task {0} in app domain", FullTaskAttemptId), ex);
+                _log.Error(string.Format(CultureInfo.InvariantCulture, "Error running task {0} in app domain", FullTaskAttemptId), ex);
                 _taskServer.ReportError(JobId, TaskAttemptId, ex.ToString());
             }
 

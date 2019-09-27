@@ -14,7 +14,7 @@ namespace TaskServerApplication
 
         private static Thread _mainThread;
 
-        static void Main(string[] args)
+        static void Main()
         {
             JumboConfiguration.GetConfiguration().Log.ConfigureLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

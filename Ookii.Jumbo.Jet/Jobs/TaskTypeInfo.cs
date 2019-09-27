@@ -23,9 +23,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         public TaskTypeInfo(Type taskType)
         {
             if( taskType == null )
-                throw new ArgumentNullException("taskType");
+                throw new ArgumentNullException(nameof(taskType));
             if( taskType.ContainsGenericParameters )
-                throw new ArgumentException("The task must be closed constructed generic type.", "taskType");
+                throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
 
             _taskType = taskType;
             Type interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>));

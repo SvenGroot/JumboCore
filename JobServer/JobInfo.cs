@@ -44,11 +44,11 @@ namespace JobServerApplication
         public JobInfo(Job job, JobConfiguration config, FileSystemClient fileSystem)
         {
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             _job = job;
             _config = config;
 
@@ -60,7 +60,7 @@ namespace JobServerApplication
             foreach( StageConfiguration stage in config.GetDependencyOrderedStages() )
             {
                 if( stage.TaskCount < 1 )
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has no tasks.", stage.StageId), "config");
+                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has no tasks.", stage.StageId), nameof(config));
                 // Don't allow failures for a job with a TCP channel.
                 if( stage.Leaf.OutputChannel != null && stage.Leaf.OutputChannel.ChannelType == Ookii.Jumbo.Jet.Channels.ChannelType.Tcp )
                     _maxTaskFailures = 1;
@@ -89,7 +89,7 @@ namespace JobServerApplication
                 stage.SetupSoftDependencies(this);
 
             if( stages.Count == 0 )
-                throw new ArgumentException("The job configuration has no stages.", "config");
+                throw new ArgumentException("The job configuration has no stages.", nameof(config));
 
             if( _config.SchedulerOptions.DataInputSchedulingMode == SchedulingMode.Default )
                 _config.SchedulerOptions.DataInputSchedulingMode = JobServer.Instance.Configuration.JobServer.DataInputSchedulingMode;

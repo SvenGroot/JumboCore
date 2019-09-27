@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Jet
         public void WriteRawRecord(RecordWriter<RawRecord> writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             if( _rawRecord == null )
                 throw new InvalidOperationException("No raw record stored in this instance.");
             writer.WriteRecord(_rawRecord);
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Jet
         internal void Reset(T record)
         {
             if( record == null )
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
             _record = record;
             _rawRecord = null;
         }
@@ -83,7 +83,7 @@ namespace Ookii.Jumbo.Jet
         internal void Reset(RawRecord record)
         {
             if( record == null )
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
             _record = default(T);
             _rawRecord = record;
         }

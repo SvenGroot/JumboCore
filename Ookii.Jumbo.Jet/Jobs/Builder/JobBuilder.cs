@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public FileInput Read(string path, Type recordReaderType)
         {
             if( recordReaderType == null )
-                throw new ArgumentNullException("recordReaderType");
+                throw new ArgumentNullException(nameof(recordReaderType));
             FileInput input = new FileInput(path, recordReaderType);
             AddAssembly(recordReaderType.Assembly);
             return input;
@@ -139,11 +139,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public FileOutput Write(IJobBuilderOperation operation, string path, Type recordWriterType)
         {
             if( operation == null )
-                throw new ArgumentNullException("operation");
+                throw new ArgumentNullException(nameof(operation));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( recordWriterType == null )
-                throw new ArgumentNullException("recordWriterType");
+                throw new ArgumentNullException(nameof(recordWriterType));
 
             if( recordWriterType.IsGenericTypeDefinition )
                 recordWriterType = recordWriterType.MakeGenericType(operation.RecordType);
@@ -165,7 +165,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public StageOperation Process(IOperationInput input, Type taskType)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             CheckIfInputBelongsToJobBuilder(input);
             return new StageOperation(this, input, taskType);
         }
@@ -268,9 +268,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public void AddOperation(IJobBuilderOperation operation)
         {
             if( operation == null )
-                throw new ArgumentNullException("operation");
+                throw new ArgumentNullException(nameof(operation));
             if( operation.JobBuilder != this )
-                throw new ArgumentException("The specified operation doesn't belong to this job builder.", "operation");
+                throw new ArgumentException("The specified operation doesn't belong to this job builder.", nameof(operation));
             _operations.Add(operation);
         }
 
@@ -289,7 +289,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public void AddAssembly(Assembly assembly)
         {
             if( assembly == null )
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
 
             if( !(assembly.GlobalAssemblyCache || _dependencyAssemblies.Contains(assembly.FullName)) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)) )
@@ -312,15 +312,15 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             IJobBuilderOperation operation = input as IJobBuilderOperation;
             if( !(operation == null || operation.JobBuilder == this) )
-                throw new ArgumentException("The specified input doesn't belong to this job builder.", "input");
+                throw new ArgumentException("The specified input doesn't belong to this job builder.", nameof(input));
         }
 
         private StageOperation ProcessCore<TInput, TOutput>(IOperationInput input, Delegate processor, RecordReuseMode recordReuse)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if( processor == null )
-                throw new ArgumentNullException("processor");
+                throw new ArgumentNullException(nameof(processor));
             CheckIfInputBelongsToJobBuilder(input);
             Type taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
             StageOperation result = new StageOperation(this, input, taskType);

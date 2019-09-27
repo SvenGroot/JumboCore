@@ -107,6 +107,7 @@ namespace Ookii.Jumbo.Jet.Channels
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Ownership may be handed off to cached connection.")]
         private void SendSegmentToTask(bool sendData, int taskIndex)
         {
             bool disposeStream = false;

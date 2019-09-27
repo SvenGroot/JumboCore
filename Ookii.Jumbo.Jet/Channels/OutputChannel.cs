@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected OutputChannel(TaskExecutionUtility taskExecution)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
 
             TaskExecution = taskExecution;
 

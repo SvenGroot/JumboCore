@@ -116,7 +116,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private StageOperation GenerateCore<T>(int taskCount, Delegate generator, bool useProgressContext)
         {
             if( generator == null )
-                throw new ArgumentNullException("generator");
+                throw new ArgumentNullException(nameof(generator));
 
             // Record reuse is irrelevant for a task with no input.
             Type taskType = useProgressContext 

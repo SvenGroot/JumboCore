@@ -40,9 +40,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         public JobSettingAttribute(string key)
         {
             if( key == null )
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if( key.Length == 0 )
-                throw new ArgumentException("The key may not be zero-length.", "key");
+                throw new ArgumentException("The key may not be zero-length.", nameof(key));
 
             _key = key;
         }

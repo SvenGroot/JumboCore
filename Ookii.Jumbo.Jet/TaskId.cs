@@ -49,11 +49,11 @@ namespace Ookii.Jumbo.Jet
         public TaskId(TaskId parentTaskId, string taskId)
         {
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
 
             if( parentTaskId != null )
             {
-                if( taskId.Contains(ChildStageSeparator) )
+                if( taskId.Contains(ChildStageSeparator, StringComparison.Ordinal) )
                     throw new ArgumentException("Task ID cannot contain a child stage separator ('.') if a parent task ID is specified.");
                 _parentTaskId = parentTaskId;
                 _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
@@ -103,10 +103,11 @@ namespace Ookii.Jumbo.Jet
         {
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1801:Unused parameter", Justification = "Required parameter.")]
         private TaskId(SerializationInfo info, StreamingContext context)
         {
             if( info == null )
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
 
             _taskId = info.GetString("TaskId");
             string localTaskId = _taskId;
@@ -198,9 +199,9 @@ namespace Ookii.Jumbo.Jet
         public static string CreateTaskIdString(string stageId, int taskNumber)
         {
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
             if( taskNumber < 0 )
-                throw new ArgumentOutOfRangeException("taskNumber", "Task number cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(taskNumber), "Task number cannot be less than zero.");
             if( stageId.IndexOfAny(_invalidStageIdCharacters) >= 0 )
                 throw new ArgumentException("The characters '-', '.' and '_' may not occur in a stage ID.");
 
@@ -208,17 +209,17 @@ namespace Ookii.Jumbo.Jet
         }
 
         /// <summary>
-        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+        /// Populates a <see cref="System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
         /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
-        /// <exception cref="T:System.Security.SecurityException">
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+        /// <param name="context">The destination (see <see cref="System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+        /// <exception cref="System.Security.SecurityException">
         /// The caller does not have the required permission.
         /// </exception>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if( info == null )
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
 
             info.AddValue("TaskId", _taskId);
         }
@@ -243,7 +244,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public override int GetHashCode()
         {
-            return _taskId.GetHashCode();
+            return _taskId.GetHashCode(StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -291,7 +292,7 @@ namespace Ookii.Jumbo.Jet
         {
             TaskId other = obj as TaskId;
             if( other != null )
-                throw new ArgumentException("The specified object is not a TaskId.", "obj");
+                throw new ArgumentException("The specified object is not a TaskId.", nameof(obj));
 
             return CompareTo(other);
         }

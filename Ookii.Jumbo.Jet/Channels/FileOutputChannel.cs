@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet.Channels
             : base(taskExecution)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
             TaskExecutionUtility root = taskExecution.RootTask;
 
             // We don't include child task IDs in the output file name because internal partitioning can happen only once

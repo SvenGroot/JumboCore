@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public PipelineOutputChannel(TaskExecutionUtility taskExecution)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
 
             _taskExecution = taskExecution;
         }

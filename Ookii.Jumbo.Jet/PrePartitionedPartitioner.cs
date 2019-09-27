@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Jet
             set 
             {
                 if( value < 0 || value >= Partitions )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _currentPartition = value; 
             }
         }

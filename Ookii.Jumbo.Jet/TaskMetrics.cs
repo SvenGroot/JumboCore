@@ -109,7 +109,7 @@ namespace Ookii.Jumbo.Jet
         public void Add(TaskMetrics other)
         {
             if( other == null )
-                throw new ArgumentNullException("other");
+                throw new ArgumentNullException(nameof(other));
 
             DfsBytesRead += other.DfsBytesRead;
             DfsBytesWritten += other.DfsBytesWritten;
@@ -200,7 +200,7 @@ namespace Ookii.Jumbo.Jet
             if( element == null )
                 return null;
             if( element.Name != "Metrics" )
-                throw new ArgumentException("Invalid metrics element.", "element");
+                throw new ArgumentException("Invalid metrics element.", nameof(element));
 
             return new TaskMetrics()
             {

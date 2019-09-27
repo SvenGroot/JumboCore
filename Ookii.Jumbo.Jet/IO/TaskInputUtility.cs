@@ -23,13 +23,13 @@ namespace Ookii.Jumbo.Jet.IO
         public static void WriteTaskInputs(FileSystemClient fileSystem, string path, string stageId, IEnumerable<ITaskInput> inputs)
         {
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             if( inputs == null )
-                throw new ArgumentNullException("inputs");
+                throw new ArgumentNullException(nameof(inputs));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
 
             string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
             string splitsIndexFile = GetSplitsIndexFileName(splitsFile);
@@ -74,11 +74,11 @@ namespace Ookii.Jumbo.Jet.IO
         public static IList<string[]> ReadTaskInputLocations(FileSystemClient fileSystem, string path, string stageId)
         {
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
 
             string locationsFile = GetLocationsFileName(fileSystem, path, stageId);
 
@@ -109,13 +109,13 @@ namespace Ookii.Jumbo.Jet.IO
         public static ITaskInput ReadTaskInput(FileSystemClient fileSystem, string path, string stageId, int splitIndex)
         {
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
             if( splitIndex < 0 )
-                throw new ArgumentOutOfRangeException("splitIndex");
+                throw new ArgumentOutOfRangeException(nameof(splitIndex));
 
             string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
             string splitsIndexFile = GetSplitsIndexFileName(splitsFile);

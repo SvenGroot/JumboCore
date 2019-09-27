@@ -8,6 +8,7 @@ using System.Reflection;
 using Ookii.Jumbo.Dfs;
 using Ookii.CommandLine;
 using System.Collections;
+using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Jobs
 {
@@ -28,9 +29,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         public JobRunnerInfo(Type type)
         {
             if( type == null )
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             if( !type.GetInterfaces().Contains(typeof(IJobRunner)) )
-                throw new ArgumentException("Specified type is not a job runner.", "type");
+                throw new ArgumentException("Specified type is not a job runner.", nameof(type));
 
             _jobRunnerType = type;
         }
@@ -75,7 +76,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public static JobRunnerInfo[] GetJobRunners(Assembly assembly)
         {
             if( assembly == null )
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
 
             Type[] types = assembly.GetTypes();
             return (from type in types
@@ -93,9 +94,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         public static JobRunnerInfo GetJobRunner(Assembly assembly, string name)
         {
             if( assembly == null )
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             if( name == null )
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             Type[] types = assembly.GetTypes();
             return (from type in types
@@ -114,11 +115,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index)
         {
             if( dfsConfiguration == null )
-                throw new ArgumentNullException("dfsConfiguration");
+                throw new ArgumentNullException(nameof(dfsConfiguration));
             if( jetConfiguration == null )
-                throw new ArgumentNullException("jetConfiguration");
+                throw new ArgumentNullException(nameof(jetConfiguration));
             if( args == null )
-                throw new ArgumentNullException("args");
+                throw new ArgumentNullException(nameof(args));
 
             IJobRunner jobRunner = null;
             try
@@ -183,7 +184,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                     first = false;
                 else
                     logMessage.Append(", ");
-                logMessage.AppendFormat("{0}={1}", entry.Key, entry.Value);
+                logMessage.AppendFormat(CultureInfo.InvariantCulture, "{0}={1}", entry.Key, entry.Value);
             }
             logMessage.Append(" }");
         }

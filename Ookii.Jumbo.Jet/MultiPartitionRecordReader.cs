@@ -38,7 +38,7 @@ namespace Ookii.Jumbo.Jet
             : base(false)
         {
             if( baseReader == null )
-                throw new ArgumentNullException("baseReader");
+                throw new ArgumentNullException(nameof(baseReader));
 
             _taskExecution = taskExecution;
             _baseReader = baseReader;

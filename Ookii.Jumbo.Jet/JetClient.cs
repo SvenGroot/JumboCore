@@ -7,6 +7,7 @@ using Ookii.Jumbo.Rpc;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet.IO;
 using Ookii.Jumbo.Jet.Jobs;
+using System.Globalization;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -39,7 +40,7 @@ namespace Ookii.Jumbo.Jet
         public JetClient(JetConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             JobServer = CreateJobServerClient(config);
             Configuration = config;
@@ -53,7 +54,7 @@ namespace Ookii.Jumbo.Jet
         public JetClient(string hostName, int port)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
             Configuration = new JetConfiguration();
             Configuration.JobServer.HostName = hostName;
             Configuration.JobServer.Port = port;
@@ -90,7 +91,7 @@ namespace Ookii.Jumbo.Jet
         public static IJobServerHeartbeatProtocol CreateJobServerHeartbeatClient(JetConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             return CreateJobServerClientInternal<IJobServerHeartbeatProtocol>(config.JobServer.HostName, config.JobServer.Port);
         }
@@ -114,7 +115,7 @@ namespace Ookii.Jumbo.Jet
         public static IJobServerClientProtocol CreateJobServerClient(JetConfiguration config)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             return CreateJobServerClientInternal<IJobServerClientProtocol>(config.JobServer.HostName, config.JobServer.Port);
         }
@@ -129,7 +130,7 @@ namespace Ookii.Jumbo.Jet
         public static IJobServerClientProtocol CreateJobServerClient(string hostName, int port)
         {
             if( hostName == null )
-                throw new ArgumentNullException("hostName");
+                throw new ArgumentNullException(nameof(hostName));
 
             return CreateJobServerClientInternal<IJobServerClientProtocol>(hostName, port);
         }
@@ -154,7 +155,7 @@ namespace Ookii.Jumbo.Jet
         public static ITaskServerClientProtocol CreateTaskServerClient(ServerAddress address)
         {
             if( address == null )
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             return CreateTaskServerClientInternal<ITaskServerClientProtocol>(address.HostName, address.Port);
         }
@@ -171,7 +172,7 @@ namespace Ookii.Jumbo.Jet
         public Job RunJob(JobConfiguration config, params string[] files)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
 
             Job job = JobServer.CreateJob();
             _log.InfoFormat("Created job {{{0}}}", job.JobId);
@@ -193,7 +194,7 @@ namespace Ookii.Jumbo.Jet
             {
                 Thread.Sleep(pollIntervalMilliseconds);
                 status = JobServer.GetJobStatus(jobId);
-                string statusString = status.ToString();
+                string statusString = status.ToString(CultureInfo.CurrentCulture);
                 if( statusString != previousStatus )
                 {
                     Console.WriteLine(statusString);
@@ -239,9 +240,9 @@ namespace Ookii.Jumbo.Jet
         public Job RunJob(JobConfiguration config, FileSystemClient fileSystemClient, params string[] files)
         {
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
             if( fileSystemClient == null )
-                throw new ArgumentNullException("fileSystemClient");
+                throw new ArgumentNullException(nameof(fileSystemClient));
 
             Job job = JobServer.CreateJob();
             _log.InfoFormat("Created job {{{0}}}", job.JobId);
@@ -261,11 +262,11 @@ namespace Ookii.Jumbo.Jet
         public void RunJob(Job job, JobConfiguration config, FileSystemClient fileSystemClient, params string[] files)
         {
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
             if( config == null )
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException(nameof(config));
             if( fileSystemClient == null )
-                throw new ArgumentNullException("fileSystemClient");
+                throw new ArgumentNullException(nameof(fileSystemClient));
 
             try
             {
@@ -337,7 +338,7 @@ namespace Ookii.Jumbo.Jet
             sw.Start();
             JobStatus status = JobServer.GetJobStatus(jobId);
             if( status == null )
-                throw new ArgumentException("Unknown job ID.", "jobId");
+                throw new ArgumentException("Unknown job ID.", nameof(jobId));
 
             while( !status.IsFinished && (millisecondsTimeout == Timeout.Infinite || sw.ElapsedMilliseconds < millisecondsTimeout) )
             {
@@ -352,7 +353,7 @@ namespace Ookii.Jumbo.Jet
         internal static IJobServerTaskProtocol CreateJobServerTaskClient(JetConfiguration configuration)
         {
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
 
             return CreateJobServerClientInternal<IJobServerTaskProtocol>(configuration.JobServer.HostName, configuration.JobServer.Port);
         }

@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 if( comparerType.IsGenericTypeDefinition )
                     comparerType = comparerType.MakeGenericType(input.RecordType);
                 if( comparerType.ContainsGenericParameters )
-                    throw new ArgumentException("The comparer type must be a closed constructed generic type.", "comparerType");
+                    throw new ArgumentException("The comparer type must be a closed constructed generic type.", nameof(comparerType));
 
                 Type interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>));
                 if( input.RecordType.IsSubclassOf(interfaceType.GetGenericArguments()[0]) )
@@ -88,6 +88,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static SortOperation CreateMemorySortOperation(JobBuilder builder, IOperationInput input, Type comparerType)
         {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
             return new SortOperation(builder, input, comparerType, null, false);
         }
 
@@ -106,6 +111,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type comparerType, Type combinerType)
         {
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder));
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
             return new SortOperation(builder, input, comparerType, combinerType, true);
         }
 
@@ -119,7 +129,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
             if( compiler == null )
-                throw new ArgumentNullException("compiler");
+                throw new ArgumentNullException(nameof(compiler));
             if( _useSpillSort )
             {
                 if( InputChannel.ChannelType == null )

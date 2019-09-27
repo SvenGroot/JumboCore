@@ -22,13 +22,13 @@ namespace Ookii.Jumbo.Jet
         public TaskContext(Guid jobId, JobConfiguration jobConfiguration, TaskAttemptId taskAttemptId, StageConfiguration stageConfiguration, string localJobDirectory, string dfsJobDirectory)
         {
             if( jobConfiguration == null )
-                throw new ArgumentNullException("jobConfiguration");
+                throw new ArgumentNullException(nameof(jobConfiguration));
             if( stageConfiguration == null )
-                throw new ArgumentNullException("stageConfiguration");
+                throw new ArgumentNullException(nameof(stageConfiguration));
             if( localJobDirectory == null )
-                throw new ArgumentNullException("localJobDirectory");
+                throw new ArgumentNullException(nameof(localJobDirectory));
             if( dfsJobDirectory == null )
-                throw new ArgumentNullException("dfsJobDirectory");
+                throw new ArgumentNullException(nameof(dfsJobDirectory));
 
             JobId = jobId;
             JobConfiguration = jobConfiguration;
@@ -90,12 +90,14 @@ namespace Ookii.Jumbo.Jet
             get { return TaskExecution == null ? null : TaskExecution.TaskInput; }
         }
 
+
         /// <summary>
         /// Gets or sets the status message for the current task attempt.
         /// </summary>
         /// <remarks>
         /// Set this status message from task classes. This status message will be sent to the task server as part of a progress update.
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
         public string StatusMessage
         {
             get
@@ -157,7 +159,7 @@ namespace Ookii.Jumbo.Jet
         public string DownloadDfsFile(string dfsPath)
         {
             if( dfsPath == null )
-                throw new ArgumentNullException("dfsPath");
+                throw new ArgumentNullException(nameof(dfsPath));
 
             if( TaskExecution == null )
                 throw new InvalidOperationException("There's no TaskExecutionUtility associated with this instance.");

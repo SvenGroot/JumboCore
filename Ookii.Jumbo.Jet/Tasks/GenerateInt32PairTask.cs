@@ -31,9 +31,9 @@ namespace Ookii.Jumbo.Jet.Tasks
         public void Run(RecordReader<T> input, RecordWriter<Pair<T, int>> output)
         {
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             if( TaskContext != null && TaskContext.StageConfiguration.AllowOutputRecordReuse )
             {
                 // Record reuse allowed

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Ookii.CommandLine;
@@ -53,7 +54,7 @@ namespace JetShell.Commands
                         IJobRunner jobRunner = jobRunnerInfo.CreateInstance(_args, _argIndex + 2);
                         if( jobRunner == null )
                         {
-                            _options.UsageOptions.UsagePrefix = string.Format("{0} job {1} {2} ", _options.UsageOptions.UsagePrefix, Path.GetFileName(assemblyFileName), jobRunnerInfo.Name);
+                            _options.UsageOptions.UsagePrefix = string.Format(CultureInfo.InvariantCulture, "{0} job {1} {2} ", _options.UsageOptions.UsagePrefix, Path.GetFileName(assemblyFileName), jobRunnerInfo.Name);
                             jobRunnerInfo.CommandLineParser.WriteUsageToConsole(_options.UsageOptions);
                         }
                         else

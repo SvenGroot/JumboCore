@@ -47,7 +47,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             set 
             {
                 if( value != null && value.IndexOfAny(new char[] { TaskId.ChildStageSeparator, TaskId.TaskNumberSeparator }) >= 0 )
-                    throw new ArgumentException("A stage ID cannot contain the character '.', '-' or '_'.", "value");
+                    throw new ArgumentException("A stage ID cannot contain the character '.', '-' or '_'.", nameof(value));
                 _stageId = value; 
             }
         }
@@ -432,7 +432,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public StageConfiguration GetNamedChildStage(string childStageId)
         {
             if( childStageId == null )
-                throw new ArgumentNullException("childStageId");
+                throw new ArgumentNullException(nameof(childStageId));
 
             if( ChildStage != null && ChildStage.StageId == childStageId )
             {
@@ -532,7 +532,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public void Validate(JobConfiguration job)
         {
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
             // Some of the things checked here are also checked by the AddStage etc. methods of JobConfiguration, but almost all our properties are read/write (needed for XML serialization)
             // so it's possible to get the stage in an invalid state by modifying it after it has been added.
             if( string.IsNullOrWhiteSpace(StageId) )

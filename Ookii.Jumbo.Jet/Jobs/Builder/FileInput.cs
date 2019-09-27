@@ -18,11 +18,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         internal FileInput(string path, Type recordReaderType)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( recordReaderType == null )
-                throw new ArgumentNullException("recordReaderType");
+                throw new ArgumentNullException(nameof(recordReaderType));
             if( recordReaderType.ContainsGenericParameters )
-                throw new ArgumentException("The record reader type must be a closed constructed generic type.", "recordReaderType");
+                throw new ArgumentException("The record reader type must be a closed constructed generic type.", nameof(recordReaderType));
 
             Type recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
 
@@ -88,7 +88,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public IO.IDataInput CreateStageInput(FileSystemClient fileSystem)
         {
             if( fileSystem == null )
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             return new FileDataInput(fileSystem.Configuration, RecordReaderType, fileSystem.GetFileSystemEntryInfo(Path), MinimumSplitSize, MaximumSplitSize);
         }
     }

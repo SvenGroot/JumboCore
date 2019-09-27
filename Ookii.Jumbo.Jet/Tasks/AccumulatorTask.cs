@@ -96,7 +96,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         public override void Finish(RecordWriter<Pair<TKey, TValue>> output)
         {
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             bool allowRecordReuse = TaskContext.StageConfiguration.AllowOutputRecordReuse;
             Pair<TKey, TValue> record = null;
             if( allowRecordReuse )

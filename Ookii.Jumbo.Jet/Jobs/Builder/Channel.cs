@@ -30,9 +30,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public Channel(IJobBuilderOperation sender, IJobBuilderOperation receiver)
         {
             if( sender == null )
-                throw new ArgumentNullException("sender");
+                throw new ArgumentNullException(nameof(sender));
             if( receiver == null )
-                throw new ArgumentNullException("receiver");
+                throw new ArgumentNullException(nameof(receiver));
             _sender = sender;
             _receiver = receiver;
             _sender.SetOutput(this);
@@ -156,7 +156,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             set
             {
                 if( value < 0 )
-                    throw new ArgumentOutOfRangeException("value", "The partition count must be 0 or higher.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "The partition count must be 0 or higher.");
                 if( value > 0 && value % _partitionsPerTask != 0 )
                     throw new InvalidOperationException("The total number of partitions must be divisible by the number of partitions per task.");
                 _taskCount = value / _partitionsPerTask;
@@ -173,7 +173,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             set
             {
                 if( value < 1 )
-                    throw new ArgumentOutOfRangeException("value", "The number of partitions per task must be 1 or higher.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "The number of partitions per task must be 1 or higher.");
 
                 _partitionsPerTask = value;
             }
@@ -191,7 +191,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             set 
             {
                 if( value < 0 )
-                    throw new ArgumentOutOfRangeException("value", "The task count must be 0 or higher.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "The task count must be 0 or higher.");
                 _taskCount = value;
             }
         }

@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet
         public ArchivedJob(JobStatus job)
         {
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
 
             JobId = job.JobId;
             JobName = job.JobName;
@@ -83,7 +83,7 @@ namespace Ookii.Jumbo.Jet
         public void Write(BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.Write(JobId.ToByteArray());
             writer.Write(JobName != null);
             if( JobName != null )
@@ -101,7 +101,7 @@ namespace Ookii.Jumbo.Jet
         public void Read(BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
 
             JobId = new Guid(reader.ReadBytes(16));
             if( reader.ReadBoolean() )

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 
+#pragma warning disable CA1034 // Nested types should not be visible - nesting done for organization.
+
 namespace Ookii.Jumbo.Jet
 {
     /// <summary>
@@ -101,3 +103,5 @@ namespace Ookii.Jumbo.Jet
         }
     }
 }
+
+#pragma warning restore CA1034 // Nested types should not be visible

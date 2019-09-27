@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet
         public TaskStatusChangedJetHeartbeatData(Guid jobId, TaskAttemptId taskAttemptId, TaskAttemptStatus status, TaskProgress progress, TaskMetrics metrics)
         {
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskAttemptId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
 
             JobId = jobId;
             TaskAttemptId = taskAttemptId;

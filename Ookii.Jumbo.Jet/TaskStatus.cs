@@ -116,12 +116,12 @@ namespace Ookii.Jumbo.Jet
         public static TaskStatus FromXml(XElement task, JobStatus job)
         {
             if( task == null )
-                throw new ArgumentNullException("task");
+                throw new ArgumentNullException(nameof(task));
             if( job == null )
-                throw new ArgumentNullException("job");
+                throw new ArgumentNullException(nameof(job));
 
             if( task.Name != "Task" )
-                throw new ArgumentException("Invalid task element.", "task");
+                throw new ArgumentException("Invalid task element.", nameof(task));
 
             TaskStatus status = new TaskStatus()
             {

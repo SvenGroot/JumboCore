@@ -29,9 +29,9 @@ namespace Ookii.Jumbo.Jet
         public TaskAttemptId(TaskId taskId, int attempt)
         {
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
             if( attempt <= 0 )
-                throw new ArgumentOutOfRangeException("attempt", "The attempt number must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(attempt), "The attempt number must be greater than zero.");
 
             _taskId = taskId;
             _attempt = attempt;
@@ -143,7 +143,7 @@ namespace Ookii.Jumbo.Jet
         {
             TaskAttemptId other = obj as TaskAttemptId;
             if( other == null )
-                throw new ArgumentException("obj is not a TaskAttemptId.", "obj");
+                throw new ArgumentException("obj is not a TaskAttemptId.", nameof(obj));
             return CompareTo(other);
         }
 

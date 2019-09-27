@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             WaitUntilLoaded();
             if( partition < 1 || partition > _index.Length )
-                throw new ArgumentOutOfRangeException("partition");
+                throw new ArgumentOutOfRangeException(nameof(partition));
             return _index[partition - 1];
         }
 
@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             WaitUntilLoaded();
             if( partition < 1 || partition > _index.Length )
-                throw new ArgumentOutOfRangeException("partition");
+                throw new ArgumentOutOfRangeException(nameof(partition));
             List<PartitionFileIndexEntry> index = _index[partition - 1];
             long result = 0;
             if( index != null )

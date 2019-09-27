@@ -47,18 +47,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             : base(builder, GetEmptyTaskTypeForRecord(innerJoinRecordReaderType))
         {
             if( outerInput == null )
-                throw new ArgumentNullException("outerInput");
+                throw new ArgumentNullException(nameof(outerInput));
             if( innerInput == null )
-                throw new ArgumentNullException("innerInput");
+                throw new ArgumentNullException(nameof(innerInput));
             if( innerJoinRecordReaderType == null )
-                throw new ArgumentNullException("innerJoinRecordReaderType");
+                throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
 
             Type baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
             Type outerRecordType = baseType.GetGenericArguments()[0];
             Type innerRecordType = baseType.GetGenericArguments()[1];
             InputTypeAttribute[] inputTypeAttributes = (InputTypeAttribute[])Attribute.GetCustomAttributes(innerJoinRecordReaderType, typeof(InputTypeAttribute));
             if( !(inputTypeAttributes.Any(a => a.AcceptedType == outerRecordType) && inputTypeAttributes.Any(a => a.AcceptedType == innerRecordType)) )
-                throw new ArgumentException("The inner join record reader type does not declare the required InputType attributes.", "innerJoinRecordReaderType");
+                throw new ArgumentException("The inner join record reader type does not declare the required InputType attributes.", nameof(innerJoinRecordReaderType));
             if( outerInput.RecordType != outerRecordType )
                 throw new ArgumentException("The record type of the outer input does not match the join's outer type.");
             if( innerInput.RecordType != innerRecordType )
@@ -87,7 +87,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
             if( compiler == null )
-                throw new ArgumentNullException("compiler");
+                throw new ArgumentNullException(nameof(compiler));
 
             if( _innerInputChannel.TaskCount != _outerInputChannel.TaskCount )
                 throw new InvalidOperationException("Outer and inner input channels for a join operation must use the same number of tasks.");
@@ -100,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static Type GetEmptyTaskTypeForRecord(Type innerJoinRecordReaderType)
         {
             if( innerJoinRecordReaderType == null )
-                throw new ArgumentNullException("innerJoinRecordReaderType");
+                throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
             return typeof(EmptyTask<>).MakeGenericType(RecordReader.GetRecordType(innerJoinRecordReaderType));
         }
 

@@ -97,13 +97,13 @@ namespace Ookii.Jumbo.Jet
         internal TaskExecutionUtility(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, TaskExecutionUtility parentTask, TaskContext configuration)
         {
             if( fileSystemClient == null )
-                throw new ArgumentNullException("fileSystemClient");
+                throw new ArgumentNullException(nameof(fileSystemClient));
             if( jetClient == null )
-                throw new ArgumentNullException("jetClient");
+                throw new ArgumentNullException(nameof(jetClient));
             if( umbilical == null )
-                throw new ArgumentNullException("umbilical");
+                throw new ArgumentNullException(nameof(umbilical));
             if( configuration == null )
-                throw new ArgumentNullException("configuration");
+                throw new ArgumentNullException(nameof(configuration));
 
             _fileSystemClient = fileSystemClient;
             _jetClient = jetClient;
@@ -317,6 +317,9 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public static void RunTask(Guid jobId, string jobDirectory, string dfsJobDirectory, TaskAttemptId taskAttemptId, bool noLogConfig = false)
         {
+            if (taskAttemptId == null)
+                throw new ArgumentNullException(nameof(taskAttemptId));
+
             AssemblyResolver.Register();
 
             using( ProcessorStatus processorStatus = new ProcessorStatus() )
@@ -388,19 +391,19 @@ namespace Ookii.Jumbo.Jet
         public static TaskExecutionUtility Create(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, Guid jobId, JobConfiguration jobConfiguration, TaskAttemptId taskAttemptId, string dfsJobDirectory, string localJobDirectory)
         {
             if( fileSystemClient == null )
-                throw new ArgumentNullException("fileSystemClient");
+                throw new ArgumentNullException(nameof(fileSystemClient));
             if( jetClient == null )
-                throw new ArgumentNullException("jetClient");
+                throw new ArgumentNullException(nameof(jetClient));
             if( umbilical == null )
-                throw new ArgumentNullException("umbilical");
+                throw new ArgumentNullException(nameof(umbilical));
             if( jobConfiguration == null )
-                throw new ArgumentNullException("jobConfiguration");
+                throw new ArgumentNullException(nameof(jobConfiguration));
             if( taskAttemptId == null )
-                throw new ArgumentNullException("taskAttemptId");
+                throw new ArgumentNullException(nameof(taskAttemptId));
             if( dfsJobDirectory == null )
-                throw new ArgumentNullException("dfsJobDirectory");
+                throw new ArgumentNullException(nameof(dfsJobDirectory));
             if( localJobDirectory == null )
-                throw new ArgumentNullException("localJobDirectory");
+                throw new ArgumentNullException(nameof(localJobDirectory));
 
             TaskContext configuration = new TaskContext(jobId, jobConfiguration, taskAttemptId, jobConfiguration.GetStage(taskAttemptId.TaskId.StageId), localJobDirectory, dfsJobDirectory);
             Type taskExecutionType = DetermineTaskExecutionType(configuration);
@@ -509,7 +512,7 @@ namespace Ookii.Jumbo.Jet
         internal TaskExecutionUtility CreateAssociatedTask(StageConfiguration childStage, int taskNumber)
         {
             if( childStage == null )
-                throw new ArgumentNullException("childStage");
+                throw new ArgumentNullException(nameof(childStage));
             
             TaskId childTaskId = new TaskId(Context.TaskAttemptId.TaskId, childStage.StageId, taskNumber);
             TaskContext configuration = new TaskContext(Context.JobId, Context.JobConfiguration, new TaskAttemptId(childTaskId, Context.TaskAttemptId.Attempt), childStage, Context.LocalJobDirectory, Context.DfsJobDirectory);
@@ -642,6 +645,9 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         protected void FinalizeTask(TaskMetrics metrics)
         {
+            if (metrics == null)
+                throw new ArgumentNullException(nameof(metrics));
+
             if( _associatedTasks != null )
             {
                 foreach( TaskExecutionUtility associatedTask in _associatedTasks )

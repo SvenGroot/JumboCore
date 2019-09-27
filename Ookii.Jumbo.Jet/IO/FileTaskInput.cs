@@ -23,11 +23,11 @@ namespace Ookii.Jumbo.Jet.IO
         public FileTaskInput(string path, long offset, long size, IEnumerable<string> locations)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             if( offset < 0 )
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if( size < 1 )
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
 
             Path = path;
             Offset = offset;
@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Jet.IO
         public void Write(BinaryWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             // Don't serialize _locations
             writer.Write(Path);
             writer.Write(Offset);
@@ -92,7 +92,7 @@ namespace Ookii.Jumbo.Jet.IO
         public void Read(BinaryReader reader)
         {
             if( reader == null )
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             Path = reader.ReadString();
             Offset = reader.ReadInt64();
             Size = reader.ReadInt64();

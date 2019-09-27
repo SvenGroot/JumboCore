@@ -37,7 +37,7 @@ namespace Ookii.Jumbo.Jet
         public Job(Guid jobId, string path)
         {
             if( path == null )
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             JobId = jobId;
             Path = path;
         }
@@ -58,7 +58,7 @@ namespace Ookii.Jumbo.Jet
         public string GetJobConfigurationFilePath(FileSystemClient client)
         {
             if( client == null )
-                throw new ArgumentNullException("client");
+                throw new ArgumentNullException(nameof(client));
             return client.Path.Combine(Path, JobConfigFileName);
         }
 

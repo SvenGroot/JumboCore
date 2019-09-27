@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Channels
             public Reservation(FileChannelMemoryStorageManager manager, long size, bool waited)
             {
                 if( manager == null )
-                    throw new ArgumentNullException("manager");
+                    throw new ArgumentNullException(nameof(manager));
                 _manager = manager;
                 _waited = waited;
                 Size = size;
@@ -40,7 +40,7 @@ namespace Ookii.Jumbo.Jet.Channels
             public UnmanagedBufferMemoryStream CreateStream(long size)
             {
                 if( size > Size )
-                    throw new ArgumentOutOfRangeException("size", "Stream size exceeds reservation.");
+                    throw new ArgumentOutOfRangeException(nameof(size), "Stream size exceeds reservation.");
 
                 UnmanagedBufferMemoryStream stream = null;
                 try
@@ -85,7 +85,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private FileChannelMemoryStorageManager(long maxSize)
         {
             if( maxSize < 0 )
-                throw new ArgumentOutOfRangeException("maxSize", "Memory storage size must be larger than zero.");
+                throw new ArgumentOutOfRangeException(nameof(maxSize), "Memory storage size must be larger than zero.");
             _maxSize = maxSize;
             _log.InfoFormat("Created memory storage with maximum size {0}.", maxSize);
             _maxSingleStreamSize = (long)(maxSize * _maxSingleStreamFraction);

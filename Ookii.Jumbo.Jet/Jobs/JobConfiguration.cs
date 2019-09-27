@@ -135,13 +135,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         public StageConfiguration AddDataInputStage(string stageId, IDataInput input, Type taskType)
         {
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
             if( stageId.Length == 0 )
-                throw new ArgumentException("Stage ID cannot be empty.", "stageId");
+                throw new ArgumentException("Stage ID cannot be empty.", nameof(stageId));
             if( input == null )
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if( taskType == null )
-                throw new ArgumentNullException("taskType");
+                throw new ArgumentNullException(nameof(taskType));
 
             StageConfiguration stage = CreateStage(stageId, taskType, 0, input);
             Stages.Add(stage);
@@ -179,11 +179,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         public StageConfiguration AddStage(string stageId, Type taskType, int taskCount, IEnumerable<InputStageInfo> inputStages, Type stageMultiInputRecordReaderType)
         {
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
             if( taskType == null )
-                throw new ArgumentNullException("taskType");
+                throw new ArgumentNullException(nameof(taskType));
             if( taskCount <= 0 )
-                throw new ArgumentOutOfRangeException("taskCount", "A stage must have at least one task.");
+                throw new ArgumentOutOfRangeException(nameof(taskCount), "A stage must have at least one task.");
 
             Type taskInterfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>), true);
 
@@ -194,7 +194,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             if( inputStages != null )
             {
                 if( inputStages.Count() > 1 && stageMultiInputRecordReaderType == null )
-                    throw new ArgumentNullException("stageMultiInputRecordReaderType", "You must specify a stage multi input record reader if there is more than one input stage.");
+                    throw new ArgumentNullException(nameof(stageMultiInputRecordReaderType), "You must specify a stage multi input record reader if there is more than one input stage.");
                 foreach( InputStageInfo info in inputStages )
                 {
                     hasInputs = true;
@@ -231,11 +231,11 @@ namespace Ookii.Jumbo.Jet.Jobs
                     foreach( InputStageInfo info in inputStages )
                     {
                         if( info.InputStage.ChildStage != null )
-                            throw new ArgumentException("One of the specified input stages already has a child stage so cannot be used as input.", "inputStages");
+                            throw new ArgumentException("One of the specified input stages already has a child stage so cannot be used as input.", nameof(inputStages));
                         else if( info.InputStage.HasDataOutput )
-                            throw new ArgumentException("One of the specified input stages already has DFS output so cannot be used as input.", "inputStages");
+                            throw new ArgumentException("One of the specified input stages already has DFS output so cannot be used as input.", nameof(inputStages));
                         else if( info.InputStage.OutputChannel != null )
-                            throw new ArgumentException("One of the specified input stages already has an output channel so cannot be used as input.", "inputStages");
+                            throw new ArgumentException("One of the specified input stages already has an output channel so cannot be used as input.", nameof(inputStages));
                     }
 
                     foreach( InputStageInfo info in inputStages )
@@ -329,7 +329,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public IList<StageConfiguration> GetPipelinedStages(string compoundStageId)
         {
             if( compoundStageId == null )
-                throw new ArgumentNullException("compoundStageId");
+                throw new ArgumentNullException(nameof(compoundStageId));
 
             string[] stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             List<StageConfiguration> stages = new List<StageConfiguration>(stageIds.Length);
@@ -355,7 +355,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public StageConfiguration GetStageWithCompoundId(string compoundStageId)
         {
             if( compoundStageId == null )
-                throw new ArgumentNullException("compoundStageId");
+                throw new ArgumentNullException(nameof(compoundStageId));
 
             string[] stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             StageConfiguration current = GetStage(stageIds[0]);
@@ -390,7 +390,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public static int GetTotalTaskCount(IList<StageConfiguration> stages, int start)
         {
             if( stages == null )
-                throw new ArgumentNullException("stages");
+                throw new ArgumentNullException(nameof(stages));
 
             int result = 1;
             for( int x = start; x < stages.Count; ++x )
@@ -407,7 +407,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public void SaveXml(System.IO.Stream stream)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             XmlWriterSettings settings = new XmlWriterSettings()
             {
                 Indent = true,
@@ -429,7 +429,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public IEnumerable<StageConfiguration> GetInputStagesForStage(string stageId)
         {
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
 
             return from stage in Stages
                    let leaf = stage.Leaf
@@ -445,7 +445,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public IEnumerable<StageConfiguration> GetExplicitDependenciesForStage(string stageId)
         {
             if( stageId == null )
-                throw new ArgumentNullException("stageId");
+                throw new ArgumentNullException(nameof(stageId));
 
             return from stage in Stages
                    let leaf = stage.Leaf
@@ -461,9 +461,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         public void RenameStage(StageConfiguration stage, string newName)
         {
             if( stage == null )
-                throw new ArgumentNullException("stage");
+                throw new ArgumentNullException(nameof(stage));
             if( newName == null )
-                throw new ArgumentNullException("newName");
+                throw new ArgumentNullException(nameof(newName));
 
             if( stage.Parent == null )
             {
@@ -546,15 +546,18 @@ namespace Ookii.Jumbo.Jet.Jobs
             return result;
         }
 
+
         /// <summary>
         /// Loads job configuration from an XML source.
         /// </summary>
         /// <param name="stream">The stream containing the XML.</param>
         /// <returns>An instance of the <see cref="JobConfiguration"/> class created from the XML.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5369:Use XmlReader For Deserialize", Justification = "It's actually safe.")]
         public static JobConfiguration LoadXml(System.IO.Stream stream)
         {
             if( stream == null )
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
+
             return (JobConfiguration)_serializer.Deserialize(stream);
         }
 
@@ -566,7 +569,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public static JobConfiguration LoadXml(string file)
         {
             if( file == null )
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             using( System.IO.FileStream stream = System.IO.File.OpenRead(file) )
             {
                 return LoadXml(stream);
@@ -582,7 +585,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public bool AddAdditionalProgressCounter(Type type)
         {
             if( type == null )
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             if( type.GetInterfaces().Contains(typeof(IHasAdditionalProgress)) )
             {
                 AdditionalProgressCounter counter = new AdditionalProgressCounter() { TypeName = type.FullName };

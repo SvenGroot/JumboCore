@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -15,9 +16,11 @@ namespace JetWeb.Pages
 
         public string ErrorMessage { get; set; }
 
+#pragma warning disable CA1819 // Properties should not return arrays
         public JobStatus[] RunningJobs { get; set; }
         public JobStatus[] FinishedJobs { get; set; }
         public JobStatus[] FailedJobs { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
 
         public void OnGet()
@@ -34,7 +37,7 @@ namespace JetWeb.Pages
             }
             catch (SocketException ex)
             {
-                ErrorMessage = string.Format("Unable to connect to job server at {0}:{1}. Note: if you changed the job server port in jet.config, you must also modify web.config. Error message: {2}", JetConfiguration.GetConfiguration().JobServer.HostName, JetConfiguration.GetConfiguration().JobServer.Port, ex.Message);
+                ErrorMessage = string.Format(CultureInfo.CurrentCulture, "Unable to connect to job server at {0}:{1}. Note: if you changed the job server port in jet.config, you must also modify web.config. Error message: {2}", JetConfiguration.GetConfiguration().JobServer.HostName, JetConfiguration.GetConfiguration().JobServer.Port, ex.Message);
             }
         }
     }

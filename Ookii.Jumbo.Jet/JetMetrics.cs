@@ -74,7 +74,7 @@ namespace Ookii.Jumbo.Jet
         public void PrintMetrics(TextWriter writer)
         {
             if( writer == null )
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Job server: {0}", JobServer);
             writer.WriteLine("Running jobs: {0}", RunningJobs.Count);
             PrintList(writer, RunningJobs);

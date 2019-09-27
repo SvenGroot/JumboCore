@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
+using System.Globalization;
 
 namespace TaskServerApplication
 {
@@ -37,7 +38,7 @@ namespace TaskServerApplication
             string downloadDirectory = Path.Combine(localJobDirectory, "dfs");
             Directory.CreateDirectory(downloadDirectory);
 
-            localPath = Path.Combine(downloadDirectory, "file" + _downloadedFiles.Count.ToString());
+            localPath = Path.Combine(downloadDirectory, "file" + _downloadedFiles.Count.ToString(CultureInfo.InvariantCulture));
 
             _log.DebugFormat("Downloading DFS file '{0}' to local file '{1}'.", dfsPath, localPath);
             FileSystemClient client = FileSystemClient.Create(TaskServer.Instance.DfsConfiguration);

@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet.Channels
             public ProducerConsumerBuffer(int bufferSize, int chunkSize)
             {
                 if( bufferSize < 2 )
-                    throw new ArgumentOutOfRangeException("bufferSize", "bufferSize must be larger than one.");
+                    throw new ArgumentOutOfRangeException(nameof(bufferSize), "bufferSize must be larger than one.");
 
 
                 _bufferSize = bufferSize;
@@ -145,11 +145,11 @@ namespace Ookii.Jumbo.Jet.Channels
         public PipelinePullTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, TaskId taskId)
         {
             if( taskExecution == null )
-                throw new ArgumentNullException("taskExecution");
+                throw new ArgumentNullException(nameof(taskExecution));
             if( output == null )
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             if( taskId == null )
-                throw new ArgumentNullException("taskId");
+                throw new ArgumentNullException(nameof(taskId));
 
             _taskExecution = taskExecution;
             _task = (ITask<TRecord, TPipelinedTaskOutput>)taskExecution.Task; // just to ensure the task instance gets added to additional progress sources up front.

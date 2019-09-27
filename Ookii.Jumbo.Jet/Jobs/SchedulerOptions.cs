@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             set 
             {
                 if( _maximumDataDistance < 0 )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _maximumDataDistance = value; 
             }
         }

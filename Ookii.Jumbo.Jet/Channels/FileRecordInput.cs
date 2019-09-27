@@ -24,9 +24,9 @@ namespace Ookii.Jumbo.Jet.Channels
         public FileRecordInput(Type recordReaderType, string fileName, string sourceName, long uncompressedSize, bool deleteFile, bool inputContainsRecordSizes, int segmentCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
             if( recordReaderType == null )
-                throw new ArgumentNullException("recordReaderType");
+                throw new ArgumentNullException(nameof(recordReaderType));
             if( fileName == null )
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
 
             _recordReaderType = recordReaderType;
             _fileName = fileName;
@@ -50,6 +50,7 @@ namespace Ookii.Jumbo.Jet.Channels
             get { return !IsReaderCreated && _inputContainsRecordSizes; }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Ownership handed to returned record reader.")]
         protected override IRecordReader CreateReader()
         {
             Stream stream = CreateStream();
