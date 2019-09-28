@@ -74,22 +74,8 @@
     }
 </table>
 <h2>Running jobs</h2>
-<table id="RunningJobsTable">
-    <tr>
-        <th scope="col" rowspan="2">Job ID</th>
-        <th scope="col" rowspan="2">Job Name</th>
-        <th scope="col" rowspan="2">Start time</th>
-        <th scope="col" rowspan="2">Duration</th>
-        <th scope="col" rowspan="2">Progress</th>
-        <th scope="colgroup" colspan="7">Tasks</th>
-    </tr>
-    <tr>
-        <th scope="col">Total</th>
-        <th scope="col">Running</th>
-        <th scope="col">Pending</th>
-        <th scope="col">Finished</th>
-        <th scope="col">Errors</th>
-        <th scope="col">Rack local</th>
-        <th scope="col">Non data local</th>
-    </tr>
-</table>
+<partial name="_JobTable.cshtml" for="RunningJobs" />
+<h2>Finished jobs</h2>
+<partial name="_JobTable.cshtml" for="FinishedJobs" />
+<h2>Failed jobs</h2>
+<partial name="_JobTable.cshtml" for="FailedJobs" />

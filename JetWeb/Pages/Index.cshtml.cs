@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using JetWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo.Jet;
@@ -16,12 +17,9 @@ namespace JetWeb.Pages
 
         public string ErrorMessage { get; set; }
 
-#pragma warning disable CA1819 // Properties should not return arrays
-        public JobStatus[] RunningJobs { get; set; }
-        public JobStatus[] FinishedJobs { get; set; }
-        public JobStatus[] FailedJobs { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-
+        public JobTableModel RunningJobs { get; set; }
+        public JobTableModel FinishedJobs { get; set; }
+        public JobTableModel FailedJobs { get; set; }
 
         public void OnGet()
         {
@@ -31,9 +29,21 @@ namespace JetWeb.Pages
                 Metrics = client.JobServer.GetMetrics();
                 ViewData["Title"] = Metrics.JobServer.ToString();
 
-                RunningJobs = Metrics.RunningJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray();
-                FinishedJobs = Metrics.FinishedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray();
-                FailedJobs = Metrics.FailedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray();
+                RunningJobs = new JobTableModel()
+                {
+                    RunningJobs = true,
+                    Jobs = Metrics.RunningJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray()
+                };
+
+                FinishedJobs = new JobTableModel() 
+                {
+                    Jobs = Metrics.FinishedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray() 
+                };
+
+                FailedJobs = new JobTableModel()
+                {
+                    Jobs = Metrics.FailedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray()
+                };
             }
             catch (SocketException ex)
             {
