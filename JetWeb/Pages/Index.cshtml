@@ -68,7 +68,7 @@
             <td>@server.TaskSlots</td>
             <td>
                 <a asp-page="/LogFile" asp-route-taskServer="@server.Address.HostName" asp-route-port="@server.Address.Port" asp-route-maxSize="100KB">Last 100KB</a>,
-                <a asp-page="/LogFile" asp-route-taskServer="@server.Address.HostName" asp-route-port="@server.Address.Port">Full</a>
+                <a asp-page="/LogFile" asp-route-taskServer="@server.Address.HostName" asp-route-port="@server.Address.Port">all</a>
             </td>
         </tr>
     }
