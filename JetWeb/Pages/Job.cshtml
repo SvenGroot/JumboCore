@@ -1,0 +1,123 @@
+﻿@page
+@model JetWeb.Pages.JobModel
+
+<h2>@ViewData["Title"]</h2>
+@if (Model.Job != null)
+{
+    <partial name="_JobTable.cshtml" for="TableModel" />
+    <p>
+        <a href="/Api/JobConfig?id=@Model.Job.JobId">View job configuration</a>
+    </p>
+    @if (Model.Job.IsFinished)
+    {
+        <p>
+            <a href="/Api/JobInfo?id=@Model.Job.JobId">Download job information.</a>
+        </p>
+        @if (!Model.Job.IsSuccessful)
+        {
+            <p>
+                Job failed: @(Model.Job.FailureReason ?? "Unknown reason")
+            </p>
+        }
+    }
+    <h3>Stages</h3>
+    <partial name="_StagesTable.cshtml" for="Stages" />
+    <p>
+        <a asp-page="AllTasks" asp-route-job="@Model.Job.JobId">View details for all tasks</a>
+    </p>
+    <h3>Metrics</h3>
+    <table>
+        <tr>
+            <td>&nbsp;</td>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <th scope="col">@stage.StageId</th>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Input records</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.InputRecords.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Input bytes</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.InputBytes.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Output records</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.OutputRecords.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Output bytes</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.OutputBytes.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">DFS bytes read</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.DfsBytesRead.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">DFS bytes written</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.DfsBytesWritten.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Local bytes read</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.LocalBytesRead.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Local bytes written</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.LocalBytesWritten.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Channel network bytes read</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.NetworkBytesRead.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Channel network bytes written</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.NetworkBytesWritten.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Dynamically assigned partitions</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.DynamicallyAssignedPartitions.ToString("#,0")</td>
+            }
+        </tr>
+        <tr>
+            <th scope="row">Discarded partitions</th>
+            @foreach (var stage in Model.Job.Stages)
+            {
+                <td>@stage.Metrics.DiscardedPartitions.ToString("#,0")</td>
+            }
+        </tr>
+    </table>
+}
+

@@ -1,0 +1,7 @@
+﻿@using System.Globalization
+@model float
+@{
+    var progress = Model * 100;
+}
+
+<div class="progressBar"><div class="progressBarValue" style="width:@progress.ToString("0.0", CultureInfo.InvariantCulture)%">&nbsp;</div></div> @progress.ToString("0.0")%

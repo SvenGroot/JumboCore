@@ -1,0 +1,93 @@
+﻿@using System.Globalization
+@model JetWeb.Models.StageTableModel
+
+<table id="StagesTable" runat="server">
+    <tr>
+        <th scope="col" rowspan="2">Stage name</th>
+        <th scope="col" rowspan="2">Start time</th>
+        <th scope="col" rowspan="2">End time</th>
+        <th scope="col" rowspan="2">Duration</th>
+        <th scope="col" rowspan="2">Progress</th>
+        <th scope="colgroup" colspan="4">Tasks</th>
+    </tr>
+    <tr>
+        <th scope="col">Total</th>
+        <th scope="col">Running</th>
+        <th scope="col">Pending</th>
+        <th scope="col">Finished</th>
+    </tr>
+    @foreach (var stage in Model.Stages)
+    {
+        <tr>
+            <td>
+                <a asp-page="Tasks" asp-route-job="@Model.Job.JobId" asp-route-stage="@stage.StageId" asp-route-archived="@Model.Archived">@stage.StageId</a>
+            </td>
+            <td>
+                @if (stage.StartTime != null)
+                {
+                    @stage.StartTime.Value.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern);
+                }
+            </td>
+            <td>
+                @if (stage.EndTime != null)
+                {
+                    @stage.EndTime.Value.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern);
+                }
+            </td>
+            <td>
+                @if (stage.StartTime != null)
+                {
+                    var duration = (stage.EndTime ?? DateTime.UtcNow) - stage.StartTime.Value;
+                    @:@duration.ToString(@"hh\:mm\:ss\.ff") (@duration.TotalSeconds.ToString("0.00"))
+                }
+            </td>
+            <td>
+                @if (stage.StageProgress.AdditionalProgressValues != null)
+                {
+                    <div>
+                        <partial name="_ProgressBar.cshtml" for="@stage.StageProgress.OverallProgress" />
+                    </div>
+                    <div class="additionalProgress">
+                        Base:
+                        <partial name="_ProgressBar.cshtml" for="@stage.StageProgress.Progress" />
+                    </div>
+                    foreach (var value in stage.StageProgress.AdditionalProgressValues)
+                    {
+                        <div class="additionalProgress">
+                            @Model.Job.GetFriendlyNameForAdditionalProgressCounter(value.SourceName):
+                            <partial name="_ProgressBar.cshtml" for="@value.Progress" />
+                        </div>
+                    }
+                }
+                else
+                {
+                    <partial name="_ProgressBar.cshtml" for="@stage.StageProgress.OverallProgress" />
+                }
+            </td>
+            <td>
+                @stage.Tasks.Count
+            </td>
+            <td>
+                <a asp-page="Tasks"
+                   asp-route-job="@Model.Job.JobId"
+                   asp-route-stage="@stage.StageId"
+                   asp-route-state="Running"
+                   asp-route-archived="@Model.Archived">@stage.RunningTaskCount</a>
+            </td>
+            <td>
+                <a asp-page="Tasks"
+                   asp-route-job="@Model.Job.JobId"
+                   asp-route-stage="@stage.StageId"
+                   asp-route-state="Created"
+                   asp-route-archived="@Model.Archived">@stage.PendingTaskCount</a>
+            </td>
+            <td>
+                <a asp-page="Tasks"
+                   asp-route-job="@Model.Job.JobId"
+                   asp-route-stage="@stage.StageId"
+                   asp-route-state="Finished"
+                   asp-route-archived="@Model.Archived">@stage.FinishedTaskCount</a>
+            </td>
+        </tr>
+    }
+</table>

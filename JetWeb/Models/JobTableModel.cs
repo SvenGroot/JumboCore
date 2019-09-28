@@ -10,6 +10,8 @@ namespace JetWeb.Models
     {
         public bool RunningJobs { get; set; }
 
+        public bool SummaryTable { get; set; }
+
         public IEnumerable<JobStatus> Jobs { get; set; }
     }
 }

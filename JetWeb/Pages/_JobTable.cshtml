@@ -1,19 +1,23 @@
 ﻿@using System.Globalization
 @model JetWeb.Models.JobTableModel
-<table id="RunningJobsTable">
+<table>
     <tr>
-        <th scope="col" rowspan="2">Job ID</th>
-        <th scope="col" rowspan="2">Job Name</th>
-        <th scope="col" rowspan="2">Start time</th>
-        @if (Model.RunningJobs)
+        @if (!Model.SummaryTable)
         {
-            <th scope="col" rowspan="2">Progress</th>
+            <th scope="col" rowspan="2">Job ID</th>
+            <th scope="col" rowspan="2">Job Name</th>
         }
-        else
+
+        <th scope="col" rowspan="2">Start time</th>
+        @if (Model.SummaryTable || !Model.RunningJobs)
         {
             <th scope="col" rowspan="2">End time</th>
         }
         <th scope="col" rowspan="2">Duration</th>
+        @if (Model.RunningJobs)
+        {
+            <th scope="col" rowspan="2">Progress</th>
+        }
         <th scope="colgroup" colspan="@(Model.RunningJobs ? 7 : 4)">Tasks</th>
     </tr>
     <tr>
@@ -32,22 +36,31 @@
     @foreach (var job in Model.Jobs)
     {
         var duration = (job.IsFinished ? job.EndTime : DateTime.UtcNow) - job.StartTime;
-        var progress = job.Progress * 100;
         <tr>
-            <td>
-                <a asp-page="Job" asp-route-id="@job.JobId" asp-route-refresh="5">{@job.JobId}</a>
-            </td>
-            <td>@job.JobName</td>
-            <td>@job.StartTime.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
-            @if (Model.RunningJobs)
+            @if (!Model.SummaryTable)
             {
-                <td><div class="progressBar"><div class="progressBarValue" style="width:@progress.ToString("0.0", CultureInfo.InvariantCulture)%">&nbsp;</div></div> @progress.ToString("0.0")%</td>
+                <td>
+                    <a asp-page="Job" asp-route-id="@job.JobId" asp-route-refresh="5">{@job.JobId}</a>
+                </td>
+                <td>@job.JobName</td>
             }
-            else
+            <td>@job.StartTime.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
+            @if (Model.SummaryTable || !Model.RunningJobs)
             {
-                <td>@job.EndTime.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
+        <td>
+            @if (job.IsFinished)
+            {
+                @job.EndTime.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)
+            }
+        </td>
             }
             <td>@duration.ToString(@"hh\:mm\:ss\.ff") (@duration.TotalSeconds.ToString("0.00"))</td>
+            @if (Model.RunningJobs)
+            {
+                <td>
+                    <partial name="_ProgressBar.cshtml" for="@job.Progress" />
+                </td>
+            }
             <td>@job.TaskCount</td>
             @if (Model.RunningJobs)
             {
