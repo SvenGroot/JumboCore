@@ -20,116 +20,6 @@ namespace Ookii.Jumbo.Test.Jet
     [TestFixture]
     public class JobBuilderTests
     {
-        #region Nested types
-
-        private class FakePartitioner<T> : IPartitioner<T>
-        {
-            public int Partitions
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-                set
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public int GetPartition(T value)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeComparer<T> : IComparer<T>
-        {
-            public int Compare(T x, T y)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeEqualityComparer<T> : IEqualityComparer<T>
-        {
-            public bool Equals(T x, T y)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int GetHashCode(T obj)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeJoinComparer<T> : IRawComparer<T>, IEqualityComparer<T>
-        {
-            public int Compare(T x, T y)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Equals(T x, T y)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int GetHashCode(T obj)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeRawComparer<T> : IRawComparer<T>
-        {
-            public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int Compare(T x, T y)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-
-        private class FakeCombiner<T> : ITask<T, T>
-        {
-            public void Run(RecordReader<T> input, RecordWriter<T> output)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        [InputType(typeof(double)), InputType(typeof(int))]
-        private class FakeInnerJoinRecordReader : InnerJoinRecordReader<double, int, Utf8String>
-        {
-            public FakeInnerJoinRecordReader()
-                : base(null, 0, false, 0, CompressionType.None)
-            {
-            }
-
-            protected override int Compare(double outer, int inner)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override Utf8String CreateJoinResult(Utf8String result, double outer, int inner)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-
-        #endregion
-
         private TestJetCluster _cluster;
         private FileSystemClient _fileSystemClient;
         private JetClient _jetClient;
@@ -140,20 +30,7 @@ namespace Ookii.Jumbo.Test.Jet
         private const int _blockSize = 4194304;
 
         private static readonly HashSet<string> _allowedAssemblyNames = new HashSet<string>(new string[] {
-            "Ookii.Jumbo.Test.dll",
-            "Microsoft.VisualStudio.TestPlatform.ObjectModel.dll",
-            "Microsoft.TestPlatform.PlatformAbstractions.dll",
-            "System.Runtime.Handles.dll",
-            "Microsoft.TestPlatform.CoreUtilities.dll",
-            "System.Xml.XPath.XmlDocument.dll",
-            "nunit.framework.dll",
-            "Microsoft.Win32.Registry.dll",
-            "Ookii.Jumbo.Test.Tasks.dll",
-            "NameServer.dll",
-            "DataServer.dll",
-            "JobServer.dll",
-            "TaskServer.dll",
-            "ICSharpCode.SharpZipLib.dll"
+            "Ookii.Jumbo.Test.Tasks.dll"
         });
 
 
@@ -238,7 +115,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(LineRecordReader));
-            var operation = builder.Process<Utf8String, int>(input, ProcessRecords);
+            var operation = builder.Process<Utf8String, int>(input, TaskMethods.ProcessRecords);
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -261,7 +138,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(LineRecordReader));
-            var operation = builder.Process<Utf8String, int>(input, ProcessRecordsNoContext);
+            var operation = builder.Process<Utf8String, int>(input, TaskMethods.ProcessRecordsNoContext);
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -502,7 +379,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(RecordFileReader<Pair<Utf8String, int>>));
-            var sort = builder.SpillSortCombine<Utf8String, int>(input, CombineRecords);
+            var sort = builder.SpillSortCombine<Utf8String, int>(input, TaskMethods.CombineRecords);
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -532,7 +409,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(RecordFileReader<Pair<Utf8String, int>>));
-            var sort = builder.SpillSortCombine<Utf8String, int>(input, CombineRecordsNoContext);
+            var sort = builder.SpillSortCombine<Utf8String, int>(input, TaskMethods.CombineRecordsNoContext);
             builder.Write(sort, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -642,7 +519,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(RecordFileReader<Pair<Utf8String, int>>));
-            var aggregated = builder.GroupAggregate<Utf8String, int>(input, AccumulateRecords);
+            var aggregated = builder.GroupAggregate<Utf8String, int>(input, TaskMethods.AccumulateRecords);
             builder.Write(aggregated, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -667,7 +544,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(RecordFileReader<Pair<Utf8String, int>>));
-            var aggregated = builder.GroupAggregate<Utf8String, int>(input, AccumulateRecordsNoContext);
+            var aggregated = builder.GroupAggregate<Utf8String, int>(input, TaskMethods.AccumulateRecordsNoContext);
             builder.Write(aggregated, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -693,9 +570,9 @@ namespace Ookii.Jumbo.Test.Jet
 
             // This is it: the official way to write a "behaves like Hadoop" MapReduce job.
             var input = builder.Read(_inputPath, typeof(LineRecordReader));
-            var mapped = builder.Map<Utf8String, Pair<Utf8String, int>>(input, MapRecords);
+            var mapped = builder.Map<Utf8String, Pair<Utf8String, int>>(input, TaskMethods.MapRecords);
             var sorted = builder.SpillSort(mapped);
-            var reduced = builder.Reduce<Utf8String, int, int>(sorted, ReduceRecords);
+            var reduced = builder.Reduce<Utf8String, int, int>(sorted, TaskMethods.ReduceRecords);
             builder.Write(reduced, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -721,9 +598,9 @@ namespace Ookii.Jumbo.Test.Jet
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
             var input = builder.Read(_inputPath, typeof(LineRecordReader));
-            var mapped = builder.Map<Utf8String, Pair<Utf8String, int>>(input, MapRecordsNoContext);
+            var mapped = builder.Map<Utf8String, Pair<Utf8String, int>>(input, TaskMethods.MapRecordsNoContext);
             var sorted = builder.SpillSort(mapped);
-            var reduced = builder.Reduce<Utf8String, int, int>(sorted, ReduceRecordsNoContext);
+            var reduced = builder.Reduce<Utf8String, int, int>(sorted, TaskMethods.ReduceRecordsNoContext);
             builder.Write(reduced, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -769,7 +646,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
-            var operation = builder.Generate<int>(5, GenerateRecords);
+            var operation = builder.Generate<int>(5, TaskMethods.GenerateRecords);
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -792,7 +669,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
-            var operation = builder.Generate<int>(5, GenerateRecordsProgressContext);
+            var operation = builder.Generate<int>(5, TaskMethods.GenerateRecordsProgressContext);
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -815,7 +692,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
             JobBuilder builder = new JobBuilder(_fileSystemClient, _jetClient);
 
-            var operation = builder.Generate<int>(5, GenerateRecordsNoContext);
+            var operation = builder.Generate<int>(5, TaskMethods.GenerateRecordsNoContext);
             builder.Write(operation, _outputPath, typeof(TextRecordWriter<>));
 
             JobConfiguration config = builder.CreateJob();
@@ -865,61 +742,6 @@ namespace Ookii.Jumbo.Test.Jet
 
             VerifyStage(config.Stages[2], 2, "JoinStage", typeof(EmptyTask<Utf8String>), typeof(FakeInnerJoinRecordReader));
             VerifyDataOutput(config.Stages[2], typeof(TextRecordWriter<Utf8String>));
-        }
-
-        
-        public static void ProcessRecords(RecordReader<Utf8String> input, RecordWriter<int> output, TaskContext context)
-        {
-        }
-
-        public static void ProcessRecordsNoContext(RecordReader<Utf8String> input, RecordWriter<int> output)
-        {
-        }
-
-        public static int AccumulateRecords(Utf8String key, int value, int newValue, TaskContext context)
-        {
-            return value + newValue;
-        }
-
-        public static int AccumulateRecordsNoContext(Utf8String key, int value, int newValue)
-        {
-            return value + newValue;
-        }
-
-        public static void MapRecords(Utf8String record, RecordWriter<Pair<Utf8String,int>> output, TaskContext context)
-        {
-        }
-
-        public static void MapRecordsNoContext(Utf8String record, RecordWriter<Pair<Utf8String, int>> output)
-        {
-        }
-
-        public static void ReduceRecords(Utf8String key, IEnumerable<int> values, RecordWriter<int> output, TaskContext context)
-        {
-        }
-
-        public static void ReduceRecordsNoContext(Utf8String key, IEnumerable<int> values, RecordWriter<int> output)
-        {
-        }
-
-        public static void GenerateRecords(RecordWriter<int> output, TaskContext context)
-        {
-        }
-
-        public static void GenerateRecordsProgressContext(RecordWriter<int> output, ProgressContext context)
-        {
-        }
-
-        public static void GenerateRecordsNoContext(RecordWriter<int> output)
-        {
-        }
-
-        public static void CombineRecords(Utf8String key, IEnumerable<int> values, RecordWriter<Pair<Utf8String, int>> output, TaskContext context)
-        {
-        }
-
-        public static void CombineRecordsNoContext(Utf8String key, IEnumerable<int> values, RecordWriter<Pair<Utf8String, int>> output)
-        {
         }
 
         private static void VerifyStage(StageConfiguration stage, int taskCount, string stageId, Type taskType, Type stageMultiInputRecordReader = null)
