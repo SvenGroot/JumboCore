@@ -1,0 +1,39 @@
+﻿@page
+@using System.Globalization
+@model JetWeb.Pages.ArchiveModel
+@{
+    ViewData["Title"] = "Archived jobs";
+}
+
+<h2>
+    Archived jobs
+</h2>
+<p>
+    NOTE: Viewing log files or downloading a job summary for an archived job only works if all the task servers that were used for the job are
+    still part of the cluster and still have the job's log files stored.
+</p>
+<table>
+    <tr>
+        <th scope="col">Job ID</th>
+        <th scope="col">Job Name</th>
+        <th scope="col">Status</th>
+        <th scope="col">Start time</th>
+        <th scope="col">End time</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Tasks</th>
+    </tr>
+    @foreach (var job in Model.Jobs)
+    {
+        var duration = job.EndTime - job.StartTime;
+        <tr>
+            <td><a asp-page="Job" asp-route-id="@job.JobId" asp-route-archived="true">@job.JobId.ToString("B")</a></td>
+            <td>@(job.JobName ?? "(unnamed)")</td>
+            <td>@(job.IsSuccessful ? "Succeeded" : "Failed")</td>
+            <td>@job.StartTime.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
+            <td>@job.EndTime.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
+            <td>@duration.ToString(@"hh\:mm\:ss\.ff") (@duration.TotalSeconds.ToString("0.00"))</td>
+            <td>@job.TaskCount</td>
+        </tr>
+    }
+</table>
+
