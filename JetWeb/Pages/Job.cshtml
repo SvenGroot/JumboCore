@@ -6,12 +6,12 @@
 {
     <partial name="_JobTable.cshtml" for="TableModel" />
     <p>
-        <a href="/Api/JobConfig?id=@Model.Job.JobId">View job configuration</a>
+        <a href="/Api/JobConfig?id=@Model.Job.JobId&archive=@Model.Archived">View job configuration</a>
     </p>
     @if (Model.Job.IsFinished)
     {
         <p>
-            <a href="/Api/JobInfo?id=@Model.Job.JobId">Download job information.</a>
+            <a href="/Api/JobInfo?id=@Model.Job.JobId&archive=@Model.Archived">Download job information.</a>
         </p>
         @if (!Model.Job.IsSuccessful)
         {
