@@ -1,0 +1,113 @@
+﻿@page
+@using Ookii.Jumbo.Jet;
+@using System.Globalization
+@model JetWeb.Pages.TasksModel
+
+<h2>@ViewData["Title"]</h2>
+@if (Model.Stages != null)
+{
+    int? rowSpan = null;
+    int? colSpan = null;
+    if (Model.ComplexProgressTemplate != null)
+    {
+        rowSpan = 2;
+        colSpan = Model.ComplexProgressTemplate.AdditionalProgressValues.Count + 2;
+    }
+
+    <partial name="_StagesTable.cshtml" for="Stages" />
+    <h3>Tasks</h3>
+    <table>
+        <tr>
+            <th scope="col" rowspan="@rowSpan">Task ID</th>
+            <th scope="col" rowspan="@rowSpan">State</th>
+            <th scope="col" rowspan="@rowSpan">Task Server</th>
+            <th scope="col" rowspan="@rowSpan">Attempt</th>
+            <th scope="col" rowspan="@rowSpan">Start time</th>
+            <th scope="col" rowspan="@rowSpan">End time</th>
+            <th scope="col" rowspan="@rowSpan">Duration</th>
+            <th scope="col" colspan="@colSpan">Progress</th>
+            <th scope="col" rowspan="@rowSpan">Status</th>
+            <th scope="col" rowspan="@rowSpan">Log file</th>
+        </tr>
+        @if (Model.ComplexProgressTemplate != null)
+        {
+            <tr>
+                <th scope="col">Overall</th>
+                <th scope="col">Base</th>
+                @foreach (var value in Model.ComplexProgressTemplate.AdditionalProgressValues)
+                {
+                    <th scope="col">@Model.Job.GetFriendlyNameForAdditionalProgressCounter(value.SourceName)</th>
+                }
+            </tr>
+        }
+        @foreach (var task in Model.Tasks)
+        {
+            <tr id="TaskStatusRow_@task.TaskId">
+                <td>@task.TaskId</td>
+                <td>@task.State</td>
+                <td>@task.TaskServer</td>
+                <td>@task.Attempts</td>
+                @if (task.State >= TaskState.Running && task.TaskServer != null)
+                {
+                    var finished = task.State == TaskState.Finished || task.State == TaskState.Error;
+                    var duration = (finished ? task.EndTime : DateTime.UtcNow) - task.StartTime;
+                    <td>@task.StartTime.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)</td>
+                    <td>
+                        @if (finished)
+                        {
+                            @task.EndTime.ToString(DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern)
+                        }
+                    </td>
+                    <td>@duration.ToString(@"hh\:mm\:ss\.ff") (@(duration.TotalSeconds.ToString("0.00"))s)</td>
+                    @if (Model.ComplexProgressTemplate != null)
+                    {
+                        if (task.TaskProgress == null)
+                        {
+                            <td>@task.Progress.ToString("P1")</td>
+                            <td>@task.Progress.ToString("P1")</td>
+                        }
+                        else
+                        {
+                            <td>@task.TaskProgress.OverallProgress.ToString("P1")</td>
+                            <td>@task.TaskProgress.Progress.ToString("P1")</td>
+                        }
+                        if (task.TaskProgress == null || task.TaskProgress.AdditionalProgressValues == null)
+                        {
+                            string value = ((task.TaskProgress == null || task.TaskProgress.OverallProgress < 1.0f) ? 0.0f : 1.0f).ToString("P1");
+                            for( int x = 0; x < Model.ComplexProgressTemplate.AdditionalProgressValues.Count; ++x )
+                            {
+                                <td>@value</td>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var value in task.TaskProgress.AdditionalProgressValues)
+                            {
+                                <td>@value.Progress.ToString("P1")</td>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <td>@task.Progress.ToString("P1")</td>
+                    }
+                    <td><pre>@task.TaskProgress?.StatusMessage</pre></td>
+                    <td>
+                        <a asp-page="LogFile" asp-route-taskServer="@task.TaskServer.HostName" asp-route-port="@task.TaskServer.Port" asp-route-jobId="@Model.Job.JobId" asp-route-taskId="@task.TaskId" asp-route-attempt="@task.Attempts" asp-route-maxSize="100KB">Last 100KB</a>,
+                        <a asp-page="LogFile" asp-route-taskServer="@task.TaskServer.HostName" asp-route-port="@task.TaskServer.Port" asp-route-jobId="@Model.Job.JobId" asp-route-taskId="@task.TaskId" asp-route-attempt="@task.Attempts" asp-route-maxSize="0">All</a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                }
+            </tr>
+        }
+    </table>
+}
+
