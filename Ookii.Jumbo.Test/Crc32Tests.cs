@@ -45,7 +45,7 @@ namespace Ookii.Jumbo.Test
         {
             var native = TimeCrc(true);
             var managed = TimeCrc(false);
-            Assert.Less(native.TotalSeconds, managed.TotalSeconds / 2);
+            Assert.Less(native.TotalSeconds, managed.TotalSeconds);
         }
 
         private TimeSpan TimeCrc(bool useNativeCode)
