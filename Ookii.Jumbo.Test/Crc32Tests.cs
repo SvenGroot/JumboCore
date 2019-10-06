@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -37,6 +38,32 @@ namespace Ookii.Jumbo.Test
             Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
             if( !Crc32.UseNativeCode )
                 Assert.Inconclusive("The native code CRC32 algorithm could not be used.");
+        }
+
+        [Test]
+        public void TestUpdateSpeed()
+        {
+            var native = TimeCrc(true);
+            var managed = TimeCrc(false);
+            Assert.Less(native.TotalSeconds, managed.TotalSeconds / 2);
+        }
+
+        private TimeSpan TimeCrc(bool useNativeCode)
+        {
+            Crc32.UseNativeCode = useNativeCode;
+            Crc32 target = new Crc32();
+            Stopwatch sw = Stopwatch.StartNew();
+            for (int x = 0; x < 1000000; ++x)
+            {
+                target.Update(_testData);
+            }
+
+            sw.Stop();
+            TestContext.Progress.WriteLine("Crc: {0:x}, elapsed: {1}", target.Value, sw.Elapsed);
+            TestContext.Progress.WriteLine(sw.Elapsed);
+            if (useNativeCode && !Crc32.UseNativeCode)
+                Assert.Inconclusive("The native code CRC32 algorithm could not be used.");
+            return sw.Elapsed;
         }
 
         [Test]
