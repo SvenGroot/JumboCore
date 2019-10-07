@@ -18,7 +18,6 @@ namespace Ookii.Jumbo
     /// </summary>
     public static class RuntimeEnvironment
     {
-        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RuntimeEnvironment));
         private static string _operatingSystemDescription;
         private static string _processorName;
 
