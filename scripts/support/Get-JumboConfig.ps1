@@ -35,4 +35,4 @@ $JUMBO_REMOTE_LOCALHOST=$false
 
 # Set this to $false to use WinRM remoting instead of SSH.
 # See https://docs.microsoft.com/en-us/powershell/scripting/learn/remoting/ssh-remoting-in-powershell-core?view=powershell-6
-$JUBMO_REMOTE_SSH=$true
+$JUMBO_REMOTE_SSH=$true

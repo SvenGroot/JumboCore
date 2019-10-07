@@ -40,9 +40,15 @@ if ($Action -eq "Start")
     }
 }
 
-$hosts = Get-Content (Join-Path $PSScriptRoot "hosts")
-foreach ($hostName in $hosts) {
-    Invoke-Server $hostName $SlaveServer
+$deployDir = (Join-Path (Split-Path $PSScriptRoot) "deploy")
+$groups = Get-Content (Join-Path $deployDir "groups")
+foreach ($group in $groups) {
+    if ($group -ne "masters") {
+        $hosts = Get-Content (Join-Path $deployDir $group)
+        foreach ($hostName in $hosts) {
+            Invoke-Server $hostName $SlaveServer
+        }
+    }
 }
 
 if ($Action -eq "Stop")
