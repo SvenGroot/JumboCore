@@ -11,7 +11,7 @@ namespace Ookii.Jumbo.Jet.Channels
     {
         private readonly Stream _baseStream;
         private readonly bool _ownsBaseStream;
-        private readonly Crc32 _checksum;
+        private readonly Crc32Checksum _checksum;
         private long _bytesWritten;
         private bool _disposed;
 
@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if( enableChecksum )
             {
-                _checksum = new Crc32();
+                _checksum = new Crc32Checksum();
             }
         }
 

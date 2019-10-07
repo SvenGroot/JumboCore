@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Dfs
 
         private static readonly bool _computeChecksums = DfsConfiguration.GetConfiguration().Checksum.IsEnabled;
         private readonly byte[] _data = new byte[PacketSize];
-        private readonly Crc32 _checksum = new Crc32();
+        private readonly Crc32Checksum _checksum = new Crc32Checksum();
         private long _checksumValue;
 
         /// <summary>

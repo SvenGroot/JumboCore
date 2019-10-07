@@ -9,32 +9,9 @@ namespace Ookii.Jumbo
     /// <summary>
     /// Computes the CRC32 checksum for the input data.
     /// </summary>
-    public sealed class Crc32
+    public sealed class Crc32Checksum
     {
-        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Crc32));
-
-        private static bool _useNativeCode = true;
         private uint _crc;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to use the native CRC32 algorithm, if possible.
-        /// </summary>
-        /// <value>
-        /// 	<see langword="true"/> to use the native CRC32 algorithm; otherwise, <see langword="false"/>.
-        /// 	The default value is <see langword="true"/>.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   If the <see cref="UseNativeCode"/> property is set to <see langword="true"/> and the Jumbo native
-        ///   library cannot be loaded, the <see cref="Update(byte[],int,int)"/> method will automatically set it to
-        ///   <see langword="false"/>.
-        /// </para>
-        /// </remarks>
-        public static bool UseNativeCode
-        {
-            get { return _useNativeCode; }
-            set { _useNativeCode = value; }
-        }
 
         /// <summary>
         /// Gets or sets the the current CRC32 checksum computed so far.
@@ -98,22 +75,7 @@ namespace Ookii.Jumbo
             if( offset + count > buffer.Length )
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
-            if( _useNativeCode )
-            {
-                try
-                {
-                    _crc = NativeMethods.JumboCrc32(buffer, (uint)offset, (uint)count, _crc);
-                    return;
-                }
-                catch( DllNotFoundException ex )
-                {
-                    _log.WarnFormat("Unable to load Jumbo native library: {0}.", ex.Message);
-                    _useNativeCode = false; // Don't try to load the library again
-                }
-            }
-
-            // Native code failed if we got here
-            _crc = Crc32Managed.Calculate(buffer, offset, count, _crc);
+            _crc = Force.Crc32.Crc32Algorithm.Append(_crc, buffer, offset, count);
         }
     }
 }

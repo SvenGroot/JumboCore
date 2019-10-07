@@ -13,7 +13,7 @@ namespace NameServerApplication
     class ChecksumOutputStream : Stream
     {
         private readonly Stream _baseStream;
-        private readonly Crc32 _crc = new Crc32();
+        private readonly Crc32Checksum _crc = new Crc32Checksum();
         private readonly string _crcFileName;
         private readonly byte[] _crcBytes = new byte[4];
 
@@ -115,7 +115,7 @@ namespace NameServerApplication
 
             using( FileStream stream = File.OpenRead(file) )
             {
-                Crc32 crc = new Crc32();
+                Crc32Checksum crc = new Crc32Checksum();
                 byte[] buffer = new byte[4096];
                 int bytesRead;
                 while( (bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0 )

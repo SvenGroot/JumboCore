@@ -23,85 +23,28 @@ namespace Ookii.Jumbo.Test
         [Test]
         public void TestConstructor()
         {
-            Crc32 target = new Crc32();
+            Crc32Checksum target = new Crc32Checksum();
             Assert.AreEqual(0, target.Value);
             Assert.AreEqual(0, target.ValueUInt32);
         }
 
         [Test]
-        public void TestUpdateNative()
-        {
-            Crc32.UseNativeCode = true;
-            Crc32 target = new Crc32();
-            target.Update(_testData);
-            Assert.AreEqual(_expectedChecksum, target.Value);
-            Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
-            if( !Crc32.UseNativeCode )
-                Assert.Inconclusive("The native code CRC32 algorithm could not be used.");
-        }
-
-        [Test]
-        public void TestUpdateSpeed()
-        {
-            var native = TimeCrc(true);
-            var managed = TimeCrc(false);
-            Assert.Less(native.TotalSeconds, managed.TotalSeconds);
-        }
-
-        private TimeSpan TimeCrc(bool useNativeCode)
-        {
-            Crc32.UseNativeCode = useNativeCode;
-            Crc32 target = new Crc32();
-            Stopwatch sw = Stopwatch.StartNew();
-            for (int x = 0; x < 1000000; ++x)
-            {
-                target.Update(_testData);
-            }
-
-            sw.Stop();
-            TestContext.Progress.WriteLine("Crc: {0:x}, elapsed: {1}", target.Value, sw.Elapsed);
-            TestContext.Progress.WriteLine(sw.Elapsed);
-            if (useNativeCode && !Crc32.UseNativeCode)
-                Assert.Inconclusive("The native code CRC32 algorithm could not be used.");
-            return sw.Elapsed;
-        }
-
-        [Test]
         public void TestUpdateManaged()
         {
-            Crc32.UseNativeCode = false;
-            Crc32 target = new Crc32();
+            Crc32Checksum target = new Crc32Checksum();
             target.Update(_testData);
             Assert.AreEqual(_expectedChecksum, target.Value);
             Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
-
-            Crc32.UseNativeCode = true; // Set it back so DFS tests will use the native version if possible.
-        }
-
-        [Test]
-        public void TestUpdatePartialNative()
-        {
-            Crc32.UseNativeCode = true;
-            Crc32 target = new Crc32();
-            target.Update(_testData, 0, 500);
-            target.Update(_testData, 500, _testData.Length - 500);
-            Assert.AreEqual(_expectedChecksum, target.Value);
-            Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
-            if( !Crc32.UseNativeCode )
-                Assert.Inconclusive("The native code CRC32 algorithm could not be used.");
         }
 
         [Test]
         public void TestUpdatePartialManaged()
         {
-            Crc32.UseNativeCode = false;
-            Crc32 target = new Crc32();
+            Crc32Checksum target = new Crc32Checksum();
             target.Update(_testData, 0, 500);
             target.Update(_testData, 500, _testData.Length - 500);
             Assert.AreEqual(_expectedChecksum, target.Value);
             Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
-
-            Crc32.UseNativeCode = true; // Set it back so DFS tests will use the native version if possible.
         }    
     }
 }

@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private readonly Stream _baseStream;
         private readonly bool _ownsBaseStream;
-        private Crc32 _checksum;
+        private Crc32Checksum _checksum;
         private readonly long _length;
         private readonly string _fileName;
         private readonly bool _deleteFile;
@@ -43,7 +43,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 bool enableChecksum = baseStream.ReadByte() == 1;
                 if( enableChecksum )
                 {
-                    _checksum = new Crc32();
+                    _checksum = new Crc32Checksum();
                     _length -= sizeof(uint);
                     if( _length < 0 )
                         throw new IOException("Invalid checksum stream.");

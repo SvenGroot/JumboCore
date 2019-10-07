@@ -119,7 +119,7 @@ namespace Ookii.Jumbo.Jet.Samples
         [AllowRecordReuse]
         public static void ValidateRecords(RecordReader<GenSortRecord> input, RecordWriter<ValSortRecord> output, TaskContext context)
         {
-            Crc32 crc = new Crc32();
+            Crc32Checksum crc = new Crc32Checksum();
             long recordCrc;
             UInt128 checksum = UInt128.Zero;
             UInt128 duplicates = UInt128.Zero;

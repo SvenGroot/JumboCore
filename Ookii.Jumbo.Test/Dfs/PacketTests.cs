@@ -235,7 +235,7 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             byte[] data = new byte[Packet.PacketSize]; // Intentially not size so the size paremeter for the constructor can be tested.
             _rnd.NextBytes(data);
-            Crc32 checksum2 = new Crc32();
+            Crc32Checksum checksum2 = new Crc32Checksum();
             checksum2.Update(data, 0, size);
             checksum = checksum2.Value;
             return data;
