@@ -43,21 +43,10 @@ namespace Ookii.Jumbo.Jet
         /// <see langword="true"/> if the server should listen on both IPv6 and IPv4; <see langword="false"/>
         /// if the server should listen only on IPv6 if it's available, and otherwise on IPv4.
         /// </value>
-        /// <remarks>
-        /// <para>
-        ///   On Linux, if a socket binds to an IPv6 port it automatically also binds to an associated IPv4 port. Therefore,
-        ///   this value should be <see langword="false"/> (an exception will be thrown if it's not).
-        /// </para>
-        /// <para>
-        ///   If this property is unspecified, it will default to <see langword="true"/> on Windows and <see langword="false"/> on Unix
-        ///   (which is correct for Linux, but may not be appropriate for other Unix operating systems).
-        /// </para>
-        /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pv"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Pv"),
-         ConfigurationProperty("listenIPv4AndIPv6", DefaultValue = null, IsRequired = false, IsKey = false)]
-        public bool? ListenIPv4AndIPv6
+        [ConfigurationProperty("listenIPv4AndIPv6", DefaultValue = true, IsRequired = false, IsKey = false)]
+        public bool ListenIPv4AndIPv6
         {
-            get { return (bool?)this["listenIPv4AndIPv6"]; }
+            get { return (bool)this["listenIPv4AndIPv6"]; }
             set { this["listenIPv4AndIPv6"] = value; }
         }
 

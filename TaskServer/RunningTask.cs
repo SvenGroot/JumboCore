@@ -63,7 +63,7 @@ namespace TaskServerApplication
 
         public void Run(int createProcessDelay)
         {
-            if( Debugger.IsAttached || _taskServer.Configuration.TaskServer.RunTaskHostInAppDomain )
+            if( Debugger.IsAttached || _taskServer.Configuration.TaskServer.RunTaskHostInThread )
             {
                 RunTaskAppDomain();
                 LastProgressTimeUtc = DateTime.UtcNow;

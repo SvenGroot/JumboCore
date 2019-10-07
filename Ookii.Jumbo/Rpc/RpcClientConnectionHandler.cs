@@ -13,7 +13,6 @@ namespace Ookii.Jumbo.Rpc
 {
     sealed class RpcClientConnectionHandler : IDisposable
     {
-        private static readonly MethodBase _fixExceptionMethod = GetFixExceptionMethod();
         private readonly TcpClient _client;
         private readonly RpcStream _stream;
         private readonly BinaryFormatter _formatter = new BinaryFormatter();
@@ -55,11 +54,7 @@ namespace Ookii.Jumbo.Rpc
                 return result;
             else
             {
-                // HACK: Need to depend on internal method to preserve stack trace when rethrowing the exception. Bad but there's no other way.
-                if( _fixExceptionMethod == null )
-                    throw (Exception)result;
-                else
-                    throw (Exception)_fixExceptionMethod.Invoke(result, null);
+                throw (Exception)result;
             }
         }
 
@@ -81,24 +76,6 @@ namespace Ookii.Jumbo.Rpc
                 throw new ArgumentException("String is too long.");
             stream.WriteByte((byte)buffer.Length);
             stream.Write(buffer, 0, buffer.Length);
-        }
-
-        private static MethodBase GetFixExceptionMethod()
-        {
-            string methodName;
-            switch( RuntimeEnvironment.RuntimeType )
-            {
-            case RuntimeEnvironmentType.DotNet:
-                methodName = "PrepForRemoting";
-                break;
-            case RuntimeEnvironmentType.Mono:
-                methodName = "FixRemotingException";
-                break;
-            default:
-                return null;
-            }
-            return typeof(Exception).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-
         }
 
         #region IDisposable Members

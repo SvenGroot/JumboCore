@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Rpc
         /// <param name="port">The port on which to listen.</param>
         /// <param name="listen4And6">When IPv6 is available, <see langword="true"/> to listen on IPv4 as well as 
         /// IPv6; <see langword="false"/> to listen on IPv6 only. When IPv6 is not available, this parameter has no effect.</param>
-        public static void RegisterServerChannels(int port, bool? listen4And6)
+        public static void RegisterServerChannels(int port, bool listen4And6)
         {
             if( _serverChannels == null )
                 _serverChannels = new Dictionary<int, RpcServer>();

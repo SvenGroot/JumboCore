@@ -323,7 +323,7 @@ namespace DataServerApplication
 
         private void GetDiskUsage(StatusHeartbeatData data)
         {
-            DriveSpaceInfo info = new DriveSpaceInfo(_blockStorageDirectory);
+            DriveInfo info = new DriveInfo(_blockStorageDirectory);
             data.DiskSpaceFree = info.AvailableFreeSpace;
             data.DiskSpaceTotal = info.TotalSize;
             lock( _blocks )

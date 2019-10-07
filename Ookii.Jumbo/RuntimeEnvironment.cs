@@ -19,23 +19,8 @@ namespace Ookii.Jumbo
     public static class RuntimeEnvironment
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RuntimeEnvironment));
-        private static readonly Type _monoRuntime = typeof(object).Assembly.GetType("Mono.Runtime");
         private static string _operatingSystemDescription;
         private static string _processorName;
-
-        /// <summary>
-        /// Gets a value that indicates what runtime the application is running on.
-        /// </summary>
-        /// <value>
-        /// One of the <see cref="RuntimeEnvironmentType"/> values indicating the type of the Common Language Runtime (.Net or Mono).
-        /// </value>
-        public static RuntimeEnvironmentType RuntimeType
-        {
-            get
-            {
-                return _monoRuntime == null ? RuntimeEnvironmentType.DotNet : RuntimeEnvironmentType.Mono;
-            }
-        }
 
         /// <summary>
         /// Gets a description of the runtime environment, including the version number.
@@ -155,38 +140,6 @@ namespace Ookii.Jumbo
             }
         }
 
-
-        /// <summary>
-        /// Modifies a <see cref="ProcessStartInfo"/> to use the runtime environment.
-        /// </summary>
-        /// <param name="startInfo">The <see cref="ProcessStartInfo"/>.</param>
-        /// <param name="profileOutputFile">The file to write the profiler output to. Specify <see langword="null"/> to disable profiling.</param>
-        /// <param name="profileOptions">Additional options to pass to the profiler.</param>
-        /// <remarks>
-        /// <para>
-        ///   When running under Mono, this function will modify the specified <see cref="ProcessStartInfo"/> to use
-        ///   Mono to launch the application.
-        /// </para>
-        /// <para>
-        ///   Profiling is enabled when <paramref name="profileOutputFile"/> is not <see langword="null"/>. Profiling is supported
-        ///   only on Mono.
-        /// </para>
-        /// </remarks>
-        public static void ModifyProcessStartInfo(ProcessStartInfo startInfo, string profileOutputFile, string profileOptions)
-        {
-            if( startInfo == null )
-                throw new ArgumentNullException(nameof(startInfo));
-            if( RuntimeType == RuntimeEnvironmentType.Mono && profileOutputFile != null )
-            {
-                startInfo.Arguments = startInfo.FileName + " " + startInfo.Arguments;
-                if( !string.IsNullOrEmpty(profileOptions) )
-                    profileOptions += ",";
-
-                startInfo.Arguments = string.Format(System.Globalization.CultureInfo.InvariantCulture, "--profile=default:{0}file={1} {2}", profileOptions, profileOutputFile, startInfo.Arguments);
-                startInfo.FileName = "mono";
-            }
-        }
-
         /// <summary>
         /// Writes environemnt information to the specified log.
         /// </summary>
@@ -212,48 +165,6 @@ namespace Ookii.Jumbo
             }
         }
 
-        /// <summary>
-        /// Sets a file's permissions to indicate it's executable.
-        /// </summary>
-        /// <param name="fileName">The file whose permissions to change.</param>
-        /// <remarks>
-        /// <para>
-        ///   On Unix platforms, this method will change the file permissions of the specified file
-        ///   to include the user execute bit.
-        /// </para>
-        /// <para>
-        ///   On Windows, this method does nothing.
-        /// </para>
-        /// </remarks>
-        public static void MarkFileAsExecutable(string fileName)
-        {
-            if( fileName == null )
-                throw new ArgumentNullException(nameof(fileName));
-
-            if( RuntimeType == RuntimeEnvironmentType.Mono && Environment.OSVersion.Platform == PlatformID.Unix )
-            {
-                const string unixFileInfoTypeName = "Mono.Unix.UnixFileInfo, Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756";
-
-                Type unixFileInfoType = Type.GetType(unixFileInfoTypeName);
-                PropertyInfo fileAccessPermissionsProperty = unixFileInfoType.GetProperty("FileAccessPermissions");
-                object unixFile = Activator.CreateInstance(unixFileInfoType, fileName);
-
-                object mode = fileAccessPermissionsProperty.GetValue(unixFile, null);
-                Type fileAccessPermissionsType = mode.GetType();
-                int oldMode = Convert.ToInt32(mode, System.Globalization.CultureInfo.InvariantCulture);
-                int executeBit = Convert.ToInt32(fileAccessPermissionsType.GetField("UserExecute").GetValue(null), System.Globalization.CultureInfo.InvariantCulture);
-                int newMode = oldMode | executeBit;
-
-                if( newMode != oldMode )
-                {
-                    object newModeValue = Enum.ToObject(fileAccessPermissionsType, newMode);
-                    _log.DebugFormat("Changing file permissions for file '{0}' from {1} to {2}.", fileName, mode, newModeValue);
-
-                    fileAccessPermissionsProperty.SetValue(unixFile, newModeValue, null);
-                }
-            }
-        }
-
         private static string GetOSDescriptionWindows()
         {
             // Use WMI to get the OS name.
@@ -272,25 +183,29 @@ namespace Ookii.Jumbo
 
         private static string GetOSDescriptionUnix()
         {
-            return null;
-            //try
-            //{
-            //    // This will only work on Linux, but that's ok.
-            //    ProcessStartInfo psi = new ProcessStartInfo("lsb_release", "-d -s")
-            //    {
-            //        UseShellExecute = false,
-            //        RedirectStandardOutput = true
-            //    };
+            try
+            {
+                const string lsbReleasePath = "/etc/lsb-release";
+                const string descriptionPrefix = "DISTRIB_DESCRIPTION=";
+                if (File.Exists(lsbReleasePath))
+                {
+                    foreach (var line in File.ReadLines(lsbReleasePath))
+                    {
+                        if (line.StartsWith(descriptionPrefix, StringComparison.Ordinal))
+                        {
+                            return line.Substring(descriptionPrefix.Length).Trim('"');
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
 
-            //    using( Process p = Process.Start(psi) )
-            //    {
-            //        return p.StandardOutput.ReadToEnd().Trim();
-            //    }
-            //}
-            //catch( Win32Exception )
-            //{
-            //    return null;
-            //}
+            return null;
         }
 
         private static string GetProcessorNameWindows()

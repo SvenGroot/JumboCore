@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Test.Dfs
             NameServerConfigurationElement target = new NameServerConfigurationElement();
             Assert.AreEqual(67108864, (int)target.BlockSize);
             Assert.AreEqual(1, target.ReplicationFactor);
-            Assert.IsFalse(target.ListenIPv4AndIPv6.HasValue);
+            Assert.IsTrue(target.ListenIPv4AndIPv6);
             Assert.AreEqual(string.Empty, target.ImageDirectory);
         }
 
