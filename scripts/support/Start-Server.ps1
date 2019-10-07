@@ -18,8 +18,9 @@ $arguments = @($binary)
 $outLog = Join-Path $JUMBO_LOG "out-$Server-$hostname.log"
 $errLog = Join-Path $JUMBO_LOG "err-$Server-$hostname.log"
 
-if ($Server -eq "DfsWeb") {
-    $arguments += "--urls=http://*:$JUMBO_DFSWEB_PORT"
+switch ($Server) {
+    "DfsWeb" { $arguments += "--urls=http://*:$JUMBO_DFSWEB_PORT" }
+    "JetWeb" { $arguments += "--urls=http://*:$JUMBO_JETWEB_PORT" }
 }
 
 "Starting $Server"
