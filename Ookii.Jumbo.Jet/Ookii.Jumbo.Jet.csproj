@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.xml</DocumentationFile>
+    <DocumentationFile>Ookii.Jumbo.Jet.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.xml</DocumentationFile>
+    <DocumentationFile>Ookii.Jumbo.Jet.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
