@@ -5,6 +5,14 @@
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Lokad.ILPack" Version="0.1.3" />
     <PackageReference Include="Ookii.CommandLine" Version="2.3.0" />

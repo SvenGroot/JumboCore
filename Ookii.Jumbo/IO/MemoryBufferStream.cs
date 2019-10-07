@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
         /// </summary>
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
         public override void Flush()
         {
         }
@@ -56,9 +56,9 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <returns>A long value representing the length of the stream in bytes.</returns>
         ///   
-        /// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
+        /// <exception cref="System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
         ///   
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override long Length
         {
             get { return _end - _offset; }
@@ -69,11 +69,11 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <returns>The current position within the stream.</returns>
         ///   
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
         ///   
-        /// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
+        /// <exception cref="System.NotSupportedException">The stream does not support seeking. </exception>
         ///   
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override long Position
         {
             get
@@ -135,7 +135,7 @@ namespace Ookii.Jumbo.IO
         /// Sets the position within the current stream.
         /// </summary>
         /// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
-        /// <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
+        /// <param name="origin">A value of type <see cref="System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
         /// <returns>
         /// The new position within the current stream.
         /// </returns>

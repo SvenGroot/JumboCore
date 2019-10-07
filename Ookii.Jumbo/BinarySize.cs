@@ -485,7 +485,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Byte"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -512,7 +511,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.SByte"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -541,7 +539,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int16"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -568,7 +565,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt16"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -597,7 +593,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int32"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -624,7 +619,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt32"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -653,7 +647,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int64"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -678,7 +671,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.UInt64"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -707,7 +699,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Decimal"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -734,7 +725,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Single"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
@@ -761,7 +751,6 @@ namespace Ookii.Jumbo
         /// <summary>
         /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Double"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>

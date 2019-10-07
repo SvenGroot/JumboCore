@@ -306,6 +306,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="jobDirectory">The job directory.</param>
         /// <param name="dfsJobDirectory">The DFS job directory.</param>
         /// <param name="taskAttemptId">The task attempt id.</param>
+        /// <param name="noLogConfig"><see langword="true" /> to initialize logging configuration; otherwise, <see langword="false" />.</param>
         /// <remarks>
         /// <para>
         ///   This method assumes that the current AppDomain is used only for running the task, as it will override the global logging configuration and register the custom assembly resolver.

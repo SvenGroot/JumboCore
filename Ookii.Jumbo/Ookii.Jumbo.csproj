@@ -7,10 +7,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo\Ookii.Jumbo.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo\Ookii.Jumbo.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

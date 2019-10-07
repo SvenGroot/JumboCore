@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.IO
     ///   If the stream implements <see cref="IRecordInputStream"/> with <see cref="RecordStreamOptions.DoNotCrossBoundary"/> set, 
     ///   and <see cref="Offset"/> + <see cref="Size"/> is on a structural boundary,
     ///   <see cref="IRecordInputStream.StopReadingAtPosition"/> will be set to <see cref="Offset"/> + <see cref="Size"/>. In
-    ///   this situation, <see cref="System.IO.Stream.Read"/> may return 0 before <see cref="Size"/> bytes are read. A
+    ///   this situation, <see cref="System.IO.Stream.Read(Byte[], int, int)"/> may return 0 before <see cref="Size"/> bytes are read. A
     ///   deriving class should check this and stop reading at that point.
     /// </para>
     /// </remarks>

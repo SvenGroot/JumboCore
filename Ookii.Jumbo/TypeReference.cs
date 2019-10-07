@@ -203,6 +203,11 @@ namespace Ookii.Jumbo
 
         #region IEquatable Members
 
+        /// <summary>
+        /// Returns a value indicating whether the this instance is equal to the specified instance.
+        /// </summary>
+        /// <param name="other">The instance to compare to.</param>
+        /// <returns><see langword="true" /> if the instances are equal; otherwise, <see langword="false" />.</returns>
         public bool Equals([AllowNull] TypeReference other)
         {
             return other != null && ReferencedType == other.ReferencedType;

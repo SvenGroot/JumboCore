@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.IO
         /// Gets or sets the position in the stream after which no data will be read.
         /// </summary>
         /// <value>
-        /// 	The position after which <see cref="System.IO.Stream.Read"/> method will not return any data. The default value is the length of the stream.
+        /// 	The position after which <see cref="System.IO.Stream.Read(Byte[], int, int)"/> method will not return any data. The default value is the length of the stream.
         /// </value>
         /// <remarks>
         /// <para>
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.IO
         /// </value>
         /// <remarks>
         /// <para>
-        ///   If this property is <see langword="true"/> it means the next call to <see cref="System.IO.Stream.Read"/> will return 0.
+        ///   If this property is <see langword="true"/> it means the next call to <see cref="System.IO.Stream.Read(Byte[], int, int)"/> will return 0.
         /// </para>
         /// </remarks>
         bool IsStopped { get; }

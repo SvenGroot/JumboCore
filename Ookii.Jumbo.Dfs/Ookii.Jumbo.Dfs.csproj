@@ -5,6 +5,14 @@
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Sven\Documents\Code\JumboCore\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
   </ItemGroup>

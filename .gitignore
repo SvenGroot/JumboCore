@@ -5,6 +5,11 @@ published/
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Xml documentation files.
+Ookii.Jumbo/Ookii.Jumbo.xml
+Ookii.Jumbo.Dfs/Ookii.Jumbo.Dfs.xml
+Ookii.Jumbo.Jet/Ookii.Jumbo.Jet.xml
+
 # User-specific files
 *.rsuser
 *.suo
