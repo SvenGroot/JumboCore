@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if( assembly == null )
                 throw new ArgumentNullException(nameof(assembly));
 
-            if( !(assembly.GlobalAssemblyCache || _dependencyAssemblies.Contains(assembly.FullName)) &&
+            if( !_dependencyAssemblies.Contains(assembly.FullName) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)) )
             {
                 foreach( AssemblyName reference in assembly.GetReferencedAssemblies() )

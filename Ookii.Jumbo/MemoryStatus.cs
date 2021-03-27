@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using System.Management;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace Ookii.Jumbo
 {
@@ -104,9 +105,9 @@ namespace Ookii.Jumbo
         /// </summary>
         public void Refresh()
         {
-            if( Environment.OSVersion.Platform == PlatformID.Win32NT )
+            if( OperatingSystem.IsWindows() )
                 RefreshWindows();
-            else if( Environment.OSVersion.Platform == PlatformID.Unix )
+            else if( OperatingSystem.IsLinux() )
                 RefreshUnix();
         }
 
@@ -124,6 +125,7 @@ namespace Ookii.Jumbo
                 return "No memory information.";
         }
 
+        [SupportedOSPlatform("windows")]
         private void RefreshWindows()
         {
             NativeMethods.PERFORMANCE_INFORMATION performanceInfo;

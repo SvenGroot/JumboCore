@@ -443,7 +443,7 @@ namespace Ookii.Jumbo.IO
             MethodInfo[] methods = typeof(BinaryReader).GetMethods(BindingFlags.Instance | BindingFlags.Public);
             foreach( MethodInfo method in methods )
             {
-                if( method.Name.StartsWith("Read", StringComparison.Ordinal) && method.Name.Length > 4 && method.GetParameters().Length == 0 )
+                if( method.Name.StartsWith("Read", StringComparison.Ordinal) && method.Name.Length > 4 && method.GetParameters().Length == 0 && !method.Name.StartsWith("Read7Bit", StringComparison.Ordinal) )
                 {
                     result.Add(method.ReturnType, method);
                 }

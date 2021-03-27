@@ -7,6 +7,7 @@ using System.IO;
 using System.Management;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Runtime.Versioning;
 
 namespace Ookii.Jumbo
 {
@@ -86,19 +87,15 @@ namespace Ookii.Jumbo
         /// </remarks>
         public void Refresh()
         {
-            switch( Environment.OSVersion.Platform )
-            {
-            case PlatformID.Win32NT:
+            if (OperatingSystem.IsWindows())
                 RefreshWindows();
-                break;
-            case PlatformID.Unix:
+            else if (OperatingSystem.IsLinux())
                 RefreshUnix();
-                break;
-            }
 
             Recalculate();
         }
 
+        [SupportedOSPlatform("windows")]
         private void RefreshWindows()
         {
             SelectQuery query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", null, new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });

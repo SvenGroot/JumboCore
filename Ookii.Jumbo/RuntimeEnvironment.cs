@@ -10,6 +10,7 @@ using System.Management;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace Ookii.Jumbo
 {
@@ -49,15 +50,10 @@ namespace Ookii.Jumbo
                 if( _operatingSystemDescription == null )
                 {
                     string description = null;
-                    switch( Environment.OSVersion.Platform )
-                    {
-                    case PlatformID.Win32NT:
+                    if( OperatingSystem.IsWindows() )
                         description = GetOSDescriptionWindows();
-                        break;
-                    case PlatformID.Unix:
+                    else if( OperatingSystem.IsLinux() )
                         description = GetOSDescriptionUnix();
-                        break;
-                    }
 
                     if( description == null )
                         _operatingSystemDescription = Environment.OSVersion.ToString();
@@ -81,15 +77,11 @@ namespace Ookii.Jumbo
             {
                 if( _processorName == null )
                 {
-                    switch( Environment.OSVersion.Platform )
-                    {
-                    case PlatformID.Win32NT:
+                    if (OperatingSystem.IsWindows())
                         _processorName = GetProcessorNameWindows();
-                        break;
-                    case PlatformID.Unix:
+                    else if (OperatingSystem.IsLinux())
                         _processorName = GetProcessorNameUnix();
-                        break;
-                    }
+
                     if( _processorName == null )
                         _processorName = "unknown";
                 }
@@ -164,6 +156,7 @@ namespace Ookii.Jumbo
             }
         }
 
+        [SupportedOSPlatform("windows")]
         private static string GetOSDescriptionWindows()
         {
             // Use WMI to get the OS name.
@@ -207,6 +200,7 @@ namespace Ookii.Jumbo
             return null;
         }
 
+        [SupportedOSPlatform("windows")]
         private static string GetProcessorNameWindows()
         {
             SelectQuery query = new SelectQuery("Win32_Processor", null, new[] { "Name" });
