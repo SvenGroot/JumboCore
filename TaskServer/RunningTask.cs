@@ -17,7 +17,6 @@ namespace TaskServerApplication
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RunningTask));
 
         private Process _process;
-        private Thread _appDomainThread; // only used when running the task in an appdomain rather than a different process.
         private TaskServer _taskServer;
         private const int _processLaunchRetryCount = 10;
         private bool _disposed;
@@ -63,56 +62,47 @@ namespace TaskServerApplication
 
         public void Run(int createProcessDelay)
         {
-            if( Debugger.IsAttached || _taskServer.Configuration.TaskServer.RunTaskHostInThread )
+            _log.DebugFormat("Launching new process for task {0}.", FullTaskAttemptId);
+            int retriesLeft = _processLaunchRetryCount;
+            bool success = false;
+            do
             {
-                RunTaskAppDomain();
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format(CultureInfo.InvariantCulture, "TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
+                    startInfo.UseShellExecute = false;
+                    startInfo.CreateNoWindow = true;
+                    //string profileOutputFile = null;
+                    //RuntimeEnvironment.ModifyProcessStartInfo(startInfo, profileOutputFile, null);
+                    startInfo.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    _process = new Process();
+                    _process.StartInfo = startInfo;
+                    _process.EnableRaisingEvents = true;
+                    _process.Exited += new EventHandler(_process_Exited);
+                    _process.Start();
+                    _log.DebugFormat("Host process for task {0} has started, pid = {1}.", FullTaskAttemptId, _process.Id);
+                    if (createProcessDelay > 0)
+                    {
+                        _log.DebugFormat("Sleeping for {0}ms", createProcessDelay);
+                        Thread.Sleep(createProcessDelay);
+                    }
+                    success = true;
+                }
+                catch (Win32Exception ex)
+                {
+                    --retriesLeft;
+                    _log.Error(string.Format(CultureInfo.InvariantCulture, "Could not create host process for task {0}, {1} retries left.", FullTaskAttemptId, retriesLeft), ex);
+                    Thread.Sleep(1000);
+                }
+            } while (!success && retriesLeft > 0);
+
+            if (success)
+            {
                 LastProgressTimeUtc = DateTime.UtcNow;
                 State = TaskAttemptStatus.Running;
             }
             else
-            {
-                _log.DebugFormat("Launching new process for task {0}.", FullTaskAttemptId);
-                int retriesLeft = _processLaunchRetryCount;
-                bool success = false;
-                do
-                {
-                    try
-                    {
-                        ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format(CultureInfo.InvariantCulture, "TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
-                        startInfo.UseShellExecute = false;
-                        startInfo.CreateNoWindow = true;
-                        //string profileOutputFile = null;
-                        //RuntimeEnvironment.ModifyProcessStartInfo(startInfo, profileOutputFile, null);
-                        startInfo.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        _process = new Process();
-                        _process.StartInfo = startInfo;
-                        _process.EnableRaisingEvents = true;
-                        _process.Exited += new EventHandler(_process_Exited);
-                        _process.Start();
-                        _log.DebugFormat("Host process for task {0} has started, pid = {1}.", FullTaskAttemptId, _process.Id);
-                        if( createProcessDelay > 0 )
-                        {
-                            _log.DebugFormat("Sleeping for {0}ms", createProcessDelay);
-                            Thread.Sleep(createProcessDelay);
-                        }
-                        success = true;
-                    }
-                    catch( Win32Exception ex )
-                    {
-                        --retriesLeft;
-                        _log.Error(string.Format(CultureInfo.InvariantCulture, "Could not create host process for task {0}, {1} retries left.", FullTaskAttemptId, retriesLeft), ex);
-                        Thread.Sleep(1000);
-                    }
-                } while( !success && retriesLeft > 0 );
-
-                if( success )
-                {
-                    LastProgressTimeUtc = DateTime.UtcNow;
-                    State = TaskAttemptStatus.Running;
-                }
-                else
-                    OnProcessExited(EventArgs.Empty);
-            }
+                OnProcessExited(EventArgs.Empty);
         }
 
         public void Kill()
@@ -120,10 +110,7 @@ namespace TaskServerApplication
             _log.WarnFormat("Killing task {0}.", FullTaskAttemptId);
             try
             {
-                if( Debugger.IsAttached )
-                    _appDomainThread.Abort();
-                else
-                    _process.Kill();
+                _process.Kill();
             }
             catch( InvalidOperationException ex )
             {
@@ -148,32 +135,6 @@ namespace TaskServerApplication
             {
                 OnProcessExited(EventArgs.Empty);
             }
-        }
-
-        private void RunTaskAppDomain()
-        {
-            _log.DebugFormat("Running task {0} in an AppDomain.", FullTaskAttemptId);
-            _appDomainThread = new Thread(RunTaskAppDomainThread);
-            _appDomainThread.Name = FullTaskAttemptId;
-            _appDomainThread.IsBackground = true;
-            _appDomainThread.Start();
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the task server.")]
-        private void RunTaskAppDomainThread()
-        {
-            TypeReference.ResolveTypes = true;
-            try
-            {
-                TaskExecutionUtility.RunTask(JobId, JobDirectory, DfsJobDirectory, TaskAttemptId, true);
-            }
-            catch( Exception ex )
-            {
-                _log.Error(string.Format(CultureInfo.InvariantCulture, "Error running task {0} in app domain", FullTaskAttemptId), ex);
-                _taskServer.ReportError(JobId, TaskAttemptId, ex.ToString());
-            }
-
-            OnProcessExited(EventArgs.Empty);
         }
 
         #region IDisposable Members

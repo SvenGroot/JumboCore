@@ -105,20 +105,6 @@ namespace Ookii.Jumbo.Jet
         }
 
         /// <summary>
-        /// Gets or sets a value that indicates whether the task hosts should be run in-process in the task server.
-        /// </summary>
-        /// <remarks>
-        /// Task hosts are always run in-process if a debugger is attached to the task server, even if this property is <see langword="false"/>.
-        /// Setting this property to <see langword="true"/> is not recommended.
-        /// </remarks>
-        [ConfigurationProperty("runTaskHostInThread", DefaultValue = false, IsRequired = false, IsKey = false)]
-        public bool RunTaskHostInThread
-        {
-            get { return (bool)this["runTaskHostInThread"]; }
-            set { this["runTaskHostInThread"] = value; }
-        }
-
-        /// <summary>
         /// Gets or sets a value that indicates whether the task should periodically log processor and memory usage status.
         /// </summary>
         [ConfigurationProperty("logSystemStatus", DefaultValue = false, IsRequired = false, IsKey = false)]

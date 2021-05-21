@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Scheduling
@@ -69,7 +70,8 @@ namespace Ookii.Jumbo.Jet.Scheduling
         /// Performs a scheduling pass.
         /// </summary>
         /// <param name="jobs">The current active jobs.</param>
-        public void ScheduleTasks(IEnumerable<IJobInfo> jobs)
+        /// <param name="token">The cancellation token to observe.</param>
+        public void ScheduleTasks(IEnumerable<IJobInfo> jobs, CancellationToken token)
         {
             if( jobs == null )
                 throw new ArgumentNullException(nameof(jobs));
@@ -78,27 +80,29 @@ namespace Ookii.Jumbo.Jet.Scheduling
             // for distance 1 so there's no need to check and short-circuit the loop.
             foreach( IJobInfo job in jobs )
             {
-                if( !ScheduleJob(job) )
+                token.ThrowIfCancellationRequested();
+                if( !ScheduleJob(job, token) )
                     break;
             }
         }
 
-        private static bool ScheduleJob(IJobInfo job)
+        private static bool ScheduleJob(IJobInfo job, CancellationToken token)
         {
             foreach( IStageInfo stage in job.Stages )
             {
+                token.ThrowIfCancellationRequested();
                 if( stage.IsReadyForScheduling && stage.UnscheduledTaskCount > 0 )
                 {
                     if( stage.Configuration.HasDataInput )
                     {
                         // ScheduleNonDataInputTasks returns false if there is no more cluster capacity left.
-                        if( !ScheduleDataInputTasks(job, stage) )
+                        if( !ScheduleDataInputTasks(job, stage, token) )
                             return false;
                     }
                     else
                     {
                         // ScheduleNonDataInputTasks returns false if there is no more cluster capacity left.
-                        if( !ScheduleNonDataInputTasks(job, stage) )
+                        if( !ScheduleNonDataInputTasks(job, stage, token) )
                             return false;
                     }
                 }
@@ -107,7 +111,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
             return true;
         }
 
-        private static bool ScheduleDataInputTasks(IJobInfo job, IStageInfo stage)
+        private static bool ScheduleDataInputTasks(IJobInfo job, IStageInfo stage, CancellationToken token)
         {
             IComparer<ITaskServerJobInfo> comparer;
 
@@ -131,13 +135,13 @@ namespace Ookii.Jumbo.Jet.Scheduling
             {
                 var availableTaskServers = job.TaskServers.Where(server => server.IsActive && server.AvailableTaskSlots > 0);
                 PriorityQueue<ITaskServerJobInfo> taskServers = new PriorityQueue<ITaskServerJobInfo>(availableTaskServers, comparer);
-                tasksAndCapacityLeft = ScheduleDataInputTasks(taskServers, stage, distance);
+                tasksAndCapacityLeft = ScheduleDataInputTasks(taskServers, stage, distance, token);
             }
 
             return job.TaskServers.Any(server => server.IsActive && server.AvailableTaskSlots > 0);
         }
 
-        private static bool ScheduleDataInputTasks(PriorityQueue<ITaskServerJobInfo> taskServers, IStageInfo stage, int distance)
+        private static bool ScheduleDataInputTasks(PriorityQueue<ITaskServerJobInfo> taskServers, IStageInfo stage, int distance, CancellationToken token)
         {
             int unscheduledTasks = stage.UnscheduledTaskCount; // Tasks that can be scheduled but haven't been scheduled yet.
             bool capacityRemaining = false;
@@ -146,6 +150,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
             {
                 while( taskServers.Count > 0 && unscheduledTasks > 0 )
                 {
+                    token.ThrowIfCancellationRequested();
                     ITaskServerJobInfo server = taskServers.Peek();
                     ITaskInfo task = server.FindDataInputTaskToSchedule(stage, distance);
                     if( task != null )
@@ -171,7 +176,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
             return unscheduledTasks > 0 && capacityRemaining;
         }
 
-        private static bool ScheduleNonDataInputTasks(IJobInfo job, IStageInfo stage)
+        private static bool ScheduleNonDataInputTasks(IJobInfo job, IStageInfo stage, CancellationToken token)
         {
             List<ITaskInfo> unscheduledTasks = stage.Tasks.Where(t => !t.IsAssignedToServer).ToList();
             Debug.Assert(unscheduledTasks.Count > 0);
@@ -183,6 +188,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
 
             while( taskServers.Count > 0 && unscheduledTasks.Count > 0 )
             {
+                token.ThrowIfCancellationRequested();
                 ITaskServerJobInfo server = taskServers.Peek();
                 // We search backwards because that will make the remove operation cheaper.
                 int taskIndex = unscheduledTasks.FindLastIndex(task => !task.IsBadServer(server));

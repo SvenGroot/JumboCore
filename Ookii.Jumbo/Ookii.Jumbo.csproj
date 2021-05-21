@@ -13,6 +13,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>Ookii.Jumbo.xml</DocumentationFile>
+    <NoWarn>1701;1702;SYSLIB0011</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

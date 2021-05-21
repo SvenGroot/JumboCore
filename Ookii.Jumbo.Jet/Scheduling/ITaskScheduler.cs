@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
@@ -24,6 +25,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
         /// Performs a scheduling pass.
         /// </summary>
         /// <param name="jobs">The current active jobs.</param>
-        void ScheduleTasks(IEnumerable<IJobInfo> jobs);
+        /// <param name="token">The cancellation token to observe.</param>
+        void ScheduleTasks(IEnumerable<IJobInfo> jobs, CancellationToken token);
     }
 }

@@ -109,12 +109,6 @@ namespace NameServerApplication
             _log.Info("---- NameServer has shut down ----");
         }
 
-        public override object InitializeLifetimeService()
-        {
-            // This causes the object to live forever.
-            return null;
-        }
-
         public void CheckBlockReplication(IEnumerable<Guid> blocks)
         {
             if (blocks == null)

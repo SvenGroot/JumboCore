@@ -39,6 +39,7 @@ namespace JobServerApplication
         private readonly BlockingCollection<ManualResetEventSlim> _schedulerRequests = new BlockingCollection<ManualResetEventSlim>();
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private Thread _schedulerThread;
+        private CancellationTokenSource _schedulerCancellation;
         private readonly object _schedulerThreadLock = new object();
         private readonly object _archiveLock = new object();
         private const int _schedulerTimeoutMilliseconds = 30000;
@@ -808,8 +809,9 @@ namespace JobServerApplication
             {
                 if( _schedulerThread == null )
                 {
+                    _schedulerCancellation = new();
                     _schedulerThread = new Thread(SchedulerThread) { Name = "SchedulerThread", IsBackground = true };
-                    _schedulerThread.Start();
+                    _schedulerThread.Start(_schedulerCancellation.Token);
                 }
             }
         }
@@ -820,7 +822,8 @@ namespace JobServerApplication
             {
                 if( _schedulerThread != null )
                 {
-                    _schedulerThread.Abort();
+                    _schedulerCancellation.Cancel();
+                    _schedulerCancellation = null;
                     _schedulerThread = null;
                 }
             }
@@ -894,8 +897,10 @@ namespace JobServerApplication
             return job;
         }
 
-        private void SchedulerThread()
+        private void SchedulerThread(object param)
         {
+            var token = (CancellationToken)param;
+
             try
             {
                 List<JobInfo> jobs = new List<JobInfo>();
@@ -903,7 +908,7 @@ namespace JobServerApplication
                 {
                     try
                     {
-                        DoSchedulingRun(jobs);
+                        DoSchedulingRun(jobs, token);
                     }
                     finally
                     {
@@ -918,7 +923,7 @@ namespace JobServerApplication
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Error should fail the job not the server.")]
-        private void DoSchedulingRun(List<JobInfo> jobs)
+        private void DoSchedulingRun(List<JobInfo> jobs, CancellationToken token)
         {
             lock( _orderedJobs )
             {
@@ -943,7 +948,7 @@ namespace JobServerApplication
                 
                 try
                 {
-                    _scheduler.ScheduleTasks(jobs);
+                    _scheduler.ScheduleTasks(jobs, token);
                 }
                 catch( Exception ex )
                 {

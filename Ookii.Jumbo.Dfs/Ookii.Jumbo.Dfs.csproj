@@ -11,6 +11,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Ookii.Jumbo.Dfs.xml</DocumentationFile>
+    <NoWarn>1701;1702;SYSLIB0011</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
