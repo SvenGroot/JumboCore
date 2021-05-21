@@ -823,6 +823,7 @@ namespace JobServerApplication
                 if( _schedulerThread != null )
                 {
                     _schedulerCancellation.Cancel();
+                    _schedulerCancellation.Dispose();
                     _schedulerCancellation = null;
                     _schedulerThread = null;
                 }

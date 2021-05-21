@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
+    
+    <!-- This is not recommended but switching Jumbo's RPC over to another serialization mechanism
+         is far too much work at this point. -->
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
 
   <ItemGroup>
