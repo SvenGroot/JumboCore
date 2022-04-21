@@ -112,14 +112,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             return GenerateCore<T>(taskCount, generator, false);
         }
-        
+
         private StageOperation GenerateCore<T>(int taskCount, Delegate generator, bool useProgressContext)
         {
-            if( generator == null )
+            if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
 
             // Record reuse is irrelevant for a task with no input.
-            Type taskType = useProgressContext 
+            Type taskType = useProgressContext
                                 ? _taskBuilder.CreateDynamicTask(typeof(GeneratorTask<T>).GetMethod("Generate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), generator, 0, RecordReuseMode.Default)
                                 : _taskBuilder.CreateDynamicTask(typeof(ITask<int, T>).GetMethod("Run"), generator, 1, RecordReuseMode.Default);
 

@@ -32,14 +32,14 @@ namespace Ookii.Jumbo.Jet
         public override void NotifyConfigurationChanged()
         {
             _comparer = null;
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 string comparerTypeName = TaskContext.StageConfiguration.GetSetting(PartitionerConstants.EqualityComparerSetting, null);
-                if( !string.IsNullOrEmpty(comparerTypeName) )
+                if (!string.IsNullOrEmpty(comparerTypeName))
                     _comparer = (IEqualityComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
             }
 
-            if( _comparer == null )
+            if (_comparer == null)
                 _comparer = EqualityComparer<T>.Default;
         }
 

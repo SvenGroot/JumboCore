@@ -31,7 +31,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A signed integer that indicates the relative values of the first and second object.</returns>
         public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
         {
-            return _comparer.Compare(buffer2, offset2, count2, buffer1, offset1, count1); 
+            return _comparer.Compare(buffer2, offset2, count2, buffer1, offset1, count1);
         }
 
         /// <summary>

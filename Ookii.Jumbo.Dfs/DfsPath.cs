@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Dfs
         /// <returns><see langword="true"/> if the path is rooted; otherwise, <see langword="false"/>.</returns>
         public static bool IsPathRooted(string path)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
             return path.Length > 0 && path[0] == DirectorySeparator;
         }
@@ -36,21 +36,21 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>The combined path.</returns>
         public static string Combine(string path1, string path2)
         {
-            if( path1 == null )
+            if (path1 == null)
                 throw new ArgumentNullException(nameof(path1));
-            if( path2 == null )
+            if (path2 == null)
                 throw new ArgumentNullException(nameof(path2));
 
-            if( path2.Length == 0 )
+            if (path2.Length == 0)
                 return path1;
-            if( path1.Length == 0 )
+            if (path1.Length == 0)
                 return path2;
 
-            if( IsPathRooted(path2) )
+            if (IsPathRooted(path2))
                 return path2;
 
             string result = path1;
-            if( path1[path1.Length - 1] != DirectorySeparator )
+            if (path1[path1.Length - 1] != DirectorySeparator)
                 result += DirectorySeparator;
             result += path2;
             return result;
@@ -63,14 +63,14 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>The file name and extension of the specified path string.</returns>
         public static string GetFileName(string path)
         {
-            if( path != null )
+            if (path != null)
             {
                 int length = path.Length;
                 int current = length;
-                while( --current >= 0 )
+                while (--current >= 0)
                 {
                     char ch = path[current];
-                    if( ch == DirectorySeparator )
+                    if (ch == DirectorySeparator)
                     {
                         return path.Substring(current + 1, (length - current) - 1);
                     }
@@ -87,14 +87,14 @@ namespace Ookii.Jumbo.Dfs
         /// not contain directory information.</returns>
         public static string GetDirectoryName(string path)
         {
-            if( path != null )
+            if (path != null)
             {
-                if( path == "/" )
+                if (path == "/")
                     return null;
                 int index = path.LastIndexOf(DirectorySeparator);
-                if( index == 0 )
+                if (index == 0)
                     return "/";
-                else if( index > 0 )
+                else if (index > 0)
                     return path.Substring(0, index);
                 else
                     return "";

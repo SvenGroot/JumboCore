@@ -112,11 +112,11 @@ namespace TaskServerApplication
             {
                 _process.Kill();
             }
-            catch( InvalidOperationException ex )
+            catch (InvalidOperationException ex)
             {
                 _log.Error("Could not kill task.", ex);
             }
-            catch( Win32Exception ex )
+            catch (Win32Exception ex)
             {
                 _log.Error("Could not kill task.", ex);
             }
@@ -125,7 +125,7 @@ namespace TaskServerApplication
         private void OnProcessExited(EventArgs e)
         {
             EventHandler handler = ProcessExited;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
@@ -142,7 +142,7 @@ namespace TaskServerApplication
         public void Dispose()
         {
             _disposed = true;
-            if( _process != null )
+            if (_process != null)
             {
                 _process.Dispose();
                 _process = null;

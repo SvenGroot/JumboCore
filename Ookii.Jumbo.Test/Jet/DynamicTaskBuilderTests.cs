@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
-using Ookii.Jumbo.Jet.Jobs.Builder;
 using Ookii.Jumbo.Jet.Jobs;
-using System.IO;
-using System.Reflection;
+using Ookii.Jumbo.Jet.Jobs.Builder;
 using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Test.Jet
@@ -43,8 +43,8 @@ namespace Ookii.Jumbo.Test.Jet
             ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<int> data = Utilities.GenerateNumberData(10);
             List<int> result;
-            using( EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data) )
-            using( ListRecordWriter<int> output = new ListRecordWriter<int>() )
+            using (EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data))
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
             {
                 task.Run(input, output);
                 result = output.List.ToList();
@@ -63,8 +63,8 @@ namespace Ookii.Jumbo.Test.Jet
             ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<int> data = Utilities.GenerateNumberData(10);
             List<int> result;
-            using( EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data) )
-            using( ListRecordWriter<int> output = new ListRecordWriter<int>() )
+            using (EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data))
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
             {
                 task.Run(input, output);
                 result = output.List.ToList();
@@ -84,8 +84,8 @@ namespace Ookii.Jumbo.Test.Jet
             AccumulatorTask<Utf8String, int> task = (AccumulatorTask<Utf8String, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<string> data = Utilities.GenerateDataWords(null, 100, 10);
             List<KeyValuePair<string, int>> result;
-            using( EnumerableRecordReader<Pair<Utf8String, int>> input = new EnumerableRecordReader<Pair<Utf8String, int>>(data.Select(w => Pair.MakePair(new Utf8String(w), 1)), data.Count) )
-            using( ListRecordWriter<Pair<Utf8String, int>> output = new ListRecordWriter<Pair<Utf8String, int>>(true) )
+            using (EnumerableRecordReader<Pair<Utf8String, int>> input = new EnumerableRecordReader<Pair<Utf8String, int>>(data.Select(w => Pair.MakePair(new Utf8String(w), 1)), data.Count))
+            using (ListRecordWriter<Pair<Utf8String, int>> output = new ListRecordWriter<Pair<Utf8String, int>>(true))
             {
                 task.Run(input, output);
                 result = output.List.Select(p => new KeyValuePair<string, int>(p.Key.ToString(), p.Value)).OrderBy(p => p.Key, StringComparer.Ordinal).ToList();
@@ -110,8 +110,8 @@ namespace Ookii.Jumbo.Test.Jet
             ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<int> data = Utilities.GenerateNumberData(10);
             List<int> result;
-            using( EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data) )
-            using( ListRecordWriter<int> output = new ListRecordWriter<int>() )
+            using (EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data))
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
             {
                 task.Run(input, output);
                 result = output.List.ToList();
@@ -156,8 +156,8 @@ namespace Ookii.Jumbo.Test.Jet
             ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<int> data = Utilities.GenerateNumberData(10);
             List<int> result;
-            using( EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data) )
-            using( ListRecordWriter<int> output = new ListRecordWriter<int>() )
+            using (EnumerableRecordReader<int> input = new EnumerableRecordReader<int>(data))
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
             {
                 task.Run(input, output);
                 result = output.List.ToList();
@@ -176,7 +176,7 @@ namespace Ookii.Jumbo.Test.Jet
             context.StageConfiguration.AddSetting("Count", 6);
             ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
             List<int> result;
-            using( ListRecordWriter<int> output = new ListRecordWriter<int>() )
+            using (ListRecordWriter<int> output = new ListRecordWriter<int>())
             {
                 task.Run(null, output);
                 result = output.List.ToList();
@@ -227,7 +227,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(type1, type2);
             Assert.AreNotEqual(type2, type3);
         }
-        
+
         public static void TaskMethod(RecordReader<int> input, RecordWriter<int> output, TaskContext context)
         {
             int factor = context.GetSetting("Factor", 0);
@@ -256,7 +256,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
         }
 
-        [AllowRecordReuse(PassThrough=true)]
+        [AllowRecordReuse(PassThrough = true)]
         public static void TaskMethodAllowRecordReusePassThrough(RecordReader<int> input, RecordWriter<int> output)
         {
         }
@@ -270,7 +270,7 @@ namespace Ookii.Jumbo.Test.Jet
         private static void VerifyRecordReuse(Type type, bool allow, bool passthrough = false)
         {
             AllowRecordReuseAttribute attribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(type, typeof(AllowRecordReuseAttribute));
-            if( allow )
+            if (allow)
             {
                 Assert.IsNotNull(attribute);
                 Assert.AreEqual(passthrough, attribute.PassThrough);

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
-using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -29,9 +29,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="receiver">The receiver.</param>
         public Channel(IJobBuilderOperation sender, IJobBuilderOperation receiver)
         {
-            if( sender == null )
+            if (sender == null)
                 throw new ArgumentNullException(nameof(sender));
-            if( receiver == null )
+            if (receiver == null)
                 throw new ArgumentNullException(nameof(receiver));
             _sender = sender;
             _receiver = receiver;
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public ChannelType? ChannelType { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the partitioner to use to spread the records across the output tasks.
         /// </summary>
@@ -101,13 +101,13 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             get { return _partitionerType; }
             set
             {
-                if( value != null )
+                if (value != null)
                 {
-                    if( value.IsGenericTypeDefinition )
+                    if (value.IsGenericTypeDefinition)
                         value = value.MakeGenericType(RecordType);
 
                     Type partitionerInterfaceType = value.FindGenericInterfaceType(typeof(IPartitioner<>), true);
-                    if( RecordType != partitionerInterfaceType.GetGenericArguments()[0] )
+                    if (RecordType != partitionerInterfaceType.GetGenericArguments()[0])
                         throw new ArgumentException("The partitioner's record type doesn't match the channel's record type.");
                 }
                 _partitionerType = value;
@@ -128,21 +128,21 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public Type MultiInputRecordReaderType
         {
             get { return _multiInputRecordReaderType; }
-            set 
+            set
             {
-                if( value != null )
+                if (value != null)
                 {
-                    if( value.IsGenericTypeDefinition )
+                    if (value.IsGenericTypeDefinition)
                         value = value.MakeGenericType(RecordType);
 
                     Type baseType = value.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
-                    if( RecordType != baseType.GetGenericArguments()[0] )
+                    if (RecordType != baseType.GetGenericArguments()[0])
                         throw new ArgumentException("The multi-input record reader's record type doesn't match the channel's record type.");
                 }
-                _multiInputRecordReaderType = value; 
+                _multiInputRecordReaderType = value;
             }
         }
-        
+
 
         /// <summary>
         /// Gets or sets the number of partitions to create
@@ -155,9 +155,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             get { return _taskCount * _partitionsPerTask; }
             set
             {
-                if( value < 0 )
+                if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value), "The partition count must be 0 or higher.");
-                if( value > 0 && value % _partitionsPerTask != 0 )
+                if (value > 0 && value % _partitionsPerTask != 0)
                     throw new InvalidOperationException("The total number of partitions must be divisible by the number of partitions per task.");
                 _taskCount = value / _partitionsPerTask;
             }
@@ -172,7 +172,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             get { return _partitionsPerTask; }
             set
             {
-                if( value < 1 )
+                if (value < 1)
                     throw new ArgumentOutOfRangeException(nameof(value), "The number of partitions per task must be 1 or higher.");
 
                 _partitionsPerTask = value;
@@ -188,9 +188,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public int TaskCount
         {
             get { return _taskCount; }
-            set 
+            set
             {
-                if( value < 0 )
+                if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value), "The task count must be 0 or higher.");
                 _taskCount = value;
             }
@@ -234,23 +234,23 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public InputStageInfo CreateInput(StageConfiguration overrideSender = null)
         {
             StageConfiguration sender = overrideSender;
-            if( sender == null )
+            if (sender == null)
             {
-                if( Sender.Stage == null )
+                if (Sender.Stage == null)
                     throw new InvalidOperationException("The sending stage for this channel has not been compiled.");
                 sender = Sender.Stage;
             }
 
             return new InputStageInfo(sender)
-                {
-                    ChannelType = ChannelType ?? GetDefaultChannelType(sender),
-                    PartitionsPerTask = PartitionsPerTask,
-                    PartitionerType = PartitionerType,
-                    PartitionAssignmentMethod = PartitionAssignmentMethod,
-                    MultiInputRecordReaderType = MultiInputRecordReaderType
-                };
+            {
+                ChannelType = ChannelType ?? GetDefaultChannelType(sender),
+                PartitionsPerTask = PartitionsPerTask,
+                PartitionerType = PartitionerType,
+                PartitionAssignmentMethod = PartitionAssignmentMethod,
+                MultiInputRecordReaderType = MultiInputRecordReaderType
+            };
         }
-        
+
         void IOperationOutput.ApplyOutput(FileSystemClient client, StageConfiguration stage)
         {
             // Nothing.
@@ -258,7 +258,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private ChannelType GetDefaultChannelType(StageConfiguration sender)
         {
-            return ((PartitionCount <= 1 && sender.Root.TaskCount == 1) || (PartitionCount == 0 && JobBuilderCompiler.IsEmptyTask(sender.TaskType.ReferencedType))) 
+            return ((PartitionCount <= 1 && sender.Root.TaskCount == 1) || (PartitionCount == 0 && JobBuilderCompiler.IsEmptyTask(sender.TaskType.ReferencedType)))
                 ? Channels.ChannelType.Pipeline : Channels.ChannelType.File;
         }
     }

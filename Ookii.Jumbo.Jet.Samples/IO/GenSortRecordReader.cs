@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.Jet.Samples.IO
 {
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
             IRecordInputStream recordInputStream = stream as IRecordInputStream;
             long rem;
-            if( recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary )
+            if (recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary)
             {
                 rem = recordInputStream.OffsetFromBoundary(_position) % GenSortRecord.RecordSize;
             }
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
                 // gensort records are 100 bytes long, making it easy to find the first record.
                 rem = _position % GenSortRecord.RecordSize;
             }
-            if( rem != 0 )
+            if (rem != 0)
             {
                 Stream.Position += GenSortRecord.RecordSize - rem;
                 FirstRecordOffset = Stream.Position;
@@ -80,7 +80,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         {
             CheckDisposed();
 
-            if( _position >= _end )
+            if (_position >= _end)
             {
                 CurrentRecord = null;
                 return false;
@@ -88,12 +88,12 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
             GenSortRecord result = new GenSortRecord();
             int bytesRead = Stream.Read(result.RecordBuffer, 0, GenSortRecord.RecordSize);
-            if( bytesRead == 0 )
+            if (bytesRead == 0)
             {
                 CurrentRecord = null;
                 return false;
             }
-            else if( bytesRead != GenSortRecord.RecordSize )
+            else if (bytesRead != GenSortRecord.RecordSize)
             {
                 CurrentRecord = null;
                 throw new InvalidOperationException("Invalid input file format");

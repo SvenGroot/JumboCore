@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Jet;
 
 namespace JobServerApplication
 {
@@ -36,7 +36,7 @@ namespace JobServerApplication
             set
             {
                 _state = value;
-                if( _state == TaskState.Finished )
+                if (_state == TaskState.Finished)
                 {
                     _task.Stage.NotifyTaskFinished();
                 }
@@ -49,7 +49,7 @@ namespace JobServerApplication
         {
             get
             {
-                if( _badServers == null )
+                if (_badServers == null)
                     _badServers = new List<TaskServerInfo>();
                 return _badServers;
             }

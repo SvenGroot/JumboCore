@@ -211,31 +211,31 @@ namespace Ookii.Jumbo.IO
 
         public static object GetComparer(Type type)
         {
-            if( type == typeof(SByte) )
+            if (type == typeof(SByte))
                 return new SByteComparer();
-            else if( type == typeof(Byte) )
+            else if (type == typeof(Byte))
                 return new ByteComparer();
-            else if( type == typeof(Int16) )
+            else if (type == typeof(Int16))
                 return new Int16Comparer();
-            else if( type == typeof(UInt16) )
+            else if (type == typeof(UInt16))
                 return new UInt16Comparer();
-            else if( type == typeof(Int32) )
+            else if (type == typeof(Int32))
                 return new Int32Comparer();
-            else if( type == typeof(UInt32) )
+            else if (type == typeof(UInt32))
                 return new UInt32Comparer();
-            else if( type == typeof(Int64) )
+            else if (type == typeof(Int64))
                 return new Int64Comparer();
-            else if( type == typeof(UInt64) )
+            else if (type == typeof(UInt64))
                 return new UInt64Comparer();
-            else if( type == typeof(Decimal) )
+            else if (type == typeof(Decimal))
                 return new DecimalComparer();
-            else if( type == typeof(Single) )
+            else if (type == typeof(Single))
                 return new SingleComparer();
-            else if( type == typeof(Double) )
+            else if (type == typeof(Double))
                 return new DoubleComparer();
-            else if( type == typeof(DateTime) )
+            else if (type == typeof(DateTime))
                 return new DateTimeComparer();
-            else if( type == typeof(String) )
+            else if (type == typeof(String))
                 return new StringRawComparer();
 
             return null;

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Globalization;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -31,7 +31,7 @@ namespace Ookii.Jumbo
             public IAsyncResult BeginReceive(AsyncCallback callback, object state)
             {
                 EndPoint remote;
-                if( _socket.AddressFamily == AddressFamily.InterNetworkV6 )
+                if (_socket.AddressFamily == AddressFamily.InterNetworkV6)
                     remote = new IPEndPoint(IPAddress.IPv6Any, 0);
                 else
                     remote = new IPEndPoint(IPAddress.Any, 0);
@@ -42,7 +42,7 @@ namespace Ookii.Jumbo
             public byte[] EndReceive(IAsyncResult ar, out IPEndPoint remoteEndPoint)
             {
                 EndPoint remote;
-                if( _socket.AddressFamily == AddressFamily.InterNetworkV6 )
+                if (_socket.AddressFamily == AddressFamily.InterNetworkV6)
                     remote = new IPEndPoint(IPAddress.IPv6Any, 0);
                 else
                     remote = new IPEndPoint(IPAddress.Any, 0);
@@ -76,15 +76,15 @@ namespace Ookii.Jumbo
         /// <param name="allowAddressReuse">If set to <see langword="true"/>, allows the sockets to be bound to an address that is already in use.</param>
         protected UdpServer(IPAddress[] localAddresses, int port, bool allowAddressReuse)
         {
-            if( localAddresses == null )
+            if (localAddresses == null)
                 throw new ArgumentNullException(nameof(localAddresses));
-            if( localAddresses.Length == 0 )
+            if (localAddresses.Length == 0)
                 throw new ArgumentException("You must specify at least one address to bind to.", nameof(localAddresses));
 
             _callback = new AsyncCallback(ReceiveFromCallback);
             _sockets = new SlimUdpClient[localAddresses.Length];
             int x = 0;
-            foreach( IPAddress localAddress in localAddresses )
+            foreach (IPAddress localAddress in localAddresses)
             {
                 _sockets[x] = new SlimUdpClient(localAddress, port, allowAddressReuse);
             }
@@ -95,7 +95,7 @@ namespace Ookii.Jumbo
         /// </summary>
         public void Start()
         {
-            foreach( SlimUdpClient socket in _sockets )
+            foreach (SlimUdpClient socket in _sockets)
             {
                 socket.BeginReceive(_callback, socket);
             }
@@ -123,9 +123,9 @@ namespace Ookii.Jumbo
         /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if( disposing )
+            if (disposing)
             {
-                foreach( SlimUdpClient socket in _sockets )
+                foreach (SlimUdpClient socket in _sockets)
                 {
                     socket.Dispose();
                 }
@@ -146,12 +146,12 @@ namespace Ookii.Jumbo
                 {
                     HandleMessage(message, remoteEndPoint);
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     _log.Error(string.Format(CultureInfo.InvariantCulture, "Error handling UDP message from {0}.", remoteEndPoint), ex);
                 }
             }
-            catch( ObjectDisposedException )
+            catch (ObjectDisposedException)
             {
                 // Thrown if the BeginReceiveFrom call was cancelled by the Dispose method.
             }

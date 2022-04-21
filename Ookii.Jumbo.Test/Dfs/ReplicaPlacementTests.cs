@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Topology;
-using NUnit.Framework;
 using NameServerApplication;
+using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Topology;
 
 namespace Ookii.Jumbo.Test.Dfs
 {
@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Dictionary<ServerAddress, DataServerInfo> dataServers;
             ReplicaPlacement target = CreateReplicaPlacement(2, 5, out dataServers);
             DfsFile file = CreateFakeFile(3);
-            
+
             BlockInfo block = new BlockInfo(Guid.NewGuid(), file);
 
             const string writer = "rack1_1";
@@ -164,10 +164,10 @@ namespace Ookii.Jumbo.Test.Dfs
 
         private ReplicaPlacement CreateReplicaPlacement(int racks, int nodesPerRack, out Dictionary<ServerAddress, DataServerInfo> dataServers)
         {
-            dataServers = new Dictionary<ServerAddress,DataServerInfo>();
+            dataServers = new Dictionary<ServerAddress, DataServerInfo>();
 
             JumboConfiguration config = new JumboConfiguration();
-            for( int rack = 0; rack < racks; ++rack )
+            for (int rack = 0; rack < racks; ++rack)
             {
                 config.PatternTopologyResolver.Racks.Add(new RackConfigurationElement() { RackId = string.Format("rack{0}", rack + 1), Pattern = string.Format(@"^rack{0}_\d$", rack + 1) });
             }
@@ -175,9 +175,9 @@ namespace Ookii.Jumbo.Test.Dfs
             NetworkTopology topology = new NetworkTopology(config);
 
 
-            for( int rack = 0; rack < racks; ++rack )
+            for (int rack = 0; rack < racks; ++rack)
             {
-                for( int node = 0; node < nodesPerRack; ++node )
+                for (int node = 0; node < nodesPerRack; ++node)
                 {
                     DataServerInfo server = new DataServerInfo(new ServerAddress(string.Format("rack{0}_{1}", rack + 1, node + 1), 9000), Guid.Empty);
                     server.DiskSpaceTotal = 100L * 1024 * 1024 * 1024;
@@ -196,6 +196,6 @@ namespace Ookii.Jumbo.Test.Dfs
             DfsDirectory root = new DfsDirectory(null, "", DateTime.UtcNow);
             return new DfsFile(root, "testfile", DateTime.UtcNow, 16 * 1024 * 1024, replicationFactor, IO.RecordStreamOptions.None);
         }
-    
+
     }
 }

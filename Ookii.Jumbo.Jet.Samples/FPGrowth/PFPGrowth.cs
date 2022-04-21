@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet.Jobs.Builder;
-using System.ComponentModel;
-using Ookii.Jumbo.IO;
-using System.IO;
 using Ookii.CommandLine;
 using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Jet.Tasks;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
-using System.Globalization;
+using Ookii.Jumbo.Jet.Jobs.Builder;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -136,12 +136,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         protected override void BuildJob(JobBuilder job)
         {
             // Need to determine this now because we need it to validate the number of groups.
-            if( FPGrowthTaskCount == 0 )
+            if (FPGrowthTaskCount == 0)
                 FPGrowthTaskCount = JetClient.JobServer.GetMetrics().Capacity;
 
             // If the number of groups equals or is smaller than the number of partitions, we don't need to sort, because each
             // partition will get exactly one group.
-            if( FPGrowthTaskCount * PartitionsPerTask < Groups )
+            if (FPGrowthTaskCount * PartitionsPerTask < Groups)
                 throw new NotSupportedException("The number of groups must be less than or equal to the number of partitions.");
 
             string fglistDirectory = FileSystemClient.Path.Combine(OutputPath, "fglist");
@@ -169,7 +169,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             var patterns = job.Process(groupedTransactions, typeof(TransactionMiningTask));
             patterns.InputChannel.TaskCount = FPGrowthTaskCount;
             patterns.InputChannel.PartitionsPerTask = PartitionsPerTask;
-            
+
             // Aggregate frequent patterns.
             var aggregatedPatterns = job.Process<Pair<int, WritableCollection<MappedFrequentPattern>>, Pair<Utf8String, WritableCollection<FrequentPattern>>>(patterns, AggregatePatterns);
             aggregatedPatterns.InputChannel.TaskCount = AggregateTaskCount;
@@ -190,10 +190,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             var record = Pair.MakePair(new Utf8String(), 1);
             char[] separator = { ' ' };
             config.StatusMessage = "Extracting features.";
-            foreach( Utf8String transaction in input.EnumerateRecords() )
+            foreach (Utf8String transaction in input.EnumerateRecords())
             {
                 string[] items = transaction.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                foreach( string item in items )
+                foreach (string item in items)
                 {
                     record.Key.Set(item);
                     output.WriteRecord(record);
@@ -228,7 +228,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
             char[] separator = { ' ' };
 
-            foreach( Utf8String transaction in input.EnumerateRecords() )
+            foreach (Utf8String transaction in input.EnumerateRecords())
             {
                 // Extract the items for the transaction
                 string[] items = transaction.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
@@ -236,29 +236,29 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 // Map them to their item IDs.
                 int mappedItemCount = 0;
                 int[] mappedItems = new int[itemCount];
-                for( int x = 0; x < itemCount; ++x )
+                for (int x = 0; x < itemCount; ++x)
                 {
                     int itemId;
                     // Items that are not in the mapping are not frequent.
-                    if( itemMapping.TryGetValue(items[x], out itemId) )
+                    if (itemMapping.TryGetValue(items[x], out itemId))
                     {
                         mappedItems[mappedItemCount] = itemId;
                         ++mappedItemCount;
                     }
                 }
 
-                if( mappedItemCount > 0 )
+                if (mappedItemCount > 0)
                 {
                     // Sort by item ID; this ensures the items have the same order as they have in the FGList.
                     Array.Sort(mappedItems, 0, mappedItemCount);
 
                     int currentGroupId = -1;
-                    for( int x = 0; x < mappedItemCount; ++x )
+                    for (int x = 0; x < mappedItemCount; ++x)
                     {
                         int groupId = fgList[mappedItems[x]].GroupId;
-                        if( currentGroupId != groupId )
+                        if (currentGroupId != groupId)
                         {
-                            if( currentGroupId != -1 )
+                            if (currentGroupId != -1)
                             {
                                 OutputGroupTransaction(output, mappedItems, currentGroupId, x, config);
                             }
@@ -279,7 +279,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         [AllowRecordReuse]
         public static void MineTransactions(RecordReader<Pair<int, Transaction>> input, RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output, TaskContext config)
         {
-            if( input.ReadRecord() )
+            if (input.ReadRecord())
             {
                 // job settings
                 int minSupport = config.JobConfiguration.GetSetting("PFPGrowth.MinSupport", 2);
@@ -289,14 +289,14 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 int itemCount = LoadFGList(config, null).Count;
 
                 int maxPerGroup = itemCount / numGroups;
-                if( itemCount % numGroups != 0 )
+                if (itemCount % numGroups != 0)
                     maxPerGroup++;
                 FrequentPatternMaxHeap[] itemHeaps = null;
-                while( true )
+                while (true)
                 {
                     FPTree tree;
                     int groupId;
-                    if( input.HasFinished )
+                    if (input.HasFinished)
                         break;
                     groupId = input.CurrentRecord.Key;
                     _log.InfoFormat("Building tree for group {0}.", groupId);
@@ -306,12 +306,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                     itemHeaps = tree.Mine(k, false, groupId * maxPerGroup, itemHeaps);
                 }
 
-                if( itemHeaps != null )
+                if (itemHeaps != null)
                 {
-                    for( int item = 0; item < itemHeaps.Length; ++item )
+                    for (int item = 0; item < itemHeaps.Length; ++item)
                     {
                         FrequentPatternMaxHeap heap = itemHeaps[item];
-                        if( heap != null )
+                        if (heap != null)
                             heap.OutputItems(item, output);
                     }
                 }
@@ -336,18 +336,18 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             List<FGListItem> fgList = LoadFGList(config, null);
             FrequentPatternMaxHeap[] heaps = new FrequentPatternMaxHeap[fgList.Count]; // TODO: Create a smaller list based on the number of partitions.
 
-            foreach( Pair<int, WritableCollection<MappedFrequentPattern>> record in input.EnumerateRecords() )
+            foreach (Pair<int, WritableCollection<MappedFrequentPattern>> record in input.EnumerateRecords())
             {
                 config.StatusMessage = "Aggregating for item id: " + record.Key.ToString(CultureInfo.InvariantCulture);
                 FrequentPatternMaxHeap heap = heaps[record.Key];
-                if( heap == null )
+                if (heap == null)
                 {
                     heap = new FrequentPatternMaxHeap(k, minSupport, true, record.Value);
                     heaps[record.Key] = heap;
                 }
                 else
                 {
-                    foreach( MappedFrequentPattern pattern in record.Value )
+                    foreach (MappedFrequentPattern pattern in record.Value)
                     {
                         heap.Add(pattern);
                     }
@@ -356,15 +356,15 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
             int patternCount = 0;
             var outputRecord = Pair.MakePair((Utf8String)null, new WritableCollection<FrequentPattern>(k));
-            for( int x = 0; x < heaps.Length; ++x )
+            for (int x = 0; x < heaps.Length; ++x)
             {
                 FrequentPatternMaxHeap heap = heaps[x];
-                if( heap != null )
+                if (heap != null)
                 {
                     outputRecord.Key = fgList[x].Feature;
                     outputRecord.Value.Clear();
                     PriorityQueue<MappedFrequentPattern> queue = heap.Queue;
-                    while( queue.Count > 0 )
+                    while (queue.Count > 0)
                     {
                         MappedFrequentPattern mappedPattern = queue.Dequeue();
                         outputRecord.Value.Add(new FrequentPattern(mappedPattern.Items.Select(i => fgList[i].Feature), mappedPattern.Support));
@@ -383,7 +383,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             {
                 //_log.Debug(reader.CurrentRecord);
                 yield return reader.CurrentRecord.Value;
-            } while( reader.ReadRecord() && reader.CurrentRecord.Key == groupId );
+            } while (reader.ReadRecord() && reader.CurrentRecord.Key == groupId);
         }
 
         private static void OutputGroupTransaction(RecordWriter<Pair<int, Transaction>> transactionOutput, int[] mappedItems, int currentGroupId, int x, TaskContext config)
@@ -398,7 +398,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             string fglistPath = context.DownloadDfsFile(context.JobConfiguration.GetSetting("PFPGrowth.FGListPath", null));
 
-            using( FileStream stream = File.OpenRead(fglistPath) )
+            using (FileStream stream = File.OpenRead(fglistPath))
             {
                 return LoadFGList(itemMapping, stream);
             }
@@ -407,13 +407,13 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private static List<FGListItem> LoadFGList(Dictionary<string, int> itemMapping, Stream stream)
         {
             List<FGListItem> fgList = new List<FGListItem>();
-            using( BinaryRecordReader<FGListItem> reader = new BinaryRecordReader<FGListItem>(stream, false) )
+            using (BinaryRecordReader<FGListItem> reader = new BinaryRecordReader<FGListItem>(stream, false))
             {
                 int x = 0;
-                foreach( FGListItem item in reader.EnumerateRecords() )
+                foreach (FGListItem item in reader.EnumerateRecords())
                 {
                     fgList.Add(item);
-                    if( itemMapping != null )
+                    if (itemMapping != null)
                         itemMapping.Add(item.Feature.ToString(), x);
                     ++x;
                 }

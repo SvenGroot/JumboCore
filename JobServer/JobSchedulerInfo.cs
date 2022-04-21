@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Jet;
 
 namespace JobServerApplication
 {
@@ -18,7 +18,7 @@ namespace JobServerApplication
     /// </remarks>
     sealed class JobSchedulerInfo
     {
-        private readonly Dictionary<ServerAddress, TaskServerJobInfo> _taskServers = new Dictionary<ServerAddress,TaskServerJobInfo>();
+        private readonly Dictionary<ServerAddress, TaskServerJobInfo> _taskServers = new Dictionary<ServerAddress, TaskServerJobInfo>();
         private readonly Dictionary<string, List<TaskInfo>> _rackTasks = new Dictionary<string, List<TaskInfo>>();
         private readonly JobInfo _job;
         private readonly Dictionary<string, JumboFile> _files = new Dictionary<string, JumboFile>();
@@ -39,7 +39,7 @@ namespace JobServerApplication
         public TaskServerJobInfo GetTaskServer(ServerAddress address)
         {
             TaskServerJobInfo server;
-            if( _taskServers.TryGetValue(address, out server) )
+            if (_taskServers.TryGetValue(address, out server))
                 return server;
             else
                 return null;
@@ -47,7 +47,7 @@ namespace JobServerApplication
 
         public void AddTaskServer(TaskServerInfo server)
         {
-            if( !_taskServers.ContainsKey(server.Address) )
+            if (!_taskServers.ContainsKey(server.Address))
                 _taskServers.Add(server.Address, new TaskServerJobInfo(server, _job));
         }
 
@@ -59,7 +59,7 @@ namespace JobServerApplication
         public List<TaskInfo> GetRackTasks(string rackId)
         {
             List<TaskInfo> tasks;
-            if( _rackTasks.TryGetValue(rackId, out tasks) )
+            if (_rackTasks.TryGetValue(rackId, out tasks))
                 return tasks;
             else
                 return null;
@@ -67,7 +67,7 @@ namespace JobServerApplication
 
         public void AddRackTasks(string rackId, List<TaskInfo> tasks)
         {
-            if( tasks == null )
+            if (tasks == null)
                 throw new ArgumentNullException(nameof(tasks));
 
             _rackTasks.Add(rackId, tasks);
@@ -87,10 +87,10 @@ namespace JobServerApplication
         public JumboFile GetFileInfo(DfsClient dfsClient, string path)
         {
             JumboFile file;
-            if( !_files.TryGetValue(path, out file) )
+            if (!_files.TryGetValue(path, out file))
             {
                 file = dfsClient.NameServer.GetFileInfo(path);
-                if( file == null )
+                if (file == null)
                     throw new ArgumentException("File doesn't exist."); // TODO: Different exception type.
                 _files.Add(path, file);
             }
@@ -99,9 +99,9 @@ namespace JobServerApplication
 
         public void AbortTasks()
         {
-            foreach( TaskInfo jobTask in _job.Stages.SelectMany(stage => stage.Tasks) )
+            foreach (TaskInfo jobTask in _job.Stages.SelectMany(stage => stage.Tasks))
             {
-                if( jobTask.State <= TaskState.Running )
+                if (jobTask.State <= TaskState.Running)
                     jobTask.SchedulerInfo.State = TaskState.Aborted;
             }
         }

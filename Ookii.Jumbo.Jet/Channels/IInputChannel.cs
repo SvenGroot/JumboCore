@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </para>
         /// </remarks>
         event EventHandler<MemoryStorageFullEventArgs> MemoryStorageFull;
-        
+
         /// <summary>
         /// Gets the configuration of the input channel.
         /// </summary>

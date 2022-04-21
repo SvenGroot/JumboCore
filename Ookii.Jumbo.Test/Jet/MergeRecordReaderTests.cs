@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Test.Jet
         [OneTimeSetUp]
         public void SetUp()
         {
-            if( Directory.Exists(Utilities.TestOutputPath) )
+            if (Directory.Exists(Utilities.TestOutputPath))
                 Directory.Delete(Utilities.TestOutputPath, true);
             Directory.CreateDirectory(Utilities.TestOutputPath);
 
@@ -94,16 +94,16 @@ namespace Ookii.Jumbo.Test.Jet
             const int partitionGroupSize = 2;
             List<int>[] sortedLists = new List<int>[partitions + extraPartitionGroups * partitionGroupSize];
             RecordInput[] partitionInputs = new RecordInput[partitions];
-            for( int x = 0; x < inputCount; ++x )
+            for (int x = 0; x < inputCount; ++x)
             {
-                for( int partition = 0; partition < partitions; ++partition )
+                for (int partition = 0; partition < partitions; ++partition)
                 {
                     CreatePartition(recordCountMin, recordCountMax, rnd, sortedLists, partitionInputs, partition, 0, memoryInputs);
                 }
                 reader.AddInput(partitionInputs);
             }
 
-            for( int partition = 0; partition < partitions; ++partition, reader.NextPartition() )
+            for (int partition = 0; partition < partitions; ++partition, reader.NextPartition())
             {
                 List<int> expected = sortedLists[partition];
                 expected.Sort();
@@ -114,21 +114,21 @@ namespace Ookii.Jumbo.Test.Jet
             }
 
             partitionInputs = new RecordInput[partitionGroupSize];
-            for( int group = 0; group < extraPartitionGroups; ++group )
+            for (int group = 0; group < extraPartitionGroups; ++group)
             {
                 int firstPartition = partitions + group * partitionGroupSize;
                 reader.AssignAdditionalPartitions(Enumerable.Range(firstPartition, partitionGroupSize).ToList());
                 reader.NextPartition();
-                for( int input = 0; input < inputCount; ++input )
+                for (int input = 0; input < inputCount; ++input)
                 {
-                    for( int partition = 0; partition < partitionGroupSize; ++partition )
+                    for (int partition = 0; partition < partitionGroupSize; ++partition)
                     {
                         CreatePartition(recordCountMin, recordCountMax, rnd, sortedLists, partitionInputs, partition, firstPartition, memoryInputs);
                     }
                     reader.AddInput(partitionInputs);
                 }
 
-                for( int partition = firstPartition; partition < firstPartition + partitionGroupSize; ++partition, reader.NextPartition() )
+                for (int partition = firstPartition; partition < firstPartition + partitionGroupSize; ++partition, reader.NextPartition())
                 {
                     List<int> expected = sortedLists[partition];
                     expected.Sort();
@@ -142,11 +142,11 @@ namespace Ookii.Jumbo.Test.Jet
 
         private static void CreatePartition(int recordCountMin, int recordCountMax, Random rnd, List<int>[] sortedLists, RecordInput[] partitionInputs, int partition, int firstPartition, bool memoryInputs)
         {
-            if( sortedLists[firstPartition + partition] == null )
+            if (sortedLists[firstPartition + partition] == null)
                 sortedLists[firstPartition + partition] = new List<int>();
             int recordCount = rnd.Next(recordCountMin, recordCountMax);
             List<int> records = new List<int>(recordCount);
-            for( int record = 0; record < recordCount; ++record )
+            for (int record = 0; record < recordCount; ++record)
             {
                 int value = rnd.Next();
                 records.Add(value);

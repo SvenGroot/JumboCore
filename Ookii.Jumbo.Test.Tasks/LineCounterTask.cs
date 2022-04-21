@@ -17,13 +17,13 @@ namespace Ookii.Jumbo.Test.Tasks
         {
             _log.Info("Running");
             int lines = 0;
-            while( input.ReadRecord() )
+            while (input.ReadRecord())
             {
                 ++lines;
                 TaskContext.StatusMessage = string.Format("Counted {0} lines.", lines);
             }
             _log.Info(lines);
-            if( writer != null )
+            if (writer != null)
                 writer.WriteRecord(lines);
             _log.Info("Done");
         }

@@ -9,7 +9,7 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// Provides information about additional progress counters in the <see cref="JobConfiguration"/>.
     /// </summary>
     [Serializable] // Binary serializable because it's used in JobStatus
-    [XmlType(Namespace=JobConfiguration.XmlNamespace)] // XML serializable for JobConfiguration.
+    [XmlType(Namespace = JobConfiguration.XmlNamespace)] // XML serializable for JobConfiguration.
     public class AdditionalProgressCounter
     {
         /// <summary>
@@ -37,7 +37,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public override bool Equals(object obj)
         {
             AdditionalProgressCounter counter = obj as AdditionalProgressCounter;
-            if( counter == null )
+            if (counter == null)
                 return base.Equals(obj);
             else
                 return counter.TypeName == TypeName;

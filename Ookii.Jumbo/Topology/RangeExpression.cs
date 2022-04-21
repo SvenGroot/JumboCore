@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Topology
 {
@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.Topology
 
             public TextNode(string text)
             {
-                if( text == null )
+                if (text == null)
                     throw new ArgumentNullException(nameof(text));
 
                 _text = text;
@@ -68,19 +68,19 @@ namespace Ookii.Jumbo.Topology
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 // We want to return -1 if index == length! This is caught by the end > length comparison below.
-                if( index < 0 || index > value.Length )
+                if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
                 int end = index + _text.Length;
-                if( end > value.Length )
+                if (end > value.Length)
                     return -1;
 
-                for( int matchIndex = 0; index < end; ++index, ++matchIndex )
+                for (int matchIndex = 0; index < end; ++index, ++matchIndex)
                 {
-                    if( matchCase ? value[index] != _text[matchIndex] : char.ToUpperInvariant(value[index]) != char.ToUpperInvariant(_text[matchIndex]) )
+                    if (matchCase ? value[index] != _text[matchIndex] : char.ToUpperInvariant(value[index]) != char.ToUpperInvariant(_text[matchIndex]))
                         return -1;
                 }
 
@@ -102,13 +102,13 @@ namespace Ookii.Jumbo.Topology
 
             public RangeNode(int minInclusive, int maxInclusive, int minCharCount, int maxCharCount)
             {
-                if( minInclusive < 0 )
+                if (minInclusive < 0)
                     throw new ArgumentOutOfRangeException(nameof(minInclusive));
-                if( maxInclusive < minInclusive )
+                if (maxInclusive < minInclusive)
                     throw new ArgumentOutOfRangeException(nameof(maxInclusive));
-                if( minCharCount < 1 )
+                if (minCharCount < 1)
                     throw new ArgumentOutOfRangeException(nameof(minCharCount));
-                if( maxCharCount < minCharCount )
+                if (maxCharCount < minCharCount)
                     throw new ArgumentOutOfRangeException(nameof(maxCharCount));
 
                 _minInclusive = minInclusive;
@@ -119,25 +119,25 @@ namespace Ookii.Jumbo.Topology
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 // We want to return -1 if index == length. This is caught by the loop and min char count check below.
-                if( index < 0 || index > value.Length )
+                if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
                 int start = index;
-                while( index < value.Length && char.IsNumber(value, index) )
+                while (index < value.Length && char.IsNumber(value, index))
                 {
                     ++index;
                 }
 
                 int count = index - start;
-                if( count >= _minCharCount && count <= _maxCharCount )
+                if (count >= _minCharCount && count <= _maxCharCount)
                 {
                     int number;
-                    if( int.TryParse(value.Substring(start, index - start), out number) )
+                    if (int.TryParse(value.Substring(start, index - start), out number))
                     {
-                        if( number >= _minInclusive && number <= _maxInclusive )
+                        if (number >= _minInclusive && number <= _maxInclusive)
                             return index;
                     }
                 }
@@ -156,7 +156,7 @@ namespace Ookii.Jumbo.Topology
 
             public void AddChoice(List<BaseNode> choice)
             {
-                if( choice == null )
+                if (choice == null)
                     throw new ArgumentNullException(nameof(choice));
 
                 _choices.Add(choice);
@@ -169,22 +169,22 @@ namespace Ookii.Jumbo.Topology
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
-                if( index < 0 || index > value.Length )
+                if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                foreach( List<BaseNode> choice in _choices )
+                foreach (List<BaseNode> choice in _choices)
                 {
                     int current = index;
 
-                    foreach( BaseNode node in choice )
+                    foreach (BaseNode node in choice)
                     {
                         current = node.Match(value, current, matchCase);
-                        if( current < 0 )
+                        if (current < 0)
                             break;
                     }
-                    if( current >= 0 )
+                    if (current >= 0)
                         return current;
                 }
 
@@ -195,16 +195,16 @@ namespace Ookii.Jumbo.Topology
             {
                 StringBuilder result = new StringBuilder();
                 bool first = true;
-                foreach( List<BaseNode> choice in _choices )
+                foreach (List<BaseNode> choice in _choices)
                 {
-                    if( first )
+                    if (first)
                         first = false;
                     else
                         result.Append('|');
 
-                    foreach( BaseNode node in choice )
+                    foreach (BaseNode node in choice)
                     {
-                        if( node is ChoiceNode && choice.Count > 1 )
+                        if (node is ChoiceNode && choice.Count > 1)
                         {
                             result.Append('(');
                             result.Append(node);
@@ -231,7 +231,7 @@ namespace Ookii.Jumbo.Topology
         /// <exception cref="FormatException"><paramref name="pattern"/> is not a valid range expression.</exception>
         public RangeExpression(string pattern)
         {
-            if( pattern == null )
+            if (pattern == null)
                 throw new ArgumentNullException(nameof(pattern));
 
             _nodes = ParsePattern(pattern);
@@ -255,14 +255,14 @@ namespace Ookii.Jumbo.Topology
         /// <returns><see langword="true"/> if <paramref name="value"/> matches the pattern; otherwise, <see langword="false"/>.</returns>
         public bool Match(string value, bool matchCase)
         {
-            if( value == null )
+            if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
             int index = 0;
-            foreach( BaseNode node in _nodes )
+            foreach (BaseNode node in _nodes)
             {
                 index = node.Match(value, index, matchCase);
-                if( index < 0 )
+                if (index < 0)
                     return false;
             }
 
@@ -281,12 +281,12 @@ namespace Ookii.Jumbo.Topology
             int minInclusive = 0;
             int minCharCount = 0;
 
-            foreach( char c in pattern )
+            foreach (char c in pattern)
             {
-                switch( state )
+                switch (state)
                 {
                 case ParseState.Text:
-                    switch( c )
+                    switch (c)
                     {
                     case '[':
                         AddCurrentTextNode(current, temp);
@@ -298,7 +298,7 @@ namespace Ookii.Jumbo.Topology
                         break;
                     case '(':
                         AddCurrentTextNode(current, temp);
-                        if( groups == null )
+                        if (groups == null)
                             groups = new Stack<Tuple<List<BaseNode>, ChoiceNode>>();
                         groups.Push(Tuple.Create(currentGroup, choice));
                         currentGroup = new List<BaseNode>();
@@ -307,13 +307,13 @@ namespace Ookii.Jumbo.Topology
                         break;
                     case ')':
                         AddCurrentTextNode(current, temp);
-                        if( groups == null || groups.Count == 0 )
+                        if (groups == null || groups.Count == 0)
                             throw new FormatException("Invalid range expression.");
                         var parent = groups.Pop();
                         List<BaseNode> group = currentGroup;
                         currentGroup = parent.Item1;
                         choice = parent.Item2;
-                        if( choice == null )
+                        if (choice == null)
                             current = currentGroup;
                         else
                             current = choice.LastChoice;
@@ -324,7 +324,7 @@ namespace Ookii.Jumbo.Topology
                         break;
                     case '|':
                         AddCurrentTextNode(current, temp);
-                        if( choice == null )
+                        if (choice == null)
                         {
                             choice = new ChoiceNode();
                             choice.AddChoice(current);
@@ -343,11 +343,11 @@ namespace Ookii.Jumbo.Topology
                     state = ParseState.Text;
                     break;
                 case ParseState.RangeMinimum:
-                    if( char.IsNumber(c) )
+                    if (char.IsNumber(c))
                         temp.Append(c);
-                    else if( c == '-' )
+                    else if (c == '-')
                     {
-                        if( temp.Length == 0 )
+                        if (temp.Length == 0)
                             throw new FormatException("Invalid range expression.");
                         minInclusive = int.Parse(temp.ToString(), CultureInfo.InvariantCulture);
                         minCharCount = temp.Length;
@@ -358,11 +358,11 @@ namespace Ookii.Jumbo.Topology
                         throw new FormatException("Invalid range expression.");
                     break;
                 case ParseState.RangeMaximum:
-                    if( char.IsNumber(c) )
+                    if (char.IsNumber(c))
                         temp.Append(c);
-                    else if( c == ']' )
+                    else if (c == ']')
                     {
-                        if( temp.Length == 0 )
+                        if (temp.Length == 0)
                             throw new FormatException("Invalid range expression.");
                         current.Add(new RangeNode(minInclusive, int.Parse(temp.ToString(), CultureInfo.InvariantCulture), minCharCount, Math.Max(minCharCount, temp.Length)));
                         temp.Length = 0;
@@ -374,10 +374,10 @@ namespace Ookii.Jumbo.Topology
                 }
             }
 
-            if( state != ParseState.Text || groups != null && groups.Count > 0 )
+            if (state != ParseState.Text || groups != null && groups.Count > 0)
                 throw new FormatException("Invalid range expression.");
 
-            if( temp.Length > 0 )
+            if (temp.Length > 0)
                 current.Add(new TextNode(temp.ToString()));
 
             return currentGroup;
@@ -392,9 +392,9 @@ namespace Ookii.Jumbo.Topology
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
-            foreach( BaseNode node in _nodes )
+            foreach (BaseNode node in _nodes)
             {
-                if( node is ChoiceNode && _nodes.Count > 1 )
+                if (node is ChoiceNode && _nodes.Count > 1)
                 {
                     result.Append("(");
                     result.Append(node);
@@ -409,7 +409,7 @@ namespace Ookii.Jumbo.Topology
 
         private static void AddCurrentTextNode(List<BaseNode> current, StringBuilder temp)
         {
-            if( temp.Length > 0 )
+            if (temp.Length > 0)
             {
                 current.Add(new TextNode(temp.ToString()));
                 temp.Length = 0;

@@ -21,9 +21,9 @@ namespace Ookii.Jumbo.Test.Tasks
             string stageId = TaskContext.GetSetting(StageToVerifySettingName, (string)null);
             StageConfiguration stage = TaskContext.JobConfiguration.GetStage(stageId);
             bool result = true;
-            for( int x = 0; x < stage.TaskCount; ++x )
+            for (int x = 0; x < stage.TaskCount; ++x)
             {
-                if( client.GetFileInfo(FileDataOutput.GetOutputPath(stage, x + 1)) == null )
+                if (client.GetFileInfo(FileDataOutput.GetOutputPath(stage, x + 1)) == null)
                 {
                     result = false;
                     break;

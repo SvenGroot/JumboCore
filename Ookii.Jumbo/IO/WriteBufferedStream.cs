@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -35,11 +35,11 @@ namespace Ookii.Jumbo.IO
         /// <param name="bufferSize">The size of the buffer, in bytes.</param>
         public WriteBufferedStream(Stream stream, int bufferSize)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            if( bufferSize <= 0 )
+            if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
-            if( !stream.CanWrite )
+            if (!stream.CanWrite)
                 throw new ArgumentException("You must use a writable stream.", nameof(stream));
             _stream = stream;
             _buffer = new byte[bufferSize];
@@ -93,7 +93,7 @@ namespace Ookii.Jumbo.IO
         public override void Flush()
         {
             CheckDisposed();
-            if( _bufferPos > 0 )
+            if (_bufferPos > 0)
                 _stream.Write(_buffer, 0, _bufferPos);
             _bufferPos = 0;
         }
@@ -106,9 +106,9 @@ namespace Ookii.Jumbo.IO
         /// </value>
         public override long Length
         {
-            get 
+            get
             {
-                return _stream.Length + _bufferPos; 
+                return _stream.Length + _bufferPos;
             }
         }
 
@@ -176,23 +176,23 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > buffer.Length )
+            if (offset + count > buffer.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
-            while( count > 0 )
+            while (count > 0)
             {
                 int length = Math.Min(_buffer.Length - _bufferPos, count);
                 Array.Copy(buffer, offset, _buffer, _bufferPos, length);
                 _bufferPos += length;
                 count -= length;
                 offset += length;
-                if( _bufferPos == _buffer.Length )
+                if (_bufferPos == _buffer.Length)
                     Flush();
             }
         }
@@ -206,10 +206,10 @@ namespace Ookii.Jumbo.IO
         {
             try
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
                     Flush();
-                    if( disposing )
+                    if (disposing)
                         _stream.Dispose();
                     _disposed = true;
                 }
@@ -222,7 +222,7 @@ namespace Ookii.Jumbo.IO
 
         private void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
         }
     }

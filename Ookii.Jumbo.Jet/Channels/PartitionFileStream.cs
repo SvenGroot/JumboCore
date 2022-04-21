@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -71,23 +71,23 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > buffer.Length )
+            if (offset + count > buffer.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
-            if( _currentSegment == null )
+            if (_currentSegment == null)
                 return 0;
 
             int totalBytesRead = 0;
-            while( count > 0 )
+            while (count > 0)
             {
                 int bytesRead = _currentSegment.Read(buffer, offset, count);
-                if( bytesRead == 0 && !NextSegment() )
+                if (bytesRead == 0 && !NextSegment())
                     break;
                 totalBytesRead += bytesRead;
                 _position += bytesRead;
@@ -116,24 +116,24 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
                 _indexEntries.Dispose();
-                if( _currentSegment != null )
+                if (_currentSegment != null)
                     _currentSegment.Dispose();
-                if( _currentSegmentRaw != null )
+                if (_currentSegmentRaw != null)
                     _currentSegmentRaw.Dispose();
-                if( _baseStream != null )
+                if (_baseStream != null)
                     _baseStream.Dispose();
             }
         }
 
         private bool NextSegment()
         {
-            if( _currentSegment != null )
+            if (_currentSegment != null)
                 _currentSegment.Dispose();
 
-            if( !_indexEntries.MoveNext() )
+            if (!_indexEntries.MoveNext())
             {
                 _currentSegment = null;
                 return false;

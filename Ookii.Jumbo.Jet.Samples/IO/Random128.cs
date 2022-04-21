@@ -197,9 +197,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             ulong bitmap;
 
             bitmap = advance.Low64;
-            for( int i = 0; bitmap != 0 && i < 64; i++ )
+            for (int i = 0; bitmap != 0 && i < 64; i++)
             {
-                if( (bitmap & ((ulong)1 << i)) != 0 )
+                if ((bitmap & ((ulong)1 << i)) != 0)
                 {
                     /* advance random number by f**(2**i) (x)
                      */
@@ -208,9 +208,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
                 }
             }
             bitmap = advance.High64;
-            for( int i = 0; bitmap != 0 && i < 64; i++ )
+            for (int i = 0; bitmap != 0 && i < 64; i++)
             {
-                if( (bitmap & ((ulong)1 << i)) != 0 )
+                if ((bitmap & ((ulong)1 << i)) != 0)
                 {
                     /* advance random number by f**(2**(i + 64)) (x)
                      */

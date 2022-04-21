@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcServerConnectionHandler(Socket serverSocket)
         {
-            if( serverSocket == null )
+            if (serverSocket == null)
                 throw new ArgumentNullException(nameof(serverSocket));
 
             _serverSocket = serverSocket;
@@ -38,17 +38,17 @@ namespace Ookii.Jumbo.Rpc
             bool hasData = false;
             try
             {
-                if( !_stream.HasData )
+                if (!_stream.HasData)
                     _stream.BeginBuffering(_beginReadRequestCallback);
                 else
                     hasData = true;
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 CloseOnError(ex);
             }
 
-            if( hasData )
+            if (hasData)
             {
                 ProcessRequest();
             }
@@ -61,17 +61,17 @@ namespace Ookii.Jumbo.Rpc
             try
             {
                 _stream.EndBuffering(ar);
-                if( !_stream.HasData )
+                if (!_stream.HasData)
                     Close();
                 else
                     hasData = true;
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 CloseOnError(ex);
             }
 
-            if( hasData )
+            if (hasData)
             {
                 ProcessRequest();
             }
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Rpc
         {
             try
             {
-                if( !_hostNameReceived )
+                if (!_hostNameReceived)
                 {
                     _context.ClientHostName = _stream.ReadString();
                     _hostNameReceived = true;
@@ -93,7 +93,7 @@ namespace Ookii.Jumbo.Rpc
 
                 RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, this);
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 TrySendError(ex);
             }
@@ -130,11 +130,11 @@ namespace Ookii.Jumbo.Rpc
 
         private void SendResponse(bool success, object response)
         {
-            using( MemoryStream contentStream = new MemoryStream() )
+            using (MemoryStream contentStream = new MemoryStream())
             {
                 RpcResponseStatus status = success ? (response == null ? RpcResponseStatus.SuccessNoValue : RpcResponseStatus.Success) : RpcResponseStatus.Error;
                 contentStream.WriteByte((byte)status);
-                if( response != null )
+                if (response != null)
                     _formatter.Serialize(contentStream, response);
                 contentStream.WriteTo(_stream);
             }

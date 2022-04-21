@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="inputStage">The stage configuration of the input stage.</param>
         public InputStageInfo(StageConfiguration inputStage)
         {
-            if( inputStage == null )
+            if (inputStage == null)
                 throw new ArgumentNullException(nameof(inputStage));
 
             InputStage = inputStage;
@@ -43,9 +43,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </summary>
         public Type PartitionerType
         {
-            get 
-            { 
-                return _partitionerType ?? typeof(HashPartitioner<>).MakeGenericType(InputStageOutputType); 
+            get
+            {
+                return _partitionerType ?? typeof(HashPartitioner<>).MakeGenericType(InputStageOutputType);
             }
             set { _partitionerType = value; }
         }
@@ -103,7 +103,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             Type inputType = InputStageOutputType;
             Type partitionerInterfaceType = PartitionerType.FindGenericInterfaceType(typeof(IPartitioner<>));
             Type partitionedType = partitionerInterfaceType.GetGenericArguments()[0];
-            if( partitionedType != inputType )
+            if (partitionedType != inputType)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The partitioner type {0} cannot partition objects of type {1}.", PartitionerType, inputType));
         }
 
@@ -117,11 +117,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             IEnumerable<Type> acceptedInputTypes;
             Type recordType;
-            if( stageMultiInputRecordReaderType != null )
+            if (stageMultiInputRecordReaderType != null)
             {
                 // The output of the stage multi input record reader type must match the input type of the stage.
                 recordType = RecordReader.GetRecordType(stageMultiInputRecordReaderType);
-                if( recordType != inputType )
+                if (recordType != inputType)
                     throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified stage multi input record reader type {0} doesn't return objects of type {1}.", stageMultiInputRecordReaderType, inputType), nameof(stageMultiInputRecordReaderType));
 
                 acceptedInputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType);
@@ -131,11 +131,11 @@ namespace Ookii.Jumbo.Jet.Jobs
 
             Type stageOutputType = InputStageOutputType;
             recordType = RecordReader.GetRecordType(MultiInputRecordReaderType);
-            if( !acceptedInputTypes.Contains(recordType) )
+            if (!acceptedInputTypes.Contains(recordType))
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified channel multi input record reader type {0} doesn't return objects of the correct type.", MultiInputRecordReaderType));
 
             IEnumerable<Type> channelAcceptedInputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType);
-            if( !channelAcceptedInputTypes.Contains(stageOutputType) )
+            if (!channelAcceptedInputTypes.Contains(stageOutputType))
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified channel multi input record reader type {0} doesn't accept objects of the correct type.", MultiInputRecordReaderType));
         }
 

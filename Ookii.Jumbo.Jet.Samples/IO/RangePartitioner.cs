@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs;
-using System.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.IO
@@ -75,9 +75,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
             public override int GetPartition(byte[] key)
             {
-                for( int x = _begin; x < _end; ++x )
+                for (int x = _begin; x < _end; ++x)
                 {
-                    if( GenSortRecord.CompareKeys(key, _splitPoints[x]) < 0 )
+                    if (GenSortRecord.CompareKeys(key, _splitPoints[x]) < 0)
                         return x;
                 }
                 return _end;
@@ -86,7 +86,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             public override string ToString()
             {
                 StringBuilder result = new StringBuilder();
-                for( int x = _begin; x < _end; ++x )
+                for (int x = _begin; x < _end; ++x)
                 {
                     result.Append(_splitPoints[x]);
                     result.Append(";");
@@ -114,9 +114,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>The partition number for the specified value.</returns>
         public int GetPartition(GenSortRecord value)
         {
-            if( value == null )
+            if (value == null)
                 throw new ArgumentNullException("value");
-            if( _trie == null )
+            if (_trie == null)
             {
                 ReadPartitionFile();
                 _trie = BuildTrie(0, _splitPoints.Length, new byte[] { }, 2);
@@ -144,12 +144,12 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
             List<byte[]> sampleData = new List<byte[]>(sampleSize);
 
-            for( int sample = 0; sample < samples; ++sample )
+            for (int sample = 0; sample < samples; ++sample)
             {
-                using( RecordReader<GenSortRecord> reader = (RecordReader<GenSortRecord>)input.CreateRecordReader(input.TaskInputs[sample * sampleStep]) )
+                using (RecordReader<GenSortRecord> reader = (RecordReader<GenSortRecord>)input.CreateRecordReader(input.TaskInputs[sample * sampleStep]))
                 {
                     int records = 0;
-                    while( records++ < recordsPerSample && reader.ReadRecord() )
+                    while (records++ < recordsPerSample && reader.ReadRecord())
                     {
                         sampleData.Add(reader.CurrentRecord.ExtractKeyBytes());
                     }
@@ -164,9 +164,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
             float stepSize = sampleData.Count / (float)partitions;
 
-            using( Stream stream = fileSystemClient.CreateFile(partitionFilePath) )
+            using (Stream stream = fileSystemClient.CreateFile(partitionFilePath))
             {
-                for( int x = 1; x < partitions; ++x )
+                for (int x = 1; x < partitions; ++x)
                 {
                     stream.Write(sampleData[(int)Math.Round(x * stepSize)], 0, GenSortRecord.KeySize);
                 }
@@ -180,20 +180,20 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             List<byte[]> splitPoints = new List<byte[]>();
             string partitionFilePath = Path.Combine(TaskContext.LocalJobDirectory, SplitFileName);
             _log.InfoFormat("Reading local partition split file {0}.", partitionFilePath);
-            using( FileStream stream =  File.OpenRead(partitionFilePath) )
+            using (FileStream stream = File.OpenRead(partitionFilePath))
             {
                 int bytesRead;
                 do
                 {
                     byte[] key = new byte[GenSortRecord.KeySize];
                     bytesRead = stream.Read(key, 0, GenSortRecord.KeySize);
-                    if( bytesRead == GenSortRecord.KeySize )
+                    if (bytesRead == GenSortRecord.KeySize)
                     {
                         splitPoints.Add(key);
                     }
-                } while( bytesRead == GenSortRecord.KeySize );
+                } while (bytesRead == GenSortRecord.KeySize);
             }
-            if( splitPoints.Count != Partitions - 1 )
+            if (splitPoints.Count != Partitions - 1)
                 throw new InvalidOperationException("The partition file is invalid.");
             _splitPoints = splitPoints.ToArray();
         }
@@ -201,18 +201,18 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         private TrieNode BuildTrie(int begin, int end, byte[] prefix, int maxDepth)
         {
             int depth = prefix.Length;
-            if( depth >= maxDepth || begin == end )
+            if (depth >= maxDepth || begin == end)
                 return new LeafTrieNode(depth, _splitPoints, begin, end);
 
             InnerTrieNode result = new InnerTrieNode(depth);
             int current = begin;
-            for( int x = 0; x < 128; ++x )
+            for (int x = 0; x < 128; ++x)
             {
                 byte[] newPrefix = new byte[depth + 1];
                 prefix.CopyTo(newPrefix, 0);
                 newPrefix[depth] = (byte)(x + 1);
                 begin = current;
-                while( current < end && GenSortRecord.ComparePartialKeys(_splitPoints[current], newPrefix) < 0 )
+                while (current < end && GenSortRecord.ComparePartialKeys(_splitPoints[current], newPrefix) < 0)
                 {
                     ++current;
                 }

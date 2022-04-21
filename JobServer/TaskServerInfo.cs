@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Jet;
-using System.Threading;
 using Ookii.Jumbo.Topology;
 
 namespace JobServerApplication

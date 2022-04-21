@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets or sets the an informational string indicating the source of the records.
         /// </summary>
-        string SourceName { get; set;  }
+        string SourceName { get; set; }
 
         /// <summary>
         /// Gets a value that indicates whether there are records available on the data source that this reader is reading from.

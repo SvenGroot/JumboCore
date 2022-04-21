@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -37,12 +37,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(BinaryWriter writer)
         {
-            if( _items == null )
+            if (_items == null)
                 WritableUtility.Write7BitEncodedInt32(writer, 0);
             else
             {
                 WritableUtility.Write7BitEncodedInt32(writer, Length);
-                for( int x = 0; x < Length; ++x )
+                for (int x = 0; x < Length; ++x)
                     writer.Write(_items[x]);
             }
         }
@@ -54,9 +54,9 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public void Read(BinaryReader reader)
         {
             Length = WritableUtility.Read7BitEncodedInt32(reader);
-            if( _items == null || _items.Length < Length )
+            if (_items == null || _items.Length < Length)
                 _items = new int[Length];
-            for( int x = 0; x < Length; ++x )
+            for (int x = 0; x < Length; ++x)
                 _items[x] = reader.ReadInt32();
         }
 
@@ -73,7 +73,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         IEnumerable<int> ITransaction.Items
         {
-            get { return _items.Take(Length);  }
+            get { return _items.Take(Length); }
         }
 
         int ITransaction.Count

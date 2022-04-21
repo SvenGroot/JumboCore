@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Ookii.Jumbo;
-using System.Net;
-using System.IO;
-using System.Net.Sockets;
-using Ookii.Jumbo.Jet.Channels;
-using System.Diagnostics;
 using Ookii.Jumbo.Jet;
-using System.Globalization;
+using Ookii.Jumbo.Jet.Channels;
 
 namespace TaskServerApplication
 {
@@ -47,7 +47,7 @@ namespace TaskServerApplication
         public FileChannelServer(TaskServer taskServer, IPAddress[] localAddresses, int port, int maxConnections, int maxCacheSize)
             : base(localAddresses, port, maxConnections)
         {
-            if( taskServer == null )
+            if (taskServer == null)
                 throw new ArgumentNullException(nameof(taskServer));
             _taskServer = taskServer;
             _indexCache = new PartitionFileIndexCache(maxCacheSize);
@@ -101,7 +101,7 @@ namespace TaskServerApplication
                     throw;
                 }
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 _log.Error("An error occurred handling a client connection.", ex);
             }
@@ -110,19 +110,19 @@ namespace TaskServerApplication
         private void SendSingleFileOutput(BinaryWriter writer, Guid jobId, int[] partitions, string[] tasks)
         {
             string dir = _taskServer.GetJobDirectory(jobId);
-            foreach( string task in tasks )
+            foreach (string task in tasks)
             {
                 string outputFile = FileOutputChannel.CreateChannelFileName(task);
                 string path = Path.Combine(dir, outputFile);
                 PartitionFileIndex index = _indexCache.GetIndex(path);
                 long totalSize = partitions.Sum(p => index.GetPartitionSize(p, true));
                 writer.Write(totalSize);
-                using( FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize) )
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize))
                 {
-                    foreach( int partition in partitions )
+                    foreach (int partition in partitions)
                     {
                         IEnumerable<PartitionFileIndexEntry> entries = index.GetEntriesForPartition(partition);
-                        if( entries == null )
+                        if (entries == null)
                             writer.Write(0L);
                         else
                         {
@@ -133,7 +133,7 @@ namespace TaskServerApplication
                             writer.Write(uncompressedPartitionSize);
                             writer.Write(segmentCount);
                             // No need for compressed size because compression is not supported for partition files currently.
-                            foreach( PartitionFileIndexEntry entry in entries )
+                            foreach (PartitionFileIndexEntry entry in entries)
                             {
                                 writer.Write(entry.CompressedSize);
                                 writer.Write(entry.UncompressedSize);

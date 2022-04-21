@@ -26,7 +26,7 @@ namespace TaskServerApplication
 
         public TaskRunner(TaskServer taskServer)
         {
-            if( taskServer == null )
+            if (taskServer == null)
                 throw new ArgumentNullException(nameof(taskServer));
             _taskServer = taskServer;
             _createProcessDelay = _taskServer.Configuration.TaskServer.ProcessCreationDelay;
@@ -43,16 +43,16 @@ namespace TaskServerApplication
         public void Stop()
         {
             _running = false;
-            lock( _tasks )
+            lock (_tasks)
             {
                 Monitor.Pulse(_tasks);
             }
             _taskStarterThread.Join();
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
-                foreach( RunningTask task in _runningTasks.Values )
+                foreach (RunningTask task in _runningTasks.Values)
                 {
-                    if( task.State == TaskAttemptStatus.Running )
+                    if (task.State == TaskAttemptStatus.Running)
                         task.Kill();
                 }
             }
@@ -60,7 +60,7 @@ namespace TaskServerApplication
 
         public void AddTask(RunTaskJetHeartbeatResponse task)
         {
-            lock( _tasks )
+            lock (_tasks)
             {
                 _tasks.Enqueue(task);
                 Monitor.Pulse(_tasks);
@@ -71,9 +71,9 @@ namespace TaskServerApplication
         {
             string fullTaskId = Job.CreateFullTaskId(taskHeartbeat.JobId, taskHeartbeat.TaskAttemptId);
             RunningTask task = null;
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
-                if( _runningTasks.TryGetValue(fullTaskId, out task) )
+                if (_runningTasks.TryGetValue(fullTaskId, out task))
                 {
                     _runningTasks.Remove(fullTaskId);
                     _log.InfoFormat("Killing task {{0}}_{1}.", taskHeartbeat.JobId, taskHeartbeat.TaskAttemptId);
@@ -91,15 +91,15 @@ namespace TaskServerApplication
 
         public void KillTimedOutTasks()
         {
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 List<string> tasksToRemove = null;
-                foreach( RunningTask task in _runningTasks.Values )
+                foreach (RunningTask task in _runningTasks.Values)
                 {
-                    if( task.IsTimedOut )
+                    if (task.IsTimedOut)
                     {
                         _log.WarnFormat("Task {0} has not reported progress for {1:0.0} seconds and is being killed.", task.FullTaskAttemptId, (DateTime.UtcNow - task.LastProgressTimeUtc).TotalSeconds);
-                        if( tasksToRemove == null )
+                        if (tasksToRemove == null)
                             tasksToRemove = new List<string>();
                         tasksToRemove.Add(task.FullTaskAttemptId);
                         task.State = TaskAttemptStatus.Error;
@@ -107,9 +107,9 @@ namespace TaskServerApplication
                         _taskServer.NotifyTaskStatusChanged(task.JobId, task.TaskAttemptId, TaskAttemptStatus.Error, null, null);
                     }
                 }
-                if( tasksToRemove != null )
+                if (tasksToRemove != null)
                 {
-                    foreach( string task in tasksToRemove )
+                    foreach (string task in tasksToRemove)
                         _runningTasks.Remove(task);
                 }
             }
@@ -117,13 +117,13 @@ namespace TaskServerApplication
 
         public void ReportProgress(string fullTaskAttemptId, TaskProgress progress)
         {
-            if( fullTaskAttemptId == null )
+            if (fullTaskAttemptId == null)
                 throw new ArgumentNullException(nameof(fullTaskAttemptId));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task;
-                if( _runningTasks.TryGetValue(fullTaskAttemptId, out task) && task.State == TaskAttemptStatus.Running )
+                if (_runningTasks.TryGetValue(fullTaskAttemptId, out task) && task.State == TaskAttemptStatus.Running)
                 {
                     _log.InfoFormat("Task {0} progress: {1}", fullTaskAttemptId, progress);
                     task.LastProgressTimeUtc = DateTime.UtcNow;
@@ -136,13 +136,13 @@ namespace TaskServerApplication
 
         public void ReportCompletion(string fullTaskId, TaskMetrics metrics)
         {
-            if( fullTaskId == null )
+            if (fullTaskId == null)
                 throw new ArgumentNullException(nameof(fullTaskId));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task;
-                if( _runningTasks.TryGetValue(fullTaskId, out task) && task.State == TaskAttemptStatus.Running )
+                if (_runningTasks.TryGetValue(fullTaskId, out task) && task.State == TaskAttemptStatus.Running)
                 {
                     _log.InfoFormat("Task {0} has completed successfully.", task.FullTaskAttemptId);
                     task.State = TaskAttemptStatus.Completed;
@@ -155,13 +155,13 @@ namespace TaskServerApplication
 
         public void ReportError(string fullTaskId, string failureReason)
         {
-            if( fullTaskId == null )
+            if (fullTaskId == null)
                 throw new ArgumentNullException(nameof(fullTaskId));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task;
-                if( _runningTasks.TryGetValue(fullTaskId, out task) &&(task.State == TaskAttemptStatus.Running || task.State == TaskAttemptStatus.Error) )
+                if (_runningTasks.TryGetValue(fullTaskId, out task) && (task.State == TaskAttemptStatus.Running || task.State == TaskAttemptStatus.Error))
                 {
                     _log.InfoFormat("Task {0} has encountered an error: {1}", task.FullTaskAttemptId, failureReason);
                     task.State = TaskAttemptStatus.Error;
@@ -175,14 +175,14 @@ namespace TaskServerApplication
 
         public void CleanupJobTasks(Guid jobID)
         {
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 string[] tasksToRemove = (from item in _runningTasks
                                           where item.Value.JobId == jobID
                                           select item.Key).ToArray();
-                foreach( string task in tasksToRemove )
+                foreach (string task in tasksToRemove)
                 {
-                    if( _runningTasks[task].State == TaskAttemptStatus.Running )
+                    if (_runningTasks[task].State == TaskAttemptStatus.Running)
                     {
                         _log.WarnFormat("Received cleanup command for still running task {0} (this usually means the job failed).", task);
                         _runningTasks[task].Kill();
@@ -196,13 +196,13 @@ namespace TaskServerApplication
 
         public TaskAttemptStatus GetTaskStatus(string fullTaskID)
         {
-            if( fullTaskID == null )
+            if (fullTaskID == null)
                 throw new ArgumentNullException(nameof(fullTaskID));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task;
-                if( _runningTasks.TryGetValue(fullTaskID, out task) )
+                if (_runningTasks.TryGetValue(fullTaskID, out task))
                 {
                     return task.State;
                 }
@@ -213,10 +213,10 @@ namespace TaskServerApplication
 
         public void RegisterTcpChannelPort(string fullTaskId, int port)
         {
-            if( fullTaskId == null )
+            if (fullTaskId == null)
                 throw new ArgumentNullException(nameof(fullTaskId));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task = _runningTasks[fullTaskId];
                 task.TcpChannelPort = port;
@@ -225,13 +225,13 @@ namespace TaskServerApplication
 
         public int GetTcpChannelPort(string fullTaskId)
         {
-            if( fullTaskId == null )
+            if (fullTaskId == null)
                 throw new ArgumentNullException(nameof(fullTaskId));
 
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 RunningTask task;
-                if( _runningTasks.TryGetValue(fullTaskId, out task) )
+                if (_runningTasks.TryGetValue(fullTaskId, out task))
                     return task.TcpChannelPort;
                 else
                     return 0;
@@ -240,20 +240,20 @@ namespace TaskServerApplication
 
         private void TaskRunnerThread()
         {
-            while( _running )
+            while (_running)
             {
                 RunTaskJetHeartbeatResponse task = null;
-                lock( _tasks )
+                lock (_tasks)
                 {
-                    while( _tasks.Count == 0 && _running )
+                    while (_tasks.Count == 0 && _running)
                         Monitor.Wait(_tasks);
 
-                    if( !_running )
+                    if (!_running)
                         break;
 
                     task = _tasks.Dequeue();
                 }
-                if( task != null )
+                if (task != null)
                 {
                     RunTask(task);
                 }
@@ -268,7 +268,7 @@ namespace TaskServerApplication
             JobConfiguration config;
             try
             {
-                if( !(IO.Directory.Exists(jobDirectory) && _jobConfigurations.ContainsKey(task.Job.JobId)) )
+                if (!(IO.Directory.Exists(jobDirectory) && _jobConfigurations.ContainsKey(task.Job.JobId)))
                 {
                     IO.Directory.CreateDirectory(jobDirectory);
                     _fileSystemClient.DownloadDirectory(task.Job.Path, jobDirectory);
@@ -279,14 +279,14 @@ namespace TaskServerApplication
                 else
                     config = _jobConfigurations[task.Job.JobId];
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 _log.Error("Could not load job configuration.", ex);
                 _taskServer.NotifyTaskStatusChanged(task.Job.JobId, task.TaskAttemptId, TaskAttemptStatus.Error, null, null);
                 return;
             }
             RunningTask runningTask;
-            lock( _runningTasks )
+            lock (_runningTasks)
             {
                 runningTask = new RunningTask(task.Job.JobId, jobDirectory, task.TaskAttemptId, task.Job.Path, config, _taskServer);
                 runningTask.ProcessExited += new EventHandler(RunningTask_ProcessExited);
@@ -298,15 +298,15 @@ namespace TaskServerApplication
         private void SaveTaskHostConfig()
         {
             // Save if using custom configuration; this is used primarily for testing
-            if( ConfigurationManager.GetSection("ookii.jumbo.jet") != _taskServer.Configuration )
+            if (ConfigurationManager.GetSection("ookii.jumbo.jet") != _taskServer.Configuration)
             {
                 string configPath = IO.Path.Combine(_taskServer.Configuration.TaskServer.TaskDirectory, "config");
                 IO.Directory.CreateDirectory(configPath);
                 Configuration configToSave = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                if( configToSave.GetSection("ookii.jumbo.jet") != null )
+                if (configToSave.GetSection("ookii.jumbo.jet") != null)
                     configToSave.Sections.Remove("ookii.jumbo.jet");
                 configToSave.Sections.Add("ookii.jumbo.jet", _taskServer.Configuration);
-                if( configToSave.GetSection("ookii.jumbo.dfs") != null )
+                if (configToSave.GetSection("ookii.jumbo.dfs") != null)
                     configToSave.Sections.Remove("ookii.jumbo.dfs");
                 configToSave.Sections.Add("ookii.jumbo.dfs", _taskServer.DfsConfiguration);
                 configToSave.SaveAs(IO.Path.Combine(configPath, "taskhost.config"), ConfigurationSaveMode.Minimal, true);
@@ -315,12 +315,12 @@ namespace TaskServerApplication
 
         private void RunningTask_ProcessExited(object sender, EventArgs e)
         {
-            if( _running )
+            if (_running)
             {
                 RunningTask task = (RunningTask)sender;
-                lock( _runningTasks )
+                lock (_runningTasks)
                 {
-                    if( task.State < TaskAttemptStatus.Completed )
+                    if (task.State < TaskAttemptStatus.Completed)
                     {
                         _log.ErrorFormat("Task {0} ended without sending success/failure status.", task.FullTaskAttemptId);
                         task.State = TaskAttemptStatus.Error;

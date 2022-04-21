@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="dataServers">The list of data servers that have this block.</param>
         public BlockAssignment(Guid blockId, IEnumerable<ServerAddress> dataServers)
         {
-            if( dataServers == null )
+            if (dataServers == null)
                 throw new ArgumentNullException(nameof(dataServers));
 
             BlockId = blockId;

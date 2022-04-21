@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -18,7 +18,7 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcStream(Socket socket)
         {
-            if( socket == null )
+            if (socket == null)
                 throw new ArgumentNullException(nameof(socket));
 
             _baseStream = new NetworkStream(socket);
@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcStream(TcpClient client)
         {
-            if( client == null )
+            if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
             _baseStream = client.GetStream();
@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Rpc
         public string ReadString()
         {
             int length = ReadByte();
-            if( length == 0 )
+            if (length == 0)
                 return string.Empty;
             Read(_byteBuffer, 0, length);
             return Encoding.UTF8.GetString(_byteBuffer, 0, length);
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Rpc
         public override int Read(byte[] buffer, int offset, int count)
         {
             int bytesRead = 0;
-            if( _dataLength > 0 )
+            if (_dataLength > 0)
             {
                 int realCount = Math.Min(_dataLength, count);
                 Buffer.BlockCopy(_buffer, _dataOffset, buffer, offset, realCount);
@@ -114,9 +114,9 @@ namespace Ookii.Jumbo.Rpc
                 count -= realCount;
                 bytesRead += realCount;
             }
-            while( count > 0 )
+            while (count > 0)
             {
-                if( FillBuffer() == 0 )
+                if (FillBuffer() == 0)
                     throw new RpcException("Remote socket was closed.");
                 int realCount = Math.Min(_dataLength, count);
                 Buffer.BlockCopy(_buffer, _dataOffset, buffer, offset, realCount);
@@ -147,7 +147,7 @@ namespace Ookii.Jumbo.Rpc
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
                 _baseStream.Dispose();
             }

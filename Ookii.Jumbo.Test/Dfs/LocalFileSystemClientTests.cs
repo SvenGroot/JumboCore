@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
-using Ookii.Jumbo.Dfs.FileSystem;
-using System.Reflection;
-using System.IO;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test.Dfs
 {
@@ -88,7 +88,7 @@ namespace Ookii.Jumbo.Test.Dfs
             actual = target.GetDirectoryInfo("/Foo");
             Assert.IsNotNull(actual);
         }
-        
+
         [Test]
         public void TestGetFileInfo()
         {
@@ -138,7 +138,7 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             LocalFileSystemClient target = new LocalFileSystemClient();
             string path = target.Path.Combine(_testPath, "create.dat");
-            using( Stream stream = target.CreateFile(path) )
+            using (Stream stream = target.CreateFile(path))
             {
                 Utilities.GenerateData(stream, 250);
             }
@@ -154,7 +154,7 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             LocalFileSystemClient target = new LocalFileSystemClient(_testPath);
             string path = "/create.dat";
-            using( Stream stream = target.CreateFile(path) )
+            using (Stream stream = target.CreateFile(path))
             {
                 Utilities.GenerateData(stream, 250);
             }
@@ -193,7 +193,7 @@ namespace Ookii.Jumbo.Test.Dfs
             LocalFileSystemClient target = new LocalFileSystemClient();
             string path = target.Path.Combine(_testPath, "test1.dat");
             byte[] actual;
-            using( Stream stream = target.OpenFile(path) )
+            using (Stream stream = target.OpenFile(path))
             {
                 actual = new byte[stream.Length];
                 stream.Read(actual, 0, actual.Length);
@@ -208,7 +208,7 @@ namespace Ookii.Jumbo.Test.Dfs
             LocalFileSystemClient target = new LocalFileSystemClient(_testPath);
             string path = "/test1.dat";
             byte[] actual;
-            using( Stream stream = target.OpenFile(path) )
+            using (Stream stream = target.OpenFile(path))
             {
                 actual = new byte[stream.Length];
                 stream.Read(actual, 0, actual.Length);
@@ -224,11 +224,11 @@ namespace Ookii.Jumbo.Test.Dfs
             //Assert.AreEqual(info.FullName, directory.FullPath);
             Assert.AreEqual(directory.FullPath.Length == 1 ? "" : info.Name, directory.Name);
             Assert.AreEqual(info.CreationTimeUtc, directory.DateCreated);
-            if( includeChildren )
+            if (includeChildren)
             {
                 FileSystemInfo[] children = info.GetFileSystemInfos();
                 Assert.AreEqual(children.Length, directory.Children.Count);
-                foreach( var child in children )
+                foreach (var child in children)
                 {
                     VerifyEntry(directory.GetChild(child.Name), rootPath, false);
                 }
@@ -257,7 +257,7 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             Assert.IsNotNull(entry);
             JumboFile file = entry as JumboFile;
-            if( file != null )
+            if (file != null)
                 VerifyFile(file, rootPath);
             else
                 VerifyDirectory((JumboDirectory)entry, rootPath, includeChildren);
@@ -265,11 +265,11 @@ namespace Ookii.Jumbo.Test.Dfs
 
         private static string AdjustPath(string rootPath, string path)
         {
-            if( rootPath == null )
+            if (rootPath == null)
                 return path;
             else
             {
-                if( System.IO.Path.IsPathRooted(path) )
+                if (System.IO.Path.IsPathRooted(path))
                 {
                     int rootLength = System.IO.Path.GetPathRoot(path).Length;
                     path = path.Substring(rootLength);

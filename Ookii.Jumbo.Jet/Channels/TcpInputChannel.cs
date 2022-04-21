@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -8,7 +9,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -45,7 +45,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 {
                     _stream.BeginRead(_header, 0, HeaderSize, BeginReadCallback, null);
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     CloseOnError(ex);
                     throw; // Transmission failure is a non-recoverable error for a TCP input channel
@@ -63,7 +63,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 try
                 {
                     int bytesRead = _stream.EndRead(ar);
-                    if( bytesRead != HeaderSize )
+                    if (bytesRead != HeaderSize)
                         throw new ChannelException("Bad TCP channel header format.");
                     else
                     {
@@ -71,9 +71,9 @@ namespace Ookii.Jumbo.Jet.Channels
                         int sendingTaskNumber = ReadInt32(1);
                         int segmentNumber = ReadInt32(5);
 
-                        if( sendingTaskNumber < 1 || sendingTaskNumber > _channel.InputStage.Root.TaskCount )
+                        if (sendingTaskNumber < 1 || sendingTaskNumber > _channel.InputStage.Root.TaskCount)
                             throw new ChannelException("Invalid sending task number.");
-                        if( flags.HasFlag(TcpChannelConnectionFlags.KeepAlive) )
+                        if (flags.HasFlag(TcpChannelConnectionFlags.KeepAlive))
                             _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
 
                         _stream.ReadTimeout = 30000;
@@ -81,7 +81,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                         SendResponse(null); // Send success
 
-                        if( flags.HasFlag(TcpChannelConnectionFlags.KeepAlive) && !flags.HasFlag(TcpChannelConnectionFlags.FinalSegment) )
+                        if (flags.HasFlag(TcpChannelConnectionFlags.KeepAlive) && !flags.HasFlag(TcpChannelConnectionFlags.FinalSegment))
                         {
                             _stream.ReadTimeout = Timeout.Infinite;
                             HandleConnection(); // Read the next header.
@@ -90,11 +90,11 @@ namespace Ookii.Jumbo.Jet.Channels
                             Close(); // We're done
                     }
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     CloseOnError(ex);
                     throw; // Transmission failure is a non-recoverable error for a TCP input channel
-                }           
+                }
             }
 
             public void ReadPartitionHeader(out int partition, out int partitionSize)
@@ -103,10 +103,10 @@ namespace Ookii.Jumbo.Jet.Channels
                 do
                 {
                     int bytesRead = _stream.Read(_header, totalBytesRead, PartitionHeaderSize - totalBytesRead);
-                    if( bytesRead == 0 )
+                    if (bytesRead == 0)
                         throw new ChannelException("Invalid segment format.");
                     totalBytesRead += bytesRead;
-                } while( totalBytesRead < PartitionHeaderSize );
+                } while (totalBytesRead < PartitionHeaderSize);
 
                 partition = ReadInt32(0);
                 partitionSize = ReadInt32(4);
@@ -132,9 +132,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
             private void SendResponse(Exception ex)
             {
-                if( ex != null )
+                if (ex != null)
                 {
-                    using( MemoryStream contentStream = new MemoryStream() )
+                    using (MemoryStream contentStream = new MemoryStream())
                     {
                         contentStream.WriteByte(0);
                         BinaryFormatter formatter = new BinaryFormatter();
@@ -178,7 +178,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public TcpInputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
             : base(taskExecution, inputStage)
         {
-            if( inputStage == null )
+            if (inputStage == null)
                 throw new ArgumentNullException(nameof(inputStage));
             _inputReaderType = typeof(TcpChannelRecordReader<>).MakeGenericType(InputRecordType);
             _inputReaders = new ITcpChannelRecordReader[inputStage.Root.TaskCount][];
@@ -226,12 +226,12 @@ namespace Ookii.Jumbo.Jet.Channels
             _listeners = new TcpListener[addresses.Length];
 
             int port = 0;
-            for( int x = 0; x < addresses.Length; ++x )
+            for (int x = 0; x < addresses.Length; ++x)
             {
                 TcpListener listener = new TcpListener(addresses[x], port);
                 _listeners[x] = listener;
                 listener.Start();
-                if( port == 0 )
+                if (port == 0)
                     port = ((IPEndPoint)listener.LocalEndpoint).Port;
                 listener.BeginAcceptSocket(BeginAcceptCallback, listener);
             }
@@ -258,7 +258,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private void BeginAcceptCallback(IAsyncResult ar)
         {
             TcpListener listener = (TcpListener)ar.AsyncState;
-            if( _running )
+            if (_running)
                 listener.BeginAcceptSocket(BeginAcceptCallback, listener);
 
             TcpChannelConnectionHandler handler = null;
@@ -271,11 +271,11 @@ namespace Ookii.Jumbo.Jet.Channels
                 handler = new TcpChannelConnectionHandler(this, socket);
                 handler.HandleConnection();
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
-                if( handler != null )
+                if (handler != null)
                     handler.CloseOnError(ex);
-                else if( socket != null )
+                else if (socket != null)
                     socket.Close();
             }
         }
@@ -283,14 +283,14 @@ namespace Ookii.Jumbo.Jet.Channels
         private void HandleSegment(int taskNumber, int segmentNumber, bool finalSegment, TcpChannelConnectionHandler handler)
         {
             ITcpChannelRecordReader[] readers;
-            lock( _inputReaders )
+            lock (_inputReaders)
             {
                 readers = _inputReaders[taskNumber - 1];
-                if( readers == null )
+                if (readers == null)
                 {
                     RecordInput[] inputs = new RecordInput[ActivePartitions.Count];
                     readers = new ITcpChannelRecordReader[ActivePartitions.Count];
-                    for( int x = 0; x < readers.Length; ++x )
+                    for (int x = 0; x < readers.Length; ++x)
                     {
                         ITcpChannelRecordReader reader = (ITcpChannelRecordReader)JetActivator.CreateInstance(_inputReaderType, TaskExecution, TaskExecution.Context.StageConfiguration.AllowRecordReuse);
                         readers[x] = reader;
@@ -301,18 +301,18 @@ namespace Ookii.Jumbo.Jet.Channels
                 }
             }
 
-            lock( readers )
+            lock (readers)
             {
-                for( int x = 0; x < readers.Length; ++x )
+                for (int x = 0; x < readers.Length; ++x)
                 {
                     ITcpChannelRecordReader reader = readers[x];
                     int partition;
                     int partitionSize;
                     handler.ReadPartitionHeader(out partition, out partitionSize);
-                    if( partition != ActivePartitions[x] )
+                    if (partition != ActivePartitions[x])
                         throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Received partition {0}, excepted {1}.", partition, ActivePartitions[x]));
                     reader.AddSegment(partitionSize, segmentNumber, handler.Stream);
-                    if( finalSegment )
+                    if (finalSegment)
                         reader.CompleteAdding();
                 }
             }

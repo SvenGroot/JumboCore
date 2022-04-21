@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace Ookii.Jumbo.IO
 {
@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A list of accepted types.</returns>
         public static IEnumerable<Type> GetAcceptedInputTypes(Type type)
         {
-            if( type == null )
+            if (type == null)
                 throw new ArgumentNullException(nameof(type));
             Type baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
 
@@ -32,11 +32,11 @@ namespace Ookii.Jumbo.IO
         private static IEnumerable<Type> GetAcceptedInputTypesCore(Type type, Type baseType)
         {
             Attribute[] attributes = Attribute.GetCustomAttributes(type, typeof(InputTypeAttribute));
-            if( attributes.Length == 0 )
+            if (attributes.Length == 0)
                 yield return baseType.GetGenericArguments()[0];
             else
             {
-                foreach( InputTypeAttribute attribute in attributes )
+                foreach (InputTypeAttribute attribute in attributes)
                     yield return attribute.AcceptedType;
             }
         }
@@ -102,7 +102,7 @@ namespace Ookii.Jumbo.IO
             {
                 get
                 {
-                    if( _inputBytes >= 0 )
+                    if (_inputBytes >= 0)
                         return _inputBytes;
 
                     return (from input in _inputs
@@ -115,7 +115,7 @@ namespace Ookii.Jumbo.IO
             {
                 get
                 {
-                    if( _bytesRead >= 0 )
+                    if (_bytesRead >= 0)
                         return _bytesRead;
 
                     return (from input in _inputs
@@ -134,7 +134,7 @@ namespace Ookii.Jumbo.IO
 
             public void AddInput(RecordInput input)
             {
-                if( input.IsMemoryBased )
+                if (input.IsMemoryBased)
                 {
                     _inputs.Insert(_firstNonMemoryIndex, input);
                     ++_firstNonMemoryIndex;
@@ -149,9 +149,9 @@ namespace Ookii.Jumbo.IO
             {
                 // Inputs that have been retrieved may not be moved; adjusting the _firstNonMemoryIndex field will make sure they won't be.
                 RecordInput result = _inputs[index];
-                if( memoryOnly && !result.IsMemoryBased )
+                if (memoryOnly && !result.IsMemoryBased)
                     return null;
-                if( index >= _firstNonMemoryIndex )
+                if (index >= _firstNonMemoryIndex)
                     _firstNonMemoryIndex = index + 1;
                 return result;
             }
@@ -163,11 +163,11 @@ namespace Ookii.Jumbo.IO
 
             public void Dispose()
             {
-                if( _inputBytes == -1 )
+                if (_inputBytes == -1)
                     _inputBytes = InputBytesSum;
-                if( _bytesRead == -1 )
+                if (_bytesRead == -1)
                     _bytesRead = BytesReadSum;
-                foreach( RecordInput input in _inputs )
+                foreach (RecordInput input in _inputs)
                     input.Dispose();
             }
         }
@@ -212,14 +212,14 @@ namespace Ookii.Jumbo.IO
         protected MultiInputRecordReader(IEnumerable<int> partitions, int totalInputCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
             : base(false)
         {
-            if( partitions == null )
+            if (partitions == null)
                 throw new ArgumentNullException(nameof(partitions));
-            if( totalInputCount < 1 )
+            if (totalInputCount < 1)
                 throw new ArgumentOutOfRangeException(nameof(totalInputCount), "Multi input record reader must have at least one input.");
-            if( bufferSize <= 0 )
+            if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
 
-            foreach( int partitionNumber in partitions )
+            foreach (int partitionNumber in partitions)
             {
                 Partition partition = new Partition(partitionNumber, totalInputCount);
                 _partitions.Add(partition);
@@ -260,9 +260,9 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
-                    if( _partitions.Count == 0 ) // prevent division by zero.
+                    if (_partitions.Count == 0) // prevent division by zero.
                         return 0;
 
                     return (from partition in _partitions
@@ -281,7 +281,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return (from partition in _partitions
                             select partition.InputBytesSum).Sum();
@@ -304,7 +304,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return (from partition in _partitions
                             select partition.BytesReadSum).Sum();
@@ -319,7 +319,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return _partitions.Count == 0 ? 0 : _partitions[_firstActivePartitionIndex].InputCount;
                 }
@@ -334,7 +334,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return (from p in _partitions
                             select p.PartitionNumber).ToList();
@@ -350,7 +350,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return _partitions.Count;
                 }
@@ -393,17 +393,17 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public bool NextPartition()
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 int newPartitionIndex = _currentPartitionIndex + 1;
                 _partitions[_currentPartitionIndex].Dispose();
-                while( newPartitionIndex < _partitions.Count )
+                while (newPartitionIndex < _partitions.Count)
                 {
-                    if( _currentPartitionIndex < _partitions.Count - 1 )
+                    if (_currentPartitionIndex < _partitions.Count - 1)
                     {
                         CurrentPartitionChangingEventArgs e = new CurrentPartitionChangingEventArgs(_partitions[newPartitionIndex].PartitionNumber);
                         OnCurrentPartitionChanging(e);
-                        if( e.Cancel )
+                        if (e.Cancel)
                         {
                             _partitions[newPartitionIndex].Dispose();
                             ++newPartitionIndex;
@@ -442,17 +442,17 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public virtual void AddInput(IList<RecordInput> partitions)
         {
-            if( partitions == null )
+            if (partitions == null)
                 throw new ArgumentNullException(nameof(partitions));
 
-            lock( _partitions )
+            lock (_partitions)
             {
-                if( partitions.Count != _partitions.Count - _firstActivePartitionIndex )
+                if (partitions.Count != _partitions.Count - _firstActivePartitionIndex)
                     throw new ArgumentException("Incorrect number of partitions.");
-                if( CurrentInputCount >= TotalInputCount )
+                if (CurrentInputCount >= TotalInputCount)
                     throw new InvalidOperationException("The merge task input already has all inputs.");
 
-                for( int x = 0; x < partitions.Count; ++x )
+                for (int x = 0; x < partitions.Count; ++x)
                 {
                     RecordInput input = partitions[x];
                     _partitions[_firstActivePartitionIndex + x].AddInput(input);
@@ -473,18 +473,18 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public virtual void AssignAdditionalPartitions(IList<int> newPartitions)
         {
-            if( newPartitions == null )
+            if (newPartitions == null)
                 throw new ArgumentNullException(nameof(newPartitions));
-            if( newPartitions.Count == 0 )
+            if (newPartitions.Count == 0)
                 throw new ArgumentException("The list of new partitions is empty.", nameof(newPartitions));
 
-            lock( _partitions )
+            lock (_partitions)
             {
-                if( _partitions.Count > 0 && _partitions[_firstActivePartitionIndex].InputCount != TotalInputCount )
+                if (_partitions.Count > 0 && _partitions[_firstActivePartitionIndex].InputCount != TotalInputCount)
                     throw new InvalidOperationException("You cannot assign new partitions to a record reader until the currently assigned partitions have all their inputs.");
 
                 _firstActivePartitionIndex = _partitions.Count;
-                foreach( int partitionNumber in newPartitions )
+                foreach (int partitionNumber in newPartitions)
                 {
                     Partition partition = new Partition(partitionNumber, TotalInputCount);
                     _partitions.Add(partition);
@@ -508,25 +508,25 @@ namespace Ookii.Jumbo.IO
         protected bool WaitForInputs(int inputCount, int timeout)
         {
             CheckDisposed();
-            if( inputCount <= 0 )
+            if (inputCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(inputCount), "inputCount must be greater than zero.");
-            if( inputCount > TotalInputCount )
+            if (inputCount > TotalInputCount)
                 inputCount = TotalInputCount;
             Stopwatch sw = null;
-            if( timeout > 0 )
+            if (timeout > 0)
                 sw = Stopwatch.StartNew();
-            lock( _partitions )
+            lock (_partitions)
             {
-                while( _partitions[_firstActivePartitionIndex].InputCount < inputCount )
+                while (_partitions[_firstActivePartitionIndex].InputCount < inputCount)
                 {
                     int timeoutRemaining = Timeout.Infinite;
-                    if( timeout >= 0 )
+                    if (timeout >= 0)
                     {
                         timeoutRemaining = (int)(timeout - sw.ElapsedMilliseconds);
-                        if( timeoutRemaining <= 0 )
+                        if (timeoutRemaining <= 0)
                             return false;
                     }
-                    if( !Monitor.Wait(_partitions, timeoutRemaining) )
+                    if (!Monitor.Wait(_partitions, timeoutRemaining))
                         return false;
                 }
                 return true;
@@ -540,7 +540,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>An instance of a class implementing <see cref="IRecordReader"/> for the specified input.</returns>
         protected IRecordReader GetInputReader(int index)
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 return _partitions[_currentPartitionIndex].GetInput(index, false).Reader;
             }
@@ -594,7 +594,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected IRecordReader GetInputReader(int partition, int index, bool memoryOnly)
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 RecordInput input = _partitionsByNumber[partition].GetInput(index, memoryOnly);
                 return input == null ? null : input.Reader;
@@ -628,7 +628,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected RecordInput GetInput(int partition, int index, bool memoryOnly)
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 return _partitionsByNumber[partition].GetInput(index, memoryOnly);
             }
@@ -643,14 +643,14 @@ namespace Ookii.Jumbo.IO
         {
             try
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
                     _disposed = true;
-                    if( disposing )
+                    if (disposing)
                     {
-                        lock( _partitions )
+                        lock (_partitions)
                         {
-                            foreach( Partition partition in _partitions )
+                            foreach (Partition partition in _partitions)
                             {
                                 partition.Dispose();
                             }
@@ -673,7 +673,7 @@ namespace Ookii.Jumbo.IO
         protected virtual void OnCurrentPartitionChanged(EventArgs e)
         {
             EventHandler handler = CurrentPartitionChanged;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
@@ -684,7 +684,7 @@ namespace Ookii.Jumbo.IO
         protected virtual void OnCurrentPartitionChanging(CurrentPartitionChangingEventArgs e)
         {
             EventHandler<CurrentPartitionChangingEventArgs> handler = CurrentPartitionChanging;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
@@ -693,7 +693,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         protected void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
         }
     }

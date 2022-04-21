@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Jet
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void Register()
         {
-            if( !_registered )
+            if (!_registered)
             {
                 AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
                 _registered = true;

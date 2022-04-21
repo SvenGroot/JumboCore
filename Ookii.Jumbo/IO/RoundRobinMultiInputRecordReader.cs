@@ -43,11 +43,11 @@ namespace Ookii.Jumbo.IO
         /// <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
         protected override bool ReadRecordInternal()
         {
-            while( true )
+            while (true)
             {
-                if( _readers.Count == 0 )
+                if (_readers.Count == 0)
                 {
-                    if( _previousInputsAvailable == TotalInputCount )
+                    if (_previousInputsAvailable == TotalInputCount)
                     {
                         CurrentRecord = default(T);
                         return false;
@@ -57,25 +57,25 @@ namespace Ookii.Jumbo.IO
                 }
 
                 int inputsAvailable = CurrentInputCount;
-                if( inputsAvailable > _previousInputsAvailable )
+                if (inputsAvailable > _previousInputsAvailable)
                 {
-                    for( int x = _previousInputsAvailable; x < inputsAvailable; ++x )
+                    for (int x = _previousInputsAvailable; x < inputsAvailable; ++x)
                         _readers.Add((RecordReader<T>)GetInputReader(x));
                     _previousInputsAvailable = inputsAvailable;
-                    if( _currentReader == -1 )
+                    if (_currentReader == -1)
                         _currentReader = _readers.Count - 1;
                 }
 
                 int nextReader = (_currentReader + 1) % _readers.Count;
 
-                while( nextReader != _currentReader )
+                while (nextReader != _currentReader)
                 {
                     RecordReader<T> reader = _readers[nextReader];
-                    if( reader.HasRecords )
+                    if (reader.HasRecords)
                     {
-                        if( ReadRecordFromReader(nextReader, reader) )
+                        if (ReadRecordFromReader(nextReader, reader))
                             return true;
-                        else if( nextReader >= _readers.Count )
+                        else if (nextReader >= _readers.Count)
                             nextReader = _readers.Count - 1;
                     }
                     else
@@ -85,14 +85,14 @@ namespace Ookii.Jumbo.IO
                 // If we got here, we didn't find any record to return.
                 // We're going to go through the list again, this time ignoring RecordsAvailable.
                 nextReader = (_currentReader + 1) % _readers.Count;
-                while( _readers.Count > 0 )
+                while (_readers.Count > 0)
                 {
                     RecordReader<T> reader = _readers[nextReader];
-                    if( ReadRecordFromReader(nextReader, reader) )
+                    if (ReadRecordFromReader(nextReader, reader))
                         return true;
                     else
                     {
-                        if( nextReader >= _readers.Count )
+                        if (nextReader >= _readers.Count)
                             nextReader = _readers.Count - 1;
                     }
                 }
@@ -114,7 +114,7 @@ namespace Ookii.Jumbo.IO
         {
             try
             {
-                if( reader.ReadRecord() )
+                if (reader.ReadRecord())
                 {
                     _currentReader = index;
                     CurrentRecord = reader.CurrentRecord;
@@ -123,12 +123,12 @@ namespace Ookii.Jumbo.IO
                 else
                 {
                     _readers.RemoveAt(index);
-                    if( index < _currentReader )
+                    if (index < _currentReader)
                         --_currentReader;
                     return false;
                 }
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 throw new ChildReaderException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Error reading from source {0}.", reader.SourceName), ex);
             }

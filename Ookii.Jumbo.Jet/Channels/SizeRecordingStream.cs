@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -92,7 +92,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
                 _baseStream.Dispose();
         }
     }

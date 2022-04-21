@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.IO
         public RecordFileWriter(Stream stream)
             : base(stream)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             _writer = new BinaryWriter(stream);
@@ -56,14 +56,14 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
 
-            if( record == null )
+            if (record == null)
                 throw new ArgumentNullException(nameof(record));
 
             WriteRecordMarkerIfNecessary();
 
             // In the future we might write a record size or something instead, but at the moment we don't really need that.
             _writer.Write(RecordFile.RecordPrefix);
-            if( _valueWriter == null )
+            if (_valueWriter == null)
                 ((IWritable)record).Write(_writer);
             else
                 _valueWriter.Write(record, _writer);
@@ -79,9 +79,9 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _writer != null )
+                if (_writer != null)
                 {
                     ((IDisposable)_writer).Dispose();
                     _writer = null;
@@ -91,13 +91,13 @@ namespace Ookii.Jumbo.IO
 
         private void CheckDisposed()
         {
-            if( _writer == null )
+            if (_writer == null)
                 throw new ObjectDisposedException("BinaryRecordWriter");
         }
 
         private void WriteRecordMarkerIfNecessary()
         {
-            if( Stream.Position - _lastRecordMarkerPosition >= RecordFile.RecordMarkerInterval )
+            if (Stream.Position - _lastRecordMarkerPosition >= RecordFile.RecordMarkerInterval)
                 WriteRecordMarker();
         }
 

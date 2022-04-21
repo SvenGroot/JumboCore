@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Management;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Management;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo
             _processorData = new ProcessorStatusData[Environment.ProcessorCount + 1];
             Total = new IndividualProcessorStatus(-1);
             _processors = new List<IndividualProcessorStatus>(Environment.ProcessorCount);
-            for( int x = 0; x < Environment.ProcessorCount; ++x )
+            for (int x = 0; x < Environment.ProcessorCount; ++x)
             {
                 _processors.Add(new IndividualProcessorStatus(x));
             }
@@ -99,14 +99,14 @@ namespace Ookii.Jumbo
         private void RefreshWindows()
         {
             SelectQuery query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", null, new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });
-            using( ManagementObjectSearcher searcher = new ManagementObjectSearcher(query) )
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
             {
 
-                foreach( ManagementBaseObject obj in searcher.Get() )
+                foreach (ManagementBaseObject obj in searcher.Get())
                 {
                     int index;
                     string name = (string)obj.GetPropertyValue("Name");
-                    if( name == "_Total" )
+                    if (name == "_Total")
                     {
                         index = _total;
                     }
@@ -127,7 +127,7 @@ namespace Ookii.Jumbo
 
         private void RefreshUnix()
         {
-            if( _procStatReader == null )
+            if (_procStatReader == null)
                 _procStatReader = File.OpenText("/proc/stat");
             else
             {
@@ -136,7 +136,7 @@ namespace Ookii.Jumbo
             }
 
             ProcessProcStatLine(_total); // First line is total for all CPUs.
-            for( int x = 0; x < Environment.ProcessorCount; ++x )
+            for (int x = 0; x < Environment.ProcessorCount; ++x)
             {
                 ProcessProcStatLine(x);
             }
@@ -145,7 +145,7 @@ namespace Ookii.Jumbo
         private void ProcessProcStatLine(int cpuIndex)
         {
             string line = _procStatReader.ReadLine();
-            if( !line.StartsWith("cpu", StringComparison.Ordinal) )
+            if (!line.StartsWith("cpu", StringComparison.Ordinal))
                 throw new FormatException("Unexpected /proc/stat format.");
 
             string[] items = line.Split(_procStatFieldSeparator, StringSplitOptions.RemoveEmptyEntries);
@@ -157,7 +157,7 @@ namespace Ookii.Jumbo
             _processorData[cpuIndex].Total = _processorData[cpuIndex].User + _processorData[cpuIndex].System + _processorData[cpuIndex].Idle + _processorData[cpuIndex].IOWait + _processorData[cpuIndex].Irq;
 
             // Some later kernel versions have extra fields for virtualized environments, which we want to include in the total.
-            for( int x = 8; x < items.Length; ++x )
+            for (int x = 8; x < items.Length; ++x)
             {
                 _processorData[cpuIndex].Total += Convert.ToUInt64(items[x], CultureInfo.InvariantCulture);
             }
@@ -165,9 +165,9 @@ namespace Ookii.Jumbo
 
         private void Recalculate()
         {
-            if( _previousProcessorData != null )
+            if (_previousProcessorData != null)
             {
-                for( int x = 0; x < _processorData.Length; ++x )
+                for (int x = 0; x < _processorData.Length; ++x)
                 {
                     ulong userDelta = _processorData[x].User - _previousProcessorData[x].User;
                     ulong systemDelta = _processorData[x].System - _previousProcessorData[x].System;
@@ -200,7 +200,7 @@ namespace Ookii.Jumbo
         /// </summary>
         public void Dispose()
         {
-            if( _procStatReader != null )
+            if (_procStatReader != null)
                 _procStatReader.Dispose();
         }
 

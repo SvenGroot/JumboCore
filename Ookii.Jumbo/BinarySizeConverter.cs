@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
 
 namespace Ookii.Jumbo
 {
@@ -20,9 +20,9 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if this object can perform the conversion; otherwise, <see langword="false"/>.</returns>
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            if( sourceType == typeof(string) || sourceType == typeof(long) || sourceType == typeof(ulong) || sourceType == typeof(int) || sourceType == typeof(uint) ||
+            if (sourceType == typeof(string) || sourceType == typeof(long) || sourceType == typeof(ulong) || sourceType == typeof(int) || sourceType == typeof(uint) ||
                 sourceType == typeof(short) || sourceType == typeof(ushort) || sourceType == typeof(byte) || sourceType == typeof(sbyte) ||
-                sourceType == typeof(decimal) || sourceType == typeof(float) || sourceType == typeof(int) || sourceType == typeof(double) )
+                sourceType == typeof(decimal) || sourceType == typeof(float) || sourceType == typeof(int) || sourceType == typeof(double))
                 return true;
             else
                 return base.CanConvertFrom(context, sourceType);
@@ -36,9 +36,9 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if this object can perform the conversion; otherwise, <see langword="false"/>.</returns>
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
-            if( destinationType == typeof(string) || destinationType == typeof(long) || destinationType == typeof(ulong) || destinationType == typeof(int) || destinationType == typeof(uint) ||
+            if (destinationType == typeof(string) || destinationType == typeof(long) || destinationType == typeof(ulong) || destinationType == typeof(int) || destinationType == typeof(uint) ||
                 destinationType == typeof(short) || destinationType == typeof(ushort) || destinationType == typeof(byte) || destinationType == typeof(sbyte) ||
-                destinationType == typeof(decimal) || destinationType == typeof(float) || destinationType == typeof(int) || destinationType == typeof(double) )
+                destinationType == typeof(decimal) || destinationType == typeof(float) || destinationType == typeof(int) || destinationType == typeof(double))
                 return true;
             else
                 return base.CanConvertTo(context, destinationType);
@@ -54,29 +54,29 @@ namespace Ookii.Jumbo
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
         {
             string stringValue = value as string;
-            if( stringValue != null )
+            if (stringValue != null)
                 return BinarySize.Parse(stringValue, culture);
-            else if( value is byte )
+            else if (value is byte)
                 return new BinarySize((byte)value);
-            else if( value is sbyte )
+            else if (value is sbyte)
                 return new BinarySize((sbyte)value);
-            else if( value is short )
+            else if (value is short)
                 return new BinarySize((short)value);
-            else if( value is ushort )
+            else if (value is ushort)
                 return new BinarySize((ushort)value);
-            else if( value is int )
+            else if (value is int)
                 return new BinarySize((int)value);
-            else if( value is uint )
+            else if (value is uint)
                 return new BinarySize((uint)value);
-            else if( value is long )
+            else if (value is long)
                 return new BinarySize((long)value);
-            else if( value is ulong )
+            else if (value is ulong)
                 return new BinarySize((ulong)value);
-            else if( value is decimal )
+            else if (value is decimal)
                 return (BinarySize)(decimal)value;
-            else if( value is float )
+            else if (value is float)
                 return (BinarySize)(float)value;
-            else if( value is double )
+            else if (value is double)
                 return (BinarySize)(double)value;
             else
                 return base.ConvertFrom(context, culture, value);
@@ -92,33 +92,33 @@ namespace Ookii.Jumbo
         /// <returns>The converted object.</returns>
         public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
         {
-            if( !(value is BinarySize) )
+            if (!(value is BinarySize))
                 throw new ArgumentException("Cannot convert argument: incorrect type.", nameof(value));
 
             BinarySize realValue = (BinarySize)value;
-            if( destinationType == typeof(string) )
+            if (destinationType == typeof(string))
                 return realValue.ToString(culture);
-            else if( destinationType == typeof(byte) )
+            else if (destinationType == typeof(byte))
                 return (byte)realValue;
-            else if( destinationType == typeof(sbyte) )
+            else if (destinationType == typeof(sbyte))
                 return (sbyte)realValue;
-            else if( destinationType == typeof(short) )
+            else if (destinationType == typeof(short))
                 return (short)realValue;
-            else if( destinationType == typeof(ushort) )
+            else if (destinationType == typeof(ushort))
                 return (ushort)realValue;
-            else if( destinationType == typeof(int) )
+            else if (destinationType == typeof(int))
                 return (int)realValue;
-            else if( destinationType == typeof(uint) )
+            else if (destinationType == typeof(uint))
                 return (uint)realValue;
-            else if( destinationType == typeof(long) )
+            else if (destinationType == typeof(long))
                 return (long)realValue;
-            else if( destinationType == typeof(ulong) )
+            else if (destinationType == typeof(ulong))
                 return (ulong)realValue;
-            else if( destinationType == typeof(decimal) )
+            else if (destinationType == typeof(decimal))
                 return (decimal)realValue;
-            else if( destinationType == typeof(float) )
+            else if (destinationType == typeof(float))
                 return (float)realValue;
-            else if( destinationType == typeof(double) )
+            else if (destinationType == typeof(double))
                 return (double)realValue;
             else
                 return base.ConvertTo(context, culture, value, destinationType);

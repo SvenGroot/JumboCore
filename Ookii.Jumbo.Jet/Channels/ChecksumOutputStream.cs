@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -17,13 +17,13 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public ChecksumOutputStream(Stream baseStream, bool ownsBaseStream, bool enableChecksum)
         {
-            if( baseStream == null )
+            if (baseStream == null)
                 throw new ArgumentNullException(nameof(baseStream));
 
             _baseStream = baseStream;
             _ownsBaseStream = ownsBaseStream;
 
-            if( enableChecksum )
+            if (enableChecksum)
             {
                 _checksum = new Crc32Checksum();
             }
@@ -83,25 +83,25 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(ChecksumOutputStream).FullName);
 
-            if( count == 0 )
+            if (count == 0)
                 return;
 
-            if( _bytesWritten == 0 )
+            if (_bytesWritten == 0)
                 _baseStream.WriteByte((byte)((_checksum != null) ? 1 : 0));
 
             _baseStream.Write(buffer, offset, count);
             _bytesWritten += count;
 
-            if( _checksum != null )
+            if (_checksum != null)
                 _checksum.Update(buffer, offset, count);
         }
 
         private void FinalizeChecksum()
         {
-            if( _checksum != null && _bytesWritten > 0 )
+            if (_checksum != null && _bytesWritten > 0)
             {
                 byte[] sum = BitConverter.GetBytes(_checksum.ValueUInt32);
                 _baseStream.Write(sum, 0, sum.Length);
@@ -112,11 +112,11 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
                     _disposed = true;
                     FinalizeChecksum();
-                    if( _ownsBaseStream )
+                    if (_ownsBaseStream)
                         _baseStream.Dispose();
                 }
             }

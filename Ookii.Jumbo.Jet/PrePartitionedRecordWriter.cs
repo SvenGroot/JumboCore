@@ -20,13 +20,13 @@ namespace Ookii.Jumbo.Jet
 
         internal PrepartitionedRecordWriter(RecordWriter<T> baseWriter, bool ownsBaseWriter)
         {
-            if( baseWriter == null )
+            if (baseWriter == null)
                 throw new ArgumentNullException(nameof(baseWriter));
 
             _baseWriter = baseWriter;
             // It's possible that the base writer is not a multi record writer if the there are actually no internal partitions.
             IMultiRecordWriter<T> multiWriter = baseWriter as IMultiRecordWriter<T>;
-            if( multiWriter != null )
+            if (multiWriter != null)
                 _partitioner = multiWriter.Partitioner as PrepartitionedPartitioner<T>;
 
             _ownsBaseWriter = ownsBaseWriter;
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="partition">The partition of the record.</param>
         public void WriteRecord(T record, int partition)
         {
-            if( _partitioner != null )
+            if (_partitioner != null)
                 _partitioner.CurrentPartition = partition;
             _baseWriter.WriteRecord(record);
         }
@@ -102,10 +102,10 @@ namespace Ookii.Jumbo.Jet
 
         private void Dispose(bool disposing)
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( disposing && _ownsBaseWriter )
+                if (disposing && _ownsBaseWriter)
                 {
                     _baseWriter.Dispose();
                 }

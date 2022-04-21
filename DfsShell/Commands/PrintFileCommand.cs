@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
-using Ookii.Jumbo.Dfs;
-using System.IO;
 using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
@@ -67,13 +67,13 @@ namespace DfsShell.Commands
 
             public override int Read(byte[] buffer, int offset, int count)
             {
-                if( Position + count > _size )
+                if (Position + count > _size)
                 {
                     count = (int)(_size - Position);
-                    if( count < 0 )
+                    if (count < 0)
                         count = 0;
                 }
-                
+
 
                 return _baseStream.Read(buffer, offset, count);
             }
@@ -123,16 +123,16 @@ namespace DfsShell.Commands
 
         public PrintFileCommand([Description("The path of the text file on the DFS."), ArgumentName("Path")] string path)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             _path = path;
         }
 
-        [CommandLineArgument(DefaultValue="utf-8"), Description("The text encoding to use. The default value is utf-8.")]
+        [CommandLineArgument(DefaultValue = "utf-8"), Description("The text encoding to use. The default value is utf-8.")]
         public string Encoding { get; set; }
 
-        [CommandLineArgument(DefaultValue=long.MaxValue), Description("The maximum number of bytes to read from the file. If not specified, the entire file will be read.")]
+        [CommandLineArgument(DefaultValue = long.MaxValue), Description("The maximum number of bytes to read from the file. If not specified, the entire file will be read.")]
         public BinarySize Size { get; set; }
 
         [CommandLineArgument, Description("Prints the end rather than the start of the file up to the specified size.")]
@@ -143,26 +143,26 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            if( RecordReaderType != null )
+            if (RecordReaderType != null)
                 PrintRecordReader();
             else
             {
                 Encoding encoding = System.Text.Encoding.GetEncoding(Encoding);
 
-                using( Stream stream = Client.OpenFile(_path) )
+                using (Stream stream = Client.OpenFile(_path))
                 {
-                    if( Tail )
+                    if (Tail)
                     {
                         long newPosition = stream.Length - (long)Size;
-                        if( newPosition > 0 )
+                        if (newPosition > 0)
                             stream.Position = newPosition;
                     }
-                    using( SizeLimitedStream limitedStream = new SizeLimitedStream(stream, Tail ? long.MaxValue : (long)Size) )
-                    using( StreamReader reader = new StreamReader(limitedStream, encoding) )
-                    using( LineWrappingTextWriter writer = LineWrappingTextWriter.ForConsoleOut() )
+                    using (SizeLimitedStream limitedStream = new SizeLimitedStream(stream, Tail ? long.MaxValue : (long)Size))
+                    using (StreamReader reader = new StreamReader(limitedStream, encoding))
+                    using (LineWrappingTextWriter writer = LineWrappingTextWriter.ForConsoleOut())
                     {
                         string line;
-                        while( (line = reader.ReadLine()) != null )
+                        while ((line = reader.ReadLine()) != null)
                             writer.WriteLine(line);
                     }
                 }
@@ -172,42 +172,42 @@ namespace DfsShell.Commands
         private void PrintRecordReader()
         {
             Type recordReaderType = Type.GetType(RecordReaderType);
-            if( recordReaderType == null )
+            if (recordReaderType == null)
             {
                 Console.Error.WriteLine("Could not load the record reader type.");
                 return;
             }
 
             Type recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false);
-            if( recordReaderBaseType == null )
+            if (recordReaderBaseType == null)
             {
                 Console.Error.WriteLine("The specified type is not a record reader.");
                 return;
             }
 
-            using( Stream stream = Client.OpenFile(_path) )
+            using (Stream stream = Client.OpenFile(_path))
             {
                 IRecordReader reader = null;
-                if( Size < stream.Length )
+                if (Size < stream.Length)
                 {
-                    if( recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(long), typeof(long), typeof(bool) }) == null )
+                    if (recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(long), typeof(long), typeof(bool) }) == null)
                     {
                         Console.Error.WriteLine("No constructor found on the specified record reader type that could be used when the size argument is specified (need constructor with arguments (Stream input, long offset, long size, bool allowRecordReuse)).");
                         return;
                     }
 
                     long offset = Tail ? 0 : stream.Length - (long)Size;
-                    if( offset < 0 )
+                    if (offset < 0)
                         offset = 0;
                     reader = (IRecordReader)Activator.CreateInstance(recordReaderType, stream, offset, Size, true);
                 }
                 else
                 {
-                    if( recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(bool) }) != null )
+                    if (recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(bool) }) != null)
                     {
                         reader = (IRecordReader)Activator.CreateInstance(recordReaderType, stream, true);
                     }
-                    else if( recordReaderType.GetConstructor(new[] { typeof(Stream) }) != null )
+                    else if (recordReaderType.GetConstructor(new[] { typeof(Stream) }) != null)
                     {
                         reader = (IRecordReader)Activator.CreateInstance(recordReaderType, stream);
                     }
@@ -218,7 +218,7 @@ namespace DfsShell.Commands
                     }
                 }
 
-                while( reader.ReadRecord() )
+                while (reader.ReadRecord())
                 {
                     Console.WriteLine(reader.CurrentRecord);
                 }

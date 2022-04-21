@@ -110,14 +110,14 @@ namespace Ookii.Jumbo.Jet.Samples
 
             Pair<string, int> outputRecord = Pair.MakePair((string)null, 1);
             char[] separator = new char[] { ' ' };
-            foreach( Utf8String record in input.EnumerateRecords() )
+            foreach (Utf8String record in input.EnumerateRecords())
             {
                 string line = record.ToString();
-                if( ignorePattern != null )
+                if (ignorePattern != null)
                     line = ignorePattern.Replace(line, " ");
 
                 string[] words = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                foreach( string word in words )
+                foreach (string word in words)
                 {
                     outputRecord.Key = word;
                     output.WriteRecord(outputRecord);
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.Jet.Samples
             // TaskContext has a GetSetting method, but it searched both stage and job settings. In this case, we know
             // that the setting is in the JobConfiguration, so we just check that directly.
             string dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
-            if( dfsPath == null )
+            if (dfsPath == null)
                 return null;
 
             // Using DownloadDfsFile causes the TaskServer to download the file once, and all tasks on this node can then use the locally cached version.

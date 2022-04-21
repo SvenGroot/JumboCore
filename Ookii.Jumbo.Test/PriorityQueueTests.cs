@@ -92,7 +92,7 @@ namespace Ookii.Jumbo.Test
 
             Assert.AreEqual("b", target.Peek().Value);
             Assert.AreEqual(4, target.Count);
-            
+
             // changing b to c
             target.Peek().Value = "c";
             target.AdjustFirstItem();

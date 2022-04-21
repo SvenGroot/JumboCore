@@ -13,7 +13,7 @@ namespace Ookii.Jumbo.Test
         [Test]
         public void TestCopyCircular()
         {
-            using( UnmanagedBuffer target = new UnmanagedBuffer(1024) )
+            using (UnmanagedBuffer target = new UnmanagedBuffer(1024))
             {
                 byte[] expected = Utilities.GenerateData(512);
                 byte[] actual = new byte[512];

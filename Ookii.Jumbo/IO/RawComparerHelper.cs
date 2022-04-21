@@ -22,21 +22,21 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public static int Compare<T>(this IRawComparer<T> self, RawRecord record1, RawRecord record2)
         {
-            if( self == null )
+            if (self == null)
                 throw new ArgumentNullException(nameof(self));
-            if( record1 == null )
+            if (record1 == null)
             {
-                if( record2 == null )
+                if (record2 == null)
                     return 0;
                 else
                     return -1;
             }
-            else if( record2 == null )
+            else if (record2 == null)
                 return 1;
 
             return self.Compare(record1.Buffer, record1.Offset, record1.Count, record2.Buffer, record2.Offset, record2.Count);
         }
-        
+
         /// <summary>
         /// Helper method to compare a range of bytes.
         /// </summary>
@@ -49,14 +49,14 @@ namespace Ookii.Jumbo.IO
         /// <returns>A signed integer that indicates the relative values of the first and second object.</returns>
         public static unsafe int CompareBytes(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
         {
-            fixed( byte* str1ptr = buffer1, str2ptr = buffer2 )
+            fixed (byte* str1ptr = buffer1, str2ptr = buffer2)
             {
                 byte* left = str1ptr + offset1;
                 byte* end = left + Math.Min(count1, count2);
                 byte* right = str2ptr + offset2;
-                while( left < end )
+                while (left < end)
                 {
-                    if( *left != *right )
+                    if (*left != *right)
                         return *left - *right;
                     ++left;
                     ++right;
@@ -77,16 +77,16 @@ namespace Ookii.Jumbo.IO
         /// <returns>A signed integer that indicates the relative values of the first and second object.</returns>
         public static unsafe int CompareBytesWith7BitEncodedLength(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
         {
-            fixed( byte* str1ptr = buffer1, str2ptr = buffer2 )
+            fixed (byte* str1ptr = buffer1, str2ptr = buffer2)
             {
                 byte* left = str1ptr + offset1;
                 byte* right = str2ptr + offset2;
                 int length1 = Decode7BitEncodedInt32(ref left);
                 int length2 = Decode7BitEncodedInt32(ref right);
                 byte* end = left + Math.Min(length1, length2);
-                while( left < end )
+                while (left < end)
                 {
-                    if( *left != *right )
+                    if (*left != *right)
                         return *left - *right;
                     ++left;
                     ++right;
@@ -102,7 +102,7 @@ namespace Ookii.Jumbo.IO
             int bits = 0;
             do
             {
-                if( bits == 35 )
+                if (bits == 35)
                 {
                     throw new FormatException("Invalid 7-bit encoded int.");
                 }
@@ -110,7 +110,7 @@ namespace Ookii.Jumbo.IO
                 result |= (currentByte & 0x7f) << bits;
                 bits += 7;
             }
-            while( (currentByte & 0x80) != 0 );
+            while ((currentByte & 0x80) != 0);
             return result;
         }
 
@@ -118,10 +118,10 @@ namespace Ookii.Jumbo.IO
         {
             Type type = typeof(T);
             RawComparerAttribute attribute = (RawComparerAttribute)Attribute.GetCustomAttribute(type, typeof(RawComparerAttribute));
-            if( attribute != null && !string.IsNullOrEmpty(attribute.RawComparerTypeName) )
+            if (attribute != null && !string.IsNullOrEmpty(attribute.RawComparerTypeName))
             {
                 Type comparerType = Type.GetType(attribute.RawComparerTypeName);
-                if( comparerType.IsGenericTypeDefinition && type.IsGenericType )
+                if (comparerType.IsGenericTypeDefinition && type.IsGenericType)
                     comparerType = comparerType.MakeGenericType(type.GetGenericArguments());
                 return (IRawComparer<T>)Activator.CreateInstance(comparerType);
             }

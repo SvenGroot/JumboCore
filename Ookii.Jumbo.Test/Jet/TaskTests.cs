@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Test.Jet
         [OneTimeSetUp]
         public void SetUp()
         {
-            if( Directory.Exists(Utilities.TestOutputPath) )
+            if (Directory.Exists(Utilities.TestOutputPath))
                 Directory.Delete(Utilities.TestOutputPath, true);
             Directory.CreateDirectory(Utilities.TestOutputPath);
 
@@ -64,7 +64,7 @@ namespace Ookii.Jumbo.Test.Jet
             Random rnd = new Random();
             int recordCount = rnd.Next(recordCountMin, recordCountMax);
             List<int> records = new List<int>(recordCount);
-            for( int record = 0; record < recordCount; ++record )
+            for (int record = 0; record < recordCount; ++record)
             {
                 int value = rnd.Next();
                 records.Add(value);
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Test.Jet
 
             SortTask<int> target = new SortTask<int>();
             target.NotifyConfigurationChanged();
-            foreach( int record in records )
+            foreach (int record in records)
                 target.ProcessRecord(record, 0, prepartitionedOutput);
             target.Finish(prepartitionedOutput);
 
@@ -166,7 +166,7 @@ namespace Ookii.Jumbo.Test.Jet
 
             records.Sort();
 
-            ListRecordWriter<Pair<Utf8String, int>> output = new ListRecordWriter<Pair<Utf8String,int>>();
+            ListRecordWriter<Pair<Utf8String, int>> output = new ListRecordWriter<Pair<Utf8String, int>>();
             task.Run(new EnumerableRecordReader<Pair<Utf8String, int>>(records), output);
 
             ValidateOutput(output.List);
@@ -174,7 +174,7 @@ namespace Ookii.Jumbo.Test.Jet
 
         private List<Pair<Utf8String, int>> CreateRecords()
         {
-            List<Pair<Utf8String, int>> records = new List<Pair<Utf8String,int>>();
+            List<Pair<Utf8String, int>> records = new List<Pair<Utf8String, int>>();
             records.Add(new Pair<Utf8String, int>(new Utf8String("hello"), 1));
             records.Add(new Pair<Utf8String, int>(new Utf8String("bye"), 2));
             records.Add(new Pair<Utf8String, int>(new Utf8String("bye"), 3));

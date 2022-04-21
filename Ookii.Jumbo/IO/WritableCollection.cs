@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -69,7 +69,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="item">The object to insert.</param>
         public void Insert(int index, T item)
         {
-            if( item == null )
+            if (item == null)
                 throw new ArgumentNullException(nameof(item));
             _items.Insert(index, item);
         }
@@ -96,7 +96,7 @@ namespace Ookii.Jumbo.IO
             }
             set
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 _items[index] = value;
             }
@@ -108,7 +108,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="item">The object to be added to the end of the <see cref="WritableCollection{T}"/>.</param>
         public void Add(T item)
         {
-            if( item == null )
+            if (item == null)
                 throw new ArgumentNullException(nameof(item));
             _items.Add(item);
         }
@@ -189,7 +189,7 @@ namespace Ookii.Jumbo.IO
         public void Write(BinaryWriter writer)
         {
             WritableUtility.Write7BitEncodedInt32(writer, _items.Count);
-            foreach( T item in _items )
+            foreach (T item in _items)
                 item.Write(writer);
         }
 
@@ -201,12 +201,12 @@ namespace Ookii.Jumbo.IO
         {
             int count = WritableUtility.Read7BitEncodedInt32(reader);
 
-            if( _items == null )
+            if (_items == null)
                 _items = new List<T>(count);
             else
                 _items.Clear();
 
-            for( int x = 0; x < count; ++x )
+            for (int x = 0; x < count; ++x)
             {
                 T item = (T)FormatterServices.GetUninitializedObject(typeof(T));
                 item.Read(reader);
@@ -251,14 +251,14 @@ namespace Ookii.Jumbo.IO
         /// </exception>
         public override bool Equals(object obj)
         {
-            if( obj == null )
+            if (obj == null)
                 return false;
 
-            if( obj == this )
+            if (obj == this)
                 return true;
 
             WritableCollection<T> other = obj as WritableCollection<T>;
-            if( other == null )
+            if (other == null)
                 return false;
             else
                 return _items.SequenceEqual(other);
@@ -274,7 +274,7 @@ namespace Ookii.Jumbo.IO
             return ((IEnumerable)_items).GetEnumerator();
         }
 
-        int IList.Add(object value) 
+        int IList.Add(object value)
         {
             return ((IList)_items).Add(value);
         }

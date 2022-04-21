@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet.Jobs;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Jobs;
 
 namespace Ookii.Jumbo.Jet.IO
 {

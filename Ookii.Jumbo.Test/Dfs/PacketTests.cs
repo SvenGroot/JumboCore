@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using System.IO;
 using Ookii.Jumbo.Dfs;
 
 namespace Ookii.Jumbo.Test.Dfs
@@ -41,9 +41,9 @@ namespace Ookii.Jumbo.Test.Dfs
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
             Packet packet = new Packet();
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 writer.Write((uint)checksum);
                 writer.Write(5000);
@@ -66,9 +66,9 @@ namespace Ookii.Jumbo.Test.Dfs
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
             Packet packet = new Packet();
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 writer.Write((uint)checksum);
                 writer.Write(5000);
@@ -90,9 +90,9 @@ namespace Ookii.Jumbo.Test.Dfs
             long checksum;
             byte[] data = GenerateData(Packet.PacketSize, out checksum);
             Packet packet = new Packet();
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 // Test two packets because Read uses stream length to set IsLastPacket if checksumOnly is true.
                 writer.Write((uint)checksum);
@@ -119,9 +119,9 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 Packet packet = new Packet(data, 5000, 2, true);
                 packet.Write(writer, PacketFormatOption.Default);
@@ -143,9 +143,9 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 Packet packet = new Packet(data, 5000, 1, true);
                 packet.Write(writer, PacketFormatOption.ChecksumOnly);
@@ -164,9 +164,9 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 Packet packet = new Packet(data, 5000, 2, true);
                 packet.Write(writer, PacketFormatOption.NoSequenceNumber);
@@ -187,8 +187,8 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             long checksum;
             byte[] data = GenerateData(5000, out checksum);
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 Packet packet = new Packet(data, 5000, 1, true);
                 packet.WriteDataOnly(stream);
@@ -224,7 +224,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.AreEqual(packet1, packet2);
             packet2 = new Packet(data, Packet.PacketSize, 1, true);
             Assert.AreNotEqual(packet1, packet2);
-            packet2 = new Packet(data, Packet.PacketSize-1, 1, true);
+            packet2 = new Packet(data, Packet.PacketSize - 1, 1, true);
             Assert.AreNotEqual(packet1, packet2);
             byte[] data2 = GenerateData(Packet.PacketSize, out checksum);
             packet2 = new Packet(data2, Packet.PacketSize, 1, false);

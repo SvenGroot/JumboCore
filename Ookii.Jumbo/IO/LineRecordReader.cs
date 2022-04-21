@@ -23,11 +23,11 @@ namespace Ookii.Jumbo.IO
 
             public LineReader(Stream stream, int bufferSize)
             {
-                if( bufferSize < 3 )
+                if (bufferSize < 3)
                     bufferSize = 3; // Needed to check BOM
                 _stream = stream;
                 _buffer = new byte[bufferSize];
-             }
+            }
 
             public Utf8String Line
             {
@@ -36,10 +36,10 @@ namespace Ookii.Jumbo.IO
 
             public bool CheckByteOrderMark()
             {
-                if( _bufferPos == _bufferLength && !ReadBuffer() )
+                if (_bufferPos == _bufferLength && !ReadBuffer())
                     return false;
 
-                if( _bufferLength - _bufferPos > 2 && _buffer[_bufferPos] == 0xEF && _buffer[_bufferPos + 1] == 0xBB && _buffer[_bufferPos + 2] == 0xBF )
+                if (_bufferLength - _bufferPos > 2 && _buffer[_bufferPos] == 0xEF && _buffer[_bufferPos + 1] == 0xBB && _buffer[_bufferPos + 2] == 0xBF)
                 {
                     _bufferPos += 3;
                     return true;
@@ -60,20 +60,20 @@ namespace Ookii.Jumbo.IO
                 bytesProcessed = 0;
                 _line.ByteLength = 0;
                 int length;
-                while( true )
+                while (true)
                 {
-                    if( _bufferPos == _bufferLength )
+                    if (_bufferPos == _bufferLength)
                     {
-                        if( !ReadBuffer() )
+                        if (!ReadBuffer())
                         {
                             break;
                         }
                     }
                     int start = _bufferPos;
-                    for( ; _bufferPos < _bufferLength; ++_bufferPos )
+                    for (; _bufferPos < _bufferLength; ++_bufferPos)
                     {
                         byte b = _buffer[_bufferPos];
-                        switch( b )
+                        switch (b)
                         {
                         case (byte)'\r':
                         case (byte)'\n':
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.IO
                             _line.Append(_buffer, start, length);
                             ++_bufferPos;
                             ++bytesProcessed;
-                            if( b == '\r' && (_bufferPos < _bufferLength || ReadBuffer()) && _buffer[_bufferPos] == '\n' )
+                            if (b == '\r' && (_bufferPos < _bufferLength || ReadBuffer()) && _buffer[_bufferPos] == '\n')
                             {
                                 ++bytesProcessed;
                                 ++_bufferPos;
@@ -93,7 +93,7 @@ namespace Ookii.Jumbo.IO
 
                     length = _bufferPos - start;
                     bytesProcessed += length;
-                    if( length > 0 )
+                    if (length > 0)
                     {
                         _line.Append(_buffer, start, length);
                     }
@@ -147,17 +147,17 @@ namespace Ookii.Jumbo.IO
         public LineRecordReader(Stream stream, long offset, long size, bool allowRecordReuse)
             : base(stream, offset, size)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             _reader = new LineReader(stream, _bufferSize);
             _position = offset;
             _end = offset + size;
             _allowRecordReuse = allowRecordReuse;
-            if( _end == stream.Length )
+            if (_end == stream.Length)
                 --_end;
-            if( offset == 0 )
+            if (offset == 0)
             {
-                if( _reader.CheckByteOrderMark() )
+                if (_reader.CheckByteOrderMark())
                 {
                     _position += 3;
                     FirstRecordOffset = _position;
@@ -165,8 +165,8 @@ namespace Ookii.Jumbo.IO
             }
             else
             {
-                if( RecordInputStream == null || (RecordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
-                    RecordInputStream.OffsetFromBoundary(offset) != 0 )
+                if (RecordInputStream == null || (RecordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
+                    RecordInputStream.OffsetFromBoundary(offset) != 0)
                 {
                     ReadRecordInternal();
                     CurrentRecord = null;
@@ -197,7 +197,7 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
 
-            if( _position > _end )
+            if (_position > _end)
             {
                 CurrentRecord = null;
                 return false;
@@ -206,13 +206,13 @@ namespace Ookii.Jumbo.IO
             _reader.ReadLine(out bytesProcessed);
 
             // If the stream uses RecordStreamOptions.DoNotCrossBoundary, we can run out of data before _position > _end, so check that here.
-            if( _reader.Line.ByteLength == 0 && bytesProcessed == 0 )
+            if (_reader.Line.ByteLength == 0 && bytesProcessed == 0)
             {
                 CurrentRecord = null;
                 return false;
             }
 
-            if( _allowRecordReuse )
+            if (_allowRecordReuse)
                 CurrentRecord = _reader.Line;
             else
                 CurrentRecord = new Utf8String(_reader.Line);

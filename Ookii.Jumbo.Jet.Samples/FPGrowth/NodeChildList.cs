@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -18,12 +18,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public void Add(int node)
         {
             int newChild = Count++;
-            if( ChildrenLength == 0 )
+            if (ChildrenLength == 0)
             {
                 Children = (int*)Marshal.AllocHGlobal(2 * sizeof(int));
                 ChildrenLength = 2;
             }
-            else if( ChildrenLength < Count )
+            else if (ChildrenLength < Count)
             {
                 int newSize = (int)(ChildrenLength * _growthRate);
                 Children = (int*)Marshal.ReAllocHGlobal((IntPtr)Children, new IntPtr(newSize * sizeof(int)));

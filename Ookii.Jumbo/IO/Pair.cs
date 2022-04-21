@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -176,16 +176,16 @@ namespace Ookii.Jumbo.IO
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(System.IO.BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            if( Key == null || Value == null )
+            if (Key == null || Value == null)
                 throw new InvalidOperationException("Key and value may not be null.");
-            if( _keyWriter == null )
+            if (_keyWriter == null)
                 ((IWritable)Key).Write(writer);
             else
                 _keyWriter.Write(Key, writer);
 
-            if( _valueWriter == null )
+            if (_valueWriter == null)
                 ((IWritable)Value).Write(writer);
             else
                 _valueWriter.Write(Value, writer);
@@ -197,20 +197,20 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(System.IO.BinaryReader reader)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
-            if( _keyWriter == null )
+            if (_keyWriter == null)
             {
-                if( Key == null )
+                if (Key == null)
                     Key = (TKey)FormatterServices.GetUninitializedObject(typeof(TKey));
                 ((IWritable)Key).Read(reader);
             }
             else
                 Key = _keyWriter.Read(reader);
 
-            if( _valueWriter == null )
+            if (_valueWriter == null)
             {
-                if( Value == null )
+                if (Value == null)
                     Value = (TValue)FormatterServices.GetUninitializedObject(typeof(TValue));
                 ((IWritable)Value).Read(reader);
             }
@@ -240,7 +240,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(Pair<TKey, TValue> other)
         {
-            if( (object)other == null )
+            if ((object)other == null)
                 return 1;
             return _keyComparer.Compare(Key, other.Key);
         }
@@ -257,7 +257,7 @@ namespace Ookii.Jumbo.IO
         /// <see cref="Pair{TKey, TValue}"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(Pair<TKey, TValue> other)
         {
-            if( other == null )
+            if (other == null)
                 return false;
 
             return object.Equals(Key, other.Key) && object.Equals(Value, other.Value);
@@ -270,13 +270,13 @@ namespace Ookii.Jumbo.IO
         object ICloneable.Clone()
         {
             Pair<TKey, TValue> clone = new Pair<TKey, TValue>();
-            if( typeof(TKey).IsValueType )
+            if (typeof(TKey).IsValueType)
                 clone.Key = Key;
-            else if( Key != null )
+            else if (Key != null)
                 clone.Key = (TKey)((ICloneable)Key).Clone();
-            if( typeof(TValue).IsValueType )
+            if (typeof(TValue).IsValueType)
                 clone.Value = Value;
-            else if( Value != null )
+            else if (Value != null)
                 clone.Value = (TValue)((ICloneable)Value).Clone();
             return clone;
         }

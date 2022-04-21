@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using System.Diagnostics;
 using Ookii.Jumbo.Dfs;
 
 namespace Ookii.Jumbo.Test.Dfs
@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Test.Dfs
         [OneTimeSetUp]
         public void Setup()
         {
-            if( Environment.GetEnvironmentVariable("JUMBO_TRACE") == "true" )
+            if (Environment.GetEnvironmentVariable("JUMBO_TRACE") == "true")
             {
                 Trace.Listeners.Clear();
                 Trace.Listeners.Add(new ConsoleTraceListener());

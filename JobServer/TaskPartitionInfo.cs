@@ -21,20 +21,20 @@ namespace JobServerApplication
         {
             _task = task;
 
-            foreach( StageConfiguration inputStage in inputStages )
+            foreach (StageConfiguration inputStage in inputStages)
             {
-                if( _partitions == null )
+                if (_partitions == null)
                 {
                     int partitionsPerTask = inputStage.OutputChannel.PartitionsPerTask;
                     _partitions = new List<int>(partitionsPerTask < 1 ? 1 : partitionsPerTask);
-                    if( partitionsPerTask <= 1 )
+                    if (partitionsPerTask <= 1)
                         _partitions.Add(task.TaskId.TaskNumber);
                     else
                     {
-                        if( inputStage.OutputChannel.PartitionAssignmentMethod == PartitionAssignmentMethod.Striped )
+                        if (inputStage.OutputChannel.PartitionAssignmentMethod == PartitionAssignmentMethod.Striped)
                         {
                             int partition = task.TaskId.TaskNumber;
-                            for( int x = 0; x < partitionsPerTask; ++x, partition += task.Stage.Configuration.TaskCount )
+                            for (int x = 0; x < partitionsPerTask; ++x, partition += task.Stage.Configuration.TaskCount)
                             {
                                 _partitions.Add(partition);
                             }
@@ -46,7 +46,7 @@ namespace JobServerApplication
                         }
                     }
                 }
-                else if( inputStage.OutputChannel.PartitionsPerTask > 1 || _partitions.Count > 1 )
+                else if (inputStage.OutputChannel.PartitionsPerTask > 1 || _partitions.Count > 1)
                     throw new InvalidOperationException("Cannot use multiple partitions per task when there are multiple input channels.");
             }
 
@@ -59,7 +59,7 @@ namespace JobServerApplication
         {
             get
             {
-                lock( _partitions )
+                lock (_partitions)
                 {
                     return _unstartedPartitions.Count;
                 }
@@ -68,7 +68,7 @@ namespace JobServerApplication
 
         public int[] GetAssignedPartitions()
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 return _partitions.ToArray();
             }
@@ -76,9 +76,9 @@ namespace JobServerApplication
 
         public bool NotifyStartPartitionProcessing(int partition)
         {
-            lock( _partitions )
+            lock (_partitions)
             {
-                if( !_partitions.Contains(partition) )
+                if (!_partitions.Contains(partition))
                     return false; // We're not assigned this partitions. It may have been re-assigned after calling GetAssignedPartitions
 
                 _unstartedPartitions.Remove(partition);
@@ -91,18 +91,18 @@ namespace JobServerApplication
         {
             int additionalPartition = -1;
             // This lock is so two tasks in the same stage won't do this at the same time, so they won't pick the same task.
-            lock( _task.Stage )
+            lock (_task.Stage)
             {
                 // If the assigned partitions are frozen, always return -1.
-                if( !_frozen )
+                if (!_frozen)
                 {
                     TaskInfo candidateTask = GetTaskWithMostUnstartedPartitions();
-                    if( candidateTask != null )
+                    if (candidateTask != null)
                     {
                         additionalPartition = candidateTask.PartitionInfo.UnassignLastPartition();
-                        if( additionalPartition != -1 )
+                        if (additionalPartition != -1)
                         {
-                            lock( _partitions )
+                            lock (_partitions)
                             {
                                 // We don't add this partition to unstarted partitions because we automatically consider it started.
                                 _partitions.Add(additionalPartition);
@@ -125,22 +125,22 @@ namespace JobServerApplication
 
         public void Reset()
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 // TODO: If we want to reset _partitions to its initial state too, we need to have a way to keep track of partitions that aren't assigned to anyone at all.
                 _unstartedPartitions.Clear();
                 // We always consider the first partition as started, so we never reassign it.
-                foreach( int partition in _partitions.Skip(1) )
+                foreach (int partition in _partitions.Skip(1))
                     _unstartedPartitions.Add(partition);
             }
         }
 
         private int UnassignLastPartition()
         {
-            lock( _partitions )
+            lock (_partitions)
             {
                 int lastPartition = _partitions[_partitions.Count - 1];
-                if( !_unstartedPartitions.Remove(lastPartition) )
+                if (!_unstartedPartitions.Remove(lastPartition))
                 {
                     // Last partition already started
                     return -1;
@@ -154,12 +154,12 @@ namespace JobServerApplication
         private TaskInfo GetTaskWithMostUnstartedPartitions()
         {
             TaskInfo result = null;
-            foreach( TaskInfo task in _task.Stage.Tasks )
+            foreach (TaskInfo task in _task.Stage.Tasks)
             {
-                if( task != _task && !task.PartitionInfo._frozen )
+                if (task != _task && !task.PartitionInfo._frozen)
                 {
                     int unstartedPartitionCount = task.PartitionInfo.UnstartedPartitionCount;
-                    if( unstartedPartitionCount > 0 && (result == null || unstartedPartitionCount > result.PartitionInfo.UnstartedPartitionCount) )
+                    if (unstartedPartitionCount > 0 && (result == null || unstartedPartitionCount > result.PartitionInfo.UnstartedPartitionCount))
                     {
                         result = task;
                     }

@@ -28,21 +28,21 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="taskExecution">The task execution utility for the task that this channel is for.</param>
         protected OutputChannel(TaskExecutionUtility taskExecution)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
 
             TaskExecution = taskExecution;
 
             ChannelConfiguration channelConfig = taskExecution.Context.StageConfiguration.OutputChannel;
-            if( channelConfig.OutputStage != null )
+            if (channelConfig.OutputStage != null)
             {
                 StageConfiguration outputStage = taskExecution.Context.JobConfiguration.GetStage(channelConfig.OutputStage);
-                if( taskExecution.Context.StageConfiguration.InternalPartitionCount == 1 || taskExecution.Context.StageConfiguration.IsOutputPrepartitioned )
+                if (taskExecution.Context.StageConfiguration.InternalPartitionCount == 1 || taskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 {
                     // If this task is not a child of a compound task, or there is no partitioning done inside the compound,
                     // or the parent task uses prepartitioned output, full connectivity means we partition the output into as many pieces as there are output tasks.
                     int partitionCount = outputStage.TaskCount * channelConfig.PartitionsPerTask;
-                    for( int x = 1; x <= partitionCount; ++x )
+                    for (int x = 1; x <= partitionCount; ++x)
                     {
                         _outputPartitionIds.Add(TaskId.CreateTaskIdString(channelConfig.OutputStage, x));
                     }
@@ -80,7 +80,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                if( _outputIdsReadOnlyWrapper == null )
+                if (_outputIdsReadOnlyWrapper == null)
                     System.Threading.Interlocked.CompareExchange(ref _outputIdsReadOnlyWrapper, _outputPartitionIds.AsReadOnly(), null);
                 return _outputIdsReadOnlyWrapper;
             }
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected IPartitioner<T> CreatePartitioner<T>()
         {
             IPartitioner<T> partitioner;
-            if( TaskExecution.Context.StageConfiguration.InternalPartitionCount > 1 && TaskExecution.Context.StageConfiguration.IsOutputPrepartitioned )
+            if (TaskExecution.Context.StageConfiguration.InternalPartitionCount > 1 && TaskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 partitioner = new PrepartitionedPartitioner<T>();
             else
                 partitioner = (IPartitioner<T>)JetActivator.CreateInstance(TaskExecution.Context.StageConfiguration.OutputChannel.PartitionerType.ReferencedType, TaskExecution);

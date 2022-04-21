@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -31,21 +31,21 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public ChecksumInputStream(Stream baseStream, bool ownsBaseStream, long? length = null)
         {
-            if( baseStream == null )
+            if (baseStream == null)
                 throw new ArgumentNullException(nameof(baseStream));
 
             _baseStream = baseStream;
             _ownsBaseStream = ownsBaseStream;
 
-            if( (length ?? _baseStream.Length) > 0 )
+            if ((length ?? _baseStream.Length) > 0)
             {
                 _length = (length ?? _baseStream.Length) - 1;
                 bool enableChecksum = baseStream.ReadByte() == 1;
-                if( enableChecksum )
+                if (enableChecksum)
                 {
                     _checksum = new Crc32Checksum();
                     _length -= sizeof(uint);
-                    if( _length < 0 )
+                    if (_length < 0)
                         throw new IOException("Invalid checksum stream.");
                 }
             }
@@ -95,25 +95,25 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(ChecksumInputStream).FullName);
             count = (int)Math.Min(count, _length - _position);
 
-            if( count == 0 )
+            if (count == 0)
                 return 0;
             else
             {
                 int bytesRead = _baseStream.Read(buffer, offset, count);
                 _position += bytesRead;
 
-                if( _checksum != null )
+                if (_checksum != null)
                 {
                     _checksum.Update(buffer, offset, bytesRead);
-                    if( _position == _length )
+                    if (_position == _length)
                     {
                         byte[] sum = new byte[sizeof(uint)];
                         int sumBytesRead = _baseStream.Read(sum, 0, sum.Length);
-                        if( sumBytesRead != sum.Length || _checksum.ValueUInt32 != BitConverter.ToUInt32(sum, 0) )
+                        if (sumBytesRead != sum.Length || _checksum.ValueUInt32 != BitConverter.ToUInt32(sum, 0))
                             throw new IOException("Invalid checksum on input stream."); // TODO: More specific exception
                     }
                 }
@@ -141,35 +141,35 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
-                    if( _position < _length && _checksum != null )
+                    if (_position < _length && _checksum != null)
                     {
                         // Need to read to the end to verify the checksum
                         byte[] buffer = new byte[4096];
-                        while( Read(buffer, 0, buffer.Length) > 0 )
+                        while (Read(buffer, 0, buffer.Length) > 0)
                         {
                         }
                         Debug.Assert(_position == _length);
                     }
                     _disposed = true;
-                    if( _ownsBaseStream )
+                    if (_ownsBaseStream)
                         _baseStream.Dispose();
 
-                    if( _deleteFile )
+                    if (_deleteFile)
                     {
                         try
                         {
-                            if( File.Exists(_fileName) )
+                            if (File.Exists(_fileName))
                             {
                                 File.Delete(_fileName);
                             }
                         }
-                        catch( IOException ex )
+                        catch (IOException ex)
                         {
                             _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                         }
-                        catch( UnauthorizedAccessException ex )
+                        catch (UnauthorizedAccessException ex)
                         {
                             _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                         }

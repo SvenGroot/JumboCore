@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.IO;
-using System.Diagnostics;
-using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet
             {
                 _task = task;
                 _rootTask = task.RootTask;
-                
+
                 _reader = (IMultiInputRecordReader)_rootTask.InputReader;
                 _reader.CurrentPartitionChanged += new EventHandler(IMultiInputRecordReader_CurrentPartitionChanged);
                 CreateOutputWriter();
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Jet
             {
                 get
                 {
-                    if( _recordWriter == null )
+                    if (_recordWriter == null)
                         return _bytesWritten;
                     else
                         return _bytesWritten + _recordWriter.OutputBytes;
@@ -53,7 +53,7 @@ namespace Ookii.Jumbo.Jet
 
             private void IMultiInputRecordReader_CurrentPartitionChanged(object sender, EventArgs e)
             {
-                if( _recordWriter != null )
+                if (_recordWriter != null)
                 {
                     _bytesWritten += _recordWriter.OutputBytes;
                     _recordWriter.Dispose();
@@ -71,9 +71,9 @@ namespace Ookii.Jumbo.Jet
             protected override void Dispose(bool disposing)
             {
                 base.Dispose(disposing);
-                if( disposing )
+                if (disposing)
                 {
-                    if( _recordWriter != null )
+                    if (_recordWriter != null)
                     {
                         _bytesWritten += _recordWriter.OutputBytes;
                         _recordWriter.Dispose();
@@ -100,9 +100,9 @@ namespace Ookii.Jumbo.Jet
         public override TaskMetrics RunTask()
         {
             CheckDisposed();
-            if( IsAssociatedTask )
+            if (IsAssociatedTask)
                 throw new InvalidOperationException("You cannot run a child task.");
-            if( _hasTaskRun )
+            if (_hasTaskRun)
                 throw new InvalidOperationException("This task has already been run.");
             _hasTaskRun = true;
 
@@ -116,14 +116,14 @@ namespace Ookii.Jumbo.Jet
             StartProgressThread();
 
             MultiInputRecordReader<TInput> multiInputReader = input as MultiInputRecordReader<TInput>;
-            if( multiInputReader != null && InputChannels.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1 )
+            if (multiInputReader != null && InputChannels.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1)
                 RunTaskMultipleInputPartitions(multiInputReader, output, taskStopwatch, task);
             else
                 CallTaskRunMethod(input, output, taskStopwatch, task);
 
             TimeSpan timeWaiting;
             MultiRecordReader<TInput> multiReader = input as MultiRecordReader<TInput>;
-            if( multiReader != null )
+            if (multiReader != null)
                 timeWaiting = multiReader.TimeWaiting;
             else
                 timeWaiting = TimeSpan.Zero;
@@ -139,16 +139,16 @@ namespace Ookii.Jumbo.Jet
 
         protected override IRecordWriter CreateOutputRecordWriter()
         {
-            if( Context.StageConfiguration.HasDataOutput )
+            if (Context.StageConfiguration.HasDataOutput)
             {
-                if( Context.StageConfiguration.InternalPartitionCount == 1 )
+                if (Context.StageConfiguration.InternalPartitionCount == 1)
                 {
-                    if( !ProcessesAllInputPartitions && RootTask.InputChannels != null && RootTask.InputChannels.Count == 1 && RootTask.InputChannels[0].Configuration.PartitionsPerTask > 1 )
+                    if (!ProcessesAllInputPartitions && RootTask.InputChannels != null && RootTask.InputChannels.Count == 1 && RootTask.InputChannels[0].Configuration.PartitionsPerTask > 1)
                         return new PartitionDfsOutputRecordWriter(this);
                 }
                 return (RecordWriter<TOutput>)CreateDfsOutputWriter(Context.TaskId.TaskNumber);
             }
-            else if( OutputChannel != null )
+            else if (OutputChannel != null)
             {
                 //_log.Debug("Creating output channel record writer.");
                 return OutputChannel.CreateRecordWriter<TOutput>();
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.Jet
 
         internal override IRecordWriter CreatePipelineRecordWriter(object partitioner)
         {
-            if( !IsAssociatedTask )
+            if (!IsAssociatedTask)
                 throw new InvalidOperationException("Can't create pipeline record writer for non-child task.");
 
             RecordWriter<TOutput> output = (RecordWriter<TOutput>)OutputWriter;
@@ -168,12 +168,12 @@ namespace Ookii.Jumbo.Jet
 
             object task = Task;
             PushTask<TInput, TOutput> pushTask = task as PushTask<TInput, TOutput>;
-            if( pushTask != null )
+            if (pushTask != null)
                 return new PipelinePushTaskRecordWriter<TInput, TOutput>(this, output);
             else
             {
                 PrepartitionedPushTask<TInput, TOutput> prepartitionedPushTask = task as PrepartitionedPushTask<TInput, TOutput>;
-                if( prepartitionedPushTask != null )
+                if (prepartitionedPushTask != null)
                 {
                     IPartitioner<TInput> partitioner2 = (IPartitioner<TInput>)partitioner;
                     partitioner2.Partitions = Context.StageConfiguration.InternalPartitionCount;
@@ -201,14 +201,14 @@ namespace Ookii.Jumbo.Jet
         protected override void RunTaskFinishMethod()
         {
             // For root tasks, Finish will be called by the ITask<TInput, TOutput>.Run method.
-            if( IsAssociatedTask )
+            if (IsAssociatedTask)
             {
                 PushTask<TInput, TOutput> task = Task as PushTask<TInput, TOutput>;
-                if( task != null )
+                if (task != null)
                     task.Finish((RecordWriter<TOutput>)OutputWriter);
-                else if( _pipelinePrepartitionedPushTaskRecordWriter != null )
+                else if (_pipelinePrepartitionedPushTaskRecordWriter != null)
                     _pipelinePrepartitionedPushTaskRecordWriter.Finish();
-                else if( _pipelinePullTaskRecordWriter != null )
+                else if (_pipelinePullTaskRecordWriter != null)
                     _pipelinePullTaskRecordWriter.Finish();
             }
         }
@@ -217,11 +217,11 @@ namespace Ookii.Jumbo.Jet
         {
             try
             {
-                if( disposing )
+                if (disposing)
                 {
-                    if( _pipelinePrepartitionedPushTaskRecordWriter != null )
+                    if (_pipelinePrepartitionedPushTaskRecordWriter != null)
                         _pipelinePrepartitionedPushTaskRecordWriter.Dispose();
-                    if( _pipelinePullTaskRecordWriter != null )
+                    if (_pipelinePullTaskRecordWriter != null)
                         _pipelinePullTaskRecordWriter.Dispose();
                 }
             }
@@ -233,9 +233,9 @@ namespace Ookii.Jumbo.Jet
 
         private void RunTaskMultipleInputPartitions(MultiInputRecordReader<TInput> input, RecordWriter<TOutput> output, Stopwatch taskStopwatch, ITask<TInput, TOutput> task)
         {
-            if( ProcessesAllInputPartitions )
+            if (ProcessesAllInputPartitions)
             {
-                using( MultiPartitionRecordReader<TInput> partitionReader = new MultiPartitionRecordReader<TInput>(this, input) )
+                using (MultiPartitionRecordReader<TInput> partitionReader = new MultiPartitionRecordReader<TInput>(this, input))
                 {
                     _log.Info("Running pull task.");
                     taskStopwatch.Start();
@@ -252,7 +252,7 @@ namespace Ookii.Jumbo.Jet
                 do
                 {
                     _log.InfoFormat("Running task for partition {0}.", input.CurrentPartition);
-                    if( firstPartition )
+                    if (firstPartition)
                         firstPartition = false;
                     else
                     {
@@ -262,7 +262,7 @@ namespace Ookii.Jumbo.Jet
                     CallTaskRunMethod(input, output, taskStopwatch, task);
                     _log.InfoFormat("Finished running task for partition {0}.", input.CurrentPartition);
                     // If input.NextPartition fails we will check for additional partitions, and if we got any, we need to call input.NextPartition again.
-                } while( input.NextPartition() || (GetAdditionalPartitions(input) && input.NextPartition()) );
+                } while (input.NextPartition() || (GetAdditionalPartitions(input) && input.NextPartition()));
             }
         }
 

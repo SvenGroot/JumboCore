@@ -45,6 +45,6 @@ namespace Ookii.Jumbo.Test
             target.Update(_testData, 500, _testData.Length - 500);
             Assert.AreEqual(_expectedChecksum, target.Value);
             Assert.AreEqual(_expectedChecksum, target.ValueUInt32);
-        }    
+        }
     }
 }

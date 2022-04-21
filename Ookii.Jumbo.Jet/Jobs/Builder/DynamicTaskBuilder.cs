@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection.Emit;
-using System.Reflection;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using Ookii.Jumbo.Jet.Tasks;
-using System.Runtime.Serialization;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private AssemblyBuilder _assembly;
         private ModuleBuilder _module;
         private string _dynamicAssemblyDirectory;
-        private readonly Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type> _taskTypeCache = new Dictionary<Tuple<MethodInfo,Delegate,int,RecordReuseMode>,Type>();
+        private readonly Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type> _taskTypeCache = new Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type>();
         private readonly HashSet<string> _usedTypeNames = new HashSet<string>();
 
         /// <summary>
@@ -87,21 +87,21 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public Type CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
         {
-            if( methodToOverride == null )
+            if (methodToOverride == null)
                 throw new ArgumentNullException(nameof(methodToOverride));
-            if( methodToOverride.DeclaringType.FindGenericInterfaceType(typeof(ITask<,>), false) == null )
+            if (methodToOverride.DeclaringType.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
                 throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
-            if( taskMethodDelegate == null )
+            if (taskMethodDelegate == null)
                 throw new ArgumentNullException(nameof(taskMethodDelegate));
 
             var cacheKey = Tuple.Create(methodToOverride, taskMethodDelegate, skipParameters, recordReuseMode);
             Type cachedTask;
-            if( _taskTypeCache.TryGetValue(cacheKey, out cachedTask) )
+            if (_taskTypeCache.TryGetValue(cacheKey, out cachedTask))
                 return cachedTask;
 
             ParameterInfo[] parameters = methodToOverride.GetParameters();
             ParameterInfo[] delegateParameters = taskMethodDelegate.Method.GetParameters();
-            if( methodToOverride.ReturnType != taskMethodDelegate.Method.ReturnType )
+            if (methodToOverride.ReturnType != taskMethodDelegate.Method.ReturnType)
                 throw new ArgumentException("The delegate method doesn't have the correct return type.");
             ValidateParameters(skipParameters, parameters, delegateParameters);
 
@@ -110,21 +110,21 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             MethodBuilder overriddenMethod = OverrideMethod(taskType, methodToOverride);
 
             ILGenerator generator = overriddenMethod.GetILGenerator();
-            if( !CanCallTargetMethodDirectly(taskMethodDelegate) )
+            if (!CanCallTargetMethodDirectly(taskMethodDelegate))
             {
                 generator.Emit(OpCodes.Ldarg_0); // Put "this" on the stack
                 generator.Emit(OpCodes.Ldfld, delegateField); // Put the delegate on the stack.
             }
 
-            for( int x = skipParameters; x < parameters.Length; ++x )
+            for (int x = skipParameters; x < parameters.Length; ++x)
                 generator.Emit(OpCodes.Ldarg, x + 1); // Zero is "this", hence +1
-            if( delegateParameters.Length > parameters.Length - skipParameters )
+            if (delegateParameters.Length > parameters.Length - skipParameters)
             {
                 // Put the TaskContext on the stack.
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Call, typeof(Configurable).GetProperty("TaskContext").GetGetMethod());
             }
-            if( CanCallTargetMethodDirectly(taskMethodDelegate) )
+            if (CanCallTargetMethodDirectly(taskMethodDelegate))
                 generator.Emit(OpCodes.Call, taskMethodDelegate.Method);
             else
                 generator.Emit(OpCodes.Callvirt, taskMethodDelegate.GetType().GetMethod("Invoke"));
@@ -148,7 +148,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         public static bool CanCallTargetMethodDirectly(Delegate target)
         {
-            if( target == null )
+            if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
             return target.Method.IsPublic && target.Method.IsStatic;
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </summary>
         public void SaveAssembly()
         {
-            if( _assembly != null )
+            if (_assembly != null)
             {
                 // TODO: Switch back to _assembly.Save once supported by .Net Core.
                 var generator = new Lokad.ILPack.AssemblyGenerator();
@@ -172,7 +172,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </summary>
         public void DeleteAssembly()
         {
-            if( IsDynamicAssemblyCreated && File.Exists(DynamicAssemblyPath) )
+            if (IsDynamicAssemblyCreated && File.Exists(DynamicAssemblyPath))
                 File.Delete(DynamicAssemblyPath);
         }
 
@@ -189,9 +189,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static void SerializeDelegate(SettingsDictionary settings, Delegate taskDelegate)
         {
-            if( settings == null )
+            if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
-            if( taskDelegate == null )
+            if (taskDelegate == null)
                 throw new ArgumentNullException(nameof(taskDelegate));
 
             settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName);
@@ -207,7 +207,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 }
             }
         }
-        
+
         /// <summary>
         /// Deserializes a delegate. This method is for internal Jumbo use only.
         /// </summary>
@@ -215,7 +215,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns></returns>
         public static object DeserializeDelegate(TaskContext context)
         {
-            if( context != null )
+            if (context != null)
             {
                 string typeName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, null);
                 string methodName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateMethodSettingKey, null);
@@ -251,7 +251,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private void CreateDynamicAssembly()
         {
-            if( _assembly == null )
+            if (_assembly == null)
             {
                 // Use a Guid to ensure a unique name.
                 AssemblyName name = new AssemblyName("Ookii.Jumbo.Jet.Generated." + Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
@@ -263,25 +263,25 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static void ValidateParameters(int skipParameters, ParameterInfo[] parameters, ParameterInfo[] delegateParameters)
         {
-            if( skipParameters < 0 || skipParameters > parameters.Length )
+            if (skipParameters < 0 || skipParameters > parameters.Length)
                 throw new ArgumentOutOfRangeException(nameof(skipParameters));
-            if( delegateParameters.Length < parameters.Length - skipParameters || delegateParameters.Length > parameters.Length - skipParameters + 1 )
+            if (delegateParameters.Length < parameters.Length - skipParameters || delegateParameters.Length > parameters.Length - skipParameters + 1)
                 throw new ArgumentException("The delegate method doesn't have the correct number of parameters.");
-            for( int x = 0; x < delegateParameters.Length; ++x )
+            for (int x = 0; x < delegateParameters.Length; ++x)
             {
                 Type requiredType = (x + skipParameters == parameters.Length) ? typeof(TaskContext) : parameters[x + skipParameters].ParameterType;
-                if( delegateParameters[x].ParameterType != requiredType )
+                if (delegateParameters[x].ParameterType != requiredType)
                     throw new ArgumentException("The delegate method doesn't have the correct method signature.");
             }
         }
 
         private static void SetTaskAttributes(MethodInfo taskMethod, RecordReuseMode mode, TypeBuilder taskTypeBuilder)
         {
-            if( mode != RecordReuseMode.DoNotAllow )
+            if (mode != RecordReuseMode.DoNotAllow)
             {
                 Type allowRecordReuseAttributeType = typeof(AllowRecordReuseAttribute);
                 AllowRecordReuseAttribute allowRecordReuse = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskMethod, allowRecordReuseAttributeType);
-                if( mode == RecordReuseMode.Allow || mode == RecordReuseMode.PassThrough || allowRecordReuse != null )
+                if (mode == RecordReuseMode.Allow || mode == RecordReuseMode.PassThrough || allowRecordReuse != null)
                 {
                     ConstructorInfo ctor = allowRecordReuseAttributeType.GetConstructor(Type.EmptyTypes);
                     PropertyInfo passThrough = allowRecordReuseAttributeType.GetProperty("PassThrough");
@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 }
             }
 
-            if( Attribute.IsDefined(taskMethod, typeof(ProcessAllInputPartitionsAttribute)) )
+            if (Attribute.IsDefined(taskMethod, typeof(ProcessAllInputPartitionsAttribute)))
             {
                 ConstructorInfo ctor = typeof(ProcessAllInputPartitionsAttribute).GetConstructor(Type.EmptyTypes);
                 CustomAttributeBuilder partitionAttribute = new CustomAttributeBuilder(ctor, Array.Empty<object>());
@@ -305,7 +305,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             CreateDynamicAssembly();
 
             Type[] interfaces = null;
-            if( baseOrInterfaceType.IsInterface )
+            if (baseOrInterfaceType.IsInterface)
             {
                 interfaces = new[] { baseOrInterfaceType };
                 baseOrInterfaceType = typeof(Configurable);
@@ -313,7 +313,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             string typeName = taskDelegate.Method.Name + "Task";
             int suffix = 2;
-            while( _usedTypeNames.Contains(typeName) )
+            while (_usedTypeNames.Contains(typeName))
             {
                 typeName = taskDelegate.Method.Name + "Task" + suffix;
                 suffix++;
@@ -324,7 +324,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             SetTaskAttributes(taskDelegate.Method, recordReuseMode, taskTypeBuilder);
 
-            if( !CanCallTargetMethodDirectly(taskDelegate) )
+            if (!CanCallTargetMethodDirectly(taskDelegate))
                 delegateField = CreateDelegateField(taskDelegate, taskTypeBuilder);
             else
                 delegateField = null;
@@ -354,7 +354,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             ParameterInfo[] parameters = interfaceMethod.GetParameters();
             MethodBuilder method = taskTypeBuilder.DefineMethod(interfaceMethod.Name, MethodAttributes.Public | MethodAttributes.Virtual, interfaceMethod.ReturnType, parameters.Select(p => p.ParameterType).ToArray());
-            foreach( ParameterInfo parameter in parameters )
+            foreach (ParameterInfo parameter in parameters)
             {
                 method.DefineParameter(parameter.Position + 1, parameter.Attributes, parameter.Name);
             }

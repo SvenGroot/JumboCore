@@ -9,8 +9,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -48,16 +48,16 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="path">The path of the file to read.</param>
         public DfsInputStream(INameServerClientProtocol nameServer, string path)
         {
-            if( nameServer == null )
+            if (nameServer == null)
                 throw new ArgumentNullException(nameof(nameServer));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             _nameServer = nameServer;
             _log.DebugFormat("Opening file {0} from the DFS.", path);
             _file = nameServer.GetFileInfo(path);
             // GetFileInfo doesn't throw if the file doesn't exist; we do.
-            if( _file == null )
+            if (_file == null)
                 throw new FileNotFoundException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The file '{0}' does not exist on the distributed file system.", path));
             BlockSize = (int)_file.BlockSize;
             _endOffset = _file.Size;
@@ -130,7 +130,7 @@ namespace Ookii.Jumbo.Dfs
         /// </value>
         public override long Length
         {
-            get 
+            get
             {
                 return _file.Size;
             }
@@ -148,7 +148,7 @@ namespace Ookii.Jumbo.Dfs
             }
             set
             {
-                if( value < 0 || value >= Length )
+                if (value < 0 || value >= Length)
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 Seek(value, SeekOrigin.Begin);
@@ -213,11 +213,11 @@ namespace Ookii.Jumbo.Dfs
             get { return _endOffset; }
             set
             {
-                if( value < _position || value > Length )
+                if (value < _position || value > Length)
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _endOffset = value;
-                if( value > 0 )
+                if (value > 0)
                     _lastBlockToDownload = (int)((value - 1) / _file.BlockSize);
                 else
                     _lastBlockToDownload = 0;
@@ -256,31 +256,31 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(DfsInputStream).FullName);
             // These exceptions match the contract given in the Stream class documentation.
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > buffer.Length )
+            if (offset + count > buffer.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
-            if( _position + count > _endOffset )
+            if (_position + count > _endOffset)
                 count = (int)(_endOffset - _position);
 
             int sizeRemaining = count;
-            if( count > 0 )
+            if (count > 0)
             {
-                while( _position < _endOffset && sizeRemaining > 0 )
+                while (_position < _endOffset && sizeRemaining > 0)
                 {
-                    if( _currentPacketOffset >= _currentPacket.Size )
+                    if (_currentPacketOffset >= _currentPacket.Size)
                     {
                         _currentPacketOffset = 0;
                         // ReadPacket returns false if the end of the file or StopReadingAtPosition has been reached.
-                        if( !ReadPacket() )
+                        if (!ReadPacket())
                             break;
                     }
 
@@ -293,7 +293,7 @@ namespace Ookii.Jumbo.Dfs
                     _position += copied;
                     _currentPacketOffset += copied;
 
-                    if( _currentPacket.IsLastPacket && _position < Length && _currentPacketOffset == _currentPacket.Size && _currentPacket.Size < Packet.PacketSize )
+                    if (_currentPacket.IsLastPacket && _position < Length && _currentPacketOffset == _currentPacket.Size && _currentPacket.Size < Packet.PacketSize)
                     {
                         int padding = Packet.PacketSize - _currentPacket.Size;
                         _position += padding;
@@ -313,7 +313,7 @@ namespace Ookii.Jumbo.Dfs
         public override long Seek(long offset, SeekOrigin origin)
         {
             long newPosition = 0;
-            switch( origin )
+            switch (origin)
             {
             case SeekOrigin.Begin:
                 newPosition = offset;
@@ -325,9 +325,9 @@ namespace Ookii.Jumbo.Dfs
                 newPosition = Length + offset;
                 break;
             }
-            if( newPosition < 0 || newPosition >= Length )
+            if (newPosition < 0 || newPosition >= Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( newPosition != _position )
+            if (newPosition != _position)
             {
                 CloseDataServerConnection();
                 _position = newPosition;
@@ -366,7 +366,7 @@ namespace Ookii.Jumbo.Dfs
         /// </returns>
         public long OffsetFromBoundary(long position)
         {
-            if( position < 0 || position > Length )
+            if (position < 0 || position > Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
 
             return position % _file.BlockSize;
@@ -383,9 +383,9 @@ namespace Ookii.Jumbo.Dfs
         /// </returns>
         public bool AreInsideSameBoundary(long position1, long position2)
         {
-            if( position1 < 0 || position1 > Length )
+            if (position1 < 0 || position1 > Length)
                 throw new ArgumentOutOfRangeException(nameof(position1));
-            if( position2 < 0 || position2 > Length )
+            if (position2 < 0 || position2 > Length)
                 throw new ArgumentOutOfRangeException(nameof(position2));
 
             return position1 / _file.BlockSize == position2 / _file.BlockSize;
@@ -398,10 +398,10 @@ namespace Ookii.Jumbo.Dfs
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( disposing )
+                if (disposing)
                 {
                     CloseDataServerConnection();
                 }
@@ -417,41 +417,41 @@ namespace Ookii.Jumbo.Dfs
             {
                 try
                 {
-                    if( _serverClient == null )
+                    if (_serverClient == null)
                     {
-                        if( !ConnectToDataServer() )
+                        if (!ConnectToDataServer())
                             return false;
                     }
 
                     DataServerClientProtocolResult status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
-                    if( status != DataServerClientProtocolResult.Ok )
+                    if (status != DataServerClientProtocolResult.Ok)
                     {
                         throw new DfsException("The data server reported an error.");
                     }
                     _currentPacket.Read(_serverReader, PacketFormatOption.NoSequenceNumber, true);
-                    if( _currentPacket.IsLastPacket )
+                    if (_currentPacket.IsLastPacket)
                     {
                         CloseDataServerConnection();
                         _currentServerIndex = 0;
                     }
                     success = true;
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     _log.Error(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Error reading block {0} from server {1}", _currentBlockId, _dataServers[_currentServerIndex]), ex);
                     CloseDataServerConnection();
                     ++_currentServerIndex;
                     DataServerErrors++;
-                    if( _currentServerIndex == _dataServers.Count )
+                    if (_currentServerIndex == _dataServers.Count)
                         throw;
                 }
-            } while( !success );
+            } while (!success);
             return true;
         }
 
         private bool ConnectToDataServer()
         {
-            if( _position == _file.Size )
+            if (_position == _file.Size)
                 return false;
 
             bool success = false;
@@ -460,7 +460,7 @@ namespace Ookii.Jumbo.Dfs
             {
                 CloseDataServerConnection();
                 int blockIndex = (int)(_position / _file.BlockSize);
-                if( _lastBlockToDownload > 0 && blockIndex > _lastBlockToDownload )
+                if (_lastBlockToDownload > 0 && blockIndex > _lastBlockToDownload)
                     return false;
                 int blockOffset = (int)(_position % _file.BlockSize);
                 Guid blockId = _file.Blocks[blockIndex];
@@ -482,16 +482,16 @@ namespace Ookii.Jumbo.Dfs
                 _serverStream.Flush();
 
                 DataServerClientProtocolResult status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
-                if( status == DataServerClientProtocolResult.OutOfRange && blockOffset > 0 && blockIndex < _file.Blocks.Count - 1 && _file.RecordOptions == IO.RecordStreamOptions.DoNotCrossBoundary )
+                if (status == DataServerClientProtocolResult.OutOfRange && blockOffset > 0 && blockIndex < _file.Blocks.Count - 1 && _file.RecordOptions == IO.RecordStreamOptions.DoNotCrossBoundary)
                 {
                     long oldPosition = _position;
                     _position = (blockIndex + 1) * _file.BlockSize;
                     _paddingSkipped += _position - oldPosition;
                 }
-                else if( status != DataServerClientProtocolResult.Ok )
+                else if (status != DataServerClientProtocolResult.Ok)
                 {
                     ++_currentServerIndex;
-                    if( _currentServerIndex == _dataServers.Count )
+                    if (_currentServerIndex == _dataServers.Count)
                         throw new DfsException("The server encountered an error while sending data.");
                 }
                 else
@@ -500,23 +500,23 @@ namespace Ookii.Jumbo.Dfs
                     _currentPacketOffset = (int)(_position % Packet.PacketSize);
                     success = true;
                 }
-            } while( !success );
+            } while (!success);
             return true;
         }
 
         private void CloseDataServerConnection()
         {
-            if( _serverReader != null )
+            if (_serverReader != null)
             {
                 _serverReader.Dispose();
                 _serverReader = null;
             }
-            if( _serverStream != null )
+            if (_serverStream != null)
             {
                 _serverStream.Dispose();
                 _serverStream = null;
             }
-            if( _serverClient != null )
+            if (_serverClient != null)
             {
                 _serverClient.Close();
                 _serverClient = null;

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
-using Ookii.Jumbo;
 using System.IO;
-using Ookii.Jumbo.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using Ookii.Jumbo;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -98,12 +98,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public void PrintTree(TextWriter writer)
         {
             writer.WriteLine("Tree:");
-            foreach( HeaderTableItem item in _headerTable )
+            foreach (HeaderTableItem item in _headerTable)
             {
                 int node = item.FirstNode;
-                if( node != 0 )
+                if (node != 0)
                 {
-                    while( node != 0 )
+                    while (node != 0)
                     {
                         int parentId = _nodes[_nodes[node].Parent].Id;
                         writer.Write("{0},{1}:{2}  |  ", parentId == -1 ? "*" : parentId.ToString(), _nodes[node].Id, _nodes[node].Count);
@@ -123,10 +123,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private void Mine(int? currentItem, FrequentPatternCollector collector)
         {
             int lower = currentItem == null ? _mineUntilItem : 0;
-            for( int x = _headerTable.Length - 1; x >= lower; --x )
+            for (int x = _headerTable.Length - 1; x >= lower; --x)
             {
                 MineItem(currentItem, collector, x);
-                if( currentItem == null )
+                if (currentItem == null)
                 {
                     int total = _headerTable.Length - lower;
                     int processed = _headerTable.Length - x;
@@ -138,7 +138,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private void MineTopDown(int? currentItem, FrequentPatternCollector collector)
         {
-            for( int x = 0; x < _headerTable.Length; ++x )
+            for (int x = 0; x < _headerTable.Length; ++x)
             {
                 MineItem(currentItem, collector, x);
             }
@@ -146,31 +146,31 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private void MineItem(int? currentItem, FrequentPatternCollector collector, int item)
         {
-            if( currentItem == null )
+            if (currentItem == null)
             {
                 string message = string.Format("Mining for patterns with item id: {0}", item);
                 _log.InfoFormat(message);
                 _config.StatusMessage = message;
             }
             int minSupport = collector.GetMinSupportForItem(currentItem == null ? item : currentItem.Value);
-            if( _headerTable[item].Support >= minSupport )
+            if (_headerTable[item].Support >= minSupport)
             {
                 collector.Add(item, _headerTable[item].Support);
                 int node = _headerTable[item].FirstNode;
-                if( _nodes[node].NodeLink == 0 )
+                if (_nodes[node].NodeLink == 0)
                 {
                     // Resulting tree would be single path.
-                    for( node = _nodes[node].Parent; node > 0; node = _nodes[node].Parent )
+                    for (node = _nodes[node].Parent; node > 0; node = _nodes[node].Parent)
                         collector.AddPerfectExtension(_nodes[node].Id);
                 }
                 else
                 {
-                    using( FPTree conditionalPatternTree = CreateConditionalTree(_headerTable[item].FirstNode) )
+                    using (FPTree conditionalPatternTree = CreateConditionalTree(_headerTable[item].FirstNode))
                     {
                         conditionalPatternTree.ReduceTree(minSupport);
                         conditionalPatternTree.CollectPerfectItems(collector);
                         conditionalPatternTree.PruneTree(minSupport);
-                        if( currentItem == null )
+                        if (currentItem == null)
                             conditionalPatternTree.MineTopDown(item, collector);
                         else
                             conditionalPatternTree.Mine(currentItem, collector);
@@ -186,19 +186,19 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             int count = 0;
 
-            foreach( ITransaction t in transactions )
+            foreach (ITransaction t in transactions)
             {
-                if( ++count % 10000 == 0 )
+                if (++count % 10000 == 0)
                     _log.DebugFormat("Building tree: {0} transactions", count);
 
                 IEnumerable<int> frequent = t.Items;
 
                 int current = _rootNode;
                 bool useExistingChild = true;
-                foreach( int item in frequent )
+                foreach (int item in frequent)
                 {
                     int child = useExistingChild ? GetChild(current, item) : 0;
-                    if( child == 0 )
+                    if (child == 0)
                     {
                         useExistingChild = false; // no need to search for existing children after this.
                         child = CreateNode(current, item, t.Count);
@@ -221,7 +221,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private static int GetSupport(Dictionary<int, int> frequentItems, int item)
         {
             int support;
-            if( frequentItems.TryGetValue(item, out support) )
+            if (frequentItems.TryGetValue(item, out support))
                 return support;
             else
                 return 0;
@@ -232,16 +232,16 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             int conditionalNode = firstNode;
             FPTree conditionalTree = new FPTree(8, _nodes[conditionalNode].Id, _minSupport);
 
-            while( conditionalNode != 0 )
+            while (conditionalNode != 0)
             {
                 int pathNode = _nodes[conditionalNode].Parent;
                 int previousPathNode = 0;
                 int count = _nodes[conditionalNode].Count;
 
-                while( pathNode != _rootNode )
+                while (pathNode != _rootNode)
                 {
                     int id = _nodes[pathNode].Id;
-                    if( _nodes[pathNode].Copy == 0 )
+                    if (_nodes[pathNode].Copy == 0)
                     {
                         int copy = conditionalTree.CreateConditionalNode(id, count);
                         _nodes[pathNode].Copy = copy;
@@ -252,7 +252,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                         conditionalTree.AddNodeSupport(_nodes[pathNode].Copy, count);
                     }
 
-                    if( previousPathNode != 0 )
+                    if (previousPathNode != 0)
                         conditionalTree.SetParent(previousPathNode, _nodes[pathNode].Copy);
 
                     previousPathNode = _nodes[pathNode].Copy;
@@ -263,10 +263,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             }
 
             conditionalNode = firstNode;
-            while( conditionalNode != 0 )
+            while (conditionalNode != 0)
             {
                 int pathNode = _nodes[conditionalNode].Parent;
-                while( pathNode != 0 )
+                while (pathNode != 0)
                 {
                     _nodes[pathNode].Copy = 0;
 
@@ -282,7 +282,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private void ReduceTree(int minSupport)
         {
             int count = _headerTable.Length;
-            while( count > 0 && _headerTable[count - 1].Support < minSupport )
+            while (count > 0 && _headerTable[count - 1].Support < minSupport)
             {
                 // The children collection isn't used outside of tree construction, and it won't even be set in a conditional tree
                 // so no need to remove the deleted nodes from the children collection of their parents.
@@ -295,25 +295,25 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             int first;
             int count = _headerTable.Length;
-            for( first = 0; first < count; ++first )
+            for (first = 0; first < count; ++first)
             {
-                if( _headerTable[first].FirstNode != 0 && _headerTable[first].Support < minSupport )
+                if (_headerTable[first].FirstNode != 0 && _headerTable[first].Support < minSupport)
                     break;
             }
 
-            for( int i = first; i < count; ++i )
+            for (int i = first; i < count; ++i)
             {
-                if( _headerTable[i].Support < minSupport )
+                if (_headerTable[i].Support < minSupport)
                     continue; // skip levels with infrequent items
 
-                for( int node = _headerTable[i].FirstNode; node != 0; node = _nodes[node].NodeLink )
+                for (int node = _headerTable[i].FirstNode; node != 0; node = _nodes[node].NodeLink)
                 {
                     int ancestor = _nodes[node].Parent;
-                    while( ancestor > 0 && _headerTable[_nodes[ancestor].Id].Support < minSupport )
+                    while (ancestor > 0 && _headerTable[_nodes[ancestor].Id].Support < minSupport)
                         ancestor = _nodes[ancestor].Parent;
-                    if( _nodes[ancestor].Copy != 0 && _nodes[_nodes[ancestor].Copy].Id == _nodes[ancestor].Id )
+                    if (_nodes[ancestor].Copy != 0 && _nodes[_nodes[ancestor].Copy].Id == _nodes[ancestor].Id)
                         ancestor = _nodes[ancestor].Copy;
-                    if( _nodes[ancestor].Copy == 0 || _nodes[_nodes[ancestor].Copy].Id != i )
+                    if (_nodes[ancestor].Copy == 0 || _nodes[_nodes[ancestor].Copy].Id != i)
                     {
                         _nodes[ancestor].Copy = node;
                         _nodes[node].Parent = ancestor;
@@ -325,21 +325,21 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                     }
                 }
             }
-            for( ; first < count; ++first )
+            for (; first < count; ++first)
             {
                 int node = _headerTable[first].FirstNode;
-                if( node == 0 )
+                if (node == 0)
                     continue;
-                if( _headerTable[first].Support < minSupport )
+                if (_headerTable[first].Support < minSupport)
                 {
                     _headerTable[first].Support = 0;
                     _headerTable[first].FirstNode = 0;
                 }
                 else
                 {
-                    while( _nodes[node].NodeLink != 0 )
+                    while (_nodes[node].NodeLink != 0)
                     {
-                        if( _nodes[_nodes[node].NodeLink].Copy == 0 || _nodes[_nodes[_nodes[node].NodeLink].Copy].Id != first )
+                        if (_nodes[_nodes[node].NodeLink].Copy == 0 || _nodes[_nodes[_nodes[node].NodeLink].Copy].Id != first)
                         {
                             _nodes[_nodes[node].Parent].Copy = _nodes[node].Copy = 0;
                             node = _nodes[node].NodeLink;
@@ -366,15 +366,15 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             //min = isr_supp(rd->isrep);    /* minimum for perfect extension */
             int min = collector.Support;
             int r = 0;
-            for( int i = _headerTable.Length - 1; i >= 0; --i )
+            for (int i = _headerTable.Length - 1; i >= 0; --i)
             {
-                if( _headerTable[i].Support < min )
+                if (_headerTable[i].Support < min)
                     continue;
                 collector.AddPerfectExtension(i);
                 _headerTable[i].Support = 0;
                 ++r;
             }
-            if( r <= 0 )
+            if (r <= 0)
                 return;
             ReduceTree(1);
             PruneTree(1);
@@ -383,13 +383,13 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private int GetChild(int node, int id)
         {
             int childCount = _nodeChildren[node].Count;
-            if( childCount > 0 )
+            if (childCount > 0)
             {
                 int* children = _nodeChildren[node].Children;
-                for( int x = 0; x < childCount; ++x )
+                for (int x = 0; x < childCount; ++x)
                 {
                     int child = children[x];
-                    if( _nodes[child].Id == id )
+                    if (_nodes[child].Id == id)
                         return child;
                 }
 
@@ -399,7 +399,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private int CreateNode(int parentNode, int id, int count)
         {
-            if( _nodeCount == _nodesLength )
+            if (_nodeCount == _nodesLength)
                 Resize();
 
             int newNode = _nodeCount++;
@@ -416,7 +416,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private int CreateConditionalNode(int id, int count)
         {
-            if( _nodeCount == _nodesLength )
+            if (_nodeCount == _nodesLength)
                 Resize();
 
             int newNode = _nodeCount++;
@@ -449,24 +449,24 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             _nodesLength = (int)(_nodesLength * _growthRate);
             _nodes = (FPTreeNode*)Marshal.ReAllocHGlobal((IntPtr)_nodes, new IntPtr(_nodesLength * sizeof(FPTreeNode)));
-            if( _nodeChildren != null )
+            if (_nodeChildren != null)
                 _nodeChildren = (NodeChildList*)Marshal.ReAllocHGlobal((IntPtr)_nodeChildren, new IntPtr(_nodesLength * sizeof(NodeChildList)));
         }
 
         private void OnProgressChanged(EventArgs e)
         {
             EventHandler handler = ProgressChanged;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
         private void CleanupChildren()
         {
-            if( _nodeChildren != null )
+            if (_nodeChildren != null)
             {
-                for( int x = 0; x < _nodeCount; ++x )
+                for (int x = 0; x < _nodeCount; ++x)
                 {
-                    if( _nodeChildren[x].Children != null )
+                    if (_nodeChildren[x].Children != null)
                         Marshal.FreeHGlobal((IntPtr)_nodeChildren[x].Children);
                 }
                 Marshal.FreeHGlobal((IntPtr)_nodeChildren);
@@ -476,11 +476,11 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private void Dispose(bool disposing)
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
                 CleanupChildren();
-                if( _nodes != null )
+                if (_nodes != null)
                 {
                     Marshal.FreeHGlobal((IntPtr)_nodes);
                     _nodes = null;

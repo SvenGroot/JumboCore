@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -34,13 +34,13 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             _minSupport = minSupport;
             _expandPerfectExtensions = expandPerfectExtensions;
 
-            if( k > 0 )
+            if (k > 0)
             {
                 _heapSize = k;
-                if( itemHeaps == null || itemHeaps.Length < itemCount )
+                if (itemHeaps == null || itemHeaps.Length < itemCount)
                 {
                     _itemHeaps = new FrequentPatternMaxHeap[itemCount];
-                    if( itemHeaps != null )
+                    if (itemHeaps != null)
                         Array.Copy(itemHeaps, _itemHeaps, itemHeaps.Length);
                 }
                 else
@@ -65,7 +65,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public void Add(int item, int support)
         {
-            if( _perfectExtensionCount[item] < 0 )
+            if (_perfectExtensionCount[item] < 0)
                 throw new InvalidOperationException("Duplicate item.");
 
             _perfectExtensionCount[item] |= Int32.MinValue; // mark the item used.
@@ -77,7 +77,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public void AddPerfectExtension(int item)
         {
-            if( _perfectExtensionCount[item] < 0 )
+            if (_perfectExtensionCount[item] < 0)
                 throw new InvalidOperationException("Duplicate item.");
 
             _perfectExtensionCount[item] |= Int32.MinValue; // mark the item used.
@@ -88,12 +88,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public void Remove(int count)
         {
-            if( count > _count )
+            if (count > _count)
                 count = _count;
-            while( --count >= 0 )
+            while (--count >= 0)
             {
                 // Remove the perfect extensions by clearing their used bit and decrementing the perfect exntension index.
-                for( int i = _perfectExtensionCount[_count] & ~Int32.MinValue; --i >= 0; )
+                for (int i = _perfectExtensionCount[_count] & ~Int32.MinValue; --i >= 0;)
                     _perfectExtensionCount[_perfectExtensions[--_perfectExtensionItemIndex]] &= ~Int32.MinValue;
                 int item = _items[--_count];
                 _perfectExtensionCount[item] &= ~Int32.MinValue; // Clear the item's used bit.
@@ -104,28 +104,28 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public void Report()
         {
-            if( _perfectExtensionItemIndex > 0 )
+            if (_perfectExtensionItemIndex > 0)
                 ReportPerfectExtensions(0);
 
-            if( _perfectExtensionItemIndex == 0 || _expandPerfectExtensions )
+            if (_perfectExtensionItemIndex == 0 || _expandPerfectExtensions)
                 Output();
         }
 
         private void ReportPerfectExtensions(int index)
         {
-            if( _expandPerfectExtensions )
+            if (_expandPerfectExtensions)
             {
                 do
                 {
                     _items[_count++] = _perfectExtensions[index++];
                     _supports[_count] = _supports[_count - 1];
-                    if( index < _perfectExtensionItemIndex )
+                    if (index < _perfectExtensionItemIndex)
                         ReportPerfectExtensions(index);
                     Output();
                     --_count;
                     //if( _count < _prefixCount )
                     //    _prefixCount = _count;
-                } while( index < _perfectExtensionItemIndex );
+                } while (index < _perfectExtensionItemIndex);
             }
             else
             {
@@ -134,7 +134,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 {
                     _items[_count++] = _perfectExtensions[index++];
                     _supports[_count] = _supports[_count - 1];
-                } while( index < _perfectExtensionItemIndex );
+                } while (index < _perfectExtensionItemIndex);
                 Output();
                 _count -= index;
             }
@@ -142,7 +142,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private void Output()
         {
-            if( _itemHeaps == null )
+            if (_itemHeaps == null)
             {
                 throw new NotSupportedException();
                 //MappedFrequentPattern pattern = new MappedFrequentPattern(_items.Take(_count), _supports[_count]);
@@ -154,9 +154,9 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 MappedFrequentPattern pattern = new MappedFrequentPattern(_items.Take(_count).OrderByDescending(x => x).ToArray(), _supports[_count]);
                 //FrequentPattern<int> pattern = new FrequentPattern<int>() { Items = _items.Take(_count).ToArray(), Support = _supports[_count] };
                 //_itemHeaps[pattern.Items[0]].Add(pattern);
-                foreach( int item in pattern.Items )
+                foreach (int item in pattern.Items)
                 {
-                    if( _itemHeaps[item] == null )
+                    if (_itemHeaps[item] == null)
                         _itemHeaps[item] = new FrequentPatternMaxHeap(_heapSize, _minSupport, true);
                     _itemHeaps[item].Add(pattern);
                 }

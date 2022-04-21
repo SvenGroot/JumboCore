@@ -31,16 +31,16 @@ namespace JetWeb.Pages
         [BindProperty(SupportsGet = true)]
         public string Kind { get; set; }
 
-        [BindProperty(SupportsGet = true)] 
+        [BindProperty(SupportsGet = true)]
         public string TaskId { get; set; }
 
-        [BindProperty(SupportsGet = true)] 
+        [BindProperty(SupportsGet = true)]
         public Guid JobId { get; set; }
 
-        [BindProperty(SupportsGet = true)] 
+        [BindProperty(SupportsGet = true)]
         public int Attempt { get; set; }
 
-        [BindProperty(SupportsGet = true)] 
+        [BindProperty(SupportsGet = true)]
         public bool Profile { get; set; }
 
         public HtmlString LogFileContents { get; set; }

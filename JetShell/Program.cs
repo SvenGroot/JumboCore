@@ -1,20 +1,20 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using JetShell.Commands;
+using Ookii.CommandLine;
 using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Jobs;
-using System.Threading;
 using Ookii.Jumbo.Rpc;
-using Ookii.CommandLine;
-using JetShell.Commands;
-using Ookii.Jumbo.Dfs;
-using System.Configuration;
 
 namespace JetShell
 {
@@ -31,7 +31,7 @@ namespace JetShell
 
             repository.Threshold = log4net.Core.Level.Info;
             CreateShellCommandOptions options = new CreateShellCommandOptions()
-            {                
+            {
                 ArgumentNamePrefixes = new[] { "-" }, // DFS paths use / as the directory separator, so use - even on Windows.
                 CommandDescriptionFormat = "    {0}\n{1}\n",
                 CommandDescriptionIndent = 8,
@@ -47,27 +47,27 @@ namespace JetShell
             {
                 return ShellCommand.RunShellCommand(Assembly.GetExecutingAssembly(), args, 0, options);
             }
-            catch( SocketException ex )
+            catch (SocketException ex)
             {
                 WriteError("An error occurred communicating with the server:", ex.Message);
             }
-            catch( DfsException ex )
+            catch (DfsException ex)
             {
                 WriteError("An error occurred accessing the distributed file system:", ex.Message);
             }
-            catch( IOException ex )
+            catch (IOException ex)
             {
                 WriteError("An error occurred executing the command:", ex.Message);
             }
-            catch( ArgumentException ex )
+            catch (ArgumentException ex)
             {
                 WriteError("An error occurred executing the command:", ex.Message);
             }
-            catch( InvalidOperationException ex )
+            catch (InvalidOperationException ex)
             {
                 WriteError("Invalid operation:", ex.Message);
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 WriteError(null, ex.ToString());
             }
@@ -78,9 +78,9 @@ namespace JetShell
 
         private static void WriteError(string errorType, string message)
         {
-            using( TextWriter writer = LineWrappingTextWriter.ForConsoleError() )
+            using (TextWriter writer = LineWrappingTextWriter.ForConsoleError())
             {
-                if( errorType != null )
+                if (errorType != null)
                     writer.WriteLine(errorType);
                 writer.WriteLine(message);
             }

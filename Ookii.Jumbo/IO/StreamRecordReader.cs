@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
@@ -90,23 +90,23 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected StreamRecordReader(Stream stream, long offset, long size, bool seekToOffset)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            if( offset < 0 || (offset > 0 && offset >= stream.Length) )
+            if (offset < 0 || (offset > 0 && offset >= stream.Length))
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( size < 0 )
+            if (size < 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
-            if( offset + size > stream.Length )
+            if (offset + size > stream.Length)
                 throw new ArgumentException("Offset + size is beyond the end of the stream.");
 
             Stream = stream;
-            if( seekToOffset && offset != 0 ) // to prevent NotSupportedException on streams that can't seek.
+            if (seekToOffset && offset != 0) // to prevent NotSupportedException on streams that can't seek.
                 Stream.Position = offset;
             Offset = offset;
             FirstRecordOffset = offset;
             Size = size;
             IRecordInputStream recordInputStream = Stream as IRecordInputStream;
-            if( recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary && recordInputStream.OffsetFromBoundary(offset + size) == 0 )
+            if (recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary && recordInputStream.OffsetFromBoundary(offset + size) == 0)
                 recordInputStream.StopReadingAtPosition = offset + size;
             RecordInputStream = recordInputStream;
         }
@@ -152,23 +152,23 @@ namespace Ookii.Jumbo.IO
         /// </value>
         public override long InputBytes
         {
-            get 
+            get
             {
                 // This property doesn't need to be thread-safe, so it doesn't need the try/catch of UncompressedBytesRead,
                 // but it might still be called after the reader is disposed (because BinaryRecordReader disposes itself when the last byte is read).
                 Stream s = Stream;
-                if( s == null )
+                if (s == null)
                     return _bytesRead - (FirstRecordOffset - Offset) - _paddingBytesSkipped;
                 else
                 {
                     long result = s.Position - FirstRecordOffset;
-                    if( RecordInputStream != null )
+                    if (RecordInputStream != null)
                         result -= RecordInputStream.PaddingBytesSkipped;
                     return result;
                 }
             }
         }
-        
+
         /// <summary>
         /// Gets the size of the records before deserialization.
         /// </summary>
@@ -180,7 +180,7 @@ namespace Ookii.Jumbo.IO
             get
             {
                 ICompressor compressor = Stream as ICompressor;
-                if( compressor == null )
+                if (compressor == null)
                     return UncompressedBytesRead;
                 else
                     return compressor.CompressedBytesRead;
@@ -193,7 +193,7 @@ namespace Ookii.Jumbo.IO
         public override float Progress
         {
             get
-            {                    
+            {
                 return Math.Min(1.0f, UncompressedBytesRead / (float)Size);
             }
         }
@@ -205,7 +205,7 @@ namespace Ookii.Jumbo.IO
                 // Progress needs to be thread safe, so this must be as well. But we don't want to lock each usage of Stream.
                 // It still might not be entirely safe because Stream isn't thread safe, but it'll have to do for now.
                 Stream s = Stream;
-                if( s == null )
+                if (s == null)
                     return _bytesRead;
                 else
                 {
@@ -213,7 +213,7 @@ namespace Ookii.Jumbo.IO
                     {
                         return s.Position - Offset;
                     }
-                    catch( ObjectDisposedException )
+                    catch (ObjectDisposedException)
                     {
                         return _bytesRead;
                     }
@@ -229,14 +229,14 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( !_disposed )
+            if (!_disposed)
             {
-                if( disposing )
+                if (disposing)
                 {
-                    if( Stream != null )
+                    if (Stream != null)
                     {
                         _bytesRead = UncompressedBytesRead; // Store so that property can be used after the object is disposed.
-                        if( RecordInputStream != null )
+                        if (RecordInputStream != null)
                             _paddingBytesSkipped = RecordInputStream.PaddingBytesSkipped;
                         Stream s = Stream;
                         Stream = null;
@@ -253,7 +253,7 @@ namespace Ookii.Jumbo.IO
         /// <exception cref="ObjectDisposedException">The <see cref="StreamRecordReader{T}"/> was disposed.</exception>
         protected void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException("StreamRecordReader");
         }
     }

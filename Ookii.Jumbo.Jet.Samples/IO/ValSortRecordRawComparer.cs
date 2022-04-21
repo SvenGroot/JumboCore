@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
         {
             int result = RawComparerHelper.CompareBytesWith7BitEncodedLength(buffer1, offset1, count1, buffer2, offset2, count2);
-            if( result == 0 )
+            if (result == 0)
             {
                 int length = Utf8String.GetLength(buffer1, offset1);
                 long inputOffset1 = LittleEndianBitConverter.ToInt64(buffer1, offset1 + length);

@@ -12,7 +12,7 @@ namespace JetShell.Commands
     {
         private readonly JetClient _jetClient = new JetClient();
 
-        public JetClient JetClient 
+        public JetClient JetClient
         {
             get { return _jetClient; }
         }

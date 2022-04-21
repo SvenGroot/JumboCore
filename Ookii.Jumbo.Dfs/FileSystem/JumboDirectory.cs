@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public JumboDirectory(string fullPath, string name, DateTime dateCreated, IEnumerable<JumboFileSystemEntry> children)
             : base(fullPath, name, dateCreated)
         {
-            if( children != null )
+            if (children != null)
                 _children = new List<JumboFileSystemEntry>(children);
             else
                 _children = new List<JumboFileSystemEntry>();
@@ -71,13 +71,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string rootPath, bool includeChildren)
         {
-            if( directory == null )
+            if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
-            if( !directory.Exists )
+            if (!directory.Exists)
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, "The directory '{0}' does not exist.", directory.FullName));
 
             IEnumerable<JumboFileSystemEntry> children = null;
-            if( includeChildren )
+            if (includeChildren)
                 children = directory.GetFileSystemInfos().Select(info => JumboFileSystemEntry.FromFileSystemInfo(info, rootPath, false));
             string fullPath = StripRootPath(directory.FullName, rootPath);
             return new JumboDirectory(fullPath, fullPath.Length == 1 ? "" : directory.Name, directory.CreationTimeUtc, children);
@@ -90,7 +90,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The <see cref="JumboFileSystemEntry"/> for the child, or <see langword="null"/> if it doesn't exist.</returns>
         public JumboFileSystemEntry GetChild(string name)
         {
-            if( name == null )
+            if (name == null)
                 throw new ArgumentNullException(nameof(name));
             return _children.Where(child => child.Name == name).SingleOrDefault();
         }
@@ -110,16 +110,16 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="writer">The <see cref="TextWriter"/> </param>
         public void PrintListing(TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 
-            if( Children.Count == 0 )
+            if (Children.Count == 0)
                 writer.WriteLine("No entries.");
             else
             {
-                foreach( var entry in Children )
+                foreach (var entry in Children)
                     writer.WriteLine(entry.ToString());
             }
         }

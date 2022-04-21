@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Globalization;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -23,9 +23,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public void Dispose()
             {
-                if( ClientStream != null )
+                if (ClientStream != null)
                     ClientStream.Dispose();
-                if( Client != null )
+                if (Client != null)
                     ((IDisposable)Client).Dispose();
             }
         }
@@ -49,12 +49,12 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             StageConfiguration outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel.OutputStage);
             _outputIds = new TaskId[outputStage.TaskCount]; // We need this to be task based, not partition based.
-            for( int x = 0; x < _outputIds.Length; ++x )
+            for (int x = 0; x < _outputIds.Length; ++x)
                 _outputIds[x] = new TaskId(outputStage.StageId, x + 1);
             _taskConnections = new TaskConnectionInfo[_outputIds.Length];
             _taskExecution = taskExecution;
             _reuseConnections = reuseConnections;
-            if( reuseConnections )
+            if (reuseConnections)
                 _header[0] = (byte)TcpChannelConnectionFlags.KeepAlive;
             WriteInt32ToHeader(1, taskExecution.RootTask.Context.TaskAttemptId.TaskId.TaskNumber);
         }
@@ -76,17 +76,17 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             base.Dispose(disposing);
 
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( !_hasFinalSpill && !ErrorOccurred )
+                if (!_hasFinalSpill && !ErrorOccurred)
                 {
                     SendSegments(true, false); // Send empty partitions to all tasks to signify the end of writing
                 }
 
-                if( disposing )
+                if (disposing)
                 {
-                    for( int x = 0; x < _taskConnections.Length; ++x )
+                    for (int x = 0; x < _taskConnections.Length; ++x)
                         _taskConnections[x].Dispose();
                 }
             }
@@ -95,13 +95,13 @@ namespace Ookii.Jumbo.Jet.Channels
         private void SendSegments(bool finalSpill, bool sendData)
         {
             WriteInt32ToHeader(5, sendData ? SpillCount : (SpillCount + 1));
-            if( finalSpill )
+            if (finalSpill)
             {
                 _hasFinalSpill = true;
                 _header[0] |= (byte)TcpChannelConnectionFlags.FinalSegment;
             }
 
-            for( int taskIndex = 0; taskIndex < _outputIds.Length; ++taskIndex )
+            for (int taskIndex = 0; taskIndex < _outputIds.Length; ++taskIndex)
             {
                 SendSegmentToTask(sendData, taskIndex);
             }
@@ -116,7 +116,7 @@ namespace Ookii.Jumbo.Jet.Channels
             try
             {
                 int[] partitions = _taskConnections[taskIndex].Partitions;
-                if( partitions == null )
+                if (partitions == null)
                 {
                     partitions = _taskExecution.Context.StageConfiguration.OutputChannel.PartitionsPerTask <= 1 ? new[] { _outputIds[taskIndex].TaskNumber } : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
                     _taskConnections[taskIndex].Partitions = partitions;
@@ -124,15 +124,15 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 bool sentHeader = false;
                 // Always send all partitions, even if they're empty
-                foreach( int partition in partitions )
+                foreach (int partition in partitions)
                 {
                     int size = sendData ? SpillDataSizeForPartition(partition - 1) : 0;
-                    if( stream == null )
+                    if (stream == null)
                     {
                         disposeStream = true;
                         client = ConnectToTask(taskIndex);
                         stream = new WriteBufferedStream(client.GetStream());
-                        if( _reuseConnections )
+                        if (_reuseConnections)
                         {
                             _taskConnections[taskIndex].Client = client;
                             _taskConnections[taskIndex].ClientStream = stream;
@@ -142,7 +142,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                     WriteInt32ToHeader(TcpInputChannel.HeaderSize, partition);
                     WriteInt32ToHeader(TcpInputChannel.HeaderSize + 4, size);
-                    if( !sentHeader )
+                    if (!sentHeader)
                     {
                         // Send header + partition header
                         stream.Write(_header, 0, _header.Length);
@@ -155,7 +155,7 @@ namespace Ookii.Jumbo.Jet.Channels
                         stream.Write(_header, TcpInputChannel.HeaderSize, TcpInputChannel.PartitionHeaderSize);
                         Interlocked.Add(ref _headerBytesWritten, TcpInputChannel.PartitionHeaderSize);
                     }
-                    if( sendData && size > 0 )
+                    if (sendData && size > 0)
                         WritePartition(partition - 1, stream);
 
                 }
@@ -164,11 +164,11 @@ namespace Ookii.Jumbo.Jet.Channels
             }
             finally
             {
-                if( disposeStream )
+                if (disposeStream)
                 {
-                    if( stream != null )
+                    if (stream != null)
                         stream.Dispose();
-                    if( client != null )
+                    if (client != null)
                         ((IDisposable)client).Dispose();
                 }
             }
@@ -177,9 +177,9 @@ namespace Ookii.Jumbo.Jet.Channels
         private void CheckResult(WriteBufferedStream stream, int taskIndex)
         {
             int result = stream.ReadByte();
-            if( result == - 1 )
+            if (result == -1)
                 throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Task {0} did not send a status result.", _outputIds[taskIndex]));
-            else if( result == 0 )
+            else if (result == 0)
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 Exception ex = (Exception)formatter.Deserialize(stream);
@@ -198,19 +198,19 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private TcpClient ConnectToTask(int taskIndex)
         {
-            if( _taskConnections[taskIndex].HostName == null )
+            if (_taskConnections[taskIndex].HostName == null)
             {
                 TaskId taskId = _outputIds[taskIndex];
                 ServerAddress taskServer;
                 do
                 {
                     taskServer = _taskExecution.JetClient.JobServer.GetTaskServerForTask(_taskExecution.Context.JobId, taskId.ToString());
-                    if( taskServer == null )
+                    if (taskServer == null)
                     {
                         _log.DebugFormat("Task {0} is not yet assigned to a server, waiting for retry...", taskId);
                         Thread.Sleep(_retryDelay);
                     }
-                } while( taskServer == null );
+                } while (taskServer == null);
 
                 _log.InfoFormat("Task {0} is running on task server {1}", taskId, taskServer);
 
@@ -220,12 +220,12 @@ namespace Ookii.Jumbo.Jet.Channels
                 {
                     // Since a task failure fails the job with the TCP channel, the attempt number will always be 1.
                     port = taskServerClient.GetTcpChannelPort(_taskExecution.Context.JobId, new TaskAttemptId(taskId, 1));
-                    if( port == 0 )
+                    if (port == 0)
                     {
                         _log.DebugFormat("Task {0} has not yet registered a port number, waiting for retry...", taskId);
                         Thread.Sleep(_retryDelay);
                     }
-                } while( port == 0 );
+                } while (port == 0);
 
                 _taskConnections[taskIndex].HostName = taskServer.HostName;
                 _taskConnections[taskIndex].Port = port;
@@ -234,7 +234,7 @@ namespace Ookii.Jumbo.Jet.Channels
             _log.DebugFormat("Connecting to task {0} at TCP channel server {1}:{2}", _outputIds[taskIndex], _taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
 
             TcpClient client = new TcpClient(_taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
-            if( _reuseConnections )
+            if (_reuseConnections)
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             client.Client.NoDelay = true;
             return client;

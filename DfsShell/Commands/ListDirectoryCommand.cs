@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -18,7 +18,7 @@ namespace DfsShell.Commands
 
         public ListDirectoryCommand([Description("The path of the DFS directory. The default value is /."), ArgumentName("Path")] string path = "/")
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
             _path = path;
         }
@@ -26,7 +26,7 @@ namespace DfsShell.Commands
         public override void Run()
         {
             JumboDirectory dir = Client.GetDirectoryInfo(_path);
-            if( dir == null )
+            if (dir == null)
                 Console.WriteLine("Directory not found.");
             else
                 dir.PrintListing(Console.Out);

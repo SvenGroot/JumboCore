@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
@@ -28,10 +28,10 @@ namespace Ookii.Jumbo.Rpc
         /// IPv6; <see langword="false"/> to listen on IPv6 only. When IPv6 is not available, this parameter has no effect.</param>
         public static void RegisterServerChannels(int port, bool listen4And6)
         {
-            if( _serverChannels == null )
+            if (_serverChannels == null)
                 _serverChannels = new Dictionary<int, RpcServer>();
 
-            if( !_serverChannels.ContainsKey(port) )
+            if (!_serverChannels.ContainsKey(port))
             {
                 IPAddress[] localAddresses = TcpServer.GetDefaultListenerAddresses(listen4And6);
 
@@ -48,10 +48,10 @@ namespace Ookii.Jumbo.Rpc
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void UnregisterServerChannels(int port)
         {
-            if( _serverChannels != null )
+            if (_serverChannels != null)
             {
                 RpcServer server;
-                if( _serverChannels.TryGetValue(port, out server) )
+                if (_serverChannels.TryGetValue(port, out server))
                 {
                     server.StopListening();
                     _serverChannels.Remove(port);
@@ -83,11 +83,11 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public static T CreateClient<T>(string hostName, int port, string objectName)
         {
-            if( hostName == null )
+            if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
-            if( port < 0 )
+            if (port < 0)
                 throw new ArgumentOutOfRangeException(nameof(port));
-            if( objectName == null )
+            if (objectName == null)
                 throw new ArgumentNullException(nameof(objectName));
 
             return (T)RpcProxyBuilder.GetProxy(typeof(T), hostName, port, objectName);
@@ -102,9 +102,9 @@ namespace Ookii.Jumbo.Rpc
         public static void TryRemotingCall(Action remotingAction, int retryInterval, int maxRetries)
         {
             // TODO: This should be integrated into the RPC infrastructure.
-            if( remotingAction == null )
+            if (remotingAction == null)
                 throw new ArgumentNullException(nameof(remotingAction));
-            if( retryInterval <= 0 )
+            if (retryInterval <= 0)
                 throw new ArgumentOutOfRangeException(nameof(retryInterval), "The retry interval must be greater than zero.");
 
             bool retry = true;
@@ -115,9 +115,9 @@ namespace Ookii.Jumbo.Rpc
                     remotingAction();
                     retry = false;
                 }
-                catch( RpcException ex )
+                catch (RpcException ex)
                 {
-                    if( !_abortRetries && (maxRetries == -1 || maxRetries > 0) )
+                    if (!_abortRetries && (maxRetries == -1 || maxRetries > 0))
                     {
                         _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "An error occurred performing a remoting operation. Retrying in {0}.", retryInterval), ex);
                         --maxRetries;
@@ -129,12 +129,12 @@ namespace Ookii.Jumbo.Rpc
                         throw;
                     }
                 }
-                catch( System.Net.Sockets.SocketException ex )
+                catch (System.Net.Sockets.SocketException ex)
                 {
-                    if( !_abortRetries && (maxRetries == -1 || maxRetries > 0) )
+                    if (!_abortRetries && (maxRetries == -1 || maxRetries > 0))
                     {
                         _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "An error occurred performing a remoting operation. Retrying in {0}.", retryInterval), ex);
-                        if( maxRetries > 0 )
+                        if (maxRetries > 0)
                             --maxRetries;
                         Thread.Sleep(retryInterval);
                     }
@@ -144,7 +144,7 @@ namespace Ookii.Jumbo.Rpc
                         throw;
                     }
                 }
-            } while( retry );
+            } while (retry);
         }
 
         /// <summary>

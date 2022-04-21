@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Globalization;
-using System.IO;
 using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet
@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet
 
         public PartitionMerger(MergeRecordReader<T> reader, int partitionNumber, IComparer<T> comparer)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             _reader = reader;
             _partitionNumber = partitionNumber;
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet
         {
             get { return _partitionNumber; }
         }
-        
+
         /// <summary>
         /// NOTE: Only call while _diskInputs is locked!
         /// </summary>
@@ -57,39 +57,39 @@ namespace Ookii.Jumbo.Jet
 
         public void AddInput(RecordInput input)
         {
-            if( input.IsMemoryBased )
+            if (input.IsMemoryBased)
             {
-                lock( _memoryInputs )
+                lock (_memoryInputs)
                     _memoryInputs.Add(input);
             }
             else
             {
-                lock( _diskInputs )
+                lock (_diskInputs)
                     _diskInputs.Add(input);
             }
         }
 
         public void PrepareFinalPass(MergeHelper<T> merger)
         {
-            lock( _diskInputs )
-            lock( _memoryInputs )
-            {
-                _finalPassResult = merger.Merge(_diskInputs, _memoryInputs, _reader.MaxDiskInputsPerMergePass, _comparer, _reader.AllowRecordReuse, true, _reader.IntermediateOutputPath, _intermediateFilePrefix, _reader.CompressionType, _reader.BufferSize, _reader.JetConfiguration.FileChannel.EnableChecksum);
-            }
+            lock (_diskInputs)
+                lock (_memoryInputs)
+                {
+                    _finalPassResult = merger.Merge(_diskInputs, _memoryInputs, _reader.MaxDiskInputsPerMergePass, _comparer, _reader.AllowRecordReuse, true, _reader.IntermediateOutputPath, _intermediateFilePrefix, _reader.CompressionType, _reader.BufferSize, _reader.JetConfiguration.FileChannel.EnableChecksum);
+                }
         }
 
         public void RunMemoryPurgePass(MergeHelper<T> merger)
         {
             RecordInput[] passInputs = null;
-            lock( _memoryInputs )
+            lock (_memoryInputs)
             {
-                if( _memoryInputs.Count > 0 )
+                if (_memoryInputs.Count > 0)
                 {
                     passInputs = _memoryInputs.ToArray();
                     _memoryInputs.Clear();
                 }
             }
-            if( passInputs != null )
+            if (passInputs != null)
             {
                 ++_backgroundPassCount;
                 _log.InfoFormat("Running background pass {0} for partition {1} (memory)", _backgroundPassCount, _partitionNumber);
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet
 
                 _log.Info("Background merge complete");
 
-                lock( _diskInputs )
+                lock (_diskInputs)
                     _diskInputs.Add(new FileRecordInput(typeof(BinaryRecordReader<T>), outputFileName, null, uncompressedSize, true, merger.IsUsingRawRecords, 0, _reader.AllowRecordReuse, _reader.BufferSize, _reader.CompressionType));
             }
         }
@@ -107,7 +107,7 @@ namespace Ookii.Jumbo.Jet
         public void RunDiskMergePassIfNeeded(MergeHelper<T> merger)
         {
             RecordInput[] passInputs;
-            while( (passInputs = GetDiskPassInputs()) != null )
+            while ((passInputs = GetDiskPassInputs()) != null)
             {
                 ++_backgroundPassCount;
                 _log.InfoFormat("Running background pass {0} for partition {1} (disk)", _backgroundPassCount, _partitionNumber);
@@ -118,16 +118,16 @@ namespace Ookii.Jumbo.Jet
 
                 _log.Info("Background merge complete");
 
-                lock( _diskInputs )
+                lock (_diskInputs)
                     _diskInputs.Add(new FileRecordInput(typeof(BinaryRecordReader<T>), outputFileName, null, uncompressedSize, true, merger.IsUsingRawRecords, 0, _reader.AllowRecordReuse, _reader.BufferSize, _reader.CompressionType));
             }
         }
 
         private RecordInput[] GetDiskPassInputs()
         {
-            lock( _diskInputs )
+            lock (_diskInputs)
             {
-                if( NeedDiskMergePass )
+                if (NeedDiskMergePass)
                 {
                     RecordInput[] passInputs = _diskInputs.Take(_reader.MaxDiskInputsPerMergePass).ToArray();
                     _diskInputs.RemoveRange(0, _reader.MaxDiskInputsPerMergePass);

@@ -1,17 +1,17 @@
-﻿﻿// Copyright (c) Sven Groot (Ookii.org)
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Dfs;
-using System.Threading;
 using System.Configuration;
 using System.IO;
-using Ookii.Jumbo;
-using System.Net.Sockets;
+using System.Linq;
 using System.Net;
-using Ookii.Jumbo.Rpc;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Rpc;
 
 namespace DataServerApplication
 {
@@ -42,12 +42,12 @@ namespace DataServerApplication
 
         public DataServer(DfsConfiguration config)
         {
-            if( config == null )
+            if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
             _config = config;
             _blockStorageDirectory = config.DataServer.BlockStorageDirectory;
-            if( string.IsNullOrWhiteSpace(_blockStorageDirectory) )
+            if (string.IsNullOrWhiteSpace(_blockStorageDirectory))
                 throw new InvalidOperationException("DataServer block storage path is not configured.");
             _temporaryBlockStorageDirectory = Path.Combine(_blockStorageDirectory, "temp");
             System.IO.Directory.CreateDirectory(_temporaryBlockStorageDirectory);
@@ -68,7 +68,7 @@ namespace DataServerApplication
 
             _log.Info("Data server main loop starting.");
 
-            if( _running )
+            if (_running)
             {
                 IPAddress[] addresses = TcpServer.GetDefaultListenerAddresses(_config.DataServer.ListenIPv4AndIPv6);
                 _blockServer = new BlockServer(this, addresses, _config.DataServer.Port);
@@ -78,12 +78,12 @@ namespace DataServerApplication
 
                 AddDataForNextHeartbeat(new InitialHeartbeatData(_fileSystemId));
 
-                while( _running )
+                while (_running)
                 {
                     int start = Environment.TickCount;
                     SendHeartbeat();
                     int end = Environment.TickCount;
-                    if( end - start > 500 )
+                    if (end - start > 500)
                         _log.WarnFormat("Long heartbeat time: {0}", end - start);
                     Thread.Sleep(_heartbeatInterval);
                 }
@@ -92,7 +92,7 @@ namespace DataServerApplication
 
         public void Abort()
         {
-            if( _blockServer != null )
+            if (_blockServer != null)
             {
                 _blockServer.Stop();
                 _blockServer = null;
@@ -100,7 +100,7 @@ namespace DataServerApplication
             _running = false;
             RpcHelper.AbortRetries();
             RpcHelper.CloseConnections();
-            lock( _blocksToReplicate )
+            lock (_blocksToReplicate)
             {
                 Monitor.Pulse(_blocksToReplicate);
             }
@@ -108,22 +108,22 @@ namespace DataServerApplication
             {
                 _replicateBlocksThread.Join();
             }
-            catch( ThreadStateException )
+            catch (ThreadStateException)
             {
             }
         }
 
         public FileStream AddNewBlock(Guid blockID)
         {
-            lock( _blocks )
-            lock( _pendingBlocks )
-            {
-                if( _blocks.Contains(blockID) || _pendingBlocks.Contains(blockID) )
-                    throw new ArgumentException("Existing block ID.");
-                _pendingBlocks.Add(blockID);
-                System.IO.Directory.CreateDirectory(_temporaryBlockStorageDirectory);
-                return System.IO.File.Create(Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString()), (int)_config.DataServer.WriteBufferSize.Value);
-            }
+            lock (_blocks)
+                lock (_pendingBlocks)
+                {
+                    if (_blocks.Contains(blockID) || _pendingBlocks.Contains(blockID))
+                        throw new ArgumentException("Existing block ID.");
+                    _pendingBlocks.Add(blockID);
+                    System.IO.Directory.CreateDirectory(_temporaryBlockStorageDirectory);
+                    return System.IO.File.Create(Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString()), (int)_config.DataServer.WriteBufferSize.Value);
+                }
         }
 
         public FileStream OpenBlock(Guid blockID)
@@ -133,9 +133,9 @@ namespace DataServerApplication
 
         public int GetBlockSize(Guid blockID)
         {
-            lock( _blocks )
+            lock (_blocks)
             {
-                if( !_blocks.Contains(blockID) )
+                if (!_blocks.Contains(blockID))
                     throw new ArgumentException("Invalid block.");
             }
 
@@ -144,16 +144,16 @@ namespace DataServerApplication
 
         public void CompleteBlock(Guid blockID, int size)
         {
-            lock( _blocks )
-            lock( _pendingBlocks )
-            {
-                if( !_pendingBlocks.Contains(blockID) || _blocks.Contains(blockID) )
-                    throw new ArgumentException("Invalid block ID.");
+            lock (_blocks)
+                lock (_pendingBlocks)
+                {
+                    if (!_pendingBlocks.Contains(blockID) || _blocks.Contains(blockID))
+                        throw new ArgumentException("Invalid block ID.");
 
-                _pendingBlocks.Remove(blockID);
-                System.IO.File.Move(Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString()), GetBlockFileName(blockID));
-                _blocks.Add(blockID);
-            }
+                    _pendingBlocks.Remove(blockID);
+                    System.IO.File.Move(Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString()), GetBlockFileName(blockID));
+                    _blocks.Add(blockID);
+                }
             NewBlockHeartbeatData data = new NewBlockHeartbeatData() { BlockId = blockID, Size = size };
             GetDiskUsage(data);
             AddDataForNextHeartbeat(data);
@@ -164,13 +164,13 @@ namespace DataServerApplication
 
         public void RemoveBlockIfPending(Guid blockID)
         {
-            lock( _pendingBlocks )
+            lock (_pendingBlocks)
             {
-                if( _pendingBlocks.Contains(blockID) )
+                if (_pendingBlocks.Contains(blockID))
                 {
                     _pendingBlocks.Remove(blockID);
                     string blockFile = Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString());
-                    if( System.IO.File.Exists(blockFile) )
+                    if (System.IO.File.Exists(blockFile))
                         System.IO.File.Delete(blockFile);
                 }
             }
@@ -180,9 +180,9 @@ namespace DataServerApplication
         {
             //_log.Debug("Sending heartbeat to name server.");
             HeartbeatData[] data = null;
-            lock( _pendingHeartbeatData )
+            lock (_pendingHeartbeatData)
             {
-                if( _pendingHeartbeatData.Count > 0 )
+                if (_pendingHeartbeatData.Count > 0)
                 {
                     data = _pendingHeartbeatData.ToArray();
                     _pendingHeartbeatData.Clear();
@@ -190,13 +190,13 @@ namespace DataServerApplication
             }
             HeartbeatResponse[] response = null;
             RpcHelper.TryRemotingCall(() => response = _nameServer.Heartbeat(LocalAddress, data), _heartbeatInterval, -1);
-            if( response != null )
+            if (response != null)
                 ProcessResponses(response);
         }
 
         private void ProcessResponses(HeartbeatResponse[] responses)
         {
-            foreach( var response in responses )
+            foreach (var response in responses)
                 ProcessResponse(response);
         }
 
@@ -204,12 +204,12 @@ namespace DataServerApplication
         {
             CheckFileSystemId(response);
 
-            switch( response.Command )
+            switch (response.Command)
             {
             case DataServerHeartbeatCommand.ReportBlocks:
                 _log.Info("Received ReportBlocks command.");
                 BlockReportHeartbeatData data;
-                lock( _blocks )
+                lock (_blocks)
                 {
                     data = new BlockReportHeartbeatData(_blocks);
                     GetDiskUsage(data);
@@ -222,7 +222,7 @@ namespace DataServerApplication
                 break;
             case DataServerHeartbeatCommand.ReplicateBlock:
                 _log.Info("Received ReplicateBlock command.");
-                lock( _blocksToReplicate )
+                lock (_blocksToReplicate)
                 {
                     _blocksToReplicate.Enqueue((ReplicateBlockHeartbeatResponse)response);
                     Monitor.Pulse(_blocksToReplicate);
@@ -233,13 +233,13 @@ namespace DataServerApplication
 
         private void CheckFileSystemId(HeartbeatResponse response)
         {
-            if( _fileSystemId == Guid.Empty )
+            if (_fileSystemId == Guid.Empty)
             {
                 _fileSystemId = response.FileSystemId;
                 File.WriteAllBytes(Path.Combine(_config.DataServer.BlockStorageDirectory, "fsid"), _fileSystemId.ToByteArray());
                 _log.InfoFormat("File system ID set to {0:B}.", _fileSystemId);
             }
-            else if( _fileSystemId != response.FileSystemId )
+            else if (_fileSystemId != response.FileSystemId)
             {
                 throw new InvalidOperationException($"NameServer reported file system ID {response.FileSystemId:B}; expecting {_fileSystemId:B}.");
             }
@@ -247,7 +247,7 @@ namespace DataServerApplication
 
         private void AddDataForNextHeartbeat(HeartbeatData data)
         {
-            lock( _pendingHeartbeatData )
+            lock (_pendingHeartbeatData)
             {
                 _pendingHeartbeatData.Add(data);
             }
@@ -257,20 +257,20 @@ namespace DataServerApplication
         {
             // Since this'll be likely only done on object construction, the lock isn't strictly needed.
             // It doesn't hurt though.
-            lock( _blocks )
+            lock (_blocks)
             {
                 string[] files = System.IO.Directory.GetFiles(_blockStorageDirectory);
                 string fsIdFile = Path.Combine(_blockStorageDirectory, "fsid");
-                if( File.Exists(fsIdFile) )
+                if (File.Exists(fsIdFile))
                 {
                     _fileSystemId = new Guid(File.ReadAllBytes(fsIdFile));
                     _log.InfoFormat("File system ID: {0:B}.", _fileSystemId);
                     _log.Info("Loading block list...");
 
-                    foreach( string file in files )
+                    foreach (string file in files)
                     {
                         string fileName = Path.GetFileName(file);
-                        if( fileName != "fsid" )
+                        if (fileName != "fsid")
                         {
                             try
                             {
@@ -278,7 +278,7 @@ namespace DataServerApplication
                                 _log.DebugFormat("- Block ID: {0}", blockID);
                                 _blocks.Add(blockID);
                             }
-                            catch( FormatException )
+                            catch (FormatException)
                             {
                                 _log.WarnFormat("The name of file '{0}' in the block storage directory is not a valid GUID.", fileName);
                             }
@@ -287,7 +287,7 @@ namespace DataServerApplication
                 }
                 else
                 {
-                    if( files.Length > 0 )
+                    if (files.Length > 0)
                         throw new InvalidOperationException("DataServer is not part of a file system but block directory is not empty.");
                     _log.Info("DataServer is not yet part of a file system.");
                     _fileSystemId = Guid.Empty;
@@ -297,21 +297,21 @@ namespace DataServerApplication
 
         private void DeleteBlocks(IEnumerable<Guid> blocks)
         {
-            lock( _blocks )
+            lock (_blocks)
             {
-                foreach( var block in blocks )
+                foreach (var block in blocks)
                 {
                     _log.InfoFormat("Removing block {0}.", block);
                     _blocks.Remove(block);
                 }
             }
-            foreach( var block in blocks )
+            foreach (var block in blocks)
             {
                 try
                 {
                     System.IO.File.Delete(GetBlockFileName(block));
                 }
-                catch( IOException ex )
+                catch (IOException ex)
                 {
                     _log.Error(FormattableString.Invariant($"Failed to delete block {block}."), ex);
                 }
@@ -326,9 +326,9 @@ namespace DataServerApplication
             DriveInfo info = new DriveInfo(_blockStorageDirectory);
             data.DiskSpaceFree = info.AvailableFreeSpace;
             data.DiskSpaceTotal = info.TotalSize;
-            lock( _blocks )
+            lock (_blocks)
             {
-                foreach( var blockID in _blocks )
+                foreach (var blockID in _blocks)
                 {
                     string blockFile = GetBlockFileName(blockID);
                     data.DiskSpaceUsed += new FileInfo(blockFile).Length;
@@ -344,23 +344,23 @@ namespace DataServerApplication
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Failures should be logged and not cause a crash.")]
         private void ReplicateBlocksThread()
         {
-            while( _running )
+            while (_running)
             {
                 try
                 {
                     ReplicateBlockHeartbeatResponse response;
-                    lock( _blocksToReplicate )
+                    lock (_blocksToReplicate)
                     {
-                        while( _running && _blocksToReplicate.Count == 0 )
+                        while (_running && _blocksToReplicate.Count == 0)
                             Monitor.Wait(_blocksToReplicate);
-                        if( !_running )
+                        if (!_running)
                             return;
                         response = _blocksToReplicate.Dequeue();
                     }
 
-                    lock( _blocks )
+                    lock (_blocks)
                     {
-                        if( !_blocks.Contains(response.BlockAssignment.BlockId) )
+                        if (!_blocks.Contains(response.BlockAssignment.BlockId))
                         {
                             _log.WarnFormat("Received a command to replicate an unknown block with ID {0}.", response.BlockAssignment.BlockId);
                             return;
@@ -368,21 +368,21 @@ namespace DataServerApplication
                     }
                     _log.InfoFormat("Replicating block {0} to {1} data servers; first is {2}.", response.BlockAssignment.BlockId, response.BlockAssignment.DataServers.Count, response.BlockAssignment.DataServers[0]);
                     Packet packet = new Packet();
-                    using( BlockSender sender = new BlockSender(response.BlockAssignment) )
-                    using( FileStream file = System.IO.File.OpenRead(GetBlockFileName(response.BlockAssignment.BlockId)) )
-                    using( BinaryReader reader = new BinaryReader(file) )
+                    using (BlockSender sender = new BlockSender(response.BlockAssignment))
+                    using (FileStream file = System.IO.File.OpenRead(GetBlockFileName(response.BlockAssignment.BlockId)))
+                    using (BinaryReader reader = new BinaryReader(file))
                     {
                         do
                         {
                             packet.Read(reader, PacketFormatOption.ChecksumOnly, true);
                             packet.SequenceNumber++;
                             sender.SendPacket(packet);
-                        } while( !packet.IsLastPacket );
+                        } while (!packet.IsLastPacket);
                         sender.WaitForAcknowledgements();
                     }
                     _log.InfoFormat("Finished replicating block {0}.", response.BlockAssignment.BlockId);
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     _log.Error("Failed to replicate block.", ex);
                 }

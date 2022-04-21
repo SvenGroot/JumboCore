@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public void Run(RecordReader<int> input, RecordWriter<T> output)
         {
-            if( input != null )
+            if (input != null)
                 _log.Warn("Input was provided but will be ignored by this task.");
             Run(output);
         }

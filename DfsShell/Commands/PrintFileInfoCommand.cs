@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -17,7 +17,7 @@ namespace DfsShell.Commands
 
         public PrintFileInfoCommand([Description("The path of the file on the DFS."), ArgumentName("Path")] string path)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             _path = path;
@@ -26,7 +26,7 @@ namespace DfsShell.Commands
         public override void Run()
         {
             JumboFile file = Client.GetFileInfo(_path);
-            if( file == null )
+            if (file == null)
                 Console.WriteLine("File not found.");
             else
                 file.PrintFileInfo(Console.Out);

@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override bool Equals(object obj)
         {
             Order other = obj as Order;
-            if( other == null )
+            if (other == null)
                 return false;
             return Id == other.Id && CustomerId == other.CustomerId && ItemId == other.ItemId;
         }

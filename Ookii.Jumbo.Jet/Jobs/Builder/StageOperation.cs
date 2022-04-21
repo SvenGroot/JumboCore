@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -52,22 +52,22 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private StageOperation(JobBuilder builder, IOperationInput input, int noInputTaskCount, Type taskType)
             : base(builder, MakeGenericTaskType(taskType, input))
         {
-            if( builder == null )
+            if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( noInputTaskCount < 0 )
+            if (noInputTaskCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(noInputTaskCount));
-            if( noInputTaskCount == 0 && input == null )
+            if (noInputTaskCount == 0 && input == null)
                 throw new ArgumentException("You must specify either an input or a task count larger than zero.");
 
-            if( input != null )
+            if (input != null)
             {
-                if( TaskType.InputRecordType != input.RecordType )
+                if (TaskType.InputRecordType != input.RecordType)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The input record type {0} of the task {1} doesn't match the record type {2} of the input.", TaskType.InputRecordType, taskType, input.RecordType));
 
                 _dataInput = input as FileInput;
-                if( _dataInput == null )
+                if (_dataInput == null)
                     _inputChannel = new Channel((IJobBuilderOperation)input, this);
             }
 
@@ -95,9 +95,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if( compiler == null )
+            if (compiler == null)
                 throw new ArgumentNullException(nameof(compiler));
-            if( _dataInput != null )
+            if (_dataInput != null)
                 return compiler.CreateStage(StageId, TaskType.TaskType, _dataInput, Output);
             else
                 return compiler.CreateStage(StageId, TaskType.TaskType, _inputChannel == null ? _noInputTaskCount : _inputChannel.TaskCount, _inputChannel == null ? null : _inputChannel.CreateInput(), Output, true, _inputChannel == null ? null : _inputChannel.Settings);
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static Type MakeGenericTaskType(Type taskType, IOperationInput input)
         {
             // This only works for tasks with a single type argument (like EmptyTask<T>).
-            if( taskType.IsGenericTypeDefinition && input != null )
+            if (taskType.IsGenericTypeDefinition && input != null)
                 return taskType.MakeGenericType(input.RecordType);
             else
                 return taskType;

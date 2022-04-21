@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -115,12 +115,12 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A new instance of the <see cref="TaskStatus"/> class with the information from the XML document.</returns>
         public static TaskStatus FromXml(XElement task, JobStatus job)
         {
-            if( task == null )
+            if (task == null)
                 throw new ArgumentNullException(nameof(task));
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
 
-            if( task.Name != "Task" )
+            if (task.Name != "Task")
                 throw new ArgumentException("Invalid task element.", nameof(task));
 
             TaskStatus status = new TaskStatus()

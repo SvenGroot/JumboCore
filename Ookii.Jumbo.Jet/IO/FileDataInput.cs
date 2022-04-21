@@ -37,7 +37,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TypeSetting")]
         public const string RecordReaderTypeSettingKey = "FileDataInput.RecordReader";
-        
+
         private readonly List<ITaskInput> _taskInputs;
         private const double _splitSlack = 1.1;
         private readonly string _inputPath;
@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.Jet.IO
         public FileDataInput(DfsConfiguration dfsConfiguration, Type recordReaderType, JumboFileSystemEntry fileOrDirectory, int minSplitSize = 1, int maxSplitSize = Int32.MaxValue)
             : this(dfsConfiguration, recordReaderType, EnumerateFiles(fileOrDirectory), minSplitSize, maxSplitSize)
         {
-            if( fileOrDirectory == null )
+            if (fileOrDirectory == null)
                 throw new ArgumentNullException(nameof(fileOrDirectory));
             _inputPath = fileOrDirectory.FullPath;
         }
@@ -77,32 +77,32 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="maxSplitSize">The maximum split size.</param>
         public FileDataInput(DfsConfiguration dfsConfiguration, Type recordReaderType, IEnumerable<JumboFile> inputFiles, int minSplitSize = 1, int maxSplitSize = Int32.MaxValue)
         {
-            if( dfsConfiguration == null )
+            if (dfsConfiguration == null)
                 throw new ArgumentNullException(nameof(dfsConfiguration));
-            if( recordReaderType == null )
+            if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
-            if( inputFiles == null )
+            if (inputFiles == null)
                 throw new ArgumentNullException(nameof(inputFiles));
-            if( maxSplitSize <= 0 )
+            if (maxSplitSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxSplitSize));
-            if( minSplitSize <= 0 )
+            if (minSplitSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minSplitSize));
-            if( minSplitSize > maxSplitSize )
+            if (minSplitSize > maxSplitSize)
                 throw new ArgumentException("Minimum split size must be less than or equal to maximum split size.");
-            if( recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false) == null )
+            if (recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false) == null)
                 throw new ArgumentException("The type is not a record reader.", nameof(recordReaderType));
 
             FileSystemClient fileSystem = FileSystemClient.Create(dfsConfiguration);
             IFileSystemWithLocality localityFileSystem = fileSystem as IFileSystemWithLocality;
             List<FileTaskInput> taskInputs = new List<FileTaskInput>();
-            foreach( JumboFile file in inputFiles )
+            foreach (JumboFile file in inputFiles)
             {
-                if( file.Size > 0 ) // Don't create splits for zero-length files
+                if (file.Size > 0) // Don't create splits for zero-length files
                 {
                     int splitSize = Math.Max(minSplitSize, (int)Math.Min(maxSplitSize, file.BlockSize));
 
                     long offset;
-                    for( offset = 0; offset + (splitSize * _splitSlack) < file.Size; offset += splitSize )
+                    for (offset = 0; offset + (splitSize * _splitSlack) < file.Size; offset += splitSize)
                     {
                         taskInputs.Add(new FileTaskInput(file.FullPath, offset, splitSize, GetSplitLocations(localityFileSystem, file, offset)));
                     }
@@ -111,7 +111,7 @@ namespace Ookii.Jumbo.Jet.IO
                 }
             }
 
-            if( taskInputs.Count == 0 )
+            if (taskInputs.Count == 0)
                 throw new ArgumentException("The specified input path contains no non-empty splits.", nameof(inputFiles));
             // Sort by descending split size, so biggest splits are done first. Using OrderBy because that does a stable sort.
             _taskInputs = taskInputs.OrderByDescending(input => input.Size).Cast<ITaskInput>().ToList();
@@ -127,7 +127,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </value>
         public Type RecordType
         {
-            get { return RecordReader.GetRecordType(_recordReaderType); } 
+            get { return RecordReader.GetRecordType(_recordReaderType); }
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </returns>
         public IRecordReader CreateRecordReader(ITaskInput input)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             FileTaskInput fileInput = (FileTaskInput)input;
@@ -163,13 +163,13 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="stage">The stage configuration of the stage.</param>
         public void NotifyAddedToStage(Jobs.StageConfiguration stage)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
 
             stage.AddSetting(RecordReaderTypeSettingKey, _recordReaderType.AssemblyQualifiedName);
             // This setting is added for informational purposes only (so someone reading the job config can see what the input path was).
             // It is not used at all after setting it.
-            if( _inputPath != null )
+            if (_inputPath != null)
                 stage.AddSetting(InputPathSettingKey, _inputPath);
         }
 
@@ -180,15 +180,15 @@ namespace Ookii.Jumbo.Jet.IO
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 _recordReaderType = Type.GetType(TaskContext.StageConfiguration.GetSetting(RecordReaderTypeSettingKey, null), true);
             }
         }
-        
+
         private static IEnumerable<string> GetSplitLocations(IFileSystemWithLocality localityFileSystem, JumboFile file, long offset)
         {
-            if( localityFileSystem != null )
+            if (localityFileSystem != null)
             {
                 return localityFileSystem.GetLocationsForOffset(file, offset);
             }
@@ -198,11 +198,11 @@ namespace Ookii.Jumbo.Jet.IO
 
         private static IEnumerable<JumboFile> EnumerateFiles(JumboFileSystemEntry entry)
         {
-            if( entry == null )
+            if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
             JumboDirectory directory = entry as JumboDirectory;
-            if( directory != null )
+            if (directory != null)
             {
                 return from child in directory.Children
                        let file = child as JumboFile

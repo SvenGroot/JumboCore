@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using NUnit.Framework;
 using Ookii.Jumbo.Jet;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Ookii.Jumbo.Test.Jet
 {
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Test.Jet
             TaskId target;
 
             BinaryFormatter formatter = new BinaryFormatter();
-            using( MemoryStream stream = new MemoryStream() )
+            using (MemoryStream stream = new MemoryStream())
             {
                 formatter.Serialize(stream, original);
                 stream.Position = 0;
@@ -124,7 +124,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual("Parent-002", target.ParentTaskId.ParentTaskId.ToString());
             Assert.AreEqual("Parent", target.ParentTaskId.ParentTaskId.StageId);
             Assert.AreEqual(2, target.ParentTaskId.ParentTaskId.TaskNumber);
-            Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);            
+            Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);
         }
     }
 }

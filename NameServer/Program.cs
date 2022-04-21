@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Remoting;
-using Ookii.Jumbo.Dfs;
-using System.Collections;
+using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
 
 namespace NameServerApplication
 {
@@ -20,7 +20,7 @@ namespace NameServerApplication
 
         static void Main(string[] args)
         {
-            if( args.Length > 0 && args[0].Equals("format", StringComparison.OrdinalIgnoreCase) )
+            if (args.Length > 0 && args[0].Equals("format", StringComparison.OrdinalIgnoreCase))
             {
                 log4net.Config.BasicConfigurator.Configure(log4net.LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly()));
                 FileSystem.Format(DfsConfiguration.GetConfiguration());

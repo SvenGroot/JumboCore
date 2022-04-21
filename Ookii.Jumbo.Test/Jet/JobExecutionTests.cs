@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Test.Jet
             {
                 Thread.Sleep(1000);
                 status = target.JobServer.GetJobStatus(job.JobId);
-            } while( status.RunningTaskCount == 0 );
+            } while (status.RunningTaskCount == 0);
             Thread.Sleep(1000);
             target.JobServer.AbortJob(job.JobId);
             bool finished = target.WaitForJobCompletion(job.JobId, Timeout.Infinite, 1000);
@@ -167,10 +167,10 @@ namespace Ookii.Jumbo.Test.Jet
 
             List<int> expected = _sortData.Select(value => value * factor).ToList();
             List<int> actual = new List<int>();
-            for( int x = 0; x < stage.TaskCount; ++x )
+            for (int x = 0; x < stage.TaskCount; ++x)
             {
-                using( Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)) )
-                using( LineRecordReader reader = new LineRecordReader(stream) )
+                using (Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)))
+                using (LineRecordReader reader = new LineRecordReader(stream))
                 {
                     actual.AddRange(reader.EnumerateRecords().Select(r => Convert.ToInt32(r.ToString())));
                 }
@@ -202,10 +202,10 @@ namespace Ookii.Jumbo.Test.Jet
 
             List<CustomerOrder> actual = new List<CustomerOrder>();
             StageConfiguration stage = config.GetStage("JoinStage");
-            for( int x = 0; x < stage.TaskCount; ++x )
+            for (int x = 0; x < stage.TaskCount; ++x)
             {
-                using( Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)) )
-                using( RecordFileReader<CustomerOrder> reader = new RecordFileReader<CustomerOrder>(stream) )
+                using (Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)))
+                using (RecordFileReader<CustomerOrder> reader = new RecordFileReader<CustomerOrder>(stream))
                 {
                     actual.AddRange(reader.EnumerateRecords());
                 }
@@ -271,11 +271,11 @@ namespace Ookii.Jumbo.Test.Jet
 
             VerifyWordCountOutput(client, config);
 
-            using( Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(config.GetStage("OutputVerificationTaskStage"), 1)) )
-            using( BinaryRecordReader<bool> reader = new BinaryRecordReader<bool>(stream) )
+            using (Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(config.GetStage("OutputVerificationTaskStage"), 1)))
+            using (BinaryRecordReader<bool> reader = new BinaryRecordReader<bool>(stream))
             {
                 bool actual = false;
-                if( reader.ReadRecord() )
+                if (reader.ReadRecord())
                     actual = reader.CurrentRecord;
                 Assert.IsTrue(actual);
             }
@@ -323,14 +323,14 @@ namespace Ookii.Jumbo.Test.Jet
             orders.Randomize();
 
             fileSystemClient.CreateDirectory("/testjoin");
-            using( Stream stream = fileSystemClient.CreateFile("/testjoin/customers") )
-            using( RecordFileWriter<Customer> recordFile = new RecordFileWriter<Customer>(stream) )
+            using (Stream stream = fileSystemClient.CreateFile("/testjoin/customers"))
+            using (RecordFileWriter<Customer> recordFile = new RecordFileWriter<Customer>(stream))
             {
                 recordFile.WriteRecords(customers);
             }
 
-            using( Stream stream = fileSystemClient.CreateFile("/testjoin/orders") )
-            using( RecordFileWriter<Order> recordFile = new RecordFileWriter<Order>(stream) )
+            using (Stream stream = fileSystemClient.CreateFile("/testjoin/orders"))
+            using (RecordFileWriter<Order> recordFile = new RecordFileWriter<Order>(stream))
             {
                 recordFile.WriteRecords(orders);
             }

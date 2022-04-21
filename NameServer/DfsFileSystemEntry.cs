@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Dfs;
-using System.Globalization;
+using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace NameServerApplication
 {
@@ -34,15 +34,15 @@ namespace NameServerApplication
         /// <exception cref="ArgumentException"><paramref name="name"/> contains the / character.</exception>
         protected DfsFileSystemEntry(DfsDirectory parent, string name, DateTime dateCreated)
         {
-            if( name == null )
+            if (name == null)
                 throw new ArgumentNullException(nameof(name));
-            if( name.Contains(DfsPath.DirectorySeparator, StringComparison.Ordinal) )
+            if (name.Contains(DfsPath.DirectorySeparator, StringComparison.Ordinal))
                 throw new ArgumentException("File or directory name cannot contain directory separator.", nameof(name));
 
             Name = name;
             DateCreated = dateCreated;
 
-            if( parent != null )
+            if (parent != null)
             {
                 parent.Children.Add(this);
                 Parent = parent;
@@ -71,7 +71,7 @@ namespace NameServerApplication
         {
             get
             {
-                if( Parent == null )
+                if (Parent == null)
                     return DfsPath.DirectorySeparator.ToString(CultureInfo.InvariantCulture);
                 else
                 {
@@ -89,23 +89,23 @@ namespace NameServerApplication
         /// <param name="newName">The new name of the entry. Can be <see langword="null"/>.</param>
         public void MoveTo(DfsDirectory newParent, string newName)
         {
-            if( newParent == null )
+            if (newParent == null)
                 throw new ArgumentNullException(nameof(newParent));
 
-            if( Parent == null )
+            if (Parent == null)
                 throw new InvalidOperationException("You cannot move an entry without an existing parent.");
 
-            if( newParent != Parent || newName != null )
+            if (newParent != Parent || newName != null)
             {
                 string name = newName ?? Name;
-                if( (from child in newParent.Children where child.Name == name select child).Count() > 0 )
+                if ((from child in newParent.Children where child.Name == name select child).Count() > 0)
                     throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified new parent already contains an entry with the name \"{0}\".", newName));
             }
 
-            if( newName != null )
+            if (newName != null)
                 Name = newName;
 
-            if( newParent != Parent )
+            if (newParent != Parent)
             {
                 Parent.Children.Remove(this);
                 newParent.Children.Add(this);
@@ -119,7 +119,7 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="BinaryWriter"/> used to write to the file system image.</param>
         public virtual void SaveToFileSystemImage(BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.Write(GetType().FullName);
             writer.Write(Name);
@@ -135,15 +135,15 @@ namespace NameServerApplication
         /// <returns>An instance of <see cref="DfsFile"/> or <see cref="DfsDirectory"/> representing the file system entry.</returns>
         public static DfsFileSystemEntry LoadFromFileSystemImage(BinaryReader reader, DfsDirectory parent, Action<long> notifyFileSizeCallback)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             string className = reader.ReadString();
             string name = reader.ReadString();
             DateTime dateCreated = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
             DfsFileSystemEntry entry;
-            if( className == typeof(DfsFile).FullName )
+            if (className == typeof(DfsFile).FullName)
                 entry = new DfsFile(parent, name, dateCreated);
-            else if( className == typeof(DfsDirectory).FullName )
+            else if (className == typeof(DfsDirectory).FullName)
                 entry = new DfsDirectory(parent, name, dateCreated);
             else
                 throw new DfsException("Invalid file system image.");
@@ -170,7 +170,7 @@ namespace NameServerApplication
 
         private void BuildPath(StringBuilder path)
         {
-            if( Parent != null )
+            if (Parent != null)
             {
                 Parent.BuildPath(path);
                 path.Append(DfsPath.DirectorySeparator);

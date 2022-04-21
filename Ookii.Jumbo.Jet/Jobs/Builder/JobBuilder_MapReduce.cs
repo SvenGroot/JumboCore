@@ -172,9 +172,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private StageOperation MapCore<TInput, TOutput>(IOperationInput input, Delegate mapper, RecordReuseMode recordReuse)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( mapper == null )
+            if (mapper == null)
                 throw new ArgumentNullException(nameof(mapper));
             CheckIfInputBelongsToJobBuilder(input);
 
@@ -188,9 +188,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private StageOperation ReduceCore<TKey, TValue, TOutput>(IOperationInput input, Delegate reducer, RecordReuseMode recordReuse)
             where TKey : IComparable<TKey>
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( reducer == null )
+            if (reducer == null)
                 throw new ArgumentNullException(nameof(reducer));
             CheckIfInputBelongsToJobBuilder(input);
 

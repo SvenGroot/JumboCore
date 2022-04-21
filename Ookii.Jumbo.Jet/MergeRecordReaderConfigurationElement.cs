@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Configuration;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <value>The maximum number of file inputs in a single merge pass. The default value is 100.</value>
         [ConfigurationProperty("maxFileInputs", DefaultValue = 100, IsRequired = false, IsKey = false)]
-        [IntegerValidator(MinValue=2, MaxValue=Int32.MaxValue)]
+        [IntegerValidator(MinValue = 2, MaxValue = Int32.MaxValue)]
         public int MaxFileInputs
         {
             get { return (int)this["maxFileInputs"]; }

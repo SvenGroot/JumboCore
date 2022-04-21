@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Configuration;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -76,7 +76,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets or sets the maximum number of simultaneous connections allowed to the file channel channel TCP server.
         /// </summary>
         [ConfigurationProperty("fileServerMaxConnections", DefaultValue = 10, IsRequired = false, IsKey = false)]
-        [IntegerValidator(MinValue = 1, MaxValue=Int32.MaxValue, ExcludeRange=false)]
+        [IntegerValidator(MinValue = 1, MaxValue = Int32.MaxValue, ExcludeRange = false)]
         public int FileServerMaxConnections
         {
             get { return (int)this["fileServerMaxConnections"]; }

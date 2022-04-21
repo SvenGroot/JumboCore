@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
-using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace NameServerApplication
 {
@@ -17,7 +17,7 @@ namespace NameServerApplication
     /// When a client retrieves an instance of this class from the name server it will be a copy of the actual file record,
     /// so modifying any of the properties will not have any effect on the actual file system.
     /// </remarks>
-    class DfsFile : DfsFileSystemEntry 
+    class DfsFile : DfsFileSystemEntry
     {
         private readonly List<Guid> _blocks = new List<Guid>();
 
@@ -33,11 +33,11 @@ namespace NameServerApplication
         public DfsFile(DfsDirectory parent, string name, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
             : base(parent, name, dateCreated)
         {
-            if( blockSize <= 0 )
+            if (blockSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize), "File block size must be larger than zero.");
-            if( blockSize % Packet.PacketSize != 0 )
+            if (blockSize % Packet.PacketSize != 0)
                 throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
-            if( replicationFactor <= 0 )
+            if (replicationFactor <= 0)
                 throw new ArgumentOutOfRangeException(nameof(replicationFactor), "A block must have at least one replica.");
 
             BlockSize = blockSize;
@@ -114,7 +114,7 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="System.IO.BinaryWriter"/> used to write to the file system image.</param>
         public override void SaveToFileSystemImage(System.IO.BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             base.SaveToFileSystemImage(writer);
             writer.Write(Size);
@@ -123,7 +123,7 @@ namespace NameServerApplication
             writer.Write(ReplicationFactor);
             writer.Write((int)RecordOptions);
             writer.Write(Blocks.Count);
-            foreach( Guid block in Blocks )
+            foreach (Guid block in Blocks)
                 writer.Write(block.ToByteArray());
         }
 
@@ -163,7 +163,7 @@ namespace NameServerApplication
         /// <param name="writer">The <see cref="System.IO.TextWriter"/> to write the information to.</param>
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
@@ -172,7 +172,7 @@ namespace NameServerApplication
             writer.WriteLine("Record options:   {0}", RecordOptions);
             writer.WriteLine("Open for writing: {0}", IsOpenForWriting);
             writer.WriteLine("Blocks:           {0}", Blocks.Count);
-            foreach( Guid block in Blocks )
+            foreach (Guid block in Blocks)
                 writer.WriteLine("{{{0}}}", block);
         }
 
@@ -183,7 +183,7 @@ namespace NameServerApplication
         /// <param name="notifyFileSizeCallback">A function that should be called to notify the caller of the size of deserialized files.</param>
         protected override void LoadFromFileSystemImage(System.IO.BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             Size = reader.ReadInt64();
             IsOpenForWriting = reader.ReadBoolean();
@@ -193,12 +193,12 @@ namespace NameServerApplication
             int blockCount = reader.ReadInt32();
             _blocks.Clear();
             _blocks.Capacity = blockCount;
-            for( int x = 0; x < blockCount; ++x )
+            for (int x = 0; x < blockCount; ++x)
             {
                 _blocks.Add(new Guid(reader.ReadBytes(16)));
             }
 
-            if( notifyFileSizeCallback != null )
+            if (notifyFileSizeCallback != null)
                 notifyFileSizeCallback(Size);
         }
     }

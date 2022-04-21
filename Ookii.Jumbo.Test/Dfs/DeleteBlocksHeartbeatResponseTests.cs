@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.AreEqual(fsID, target.FileSystemId);
             Assert.AreEqual(DataServerHeartbeatCommand.DeleteBlocks, target.Command);
             Assert.AreEqual(1, target.Blocks.Count());
-            foreach( var id in target.Blocks )
+            foreach (var id in target.Blocks)
                 Assert.AreEqual(blockID, id);
         }
     }

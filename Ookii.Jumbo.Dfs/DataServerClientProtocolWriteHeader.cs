@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -11,7 +11,7 @@ namespace Ookii.Jumbo.Dfs
     /// Represents the header a client sends to a data server when writing a block.
     /// </summary>
     [Serializable]
-    public class DataServerClientProtocolWriteHeader : DataServerClientProtocolHeader 
+    public class DataServerClientProtocolWriteHeader : DataServerClientProtocolHeader
     {
         private readonly ReadOnlyCollection<ServerAddress> _dataServers;
 
@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Dfs
         public DataServerClientProtocolWriteHeader(IEnumerable<ServerAddress> dataServers)
             : base(DataServerCommand.WriteBlock)
         {
-            if( dataServers == null )
+            if (dataServers == null)
                 throw new ArgumentNullException(nameof(dataServers));
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();
         }

@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using System.Threading;
-using System.Net;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
+using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -318,7 +318,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = target.GetDirectoryInfo("/test1");
             Assert.IsNull(dir);
 
-            using( DfsOutputStream stream = new DfsOutputStream(target, "/deletetest") )
+            using (DfsOutputStream stream = new DfsOutputStream(target, "/deletetest"))
             {
                 Utilities.GenerateData(stream, 1000);
             }
@@ -347,7 +347,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 // This must fail because the file still has a pending block.
                 target.AppendBlock(path, true);
             }
-            catch( InvalidOperationException )
+            catch (InvalidOperationException)
             {
                 hasException = true;
             }
@@ -355,9 +355,9 @@ namespace Ookii.Jumbo.Test.Dfs
 
             Packet p = new Packet();
             long sequenceNumber = 0;
-            using( BlockSender sender = new BlockSender(block) )
+            using (BlockSender sender = new BlockSender(block))
             {
-                for( int sizeRemaining = target.BlockSize; sizeRemaining > 0; sizeRemaining -= Packet.PacketSize )
+                for (int sizeRemaining = target.BlockSize; sizeRemaining > 0; sizeRemaining -= Packet.PacketSize)
                 {
                     p.CopyFrom(Utilities.GenerateData(Packet.PacketSize), Packet.PacketSize, sequenceNumber++, sizeRemaining - Packet.PacketSize == 0);
                     sender.SendPacket(p);
@@ -372,7 +372,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.IsTrue(block2.DataServers[0].Port == 10001 || block2.DataServers[0].Port == 10002);
 
             sequenceNumber = 0;
-            using( BlockSender sender = new BlockSender(block2) )
+            using (BlockSender sender = new BlockSender(block2))
             {
                 p.CopyFrom(Utilities.GenerateData(10000), 10000, sequenceNumber++, true);
                 sender.SendPacket(p);
@@ -396,7 +396,7 @@ namespace Ookii.Jumbo.Test.Dfs
             INameServerClientProtocol target = _nameServer;
             // Because the blocks could get different data servers at random, we do it a couple of times to reduce the
             // chances fo passing this test by accident.
-            for( int x = 0; x < 20; ++x )
+            for (int x = 0; x < 20; ++x)
             {
                 target.CreateDirectory("/appendblockmultiplewriters");
                 string path1 = "/appendblockmultiplewriters/file1";
@@ -411,7 +411,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
                 Packet p = new Packet();
                 long sequenceNumber = 0;
-                using( BlockSender sender = new BlockSender(block1) )
+                using (BlockSender sender = new BlockSender(block1))
                 {
                     p.CopyFrom(Utilities.GenerateData(10000), 10000, sequenceNumber++, true);
                     sender.SendPacket(p);
@@ -419,7 +419,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 }
 
                 sequenceNumber = 0;
-                using( BlockSender sender = new BlockSender(block2) )
+                using (BlockSender sender = new BlockSender(block2))
                 {
                     p.CopyFrom(Utilities.GenerateData(10000), 10000, sequenceNumber++, true);
                     sender.SendPacket(p);
@@ -463,7 +463,7 @@ namespace Ookii.Jumbo.Test.Dfs
             long initialSize = metrics.TotalSize;
 
             const int size = 10000000;
-            using( DfsOutputStream output = new DfsOutputStream(target, "/metricstest") )
+            using (DfsOutputStream output = new DfsOutputStream(target, "/metricstest"))
             {
                 Utilities.GenerateData(output, size);
                 metrics = _nameServer.GetMetrics();
@@ -531,7 +531,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public void TestDeletePendingFile()
         {
             const string fileName = "/deletependingfile";
-            using( DfsOutputStream stream = new DfsOutputStream(_nameServer, fileName) )
+            using (DfsOutputStream stream = new DfsOutputStream(_nameServer, fileName))
             {
                 Utilities.GenerateData(stream, 1000);
                 _nameServer.Delete(fileName, false);
@@ -540,7 +540,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 {
                     stream.Close();
                 }
-                catch( InvalidOperationException )
+                catch (InvalidOperationException)
                 {
                     hasException = true;
                 }
@@ -567,7 +567,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.AreEqual(replicationFactor == 0 ? 1 : replicationFactor, result.ReplicationFactor);
             Assert.IsTrue(result.IsOpenForWriting);
 
-            using( BlockSender sender = new BlockSender(block) )
+            using (BlockSender sender = new BlockSender(block))
             {
                 sender.SendPacket(new Packet(Utilities.GenerateData(10000), 10000, 1, true));
                 sender.WaitForAcknowledgements();

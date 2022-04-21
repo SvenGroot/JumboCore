@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -54,7 +54,7 @@ namespace Ookii.Jumbo.IO
     {
         private static readonly byte[] _headerStart = new[] { (byte)'R', (byte)'E', (byte)'C', RecordFile.CurrentVersion };
         private Type _recordType;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordFileHeader"/> class that will be initialized using <see cref="IWritable.Read"/>.
         /// </summary>
@@ -70,11 +70,11 @@ namespace Ookii.Jumbo.IO
         /// to use the simple name.</param>
         public RecordFileHeader(Type recordType, bool useStrongName)
         {
-            if( recordType == null )
+            if (recordType == null)
                 throw new ArgumentNullException(nameof(recordType));
 
             Version = RecordFile.CurrentVersion;
-            if( useStrongName )
+            if (useStrongName)
                 RecordTypeName = recordType.AssemblyQualifiedName;
             else
                 RecordTypeName = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}", recordType.FullName, recordType.Assembly.GetName().Name);
@@ -99,11 +99,11 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         public Type RecordType
         {
-            get 
+            get
             {
-                if( _recordType == null )
+                if (_recordType == null)
                     _recordType = Type.GetType(RecordTypeName, true);
-                return _recordType; 
+                return _recordType;
             }
         }
 
@@ -121,7 +121,7 @@ namespace Ookii.Jumbo.IO
 
         private static byte[] GenerateRecordMarker()
         {
-            using( RandomNumberGenerator rng = RandomNumberGenerator.Create() )
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
                 byte[] boundary = new byte[RecordFile.RecordMarkerSize];
                 rng.GetBytes(boundary);
@@ -133,7 +133,7 @@ namespace Ookii.Jumbo.IO
 
         void IWritable.Write(System.IO.BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.Write(_headerStart);
             writer.Write(RecordTypeName);
@@ -142,15 +142,15 @@ namespace Ookii.Jumbo.IO
 
         void IWritable.Read(System.IO.BinaryReader reader)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
             byte[] headerStart = reader.ReadBytes(_headerStart.Length);
-            if( !(headerStart[0] == _headerStart[0] &&
+            if (!(headerStart[0] == _headerStart[0] &&
                   headerStart[1] == _headerStart[1] &&
-                  headerStart[2] == _headerStart[2]) )
+                  headerStart[2] == _headerStart[2]))
                 throw new InvalidOperationException("The specified file is not a record file.");
-            if( headerStart[3] != _headerStart[3] )
+            if (headerStart[3] != _headerStart[3])
                 throw new InvalidOperationException("The specified record file uses an unsupported version.");
 
             Version = headerStart[3];

@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Dfs.FileSystem;
-using System.Diagnostics;
+using System.Text;
 using System.Threading;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Rpc;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
@@ -86,7 +86,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// communicating with the name server via RPC.</returns>
         public static INameServerClientProtocol CreateNameServerClient(DfsConfiguration config)
         {
-            if( config == null )
+            if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
             return CreateNameServerClientInternal<INameServerClientProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
@@ -111,7 +111,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// communicating with the name server via RPC.</returns>
         public static INameServerHeartbeatProtocol CreateNameServerHeartbeatClient(DfsConfiguration config)
         {
-            if( config == null )
+            if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
             return CreateNameServerClientInternal<INameServerHeartbeatProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
@@ -126,7 +126,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The contents of the log file.</returns>
         public static string GetDataServerLogFileContents(ServerAddress address, LogFileKind kind, int maxSize)
         {
-            if( address == null )
+            if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
             return GetDataServerLogFileContents(address.HostName, address.Port, kind, maxSize);
@@ -142,16 +142,16 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The contents of the log file.</returns>
         public static string GetDataServerLogFileContents(string hostName, int port, LogFileKind kind, int maxSize)
         {
-            if( hostName == null )
+            if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
 
-            using( TcpClient client = new TcpClient(hostName, port) )
-            using( NetworkStream stream = client.GetStream() )
+            using (TcpClient client = new TcpClient(hostName, port))
+            using (NetworkStream stream = client.GetStream())
             {
                 DataServerClientProtocolHeader header = new DataServerClientProtocolGetLogFileContentsHeader(maxSize) { Kind = kind };
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(stream, header);
-                using( StreamReader reader = new StreamReader(stream) )
+                using (StreamReader reader = new StreamReader(stream))
                 {
                     return reader.ReadToEnd();
                 }
@@ -269,11 +269,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns><see langword="true"/> if safe mode was turned off; <see langword="false"/> if the time out expired.</returns>
         public bool WaitForSafeModeOff(int millisecondsTimeout, int millisecondsInterval)
         {
-            if( millisecondsInterval < 0 )
+            if (millisecondsInterval < 0)
                 throw new ArgumentOutOfRangeException(nameof(millisecondsInterval));
             Stopwatch sw = Stopwatch.StartNew();
 
-            while( NameServer.SafeMode && (millisecondsTimeout == Timeout.Infinite || sw.ElapsedMilliseconds < millisecondsTimeout) )
+            while (NameServer.SafeMode && (millisecondsTimeout == Timeout.Infinite || sw.ElapsedMilliseconds < millisecondsTimeout))
             {
                 Thread.Sleep(millisecondsInterval);
             }
@@ -291,9 +291,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public IEnumerable<string> GetLocationsForOffset(JumboFile file, long offset)
         {
-            if( file == null )
+            if (file == null)
                 throw new ArgumentNullException(nameof(file));
-            if( offset < 0 || offset >= file.Size )
+            if (offset < 0 || offset >= file.Size)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
             int blockIndex = (int)(offset / file.BlockSize);

@@ -42,9 +42,9 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="inputStage">The input stage that this file channel reads from.</param>
         protected InputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
-            if( inputStage == null )
+            if (inputStage == null)
                 throw new ArgumentNullException(nameof(inputStage));
 
             _partitionsReadOnlyWrapper = _partitions.AsReadOnly();
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Jet.Channels
             InputStage = inputStage;
             // Match the compression type of the input stage.
             CompressionType type;
-            if( inputStage.TryGetSetting(FileOutputChannel.CompressionTypeSetting, out type) )
+            if (inputStage.TryGetSetting(FileOutputChannel.CompressionTypeSetting, out type))
                 CompressionType = type;
             else
                 CompressionType = taskExecution.Context.JobConfiguration.GetSetting(FileOutputChannel.CompressionTypeSetting, taskExecution.JetClient.Configuration.FileChannel.CompressionType);
@@ -141,7 +141,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                if( _inputTaskIdsReadOnlyWrapper == null )
+                if (_inputTaskIdsReadOnlyWrapper == null)
                     System.Threading.Interlocked.CompareExchange(ref _inputTaskIdsReadOnlyWrapper, _inputTaskIds.AsReadOnly(), null);
                 return _inputTaskIdsReadOnlyWrapper;
             }
@@ -171,9 +171,9 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public virtual void AssignAdditionalPartitions(IList<int> additionalPartitions)
         {
-            if( additionalPartitions == null )
+            if (additionalPartitions == null)
                 throw new ArgumentNullException(nameof(additionalPartitions));
-            if( additionalPartitions.Count == 0 )
+            if (additionalPartitions.Count == 0)
                 throw new ArgumentException("The list of partitions is empty.", nameof(additionalPartitions));
 
             _partitions.Clear();
@@ -195,7 +195,7 @@ namespace Ookii.Jumbo.Jet.Channels
             _partitions.AddRange(partitions);
             IMultiInputRecordReader reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType);
             IChannelMultiInputRecordReader channelReader = reader as IChannelMultiInputRecordReader;
-            if( channelReader != null )
+            if (channelReader != null)
                 channelReader.Channel = this;
             JetActivator.ApplyConfiguration(reader, TaskExecution.FileSystemClient.Configuration, TaskExecution.JetClient.Configuration, TaskExecution.Context);
             return reader;
@@ -208,7 +208,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected virtual void OnMemoryStorageFull(MemoryStorageFullEventArgs e)
         {
             EventHandler<MemoryStorageFullEventArgs> handler = MemoryStorageFull;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
@@ -216,7 +216,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             // We add only the root task IDs, we ignore child tasks.
             StageConfiguration stage = InputStage.Root;
-            for( int x = 1; x <= stage.TaskCount; ++x )
+            for (int x = 1; x <= stage.TaskCount; ++x)
             {
                 TaskId taskId = new TaskId(stage.StageId, x);
                 _inputTaskIds.Add(taskId.ToString());

@@ -22,9 +22,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="taskType">Type of the task.</param>
         public TaskTypeInfo(Type taskType)
         {
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( taskType.ContainsGenericParameters )
+            if (taskType.ContainsGenericParameters)
                 throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
 
             _taskType = taskType;
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             _inputRecordType = arguments[0];
             _outputRecordType = arguments[1];
             AllowRecordReuseAttribute recordReuseAttribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
-            if( recordReuseAttribute != null )
+            if (recordReuseAttribute != null)
                 _recordReuse = recordReuseAttribute.PassThrough ? TaskRecordReuse.PassThrough : TaskRecordReuse.Allowed;
         }
 

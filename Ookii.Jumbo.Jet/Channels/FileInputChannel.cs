@@ -103,7 +103,7 @@ namespace Ookii.Jumbo.Jet.Channels
             /// </summary>
             public void NotifyDownloadSuccess(int count)
             {
-                if( count == _tasksToDownload.Count )
+                if (count == _tasksToDownload.Count)
                     _tasksToDownload.Clear();
                 else
                     _tasksToDownload.RemoveRange(0, count);
@@ -124,13 +124,13 @@ namespace Ookii.Jumbo.Jet.Channels
 
             protected override void HandleMessage(byte[] message, IPEndPoint remoteEndPoint)
             {
-                if( message == null || message.Length < 17 )
+                if (message == null || message.Length < 17)
                     _log.Warn("Received invalid task completion broadcast message.");
                 else
                 {
-                    for( int x = 0; x < 16; ++x )
+                    for (int x = 0; x < 16; ++x)
                     {
-                        if( _jobId[x] != message[x] )
+                        if (_jobId[x] != message[x])
                             return; // Job ID doesn't match, not meant for us.
                     }
 
@@ -150,16 +150,16 @@ namespace Ookii.Jumbo.Jet.Channels
                         task.TaskServer = new ServerAddress(serverName, port);
                         task.TaskServerFileServerPort = message[index++] | message[index++] << 8;
                     }
-                    catch( IndexOutOfRangeException )
+                    catch (IndexOutOfRangeException)
                     {
                         // Should probably do some checks so we can handle this without exceptions.
                         _log.Warn("Received invalid task completion broadcast message.");
                     }
-                    catch( FormatException )
+                    catch (FormatException)
                     {
                         _log.Warn("Received invalid task completion broadcast message.");
                     }
-                    catch( ArgumentException )
+                    catch (ArgumentException)
                     {
                         _log.Warn("Received invalid task completion broadcast message.");
                     }
@@ -204,7 +204,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 _reader = new BinaryReader(_stream);
 
                 int connectionAccepted = _reader.ReadInt32();
-                if( connectionAccepted == 0 )
+                if (connectionAccepted == 0)
                 {
                     _log.WarnFormat("Server {0}:{1} is busy.", _server.TaskServer.HostName, _server.FileServerPort);
                     return false;
@@ -212,10 +212,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 _writer.Write(jobId.ToByteArray());
                 _writer.Write(partitions.Count);
-                foreach( int partition in partitions )
+                foreach (int partition in partitions)
                     _writer.Write(partition);
                 _writer.Write(_server.TasksToDownloadCount - tasksToSkip);
-                foreach( CompletedTask task in _server.TasksToDownload.Skip(tasksToSkip) )
+                foreach (CompletedTask task in _server.TasksToDownload.Skip(tasksToSkip))
                     _writer.Write(task.TaskAttemptId.ToString());
 
                 _writer.Flush();
@@ -225,27 +225,27 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public void Dispose()
             {
-                if( _reader != null )
+                if (_reader != null)
                 {
                     _reader.Dispose();
                     _reader = null;
                 }
-                if( _writer != null )
+                if (_writer != null)
                 {
                     _writer.Dispose();
                     _writer = null;
                 }
-                if( _bufferStream != null )
+                if (_bufferStream != null)
                 {
                     _bufferStream.Dispose();
                     _bufferStream = null;
                 }
-                if( _stream != null )
+                if (_stream != null)
                 {
                     _stream.Dispose();
                     _stream = null;
                 }
-                if( _client != null )
+                if (_client != null)
                 {
                     ((IDisposable)_client).Dispose();
                     _client = null;
@@ -296,15 +296,15 @@ namespace Ookii.Jumbo.Jet.Channels
         public FileInputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
             : base(taskExecution, inputStage)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
-            if( inputStage == null )
+            if (inputStage == null)
                 throw new ArgumentNullException(nameof(inputStage));
             _jobDirectory = taskExecution.Context.LocalJobDirectory;
             _jobID = taskExecution.Context.JobId;
             _jobServer = taskExecution.JetClient.JobServer;
             _inputDirectory = Path.Combine(_jobDirectory, taskExecution.Context.TaskAttemptId.ToString());
-            if( !Directory.Exists(_inputDirectory) )
+            if (!Directory.Exists(_inputDirectory))
                 Directory.CreateDirectory(_inputDirectory);
             // The type of the records in the intermediate files will be the output type of the input stage, which usually matches the input type of the output stage but
             // in the case of a join it may not.
@@ -314,7 +314,7 @@ namespace Ookii.Jumbo.Jet.Channels
             _channelInputType = SettingsDictionary.GetJobOrStageSetting(taskExecution.Context.JobConfiguration, inputStage, JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.Spill);
 
             long memoryStorageSize = (long)TaskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.MemoryStorageSize, TaskExecution.JetClient.Configuration.FileChannel.MemoryStorageSize);
-            if( memoryStorageSize > 0 )
+            if (memoryStorageSize > 0)
             {
                 _memoryStorage = FileChannelMemoryStorageManager.GetInstance(memoryStorageSize);
                 _memoryStorage.StreamRemoved += new EventHandler(_memoryStorage_StreamRemoved);
@@ -367,9 +367,9 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                lock( _progressLock )
+                lock (_progressLock)
                 {
-                    if( _totalPartitions == 0 || InputTaskIds.Count == 0 )
+                    if (_totalPartitions == 0 || InputTaskIds.Count == 0)
                         return 0f;
 
                     return (_partitionsCompleted + ((_filesRetrieved * ActivePartitions.Count) / (float)InputTaskIds.Count)) / _totalPartitions;
@@ -403,11 +403,11 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public override float MemoryStorageLevel
         {
-            get 
+            get
             {
-                if( _memoryStorage == null )
+                if (_memoryStorage == null)
                     return 0.0f;
-                else if( _hasNonMemoryInputs )
+                else if (_hasNonMemoryInputs)
                     return 1.0f;
                 else
                     return _memoryStorage.Level;
@@ -423,7 +423,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public override IRecordReader CreateRecordReader()
         {
-            if( _inputPollThread != null )
+            if (_inputPollThread != null)
                 throw new InvalidOperationException("A record reader for this channel was already created.");
 
             _reader = CreateChannelRecordReader();
@@ -451,14 +451,14 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public override void AssignAdditionalPartitions(IList<int> additionalPartitions)
         {
-            if( !_allInputTasksCompleted.WaitOne(0) )
+            if (!_allInputTasksCompleted.WaitOne(0))
                 throw new InvalidOperationException("Cannot assign additinoal partitions until the current partitions have finished downloading.");
 
             // Just making sure the threads have exited.
             _downloadThread.Join();
             _inputPollThread.Join();
 
-            lock( _progressLock )
+            lock (_progressLock)
             {
                 _filesRetrieved = 0;
                 _partitionsCompleted += ActivePartitions.Count;
@@ -491,17 +491,17 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="disposing"><see langword="true"/> to clean up managed and unmanaged resources; <see langword="false" /> to clean up unmanaged resources only.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if( !_disposed && disposing )
+            if (!_disposed && disposing)
             {
                 ((IDisposable)_readyEvent).Dispose();
                 ((IDisposable)_allInputTasksCompleted).Dispose();
-                if( _taskCompletionBroadcastServer != null )
+                if (_taskCompletionBroadcastServer != null)
                     _taskCompletionBroadcastServer.Dispose();
 
                 _memoryStorage?.Dispose();
                 _reader?.Dispose();
             }
-            lock( _orderedServers )
+            lock (_orderedServers)
             {
                 _disposed = true;
                 // Wake up the download thread so it can exit.
@@ -514,7 +514,7 @@ namespace Ookii.Jumbo.Jet.Channels
             try
             {
                 bool hasTasksLeft;
-                lock( _tasksLeft )
+                lock (_tasksLeft)
                 {
                     hasTasksLeft = _tasksLeft.Count > 0;
                     _log.InfoFormat("Start checking for output file completion of {0} tasks, {1} partitions, timeout {2}ms", _tasksLeft.Count, ActivePartitions.Count, _pollingInterval);
@@ -522,27 +522,27 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 string[] tasksLeftArray = null;
 
-                while( !_disposed && hasTasksLeft )
+                while (!_disposed && hasTasksLeft)
                 {
                     TaskExecution.ReportProgress(); // Ping the job server for progress to ensure our task doesn't time out while waiting for input.
 
-                    lock( _orderedServers )
+                    lock (_orderedServers)
                     {
-                        if( tasksLeftArray == null || _tasksLeft.Count != tasksLeftArray.Length )
+                        if (tasksLeftArray == null || _tasksLeft.Count != tasksLeftArray.Length)
                             tasksLeftArray = _tasksLeft.ToArray();
                     }
 
                     // Tasks left count may have reached 0 in between the event timing out and lock acquisition above.
-                    if( tasksLeftArray.Length > 0 )
+                    if (tasksLeftArray.Length > 0)
                     {
                         CompletedTask[] completedTasks = _jobServer.CheckTaskCompletion(_jobID, tasksLeftArray);
-                        if( completedTasks != null && completedTasks.Length > 0 )
+                        if (completedTasks != null && completedTasks.Length > 0)
                         {
                             _log.InfoFormat("Received {0} new completed tasks.", completedTasks.Length);
 
-                            lock( _orderedServers )
+                            lock (_orderedServers)
                             {
-                                foreach( CompletedTask task in completedTasks )
+                                foreach (CompletedTask task in completedTasks)
                                 {
                                     AddCompletedTaskForDownloading(task);
                                 }
@@ -557,24 +557,24 @@ namespace Ookii.Jumbo.Jet.Channels
                         hasTasksLeft = false;
 
 
-                    if( hasTasksLeft )
+                    if (hasTasksLeft)
                         hasTasksLeft = !_allInputTasksCompleted.WaitOne(_pollingInterval);
                 }
 
-                lock( _orderedServers )
+                lock (_orderedServers)
                 {
-                    if( _taskCompletionBroadcastServer != null )
+                    if (_taskCompletionBroadcastServer != null)
                         _taskCompletionBroadcastServer.Dispose();
                     _allInputTasksCompleted.Set();
                     // Just making sure the download thread wakes up after this flag is set.
                     Monitor.Pulse(_orderedServers);
                 }
-                if( _disposed )
+                if (_disposed)
                     _log.Info("Input poll thread aborted because the object was disposed.");
                 else
                     _log.Info("All files are available.");
             }
-            catch( ObjectDisposedException ex )
+            catch (ObjectDisposedException ex)
             {
                 // This happens if the thread using the input reader doesn't process all records and disposes the object before
                 // we're done here. We ignore it.
@@ -585,10 +585,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void AddCompletedTaskForDownloading(CompletedTask task)
         {
-            if( _tasksLeft.Remove(task.TaskAttemptId.TaskId.ToString()) )
+            if (_tasksLeft.Remove(task.TaskAttemptId.TaskId.ToString()))
             {
                 InputServer server;
-                if( !_servers.TryGetValue(task.TaskServer, out server) )
+                if (!_servers.TryGetValue(task.TaskServer, out server))
                 {
                     server = new InputServer(task.TaskServer, task.TaskServerFileServerPort);
                     _servers.Add(task.TaskServer, server);
@@ -603,14 +603,14 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void NotifyTaskCompletion(CompletedTask task)
         {
-            lock( _orderedServers )
+            lock (_orderedServers)
             {
                 _log.DebugFormat("Received notification of task {0} completion through job server broadcast.", task.TaskAttemptId);
                 AddCompletedTaskForDownloading(task);
 
                 Monitor.Pulse(_orderedServers);
 
-                if( _tasksLeft.Count == 0 )
+                if (_tasksLeft.Count == 0)
                     _allInputTasksCompleted.Set();
             }
         }
@@ -619,21 +619,21 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             IMultiInputRecordReader reader = _reader;
             List<InputServer> servers = new List<InputServer>();
-            while( WaitForTasksToDownload(servers) )
+            while (WaitForTasksToDownload(servers))
             {
                 Debug.Assert(servers.Count > 0);
 
                 bool noSucceededDownloads = true;
-                foreach( InputServer server in servers )
+                foreach (InputServer server in servers)
                 {
-                    if( RetrieveInputFiles(reader, server) )
+                    if (RetrieveInputFiles(reader, server))
                         noSucceededDownloads = false; // We got at least one that succeeded.
                 }
 
-                if( noSucceededDownloads )
+                if (noSucceededDownloads)
                 {
                     int interval;
-                    lock( _orderedServers )
+                    lock (_orderedServers)
                     {
                         interval = _downloadRetryInterval + _rnd.Next(_downloadRetryIntervalRandomization);
                         // Re-randomize the list of servers if we couldn't download anything.
@@ -646,7 +646,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             TaskExecution.ChannelStatusMessage = null; // Clear the status message when we're finished.
 
-            if( _disposed )
+            if (_disposed)
                 _log.Info("Download thread aborted because the object was disposed.");
             else
                 _log.Info("All files are downloaded.");
@@ -655,23 +655,23 @@ namespace Ookii.Jumbo.Jet.Channels
         private bool WaitForTasksToDownload(List<InputServer> servers)
         {
             servers.Clear();
-            lock( _orderedServers )
+            lock (_orderedServers)
             {
                 do
                 {
-                    foreach( InputServer server in _orderedServers )
+                    foreach (InputServer server in _orderedServers)
                     {
-                        if( server.UpdateTasksToDownload() )
+                        if (server.UpdateTasksToDownload())
                             servers.Add(server);
                     }
 
-                    if( servers.Count == 0 )
+                    if (servers.Count == 0)
                     {
-                        if( _allInputTasksCompleted.WaitOne(0) )
+                        if (_allInputTasksCompleted.WaitOne(0))
                             return false;
                         Monitor.Wait(_orderedServers);
                     }
-                } while( !_disposed && servers.Count == 0 );
+                } while (!_disposed && servers.Count == 0);
             }
 
             return !_disposed;
@@ -681,14 +681,14 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             int downloadedTaskCount;
 
-            if( !InputStage.OutputChannel.ForceFileDownload && server.IsLocal )
+            if (!InputStage.OutputChannel.ForceFileDownload && server.IsLocal)
             {
                 downloadedTaskCount = UseLocalFilesForInput(server, reader);
             }
             else
             {
                 downloadedTaskCount = DownloadFiles(server, reader);
-                if( downloadedTaskCount == 0 )
+                if (downloadedTaskCount == 0)
                     return false; // Couldn't download because the server was busy
             }
 
@@ -696,7 +696,7 @@ namespace Ookii.Jumbo.Jet.Channels
             int files = Interlocked.Add(ref _filesRetrieved, downloadedTaskCount);
             TaskExecution.ChannelStatusMessage = string.Format(CultureInfo.InvariantCulture, "Downloaded {0} of {1} input files.", files, InputTaskIds.Count);
 
-            if( !_isReady )
+            if (!_isReady)
             {
                 // When we're using a MultiRecordReader we should become ready after the first downloaded file.
                 _log.Info("Input channel is now ready.");
@@ -710,7 +710,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private int UseLocalFilesForInput(InputServer server, IMultiInputRecordReader reader)
         {
             ITaskServerClientProtocol taskServer = JetClient.CreateTaskServerClient(server.TaskServer);
-            foreach( CompletedTask task in server.TasksToDownload )
+            foreach (CompletedTask task in server.TasksToDownload)
             {
                 IList<RecordInput> inputs = new List<RecordInput>(ActivePartitions.Count);
                 string taskOutputDirectory = taskServer.GetOutputFileDirectory(task.JobId);
@@ -728,12 +728,12 @@ namespace Ookii.Jumbo.Jet.Channels
 
             string outputFileName = FileOutputChannel.CreateChannelFileName(task.TaskAttemptId.ToString());
             string fileName = Path.Combine(taskOutputDirectory, outputFileName);
-            using( PartitionFileIndex index = new PartitionFileIndex(fileName) )
+            using (PartitionFileIndex index = new PartitionFileIndex(fileName))
             {
-                foreach( int partition in ActivePartitions )
+                foreach (int partition in ActivePartitions)
                 {
                     IEnumerable<PartitionFileIndexEntry> indexEntries = index.GetEntriesForPartition(partition);
-                    if( indexEntries == null )
+                    if (indexEntries == null)
                     {
                         _log.DebugFormat("Local input file {0} partition {1} is empty.", fileName, partition);
                         inputs.Add(new EmptyRecordInput(InputRecordType, task.TaskAttemptId.TaskId.ToString()));
@@ -758,12 +758,12 @@ namespace Ookii.Jumbo.Jet.Channels
             int downloadedTaskCount = 0;
             try
             {
-                using( ServerConnection connection = new ServerConnection(server) )
+                using (ServerConnection connection = new ServerConnection(server))
                 {
-                    if( !connection.Connect(_jobID, ActivePartitions, 0) )
+                    if (!connection.Connect(_jobID, ActivePartitions, 0))
                         return downloadedTaskCount;
 
-                    foreach( CompletedTask task in server.TasksToDownload )
+                    foreach (CompletedTask task in server.TasksToDownload)
                     {
                         long size = connection.Reader.ReadInt64();
                         using FileChannelMemoryStorageManager.Reservation reservation = _memoryStorage?.WaitForSpaceAndReserve(size, connection, _memoryStorageWaitTimeout);
@@ -788,15 +788,15 @@ namespace Ookii.Jumbo.Jet.Channels
                     return downloadedTaskCount;
                 }
             }
-            catch( SocketException ex )
+            catch (SocketException ex)
             {
                 // TODO: If this happens too often, we need to recover somehow.
                 _log.Error(string.Format(CultureInfo.InvariantCulture, "Error contacting server {0}:{1}.", server.TaskServer.HostName, port), ex);
                 return downloadedTaskCount;
             }
-            catch( IOException ex )
+            catch (IOException ex)
             {
-                if( ex.InnerException is SocketException )
+                if (ex.InnerException is SocketException)
                 {
                     _log.Error(string.Format(CultureInfo.InvariantCulture, "Error contacting server {0}:{1}.", server.TaskServer.HostName, port), ex);
                     return downloadedTaskCount;
@@ -809,18 +809,18 @@ namespace Ookii.Jumbo.Jet.Channels
         private void DownloadPartition(CompletedTask task, List<RecordInput> downloadedFiles, ServerConnection connection, int partition, FileChannelMemoryStorageManager.Reservation reservation)
         {
             long size = connection.Reader.ReadInt64();
-            if( size > 0 )
+            if (size > 0)
             {
                 int segmentCount = 0;
                 long uncompressedSize = connection.Reader.ReadInt64();
                 segmentCount = connection.Reader.ReadInt32();
                 string targetFile = null;
 
-                if( reservation == null )
+                if (reservation == null)
                 {
                     _hasNonMemoryInputs = true;
                     targetFile = Path.Combine(_inputDirectory, string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}_part{1}.input", task.TaskAttemptId.TaskId, partition));
-                    using( FileStream fileStream = File.Create(targetFile, _writeBufferSize) )
+                    using (FileStream fileStream = File.Create(targetFile, _writeBufferSize))
                     {
                         connection.Stream.CopySize(fileStream, size, _writeBufferSize);
                     }
@@ -841,7 +841,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 }
                 NetworkBytesRead += size;
             }
-            else if( size == 0 )
+            else if (size == 0)
             {
                 _log.DebugFormat("Input partition {0} is empty.", partition);
                 downloadedFiles.Add(new EmptyRecordInput(InputRecordType, task.TaskAttemptId.TaskId.ToString()));
@@ -852,7 +852,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void StartThreads()
         {
-            lock( _orderedServers )
+            lock (_orderedServers)
             {
                 _tasksLeft = new HashSet<string>(InputTaskIds);
                 _inputPollThread = new Thread(InputPollThread) { Name = "FileInputChannelPolling", IsBackground = true };
@@ -861,7 +861,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 _downloadThread.Start();
 
                 int broadcastPort = TaskExecution.JetClient.Configuration.JobServer.BroadcastPort;
-                if( broadcastPort > 0 )
+                if (broadcastPort > 0)
                 {
                     // Only supports IPv4 at the moment.
                     _taskCompletionBroadcastServer = new TaskCompletionBroadcastServer(this, new[] { IPAddress.Any }, broadcastPort);

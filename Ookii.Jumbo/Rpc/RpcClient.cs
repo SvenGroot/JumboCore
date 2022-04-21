@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
-using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Rpc
 
         internal static void CloseConnections()
         {
-            foreach( ServerConnectionCache cache in _connectionCache.Values )
+            foreach (ServerConnectionCache cache in _connectionCache.Values)
                 cache.CloseConnections();
             _connectionCache.Clear();
         }
@@ -47,17 +47,17 @@ namespace Ookii.Jumbo.Rpc
         private static RpcClientConnectionHandler GetConnection(ServerAddress address)
         {
             ServerConnectionCache cache = (ServerConnectionCache)_connectionCache[address];
-            if( cache == null )
+            if (cache == null)
             {
                 cache = new ServerConnectionCache(_connectionTimeout);
-                lock( _connectionCache )
+                lock (_connectionCache)
                 {
                     _connectionCache[address] = cache;
                 }
             }
 
             RpcClientConnectionHandler handler = cache.GetConnection();
-            if( handler == null )
+            if (handler == null)
                 return new RpcClientConnectionHandler(address.HostName, address.Port, cache); // Will be added to the cache when the client is done with it.
             else
                 return handler;
@@ -66,9 +66,9 @@ namespace Ookii.Jumbo.Rpc
         private static void TimeoutConnections(object state, bool wasSignalled)
         {
             DateTime now = DateTime.UtcNow;
-            lock( _connectionCache )
+            lock (_connectionCache)
             {
-                foreach( DictionaryEntry connection in _connectionCache )
+                foreach (DictionaryEntry connection in _connectionCache)
                 {
                     ((ServerConnectionCache)connection.Value).TimeoutConnections(now);
                 }

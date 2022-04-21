@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Reflection;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -30,9 +30,9 @@ namespace Ookii.Jumbo.Rpc
 
         public object SendRequest(string objectName, string interfaceName, string operationName, object[] parameters)
         {
-            using( MemoryStream stream = new MemoryStream() )
+            using (MemoryStream stream = new MemoryStream())
             {
-                if( !_hostNameSent )
+                if (!_hostNameSent)
                 {
                     WriteString(ServerContext.LocalHostName, stream);
                     _hostNameSent = true;
@@ -40,17 +40,17 @@ namespace Ookii.Jumbo.Rpc
                 WriteString(objectName, stream);
                 WriteString(interfaceName, stream);
                 WriteString(operationName, stream);
-                if( parameters != null )
+                if (parameters != null)
                     _formatter.Serialize(stream, parameters);
                 stream.WriteTo(_stream);
             }
 
             RpcResponseStatus status = (RpcResponseStatus)_stream.ReadByte();
             object result = null;
-            if( status != RpcResponseStatus.SuccessNoValue )
+            if (status != RpcResponseStatus.SuccessNoValue)
                 result = _formatter.Deserialize(_stream);
 
-            if( status != RpcResponseStatus.Error )
+            if (status != RpcResponseStatus.Error)
                 return result;
             else
             {
@@ -72,7 +72,7 @@ namespace Ookii.Jumbo.Rpc
         private static void WriteString(string value, Stream stream)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(value);
-            if( buffer.Length > byte.MaxValue )
+            if (buffer.Length > byte.MaxValue)
                 throw new ArgumentException("String is too long.");
             stream.WriteByte((byte)buffer.Length);
             stream.Write(buffer, 0, buffer.Length);

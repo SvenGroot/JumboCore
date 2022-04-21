@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
-using System.IO;
 
 namespace Ookii.Jumbo.Test.Jet
 {
@@ -57,9 +57,9 @@ namespace Ookii.Jumbo.Test.Jet
 
             CollectionAssert.AreEqual(expected, actual);
             Assert.AreEqual(expectedPasses, target.MergePassCount);
-            if( rawComparer )
+            if (rawComparer)
             {
-                if( expectedPasses == 1 )
+                if (expectedPasses == 1)
                     Assert.AreEqual(0, target.BytesWritten);
                 else
                 {
@@ -70,7 +70,7 @@ namespace Ookii.Jumbo.Test.Jet
             }
             else
             {
-                if( expectedPasses == 1 )
+                if (expectedPasses == 1)
                     Assert.AreEqual(0, target.BytesRead); // No bytes read by EnumerableComparer.
                 else
                     Assert.AreNotEqual(0, target.BytesRead);
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
             List<List<int>> result = new List<List<int>>();
             Random rnd = new Random();
-            for( int x = 0; x < segmentCount; ++x )
+            for (int x = 0; x < segmentCount; ++x)
             {
                 List<int> segment = Utilities.GenerateNumberData(itemCount + rnd.Next(itemCountRandomization), rnd);
                 segment.Sort();
@@ -93,14 +93,14 @@ namespace Ookii.Jumbo.Test.Jet
 
         private List<RecordInput> GenerateSegments(List<List<int>> segments, bool isMemoryBased, bool serialize)
         {
-            if( serialize )
+            if (serialize)
             {
                 List<RecordInput> result = new List<RecordInput>();
-                foreach( List<int> segment in segments )
+                foreach (List<int> segment in segments)
                 {
                     MemoryStream stream = new MemoryStream();
                     BinaryWriter writer = new BinaryWriter(stream);
-                    foreach( int value in segment )
+                    foreach (int value in segment)
                     {
                         WritableUtility.Write7BitEncodedInt32(writer, sizeof(int));
                         writer.Write(value);

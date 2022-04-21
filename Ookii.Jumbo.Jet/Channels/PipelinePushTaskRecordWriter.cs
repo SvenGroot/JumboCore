@@ -15,9 +15,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PipelinePushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
             _taskExecution = taskExecution;
@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         protected override void WriteRecordInternal(TRecord record)
         {
-            if( _output == null )
+            if (_output == null)
                 throw new ObjectDisposedException(typeof(PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput>).FullName);
             _task.ProcessRecord(record, _output);
         }
@@ -37,9 +37,9 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                if( disposing )
+                if (disposing)
                 {
-                    if( _output != null )
+                    if (_output != null)
                     {
                         _output.Dispose();
                         _output = null;

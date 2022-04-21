@@ -52,9 +52,9 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public virtual void Run(RecordReader<TInput> input, RecordWriter<TOutput> output)
         {
-            if( input != null )
+            if (input != null)
             {
-                foreach( TInput record in input.EnumerateRecords() )
+                foreach (TInput record in input.EnumerateRecords())
                 {
                     ProcessRecord(record, output);
                 }

@@ -28,13 +28,13 @@ namespace JetShell.Commands
         public override void Run()
         {
             ExitCode = 1; // Assume failure unless we can successfully run a job.
-            if( _args.Length - _argIndex == 0 )
+            if (_args.Length - _argIndex == 0)
                 _options.Out.WriteLine(_options.UsageOptions.UsagePrefix + " job <assemblyName> <jobName> [job arguments...]");
             else
             {
                 string assemblyFileName = _args[_argIndex];
                 Assembly assembly = Assembly.LoadFrom(assemblyFileName);
-                if( _args.Length - _argIndex == 1 )
+                if (_args.Length - _argIndex == 1)
                 {
                     _options.Out.WriteLine(_options.UsageOptions.UsagePrefix + " job <assemblyName> <jobName> [job arguments...]");
                     _options.Out.WriteLine();
@@ -44,7 +44,7 @@ namespace JetShell.Commands
                 {
                     string jobName = _args[_argIndex + 1];
                     JobRunnerInfo jobRunnerInfo = JobRunnerInfo.GetJobRunner(assembly, jobName);
-                    if( jobRunnerInfo == null )
+                    if (jobRunnerInfo == null)
                     {
                         _options.Error.WriteLine("Job {0} does not exist in the assembly {1}.", jobName, Path.GetFileName(assemblyFileName));
                         PrintAssemblyJobList(_options.Out, assembly);
@@ -52,7 +52,7 @@ namespace JetShell.Commands
                     else
                     {
                         IJobRunner jobRunner = jobRunnerInfo.CreateInstance(_args, _argIndex + 2);
-                        if( jobRunner == null )
+                        if (jobRunner == null)
                         {
                             _options.UsageOptions.UsagePrefix = string.Format(CultureInfo.InvariantCulture, "{0} job {1} {2} ", _options.UsageOptions.UsagePrefix, Path.GetFileName(assemblyFileName), jobRunnerInfo.Name);
                             jobRunnerInfo.CommandLineParser.WriteUsageToConsole(_options.UsageOptions);
@@ -60,7 +60,7 @@ namespace JetShell.Commands
                         else
                         {
                             Guid jobId = jobRunner.RunJob();
-                            if( jobId != Guid.Empty )
+                            if (jobId != Guid.Empty)
                             {
                                 bool success = JetClient.WaitForJobCompletion(jobId);
                                 jobRunner.FinishJob(success);
@@ -80,11 +80,11 @@ namespace JetShell.Commands
             JobRunnerInfo[] jobs = JobRunnerInfo.GetJobRunners(assembly);
             writer.WriteLine("The assembly {0} defines the following jobs:", assembly.GetName().Name);
             writer.WriteLine();
-            if( lineWriter != null )
+            if (lineWriter != null)
                 lineWriter.Indent = _options.CommandDescriptionIndent;
-            foreach( JobRunnerInfo job in jobs )
+            foreach (JobRunnerInfo job in jobs)
             {
-                if( lineWriter != null )
+                if (lineWriter != null)
                     lineWriter.ResetIndent();
                 writer.WriteLine(_options.CommandDescriptionFormat, job.Name, job.Description);
             }

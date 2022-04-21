@@ -27,9 +27,9 @@ namespace Ookii.Jumbo
         /// <returns>A 16-bit signed integer formed by two bytes beginning at <paramref name="offset"/>.</returns>
         public static short ToInt16(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 2 )
+            if (offset < 0 || offset > buffer.Length - 2)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             return (short)(buffer[offset] | (buffer[offset + 1] << 8));
         }
@@ -43,9 +43,9 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static ushort ToUInt16(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 2 )
+            if (offset < 0 || offset > buffer.Length - 2)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             return (ushort)(buffer[offset] | (buffer[offset + 1] << 8));
         }
@@ -58,9 +58,9 @@ namespace Ookii.Jumbo
         /// <returns>A 32-bit signed integer formed by four bytes beginning at <paramref name="offset"/>.</returns>
         public static int ToInt32(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 4 )
+            if (offset < 0 || offset > buffer.Length - 4)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             return (buffer[offset]) | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24);
         }
@@ -74,9 +74,9 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static uint ToUInt32(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 4 )
+            if (offset < 0 || offset > buffer.Length - 4)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             return (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
         }
@@ -89,9 +89,9 @@ namespace Ookii.Jumbo
         /// <returns>A 64-bit signed integer formed by eight bytes beginning at <paramref name="offset"/>.</returns>
         public static long ToInt64(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 8 )
+            if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
@@ -107,9 +107,9 @@ namespace Ookii.Jumbo
         [CLSCompliant(false)]
         public static ulong ToUInt64(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 8 )
+            if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
@@ -124,9 +124,9 @@ namespace Ookii.Jumbo
         /// <returns>A single-precision floating point number formed by four bytes beginning at <paramref name="offset"/>.</returns>
         public static unsafe float ToSingle(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 4 )
+            if (offset < 0 || offset > buffer.Length - 4)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             uint bits = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             return *(float*)&bits;
@@ -140,9 +140,9 @@ namespace Ookii.Jumbo
         /// <returns>A double-precision floating point number formed by four bytes beginning at <paramref name="offset"/>.</returns>
         public static unsafe double ToDouble(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 8 )
+            if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
@@ -158,12 +158,12 @@ namespace Ookii.Jumbo
         /// <returns>A decimal value formed by sixteen bytes beginning at <paramref name="offset"/>.</returns>
         public static decimal ToDecimal(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 16 )
+            if (offset < 0 || offset > buffer.Length - 16)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            int[] bits = new[] 
-            { 
+            int[] bits = new[]
+            {
                 (buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24)),
                 (buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24)),
                 (buffer[offset + 8] | (buffer[offset + 9] << 8) | (buffer[offset + 10] << 16) | (buffer[offset + 11] << 24)),
@@ -180,9 +180,9 @@ namespace Ookii.Jumbo
         /// <returns>A date and time formed by twelve bytes beginning at <paramref name="offset"/>.</returns>
         public static DateTime ToDateTime(byte[] buffer, int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset > buffer.Length - 12 )
+            if (offset < 0 || offset > buffer.Length - 12)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             DateTimeKind kind = (DateTimeKind)ToInt32(buffer, offset);
             long ticks = ToInt64(buffer, offset + 4);
@@ -198,16 +198,16 @@ namespace Ookii.Jumbo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "1#")]
         public static int ToInt32From7BitEncoding(byte[] buffer, ref int offset)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 || offset >= buffer.Length )
+            if (offset < 0 || offset >= buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             byte currentByte;
             int result = 0;
             int bits = 0;
             do
             {
-                if( bits == 35 )
+                if (bits == 35)
                 {
                     throw new FormatException("Invalid 7-bit encoded int.");
                 }
@@ -215,7 +215,7 @@ namespace Ookii.Jumbo
                 result |= (currentByte & 0x7f) << bits;
                 bits += 7;
             }
-            while( (currentByte & 0x80) != 0 );
+            while ((currentByte & 0x80) != 0);
             return result;
         }
     }

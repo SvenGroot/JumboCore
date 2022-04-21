@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet.Tasks;
 using Ookii.Jumbo.Jet.Channels;
-using System.Diagnostics;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -50,16 +50,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public TwoStepOperation(JobBuilder builder, IOperationInput input, Type taskType, Type secondStepTaskType, bool usePrePartitioning)
             : base(builder, CreateExtraStepForDataInput(builder, input), taskType)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            if( secondStepTaskType != null )
+            if (secondStepTaskType != null)
             {
-                if( secondStepTaskType.IsGenericTypeDefinition )
+                if (secondStepTaskType.IsGenericTypeDefinition)
                     secondStepTaskType = secondStepTaskType.MakeGenericType(TaskType.OutputRecordType);
 
                 _secondStepTaskType = new TaskTypeInfo(secondStepTaskType);
-                if( !(_secondStepTaskType.InputRecordType == TaskType.OutputRecordType && _secondStepTaskType.OutputRecordType == TaskType.OutputRecordType) )
+                if (!(_secondStepTaskType.InputRecordType == TaskType.OutputRecordType && _secondStepTaskType.OutputRecordType == TaskType.OutputRecordType))
                     throw new ArgumentException("The second step task type is incompatible with the first step task type.");
             }
             else
@@ -113,18 +113,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if( compiler == null )
+            if (compiler == null)
                 throw new ArgumentNullException(nameof(compiler));
             // We don't need an extra step if each of our tasks would get only a single input segment, i.e. when
             // our input channel is a pipeline or has only one task.
-            if( InputChannel.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1 )
+            if (InputChannel.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1)
             {
                 // Second step needed
                 int taskCount = (_usePrePartitioning && InputChannel.Sender.Stage.InternalPartitionCount == 1) ? InputChannel.PartitionCount : 1;
-                if( taskCount == 0 )
+                if (taskCount == 0)
                 {
                     taskCount = InputChannel.PartitionsPerTask * compiler.DefaultChannelInputTaskCount;
-                    if( InputChannel.ChannelType == ChannelType.Tcp )
+                    if (InputChannel.ChannelType == ChannelType.Tcp)
                         taskCount /= 2;
                 }
                 InputStageInfo input = new InputStageInfo(InputChannel.Sender.Stage)
@@ -133,7 +133,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     PartitionerType = InputChannel.PartitionerType
                 };
                 string firstStepStageId = StageId;
-                if( SecondStepStageId == null )
+                if (SecondStepStageId == null)
                     firstStepStageId = "Local" + StageId;
                 FirstStepStage = compiler.CreateStage(firstStepStageId, TaskType.TaskType, taskCount, input, InputChannel, true, null);
                 // Settings are only automatically applied to the returned stage; manually apply them here.
@@ -152,7 +152,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static IOperationInput CreateExtraStepForDataInput(JobBuilder builder, IOperationInput input)
         {
             FileInput dataInput = input as FileInput;
-            if( dataInput != null )
+            if (dataInput != null)
             {
                 // If the input is DFS, we want to create a channel around which our first and second step are created.
                 // Here's the fun bit: if the input has only one split (so there is only one task), the compiler will

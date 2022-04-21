@@ -46,22 +46,22 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public InnerJoinOperation(JobBuilder builder, IOperationInput outerInput, IOperationInput innerInput, Type innerJoinRecordReaderType, Type outerComparerType, Type innerComparerType)
             : base(builder, GetEmptyTaskTypeForRecord(innerJoinRecordReaderType))
         {
-            if( outerInput == null )
+            if (outerInput == null)
                 throw new ArgumentNullException(nameof(outerInput));
-            if( innerInput == null )
+            if (innerInput == null)
                 throw new ArgumentNullException(nameof(innerInput));
-            if( innerJoinRecordReaderType == null )
+            if (innerJoinRecordReaderType == null)
                 throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
 
             Type baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
             Type outerRecordType = baseType.GetGenericArguments()[0];
             Type innerRecordType = baseType.GetGenericArguments()[1];
             InputTypeAttribute[] inputTypeAttributes = (InputTypeAttribute[])Attribute.GetCustomAttributes(innerJoinRecordReaderType, typeof(InputTypeAttribute));
-            if( !(inputTypeAttributes.Any(a => a.AcceptedType == outerRecordType) && inputTypeAttributes.Any(a => a.AcceptedType == innerRecordType)) )
+            if (!(inputTypeAttributes.Any(a => a.AcceptedType == outerRecordType) && inputTypeAttributes.Any(a => a.AcceptedType == innerRecordType)))
                 throw new ArgumentException("The inner join record reader type does not declare the required InputType attributes.", nameof(innerJoinRecordReaderType));
-            if( outerInput.RecordType != outerRecordType )
+            if (outerInput.RecordType != outerRecordType)
                 throw new ArgumentException("The record type of the outer input does not match the join's outer type.");
-            if( innerInput.RecordType != innerRecordType )
+            if (innerInput.RecordType != innerRecordType)
                 throw new ArgumentException("The record type of the inner input does not match the join's inner type.");
 
             IJobBuilderOperation outer = CreateExtraStepForDataInput(builder, outerInput, "OuterReadStage");
@@ -86,12 +86,12 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if( compiler == null )
+            if (compiler == null)
                 throw new ArgumentNullException(nameof(compiler));
 
-            if( _innerInputChannel.TaskCount != _outerInputChannel.TaskCount )
+            if (_innerInputChannel.TaskCount != _outerInputChannel.TaskCount)
                 throw new InvalidOperationException("Outer and inner input channels for a join operation must use the same number of tasks.");
-            if( _innerInputChannel.PartitionsPerTask != 1 || _outerInputChannel.PartitionsPerTask != 1 )
+            if (_innerInputChannel.PartitionsPerTask != 1 || _outerInputChannel.PartitionsPerTask != 1)
                 throw new InvalidOperationException("Cannot use multiple partitions per task for a join operation.");
 
             return compiler.CreateStage(StageId, TaskType.TaskType, _outerInputChannel.TaskCount, new[] { _outerInputChannel.CreateInput(), _innerInputChannel.CreateInput() }, Output, new[] { _outerInputChannel.Settings, _innerInputChannel.Settings }, _innerJoinRecordReaderType);
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static Type GetEmptyTaskTypeForRecord(Type innerJoinRecordReaderType)
         {
-            if( innerJoinRecordReaderType == null )
+            if (innerJoinRecordReaderType == null)
                 throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
             return typeof(EmptyTask<>).MakeGenericType(RecordReader.GetRecordType(innerJoinRecordReaderType));
         }
@@ -107,7 +107,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static IJobBuilderOperation CreateExtraStepForDataInput(JobBuilder builder, IOperationInput input, string stageId)
         {
             IJobBuilderOperation operation = input as IJobBuilderOperation;
-            if( operation  == null )
+            if (operation == null)
                 return new StageOperation(builder, input, typeof(EmptyTask<>)) { StageId = stageId };
 
             return operation;
@@ -115,12 +115,12 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static Type MakeComparerType(Type comparerType, Type recordType)
         {
-            if( comparerType != null )
+            if (comparerType != null)
             {
-                if( comparerType.IsGenericTypeDefinition )
+                if (comparerType.IsGenericTypeDefinition)
                     comparerType = comparerType.MakeGenericType(recordType);
                 Type interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>), true);
-                if( interfaceType.GetGenericArguments()[0] != recordType )
+                if (interfaceType.GetGenericArguments()[0] != recordType)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Comparer {0} is not valid for type {1}.", comparerType, recordType));
             }
 
@@ -133,11 +133,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             channel.ChannelType = ChannelType.File;
             channel.MultiInputRecordReaderType = typeof(MergeRecordReader<>);
             channel.Settings.AddSetting(JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill);
-            if( comparerType != null )
+            if (comparerType != null)
             {
                 comparerType = MakeComparerType(comparerType, input.RecordType);
                 channel.Settings.Add(JumboSettings.FileChannel.Stage.SpillSortComparerType, comparerType.AssemblyQualifiedName);
-                if( comparerType.GetInterfaces().Contains(typeof(IEqualityComparer<>).MakeGenericType(input.RecordType)) )
+                if (comparerType.GetInterfaces().Contains(typeof(IEqualityComparer<>).MakeGenericType(input.RecordType)))
                     channel.Settings.Add(PartitionerConstants.EqualityComparerSetting, comparerType.AssemblyQualifiedName);
                 builder.AddAssembly(comparerType.Assembly);
             }

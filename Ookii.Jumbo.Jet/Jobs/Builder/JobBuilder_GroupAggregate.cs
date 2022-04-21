@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Jet.Tasks;
 using System.Reflection;
+using System.Text;
 using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -21,14 +21,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive.")]
         public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type keyComparerType = null)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( accumulatorTaskType == null )
+            if (accumulatorTaskType == null)
                 throw new ArgumentNullException(nameof(accumulatorTaskType));
 
-            if( accumulatorTaskType.IsGenericTypeDefinition )
+            if (accumulatorTaskType.IsGenericTypeDefinition)
             {
-                if( !(input.RecordType.IsGenericType && input.RecordType.GetGenericTypeDefinition() == typeof(Pair<,>)) )
+                if (!(input.RecordType.IsGenericType && input.RecordType.GetGenericTypeDefinition() == typeof(Pair<,>)))
                     throw new ArgumentException("The input record type must be Pair<TKey,TValue> for group aggregation.", nameof(input));
 
                 accumulatorTaskType = ConstructGenericAccumulatorTaskType(input.RecordType, accumulatorTaskType);
@@ -36,20 +36,20 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             Type taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true); // Ensure it's an accumulator.
 
-            if( keyComparerType != null )
+            if (keyComparerType != null)
             {
-                if( keyComparerType.IsGenericTypeDefinition )
+                if (keyComparerType.IsGenericTypeDefinition)
                     keyComparerType = keyComparerType.MakeGenericType(taskBaseType.GetGenericArguments()[0]);
 
                 Type comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true);
-                if( comparerBaseType.GetGenericArguments()[0] != taskBaseType.GetGenericArguments()[0] )
+                if (comparerBaseType.GetGenericArguments()[0] != taskBaseType.GetGenericArguments()[0])
                     throw new ArgumentException("Comparer type is not an IEqualityComparer for the key type.", nameof(keyComparerType));
             }
 
             CheckIfInputBelongsToJobBuilder(input);
             TwoStepOperation result = new TwoStepOperation(this, input, accumulatorTaskType, null, false);
 
-            if( keyComparerType != null )
+            if (keyComparerType != null)
             {
                 AddAssembly(accumulatorTaskType.Assembly);
                 result.Settings.Add(TaskConstants.AccumulatorTaskKeyComparerSettingKey, keyComparerType.AssemblyQualifiedName);
@@ -136,9 +136,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private TwoStepOperation GroupAggregateCore<TKey, TValue>(IOperationInput input, Delegate accumulator, Type keyComparerType, RecordReuseMode recordReuse)
             where TKey : IComparable<TKey> // Needed to satisfy requirement on AccumulatorTask
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( accumulator == null )
+            if (accumulator == null)
                 throw new ArgumentNullException(nameof(accumulator));
             CheckIfInputBelongsToJobBuilder(input);
 
@@ -153,10 +153,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             Type[] arguments;
             Type[] parameters = accumulatorTaskType.GetGenericArguments();
-            switch( parameters.Length )
+            switch (parameters.Length)
             {
             case 1:
-                switch( parameters[0].Name )
+                switch (parameters[0].Name)
                 {
                 case "TKey":
                     arguments = new[] { recordType.GetGenericArguments()[0] };

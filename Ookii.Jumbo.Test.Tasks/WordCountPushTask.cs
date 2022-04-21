@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override void ProcessRecord(Utf8String record, RecordWriter<Pair<Utf8String, int>> output)
         {
             string[] words = record.ToString().Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-            foreach( string word in words )
+            foreach (string word in words)
             {
                 _record.Key.Set(word);
                 output.WriteRecord(_record);
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( !TaskContext.StageConfiguration.AllowOutputRecordReuse )
+            if (!TaskContext.StageConfiguration.AllowOutputRecordReuse)
                 throw new NotSupportedException("Output record reuse required.");
         }
     }

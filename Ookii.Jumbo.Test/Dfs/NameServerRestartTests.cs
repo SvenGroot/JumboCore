@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
 using System.Threading;
-using System.IO;
+using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -33,8 +33,8 @@ namespace Ookii.Jumbo.Test.Dfs
                 nameServer.CreateDirectory("/test2/test1");
                 nameServer.Move("/test2/test1", "/test3");
                 const int size = 20000000;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat") )
-                using( MemoryStream input = new MemoryStream() )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
+                using (MemoryStream input = new MemoryStream())
                 {
                     Utilities.GenerateData(input, size);
                     input.Position = 0;
@@ -42,8 +42,8 @@ namespace Ookii.Jumbo.Test.Dfs
                 }
 
                 const int customBlockSize = 16 * 1024 * 1024;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 0) )
-                using( MemoryStream input = new MemoryStream() )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 0))
+                using (MemoryStream input = new MemoryStream())
                 {
                     Utilities.GenerateData(input, size);
                     input.Position = 0;
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
                 JumboFile file;
                 DfsMetrics metrics;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat") )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
                 {
                     nameServer = null;
                     Thread.Sleep(1000);
@@ -109,7 +109,7 @@ namespace Ookii.Jumbo.Test.Dfs
             }
             finally
             {
-                if( cluster != null )
+                if (cluster != null)
                     cluster.Shutdown();
             }
         }
@@ -131,8 +131,8 @@ namespace Ookii.Jumbo.Test.Dfs
                 nameServer.CreateDirectory("/test2/test1");
                 nameServer.Move("/test2/test1", "/test3");
                 const int size = 20000000;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat") )
-                using( MemoryStream input = new MemoryStream() )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
+                using (MemoryStream input = new MemoryStream())
                 {
                     Utilities.GenerateData(input, size);
                     input.Position = 0;
@@ -140,8 +140,8 @@ namespace Ookii.Jumbo.Test.Dfs
                 }
 
                 const int customBlockSize = 16 * 1024 * 1024;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 1) )
-                using( MemoryStream input = new MemoryStream() )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 1))
+                using (MemoryStream input = new MemoryStream())
                 {
                     Utilities.GenerateData(input, size);
                     input.Position = 0;
@@ -151,7 +151,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
                 JumboFile file;
                 DfsMetrics metrics;
-                using( DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat") )
+                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
                 {
                     nameServer.CreateCheckpoint();
 
@@ -203,7 +203,7 @@ namespace Ookii.Jumbo.Test.Dfs
             }
             finally
             {
-                if( cluster != null )
+                if (cluster != null)
                     cluster.Shutdown();
             }
         }

@@ -27,9 +27,9 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public EnumerableRecordReader(IEnumerable<T> source, int count)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             _enumerator = source.GetEnumerator();
             _count = count;
@@ -50,12 +50,12 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         public override float Progress
         {
-            get 
+            get
             {
-                if( _count == 0 )
+                if (_count == 0)
                     return HasFinished ? 1.0f : 0.0f;
                 else
-                    return (float)RecordsRead / (float)_count; 
+                    return (float)RecordsRead / (float)_count;
             }
         }
 
@@ -65,7 +65,7 @@ namespace Ookii.Jumbo.IO
         /// <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
         protected override bool ReadRecordInternal()
         {
-            if( _enumerator.MoveNext() )
+            if (_enumerator.MoveNext())
             {
                 CurrentRecord = _enumerator.Current;
                 return true;

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -73,7 +73,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="writer">The <see cref="TextWriter"/> to print the metrics to.</param>
         public void PrintMetrics(TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Job server: {0}", JobServer);
             writer.WriteLine("Running jobs: {0}", RunningJobs.Count);
@@ -90,7 +90,7 @@ namespace Ookii.Jumbo.Jet
 
         private static void PrintList<T>(TextWriter writer, IEnumerable<T> list)
         {
-            foreach( var item in list )
+            foreach (var item in list)
                 writer.WriteLine("  {0}", item);
         }
     }

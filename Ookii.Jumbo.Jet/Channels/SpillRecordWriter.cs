@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
-using System.IO;
-using System.Diagnostics;
 using System.Threading;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -115,15 +115,15 @@ namespace Ookii.Jumbo.Jet.Channels
             public override void Write(byte[] buffer, int offset, int count)
             {
                 int newBufferUsed = Interlocked.Add(ref _bufferUsed, count);
-                while( newBufferUsed > _buffer.Length )
+                while (newBufferUsed > _buffer.Length)
                 {
                     _log.InfoFormat("Waiting for buffer space, current buffer pos {0}, buffer used {1}", _bufferPos, newBufferUsed);
                     _writer.RequestOutputSpill();
                     // This is only safe for one thread to use write, but record writers and streams are not thread safe, so no problem
                     // If the cancel event was set while writing, the object was disposed or an error occurred in the spill thread.
-                    if( WaitHandle.WaitAny(_bufferEvents) == 1 )
+                    if (WaitHandle.WaitAny(_bufferEvents) == 1)
                     {
-                        if( _writer._spillException != null )
+                        if (_writer._spillException != null)
                         {
                             _writer._spillExceptionThrown = true;
                             throw new ChannelException("An error occurred while spilling records.", _writer._spillException);
@@ -154,7 +154,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 // Thread safety note: only one thread is writing into this buffer, to _bufferUsed can only ever becomes less (because of the spill thread).
                 // If that happens, we'll take an overly cautious approach but it's basically fine.
                 int extraBytes = _buffer.Length - _bufferMark;
-                if( _bufferUsed + extraBytes < _buffer.Length )
+                if (_bufferUsed + extraBytes < _buffer.Length)
                 {
                     System.Buffer.BlockCopy(_buffer, 0, _buffer, extraBytes, _bufferPos); // Move bytes at start of buffer forward
                     System.Buffer.BlockCopy(_buffer, _bufferMark, _buffer, 0, extraBytes); // Move bytes at the end of buffer to the start
@@ -176,28 +176,28 @@ namespace Ookii.Jumbo.Jet.Channels
 
             private static int CopyCircular(byte[] source, int sourceIndex, byte[] destination, int destinationIndex, int count)
             {
-                if( source == null )
+                if (source == null)
                     throw new ArgumentNullException(nameof(source));
-                if( destination == null )
+                if (destination == null)
                     throw new ArgumentNullException(nameof(destination));
-                if( sourceIndex < 0 )
+                if (sourceIndex < 0)
                     throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-                if( destinationIndex < 0 )
+                if (destinationIndex < 0)
                     throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-                if( count < 0 )
+                if (count < 0)
                     throw new ArgumentOutOfRangeException(nameof(count));
-                if( sourceIndex + count > source.Length )
+                if (sourceIndex + count > source.Length)
                     throw new ArgumentException("sourceIndex + count is larger than the source array.");
                 int end = destinationIndex + count;
-                if( end > destination.Length )
+                if (end > destination.Length)
                 {
                     end %= destination.Length;
-                    if( end > destinationIndex )
+                    if (end > destinationIndex)
                         throw new ArgumentException("count is larger than the destination array.");
                 }
 
 
-                if( end >= destinationIndex )
+                if (end >= destinationIndex)
                 {
                     Array.Copy(source, sourceIndex, destination, destinationIndex, count);
                 }
@@ -260,11 +260,11 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="options">A combination of <see cref="SpillRecordWriterOptions"/> values.</param>
         protected SpillRecordWriter(IPartitioner<T> partitioner, int bufferSize, int limit, SpillRecordWriterOptions options)
         {
-            if( partitioner == null )
+            if (partitioner == null)
                 throw new ArgumentNullException(nameof(partitioner));
-            if( bufferSize < 0 )
+            if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
-            if( limit < 1 || limit > bufferSize )
+            if (limit < 1 || limit > bufferSize)
                 throw new ArgumentOutOfRangeException(nameof(limit));
             _partitioner = partitioner;
             _buffer = new CircularBufferStream(this, bufferSize);
@@ -349,7 +349,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                if( !_spillInProgress )
+                if (!_spillInProgress)
                     throw new InvalidOperationException("No spill is in progress.");
                 return _buffer.Buffer;
             }
@@ -365,23 +365,23 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public override void FinishWriting()
         {
-            if( !HasFinishedWriting )
+            if (!HasFinishedWriting)
             {
                 base.FinishWriting();
-                lock( _spillLock )
+                lock (_spillLock)
                 {
-                    while( _spillInProgress )
+                    while (_spillInProgress)
                         Monitor.Wait(_spillLock);
 
                     _cancelEvent.Set();
                 }
-                if( _spillThread != null )
+                if (_spillThread != null)
                     _spillThread.Join();
 
-                if( _spillException != null && !_spillExceptionThrown )
+                if (_spillException != null && !_spillExceptionThrown)
                     throw new ChannelException("An exception occurred spilling the output records.", _spillException);
 
-                if( !_spillExceptionThrown && _buffer.BufferUsed > 0 || _spillCount == 0 )
+                if (!_spillExceptionThrown && _buffer.BufferUsed > 0 || _spillCount == 0)
                 {
                     PrepareForSpill(true);
                     PerformSpill(true);
@@ -396,13 +396,13 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="record">The record to write.</param>
         protected override void WriteRecordInternal(T record)
         {
-            if( _spillException != null )
+            if (_spillException != null)
             {
                 _spillExceptionThrown = true;
                 throw new ChannelException("An exception occurred spilling the output records.", _spillException);
             }
 
-            if( _bufferRemaining <= 0 )
+            if (_bufferRemaining <= 0)
                 RequestOutputSpill();
 
             _buffer.SetMark();
@@ -415,9 +415,9 @@ namespace Ookii.Jumbo.Jet.Channels
             _lastRecordEnd = recordEnd;
 
             int recordLength;
-            if( recordEnd >= recordStart )
+            if (recordEnd >= recordStart)
                 recordLength = recordEnd - recordStart;
-            else if( _flags.HasFlag(SpillRecordWriterOptions.AllowRecordWrapping) )
+            else if (_flags.HasFlag(SpillRecordWriterOptions.AllowRecordWrapping))
                 recordLength = (_buffer.Size - recordStart) + recordEnd;
             else
             {
@@ -430,7 +430,7 @@ namespace Ookii.Jumbo.Jet.Channels
             int partition = _partitioner.GetPartition(record);
 
             List<RecordIndexEntry> index = _indices[partition];
-            if( _flags.HasFlag(SpillRecordWriterOptions.AllowMultiRecordIndexEntries) && partition == _lastPartition )
+            if (_flags.HasFlag(SpillRecordWriterOptions.AllowMultiRecordIndexEntries) && partition == _lastPartition)
             {
                 // If the new record was the same partition as the last record, we just update that one.
                 int lastEntry = index.Count - 1;
@@ -440,7 +440,7 @@ namespace Ookii.Jumbo.Jet.Channels
             else
             {
                 // Add the new record to the relevant index.
-                if( index == null )
+                if (index == null)
                 {
                     index = new List<RecordIndexEntry>(100);
                     _indices[partition] = index;
@@ -482,7 +482,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         protected RecordIndexEntry[] GetSpillIndex(int partition)
         {
-            if( !_spillInProgress )
+            if (!_spillInProgress)
                 throw new InvalidOperationException("No spill is currently in progress.");
             return _spillIndices[partition];
         }
@@ -509,15 +509,15 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="outputStream">The output stream to write the partition to.</param>
         protected void WritePartition(int partition, Stream outputStream)
         {
-            if( outputStream == null )
+            if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
             RecordIndexEntry[] index = _spillIndices[partition];
-            if( index != null )
+            if (index != null)
             {
                 PreparePartition(partition, index, _buffer.Buffer);
-                for( int x = 0; x < index.Length; ++x )
+                for (int x = 0; x < index.Length; ++x)
                 {
-                    if( index[x].Offset + index[x].Count > _buffer.Size )
+                    if (index[x].Offset + index[x].Count > _buffer.Size)
                     {
                         int firstCount = _buffer.Size - index[x].Offset;
                         outputStream.Write(_buffer.Buffer, index[x].Offset, firstCount);
@@ -536,17 +536,17 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="output">The raw record writer to write the partition to.</param>
         protected void WritePartition(int partition, RecordWriter<RawRecord> output)
         {
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if( _record == null )
+            if (_record == null)
                 _record = new RawRecord();
 
             RawRecord record = _record;
             RecordIndexEntry[] index = _spillIndices[partition];
-            if( index != null )
+            if (index != null)
             {
                 PreparePartition(partition, index, _buffer.Buffer);
-                for( int x = 0; x < index.Length; ++x )
+                for (int x = 0; x < index.Length; ++x)
                 {
                     record.Reset(_buffer.Buffer, index[x].Offset, index[x].Count);
                     output.WriteRecord(record);
@@ -588,11 +588,11 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
 
-                if( disposing )
+                if (disposing)
                 {
                     ((IDisposable)_bufferWriter).Dispose();
                     _buffer.Dispose();
@@ -604,15 +604,15 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void RequestOutputSpill()
         {
-            lock( _spillLock )
+            lock (_spillLock)
             {
-                if( !_spillInProgress )
+                if (!_spillInProgress)
                 {
                     PrepareForSpill(false);
                     _spillWaitingEvent.Set();
                 }
 
-                if( _spillThread == null )
+                if (_spillThread == null)
                 {
                     _spillThread = new Thread(SpillThread) { Name = "SpillRecordWriter.SpillThread", IsBackground = true };
                     _spillThread.Start();
@@ -623,10 +623,10 @@ namespace Ookii.Jumbo.Jet.Channels
         private void PrepareForSpill(bool allowEmptySpill)
         {
             bool hasRecords = false;
-            for( int x = 0; x < _indices.Length; ++x )
+            for (int x = 0; x < _indices.Length; ++x)
             {
                 List<RecordIndexEntry> index = _indices[x];
-                if( index != null && index.Count > 0 )
+                if (index != null && index.Count > 0)
                 {
                     hasRecords = true;
                     _spillIndices[x] = index.ToArray();
@@ -635,14 +635,14 @@ namespace Ookii.Jumbo.Jet.Channels
                 else
                     _spillIndices[x] = null;
             }
-            if( !(hasRecords || allowEmptySpill) )
+            if (!(hasRecords || allowEmptySpill))
                 throw new InvalidOperationException("Spill requested but nothing to spill.");
 
             _lastPartition = -1;
             _spillStart = _spillEnd; // _outputEnd contains the place where the last output stopped.
             _spillEnd = _lastRecordEnd; // End at the last record.
             _spillSize = _spillEnd - _spillStart;
-            if( hasRecords && _spillSize <= 0 )
+            if (hasRecords && _spillSize <= 0)
                 _spillSize += _buffer.Size;
             _bufferRemaining += _spillSize;
             _spillInProgress = true;
@@ -655,12 +655,12 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 WaitHandle[] handles = new WaitHandle[] { _spillWaitingEvent, _cancelEvent };
 
-                while( WaitHandle.WaitAny(handles) != 1 )
+                while (WaitHandle.WaitAny(handles) != 1)
                 {
                     PerformSpill(false);
                 }
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 _spillException = ex;
                 _cancelEvent.Set(); // Make sure the writing thread doesn't get stuck waiting for buffer space to become available.
@@ -683,7 +683,7 @@ namespace Ookii.Jumbo.Jet.Channels
             }
             finally
             {
-                lock( _spillLock )
+                lock (_spillLock)
                 {
                     _spillInProgress = false;
                     Monitor.PulseAll(_spillLock);

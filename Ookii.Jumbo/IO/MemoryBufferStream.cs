@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -110,7 +110,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if( _position + count >= _end )
+            if (_position + count >= _end)
                 count = _end - _position;
             Buffer.BlockCopy(_buffer, _position, buffer, offset, count);
             _position += count;
@@ -125,7 +125,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public override int ReadByte()
         {
-            if( _position < _end )
+            if (_position < _end)
                 return _buffer[_position++];
             else
                 return -1;

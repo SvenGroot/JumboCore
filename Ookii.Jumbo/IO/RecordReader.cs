@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.IO
 {
@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>The record type</returns>
         public static Type GetRecordType(Type recordReaderType)
         {
-            if( recordReaderType == null )
+            if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
             Type baseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
             return baseType.GetGenericArguments()[0];
@@ -88,7 +88,7 @@ namespace Ookii.Jumbo.IO
         /// <value>
         /// The size of the records before deserialization, or 0 if the records were not read from a serialized source.
         /// </value>
-        public virtual long InputBytes 
+        public virtual long InputBytes
         {
             get { return 0; }
         }
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.IO
             get { return !_hasFinished && _hasRecords; }
             protected set
             {
-                if( _hasRecords != value )
+                if (_hasRecords != value)
                 {
                     _hasRecords = value;
                     OnHasRecordsChanged(EventArgs.Empty);
@@ -198,9 +198,9 @@ namespace Ookii.Jumbo.IO
             _readTime.Start();
             try
             {
-                if( ReadRecordInternal() )
+                if (ReadRecordInternal())
                 {
-                    if( _hasFinished ) // Can happen with record readers that process multiple partitions.
+                    if (_hasFinished) // Can happen with record readers that process multiple partitions.
                     {
                         _hasFinished = false;
                         OnHasRecordsChanged(EventArgs.Empty);
@@ -210,7 +210,7 @@ namespace Ookii.Jumbo.IO
                 }
                 else
                 {
-                    if( !_hasFinished )
+                    if (!_hasFinished)
                     {
                         _hasFinished = true;
                         OnHasRecordsChanged(EventArgs.Empty);
@@ -230,7 +230,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>An implementation of <see cref="IEnumerable{T}"/> that enumerates over the records.</returns>
         public IEnumerable<T> EnumerateRecords()
         {
-            while( ReadRecord() )
+            while (ReadRecord())
             {
                 yield return CurrentRecord;
             }
@@ -249,7 +249,7 @@ namespace Ookii.Jumbo.IO
         protected virtual void OnHasRecordsChanged(EventArgs e)
         {
             EventHandler handler = HasRecordsChanged;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 

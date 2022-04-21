@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using System.Threading;
-using System.Diagnostics;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -51,15 +51,15 @@ namespace Ookii.Jumbo.IO
         protected override bool ReadRecordInternal()
         {
             CheckDisposed();
-            if( !WaitForReaders() )
+            if (!WaitForReaders())
                 return false;
 
-            while( !_currentReader.ReadRecord() )
+            while (!_currentReader.ReadRecord())
             {
                 _currentReader.HasRecordsChanged -= _hasRecordsChangedHandler;
                 _currentReader.Dispose();
                 _currentReader = null;
-                if( !WaitForReaders() )
+                if (!WaitForReaders())
                 {
                     CurrentRecord = default(T);
                     return false;
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         protected override void OnCurrentPartitionChanged(EventArgs e)
         {
-            if( _currentReader != null )
+            if (_currentReader != null)
             {
                 _currentReader.HasRecordsChanged -= _hasRecordsChangedHandler;
                 _currentReader = null;
@@ -86,10 +86,10 @@ namespace Ookii.Jumbo.IO
 
         private bool WaitForReaders()
         {
-            if( _currentReader == null )
+            if (_currentReader == null)
             {
                 int newReaderNumber = _currentReaderNumber + 1;
-                if( newReaderNumber > TotalInputCount )
+                if (newReaderNumber > TotalInputCount)
                     return false;
 
                 _timeWaitingStopwatch.Start();
@@ -98,7 +98,7 @@ namespace Ookii.Jumbo.IO
 
                 _currentReader = (RecordReader<T>)GetInputReader(_currentReaderNumber);
                 _currentReaderNumber = newReaderNumber;
-                if( _hasRecordsChangedHandler == null )
+                if (_hasRecordsChangedHandler == null)
                     _hasRecordsChangedHandler = new EventHandler(_currentReader_HasRecordsChanged);
                 _currentReader.HasRecordsChanged += _hasRecordsChangedHandler;
                 HasRecords = _currentReader.HasRecords;
@@ -115,7 +115,7 @@ namespace Ookii.Jumbo.IO
             base.AddInput(partitions);
 
             // HACK: Need a different way of handling the events to be able to accurately watch for record availability.
-            if( CurrentInputCount == 1 )
+            if (CurrentInputCount == 1)
                 HasRecords = true;
         }
 
@@ -138,7 +138,7 @@ namespace Ookii.Jumbo.IO
         void _currentReader_HasRecordsChanged(object sender, EventArgs e)
         {
             // If the reader has finished, HasRecords will be updated by WaitForReaders (or if we're out of readers, by the RecordReader<T> itself).
-            if( !_currentReader.HasFinished )
+            if (!_currentReader.HasFinished)
                 HasRecords = _currentReader.HasRecords;
             // HACK: This implementation is a bit flimsy, as ReadRecord can still block if we reach the end of the current record reader and the next one isn't available yet.
         }

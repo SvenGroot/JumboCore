@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The reader for this input.</param>
         protected RecordInput(IRecordReader reader)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             _reader = reader;
         }
@@ -66,9 +66,9 @@ namespace Ookii.Jumbo.IO
             {
                 // TODO: Should make this a method because it has negative side-effects, which means the debugger shouldn't evaluate it.
                 CheckDisposed();
-                if( _rawReader != null )
+                if (_rawReader != null)
                     throw new InvalidOperationException("This input already has a raw record reader.");
-                if( _reader == null )
+                if (_reader == null)
                     _reader = CreateReader();
                 return _reader;
             }
@@ -141,11 +141,11 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                if( _disposed )
+                if (_disposed)
                     return 1.0f;
-                else if( IsReaderCreated )
+                else if (IsReaderCreated)
                     return _reader.Progress;
-                else if( IsRawReaderCreated )
+                else if (IsRawReaderCreated)
                     return _rawReader.Progress;
                 else
                     return 0.0f;
@@ -178,9 +178,9 @@ namespace Ookii.Jumbo.IO
         public RecordReader<RawRecord> GetRawReader()
         {
             CheckDisposed();
-            if( _reader != null )
+            if (_reader != null)
                 throw new InvalidOperationException("This input already has a regular record reader.");
-            if( _rawReader == null )
+            if (_rawReader == null)
                 _rawReader = CreateRawReader();
             return _rawReader;
         }
@@ -207,14 +207,14 @@ namespace Ookii.Jumbo.IO
         /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( _reader != null )
+                if (_reader != null)
                 {
                     ((IDisposable)_reader).Dispose();
                 }
-                if( _rawReader != null )
+                if (_rawReader != null)
                 {
                     _rawReader.Dispose();
                 }
@@ -223,7 +223,7 @@ namespace Ookii.Jumbo.IO
 
         private void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(RecordInput).Name);
         }
     }

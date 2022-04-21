@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -38,17 +38,17 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Non-trivial code with destructive side-effects.")]
         public T GetValue()
         {
-            if( _rawRecord != null )
+            if (_rawRecord != null)
             {
-                if( _rawRecordStream == null )
+                if (_rawRecordStream == null)
                 {
                     _rawRecordStream = new MemoryBufferStream();
                     _rawRecordReader = new BinaryReader(_rawRecordStream);
                 }
                 _rawRecordStream.Reset(_rawRecord.Buffer, _rawRecord.Offset, _rawRecord.Count);
-                if( _allowRecordReuse ) // Implies that the record supports IWritable
+                if (_allowRecordReuse) // Implies that the record supports IWritable
                 {
-                    if( _record == null )
+                    if (_record == null)
                         _record = (T)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(T));
                     ((IWritable)_record).Read(_rawRecordReader);
                 }
@@ -65,16 +65,16 @@ namespace Ookii.Jumbo.Jet
         /// <param name="writer">The writer.</param>
         public void WriteRawRecord(RecordWriter<RawRecord> writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            if( _rawRecord == null )
+            if (_rawRecord == null)
                 throw new InvalidOperationException("No raw record stored in this instance.");
             writer.WriteRecord(_rawRecord);
         }
 
         internal void Reset(T record)
         {
-            if( record == null )
+            if (record == null)
                 throw new ArgumentNullException(nameof(record));
             _record = record;
             _rawRecord = null;
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Jet
 
         internal void Reset(RawRecord record)
         {
-            if( record == null )
+            if (record == null)
                 throw new ArgumentNullException(nameof(record));
             _record = default(T);
             _rawRecord = record;

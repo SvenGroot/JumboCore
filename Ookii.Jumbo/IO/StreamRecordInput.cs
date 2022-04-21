@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -70,7 +70,7 @@ namespace Ookii.Jumbo.IO
         {
             IRecordReader reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, _stream, 0, _stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
             reader.SourceName = _sourceName;
-            return reader;            
+            return reader;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         protected override RecordReader<RawRecord> CreateRawReader()
         {
-            if( !_inputContainsRecordSizes )
+            if (!_inputContainsRecordSizes)
                 throw new NotSupportedException("Cannot create a raw record reader for input without record size markers.");
 
             // We always allow record reuse for raw record readers. Don't specify that the input contains record sizes, because those are used by the records themselves here.

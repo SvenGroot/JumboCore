@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
-using System.Runtime.Serialization;
 
 namespace Ookii.Jumbo.IO
 {
@@ -99,10 +99,10 @@ namespace Ookii.Jumbo.IO
         public BinaryRecordReader(Stream stream, long offset, long size, bool allowRecordReuse, bool inputContainsRecordSizes)
             : base(stream, offset, size, true)
         {
-            if( offset != 0 )
+            if (offset != 0)
             {
-                if( RecordInputStream == null || (RecordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
-                    RecordInputStream.OffsetFromBoundary(offset) != 0 )
+                if (RecordInputStream == null || (RecordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
+                    RecordInputStream.OffsetFromBoundary(offset) != 0)
                 {
                     throw new ArgumentException("BinaryRecordReader only supports offsets that are zero or at the start of a block if RecordStreamOptions.DoNotCrossBoundary is enabled.", nameof(offset));
                 }
@@ -110,10 +110,10 @@ namespace Ookii.Jumbo.IO
 
             _reader = new BinaryReader(stream);
             // IValueWriter{T} doesn't support record reuse to we never set _allowRecordReuse to true in that case.
-            if( ValueWriter<T>.Writer == null )
+            if (ValueWriter<T>.Writer == null)
             {
                 // T implements IWritable
-                if( allowRecordReuse )
+                if (allowRecordReuse)
                     _record = (T)FormatterServices.GetUninitializedObject(typeof(T));
                 _allowRecordReuse = allowRecordReuse;
             }
@@ -129,21 +129,21 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
 
-            if( (RecordInputStream != null && RecordInputStream.IsStopped) || Stream.Position >= _end )
+            if ((RecordInputStream != null && RecordInputStream.IsStopped) || Stream.Position >= _end)
             {
                 CurrentRecord = default(T);
                 Dispose(); // This will delete the file if necessary.
                 return false;
             }
 
-            if( _inputContainsRecordSizes )
+            if (_inputContainsRecordSizes)
             {
                 // We don't use the record size, as BinaryRecordReader depends on the records being able to figure out their own size.
                 // However, we need to skip the size.
                 WritableUtility.Read7BitEncodedInt32(_reader);
             }
 
-            if( _allowRecordReuse )
+            if (_allowRecordReuse)
             {
                 // _allowRecordReuse can only be true if the type implements IWritable
                 ((IWritable)_record).Read(_reader);
@@ -166,28 +166,28 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _reader != null )
+                if (_reader != null)
                 {
                     ((IDisposable)_reader).Dispose();
                     _reader = null;
                 }
             }
-            if( _deleteFile )
+            if (_deleteFile)
             {
                 try
                 {
-                    if( File.Exists(_fileName) )
+                    if (File.Exists(_fileName))
                     {
                         File.Delete(_fileName);
                     }
                 }
-                catch( IOException ex )
+                catch (IOException ex)
                 {
                     _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                 }
-                catch( UnauthorizedAccessException ex )
+                catch (UnauthorizedAccessException ex)
                 {
                     _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                 }

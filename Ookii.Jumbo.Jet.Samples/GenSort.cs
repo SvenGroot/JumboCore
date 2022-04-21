@@ -69,9 +69,9 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="job">The <see cref="JobBuilder"/> used to create the job.</param>
         protected override void BuildJob(JobBuilder job)
         {
-            if( RecordCount < 1 )
+            if (RecordCount < 1)
                 throw new ArgumentOutOfRangeException("RecordCount", "You must generate at least one record.");
-            if( TaskCount < 1 )
+            if (TaskCount < 1)
                 throw new ArgumentOutOfRangeException("TaskCount", "You must use at least one generator task.");
 
             ulong countPerTask = RecordCount / (ulong)TaskCount;
@@ -95,7 +95,7 @@ namespace Ookii.Jumbo.Jet.Samples
             ulong countPerTask = count / (ulong)context.TaskContext.StageConfiguration.TaskCount;
             int taskNum = context.TaskContext.TaskId.TaskNumber;
             startRecord += (countPerTask * (ulong)(taskNum - 1));
-            if( taskNum == context.TaskContext.StageConfiguration.TaskCount )
+            if (taskNum == context.TaskContext.StageConfiguration.TaskCount)
                 count = countPerTask + count % (ulong)context.TaskContext.StageConfiguration.TaskCount;
             else
                 count = countPerTask;
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
             GenSortGenerator generator = new GenSortGenerator();
             ulong generated = 0;
-            foreach( GenSortRecord record in generator.GenerateRecords(new UInt128(0, startRecord), count) )
+            foreach (GenSortRecord record in generator.GenerateRecords(new UInt128(0, startRecord), count))
             {
                 output.WriteRecord(record);
                 ++generated;

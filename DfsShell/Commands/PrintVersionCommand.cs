@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 using Ookii.Jumbo;
 
 namespace DfsShell.Commands
@@ -17,7 +17,7 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            if( Revision )
+            if (Revision)
                 Console.WriteLine(RuntimeEnvironment.JumboVersion.Revision);
             else
                 Console.WriteLine("Jumbo {0} ({1})", RuntimeEnvironment.JumboVersion, RuntimeEnvironment.JumboConfiguration);

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
-using Ookii.Jumbo;
 using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
 using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using Ookii.Jumbo;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="support">The support of the pattern.</param>
         public MappedFrequentPattern(IEnumerable<int> items, int support)
         {
-            if( items == null )
+            if (items == null)
                 throw new ArgumentNullException("items");
             _items = items.ToArray();
             _itemsReadOnlyWrapper = new ReadOnlyCollection<int>(_items);
@@ -72,10 +72,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// </remarks>
         public int CompareTo(MappedFrequentPattern other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
 
-            if( Support == other.Support )
+            if (Support == other.Support)
             {
                 return _items.Length == other._items.Length ? 0 :
                     (_items.Length < other._items.Length ? -1 : 1);
@@ -105,12 +105,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// </returns>
         public bool Equals(MappedFrequentPattern other)
         {
-            if( other == null )
+            if (other == null)
                 return false;
-            if( this == other )
+            if (this == other)
                 return true;
 
-            if( Support == other.Support && _items.Length == other._items.Length )
+            if (Support == other.Support && _items.Length == other._items.Length)
             {
                 return _items.SequenceEqual(other._items);
             }
@@ -126,7 +126,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public override int GetHashCode()
         {
             // We're caching hash code on the assumption that the instance is immutable; we should actually ensure this.
-            if( _hashCode == null )
+            if (_hashCode == null)
             {
                 int result = _items.GetSequenceHashCode();
                 result = 31 * result + Support.GetHashCode();
@@ -144,7 +144,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public void Write(BinaryWriter writer)
         {
             WritableUtility.Write7BitEncodedInt32(writer, _items.Length);
-            foreach( int item in _items )
+            foreach (int item in _items)
                 writer.Write(item);
             writer.Write(Support);
         }
@@ -157,7 +157,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             int length = WritableUtility.Read7BitEncodedInt32(reader);
             _items = new int[length];
-            for( int x = 0; x < length; ++x )
+            for (int x = 0; x < length; ++x)
             {
                 _items[x] = reader.ReadInt32();
             }
@@ -170,21 +170,21 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             int[] pattern = _items;
             int[] otherPattern = pattern2._items;
             int otherLength = otherPattern.Length;
-            if( pattern.Length > otherLength )
+            if (pattern.Length > otherLength)
             {
                 return false;
             }
             int i = 0;
             int otherI = 0;
             int length = pattern.Length;
-            while( i < length && otherI < otherLength )
+            while (i < length && otherI < otherLength)
             {
-                if( otherPattern[otherI] == pattern[i] )
+                if (otherPattern[otherI] == pattern[i])
                 {
                     otherI++;
                     i++;
                 }
-                else if( otherPattern[otherI] > pattern[i] )
+                else if (otherPattern[otherI] > pattern[i])
                 {
                     otherI++;
                 }

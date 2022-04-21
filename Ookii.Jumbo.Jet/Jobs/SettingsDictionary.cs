@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 using System.Xml;
-using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace Ookii.Jumbo.Jet.Jobs
 {
@@ -50,20 +50,20 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             string startElementName = reader.Name;
             int depth = reader.Depth;
-            if( reader.IsEmptyElement )
+            if (reader.IsEmptyElement)
             {
                 reader.ReadStartElement();
                 return;
             }
 
             reader.ReadStartElement();
-            while( !(reader.NodeType == XmlNodeType.EndElement && reader.Name == startElementName && reader.Depth == depth) )
+            while (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == startElementName && reader.Depth == depth))
             {
-                if( reader.IsStartElement("Setting", JobConfiguration.XmlNamespace) )
+                if (reader.IsStartElement("Setting", JobConfiguration.XmlNamespace))
                     Add(reader.GetAttribute("key"), reader.GetAttribute("value"));
                 reader.Read();
             }
@@ -72,9 +72,9 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            foreach( var item in this )
+            foreach (var item in this)
             {
                 writer.WriteStartElement("Setting", JobConfiguration.XmlNamespace);
                 writer.WriteAttributeString("key", item.Key);
@@ -92,9 +92,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="value">The value of the setting.</param>
         public void AddSetting(string key, object value)
         {
-            if( key == null )
+            if (key == null)
                 throw new ArgumentNullException(nameof(key));
-            if( value == null )
+            if (value == null)
                 throw new ArgumentNullException(nameof(value));
             Add(key, (string)TypeDescriptor.GetConverter(value).ConvertTo(null, System.Globalization.CultureInfo.InvariantCulture, value, typeof(string)));
         }
@@ -109,7 +109,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public T GetSetting<T>(string key, T defaultValue)
         {
             string value;
-            if( TryGetValue(key, out value) )
+            if (TryGetValue(key, out value))
             {
                 return (T)TypeDescriptor.GetConverter(defaultValue).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, value);
             }
@@ -127,7 +127,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public bool TryGetSetting<T>(string key, out T value)
         {
             string stringValue;
-            if( TryGetValue(key, out stringValue) )
+            if (TryGetValue(key, out stringValue))
             {
                 value = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, stringValue);
                 return true;
@@ -149,7 +149,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         public string GetSetting(string key, string defaultValue)
         {
             string value;
-            if( TryGetValue(key, out value) )
+            if (TryGetValue(key, out value))
                 return value;
             else
                 return defaultValue;
@@ -171,7 +171,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 throw new ArgumentNullException(nameof(stage));
 
             string value = stage.GetSetting(key, null);
-            if( value == null )
+            if (value == null)
                 value = job.GetSetting(key, defaultValue);
 
             return value;
@@ -196,7 +196,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 throw new ArgumentNullException(nameof(stage));
 
             T value;
-            if( !stage.TryGetSetting(key, out value) && !job.TryGetSetting(key, out value) )
+            if (!stage.TryGetSetting(key, out value) && !job.TryGetSetting(key, out value))
                 return defaultValue;
             else
                 return value;

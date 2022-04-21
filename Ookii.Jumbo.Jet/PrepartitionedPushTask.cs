@@ -60,12 +60,12 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public virtual void Run(RecordReader<TInput> input, RecordWriter<TOutput> output)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
             // Safe to use using because PrepartitionedRecordWriter does not dispose the base stream.
-            using( PrepartitionedRecordWriter<TOutput> prepartitionedOutputWriter = new PrepartitionedRecordWriter<TOutput>(output, false) )
+            using (PrepartitionedRecordWriter<TOutput> prepartitionedOutputWriter = new PrepartitionedRecordWriter<TOutput>(output, false))
             {
-                foreach( TInput record in input.EnumerateRecords() )
+                foreach (TInput record in input.EnumerateRecords())
                 {
                     ProcessRecord(record, 0, prepartitionedOutputWriter);
                 }

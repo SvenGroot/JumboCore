@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override bool Equals(object obj)
         {
             CustomerOrder other = obj as CustomerOrder;
-            if( other == null )
+            if (other == null)
                 return false;
             return CustomerId == other.CustomerId && OrderId == other.OrderId && ItemId == other.ItemId && Name == other.Name;
         }
@@ -37,11 +37,11 @@ namespace Ookii.Jumbo.Test.Tasks
         public int CompareTo(CustomerOrder other)
         {
             int result = CustomerId - other.CustomerId;
-            if( result == 0 )
+            if (result == 0)
                 result = OrderId - other.OrderId;
-            if( result == 0 )
+            if (result == 0)
                 result = ItemId - other.ItemId;
-            if( result == 0 )
+            if (result == 0)
                 result = StringComparer.Ordinal.Compare(Name, other.Name);
             return result;
         }

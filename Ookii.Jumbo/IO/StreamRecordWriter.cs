@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
@@ -23,12 +23,12 @@ namespace Ookii.Jumbo.IO
         /// <param name="stream">The stream to which to write the records.</param>
         protected StreamRecordWriter(Stream stream)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Stream = stream;
             _startPosition = stream.Position;
             _recordOutputStream = stream as IRecordOutputStream;
-            if( _recordOutputStream != null && _recordOutputStream.RecordOptions == RecordStreamOptions.None )
+            if (_recordOutputStream != null && _recordOutputStream.RecordOptions == RecordStreamOptions.None)
                 _recordOutputStream = null; // No need to waste time calling MarkRecord if there's no record options set.
         }
 
@@ -57,7 +57,7 @@ namespace Ookii.Jumbo.IO
             get
             {
                 ICompressor compressionStream = Stream as ICompressor;
-                if( compressionStream == null )
+                if (compressionStream == null)
                     return Stream.Position - _startPosition;
                 else
                     return compressionStream.CompressedBytesWritten;
@@ -75,10 +75,10 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected override void WriteRecordInternal(T record)
         {
-            if( _recordOutputStream != null )
+            if (_recordOutputStream != null)
                 _recordOutputStream.MarkRecord();
         }
-        
+
         /// <summary>
         /// Cleans up all resources associated with this <see cref="StreamRecordReader{T}"/>.
         /// </summary>
@@ -87,9 +87,9 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( Stream != null )
+                if (Stream != null)
                 {
                     Stream.Dispose();
                     Stream = null;

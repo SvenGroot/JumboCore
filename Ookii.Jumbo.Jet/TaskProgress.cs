@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -35,7 +35,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( _additionalProgressValues == null )
+                if (_additionalProgressValues == null)
                     return Progress;
                 else
                     return (Progress + _additionalProgressValues.Sum(x => x.Progress)) / (float)(_additionalProgressValues.Count + 1);
@@ -58,7 +58,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="value">The progress value.</param>
         public void AddAdditionalProgressValue(string typeName, float value)
         {
-            if( _additionalProgressValues == null )
+            if (_additionalProgressValues == null)
                 _additionalProgressValues = new List<AdditionalProgressValue>();
             _additionalProgressValues.Add(new AdditionalProgressValue() { SourceName = typeName, Progress = value });
         }
@@ -69,9 +69,9 @@ namespace Ookii.Jumbo.Jet
         public void SetFinished()
         {
             Progress = 1.0f;
-            if( _additionalProgressValues != null )
+            if (_additionalProgressValues != null)
             {
-                foreach( AdditionalProgressValue value in _additionalProgressValues )
+                foreach (AdditionalProgressValue value in _additionalProgressValues)
                     value.Progress = 1.0f;
             }
         }
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public override string ToString()
         {
-            if( _additionalProgressValues == null )
+            if (_additionalProgressValues == null)
                 return Progress.ToString("P1", CultureInfo.InvariantCulture);
             else
                 return string.Format(CultureInfo.InvariantCulture, "Overall: {0:P1}; Base: {1:P1}; {2}", OverallProgress, Progress, _additionalProgressValues.ToDelimitedString("; "));

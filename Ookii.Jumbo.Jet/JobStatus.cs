@@ -240,8 +240,8 @@ namespace Ookii.Jumbo.Jet
                         from stage in Stages
                         from task in stage.Tasks
                         select task.ToXml()),
-                    ErrorTaskCount == 0 ? 
-                        null : 
+                    ErrorTaskCount == 0 ?
+                        null :
                         new XElement("FailedTaskAttempts",
                             from task in FailedTaskAttempts
                             select task.ToXml()),
@@ -261,9 +261,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A new instance of the <see cref="JobStatus"/> class with the information from the XML document.</returns>
         public static JobStatus FromXml(XElement job)
         {
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
-            if( job.Name != "Job" )
+            if (job.Name != "Job")
                 throw new ArgumentException("Invalid job element.", nameof(job));
 
             XElement jobInfo = job.Element("JobInfo");
@@ -284,23 +284,23 @@ namespace Ookii.Jumbo.Jet
                          let taskId = new TaskId(taskStatus.TaskId)
                          group taskStatus by taskId.StageId;
 
-            foreach( var stage in stages )
+            foreach (var stage in stages)
             {
                 StageStatus stageStatus = new StageStatus() { StageId = stage.Key };
                 stageStatus.Tasks.AddRange(stage);
                 jobStatus.Stages.Add(stageStatus);
             }
 
-            if( job.Element("FailedTaskAttempts") != null )
+            if (job.Element("FailedTaskAttempts") != null)
             {
                 jobStatus.FailedTaskAttempts.AddRange(from task in job.Element("FailedTaskAttempts").Elements("Task")
                                                       select TaskStatus.FromXml(task, jobStatus));
             }
 
             XElement metricsElement = job.Element("StageMetrics");
-            if( metricsElement != null )
+            if (metricsElement != null)
             {
-                foreach( XElement stage in metricsElement.Elements("Stage") )
+                foreach (XElement stage in metricsElement.Elements("Stage"))
                 {
                     string stageId = stage.Attribute("id").Value;
                     jobStatus.GetStage(stageId).Metrics = TaskMetrics.FromXml(stage.Element("Metrics"));

@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -83,19 +83,19 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes to copy.</param>
         public static void Copy(byte[] source, int sourceIndex, UnmanagedBuffer destination, int destinationIndex, int count)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            if( sourceIndex < 0 )
+            if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-            if( destinationIndex < 0 )
+            if (destinationIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( sourceIndex + count > source.Length )
+            if (sourceIndex + count > source.Length)
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
-            if( destinationIndex + count > destination.Size )
+            if (destinationIndex + count > destination.Size)
                 throw new ArgumentException("destinationIndex + count is larger than the destination array.");
 
             destination.CheckDisposed();
@@ -114,29 +114,29 @@ namespace Ookii.Jumbo
         /// <returns>The next index position after writing the data.</returns>
         public static long CopyCircular(byte[] source, int sourceIndex, UnmanagedBuffer destination, long destinationIndex, int count)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            if( sourceIndex < 0 )
+            if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-            if( destinationIndex < 0 )
+            if (destinationIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( sourceIndex + count > source.Length )
+            if (sourceIndex + count > source.Length)
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
             long end = destinationIndex + count;
-            if( end > destination.Size )
+            if (end > destination.Size)
             {
                 end %= destination.Size;
-                if( end > destinationIndex )
+                if (end > destinationIndex)
                     throw new ArgumentException("count is larger than the destination array.");
             }
 
             destination.CheckDisposed();
 
-            if( end >= destinationIndex )
+            if (end >= destinationIndex)
             {
                 Marshal.Copy(source, sourceIndex, new IntPtr(destination._buffer + destinationIndex), count);
             }
@@ -160,19 +160,19 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes to copy.</param>
         public static void Copy(UnmanagedBuffer source, int sourceIndex, byte[] destination, int destinationIndex, int count)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            if( sourceIndex < 0 )
+            if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-            if( destinationIndex < 0 )
+            if (destinationIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( sourceIndex + count > source.Size )
+            if (sourceIndex + count > source.Size)
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
-            if( destinationIndex + count > destination.Length )
+            if (destinationIndex + count > destination.Length)
                 throw new ArgumentException("destinationIndex + count is larger than the destination array.");
 
             source.CheckDisposed();
@@ -191,30 +191,30 @@ namespace Ookii.Jumbo
         /// <returns>The next index position after writing the data.</returns>
         public static long CopyCircular(UnmanagedBuffer source, long sourceIndex, byte[] destination, int destinationIndex, int count)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            if( sourceIndex < 0 )
+            if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-            if( destinationIndex < 0 )
+            if (destinationIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( destinationIndex + count > destination.Length )
+            if (destinationIndex + count > destination.Length)
                 throw new ArgumentException("destinationIndex + count is larger than the destination array.");
 
             long end = sourceIndex + count;
-            if( end > source.Size )
+            if (end > source.Size)
             {
                 end %= source.Size;
-                if( end > sourceIndex )
+                if (end > sourceIndex)
                     throw new ArgumentException("count is larger than the source array.");
             }
 
             source.CheckDisposed();
 
-            if( end >= sourceIndex )
+            if (end >= sourceIndex)
             {
                 Marshal.Copy(new IntPtr(source._buffer + sourceIndex), destination, destinationIndex, count);
             }
@@ -249,7 +249,7 @@ namespace Ookii.Jumbo
 
         private void DisposeInternal()
         {
-            if( _buffer != null )
+            if (_buffer != null)
             {
                 Marshal.FreeHGlobal(new IntPtr(_buffer));
                 _buffer = null;
@@ -258,7 +258,7 @@ namespace Ookii.Jumbo
 
         private void CheckDisposed()
         {
-            if( _buffer == null )
+            if (_buffer == null)
                 throw new ObjectDisposedException(typeof(UnmanagedBuffer).FullName);
         }
     }

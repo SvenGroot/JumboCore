@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.IO;
-using System.Globalization;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.IO
 {
@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>The record type</returns>
         public static Type GetRecordType(Type recordWriterType)
         {
-            if( recordWriterType == null )
+            if (recordWriterType == null)
                 throw new ArgumentNullException(nameof(recordWriterType));
             Type baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
             return baseType.GetGenericArguments()[0];
@@ -59,7 +59,7 @@ namespace Ookii.Jumbo.IO
         /// <value>
         /// The size of the written records after serialization, or 0 if this writer did not serialize the records.
         /// </value>
-        public virtual long OutputBytes 
+        public virtual long OutputBytes
         {
             get { return 0; }
         }
@@ -108,12 +108,12 @@ namespace Ookii.Jumbo.IO
             _writeTime.Start();
             try
             {
-                if( record == null )
+                if (record == null)
                     throw new ArgumentNullException(nameof(record));
                 // Skip the type check if the record type is sealed.
-                if( !_recordTypeIsSealed && record.GetType() != typeof(T) )
+                if (!_recordTypeIsSealed && record.GetType() != typeof(T))
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The record was type {0} rather than {1}.", record.GetType(), typeof(T)), nameof(record));
-                if( _finishedWriting )
+                if (_finishedWriting)
                     throw new InvalidOperationException("Cannot write additional records after the FinishWriting method has been called.");
                 WriteRecordInternal(record);
                 // Increment this after the write, so if the implementation of WriteRecordsInternal throws an exception the count
@@ -138,10 +138,10 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public void WriteRecords(IEnumerable<T> records)
         {
-            if( records == null )
+            if (records == null)
                 throw new ArgumentNullException(nameof(records));
 
-            foreach( T record in records )
+            foreach (T record in records)
                 WriteRecord(record);
         }
 
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo.IO
         /// to clean up unmanaged resources only.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if( !_finishedWriting )
+            if (!_finishedWriting)
                 FinishWriting();
         }
 

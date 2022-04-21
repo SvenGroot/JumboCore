@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Tasks;
 using Ookii.Jumbo.Jet;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
-    [AllowRecordReuse(PassThrough=true)]
+    [AllowRecordReuse(PassThrough = true)]
     public class WordCountReduceTask : ReduceTask<Utf8String, int, Pair<Utf8String, int>>
     {
         Pair<Utf8String, int> _record = new Pair<Utf8String, int>();
@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( !TaskContext.StageConfiguration.AllowOutputRecordReuse )
+            if (!TaskContext.StageConfiguration.AllowOutputRecordReuse)
                 throw new NotSupportedException("Output record reuse required.");
         }
     }

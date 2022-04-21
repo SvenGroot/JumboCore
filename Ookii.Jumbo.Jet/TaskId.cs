@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -48,12 +48,12 @@ namespace Ookii.Jumbo.Jet
         /// only if <paramref name="parentTaskId"/> is <see langword="null"/>.</param>
         public TaskId(TaskId parentTaskId, string taskId)
         {
-            if( taskId == null )
+            if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
 
-            if( parentTaskId != null )
+            if (parentTaskId != null)
             {
-                if( taskId.Contains(ChildStageSeparator, StringComparison.Ordinal) )
+                if (taskId.Contains(ChildStageSeparator, StringComparison.Ordinal))
                     throw new ArgumentException("Task ID cannot contain a child stage separator ('.') if a parent task ID is specified.");
                 _parentTaskId = parentTaskId;
                 _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.Jet
             {
                 _taskId = taskId;
                 int lastSeparatorIndex = taskId.LastIndexOf(ChildStageSeparator);
-                if( lastSeparatorIndex >= 0 )
+                if (lastSeparatorIndex >= 0)
                 {
                     _parentTaskId = new TaskId(taskId.Substring(0, lastSeparatorIndex));
                     taskId = taskId.Substring(lastSeparatorIndex + 1);
@@ -87,7 +87,7 @@ namespace Ookii.Jumbo.Jet
             _taskNumber = taskNumber;
             _parentTaskId = parentTaskId;
 
-            if( parentTaskId != null )
+            if (parentTaskId != null)
                 _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
             else
                 _taskId = taskId;
@@ -106,13 +106,13 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1801:Unused parameter", Justification = "Required parameter.")]
         private TaskId(SerializationInfo info, StreamingContext context)
         {
-            if( info == null )
+            if (info == null)
                 throw new ArgumentNullException(nameof(info));
 
             _taskId = info.GetString("TaskId");
             string localTaskId = _taskId;
             int lastSeparatorIndex = _taskId.LastIndexOf(ChildStageSeparator);
-            if( lastSeparatorIndex >= 0 )
+            if (lastSeparatorIndex >= 0)
             {
                 _parentTaskId = new TaskId(_taskId.Substring(0, lastSeparatorIndex));
                 localTaskId = _taskId.Substring(lastSeparatorIndex + 1);
@@ -169,11 +169,11 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( ParentTaskId == null )
+                if (ParentTaskId == null)
                     return 1;
                 else
                 {
-                    if( TaskNumber > 1 )
+                    if (TaskNumber > 1)
                         return TaskNumber;
                     else
                         return ParentTaskId.PartitionNumber;
@@ -198,11 +198,11 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A task ID string.</returns>
         public static string CreateTaskIdString(string stageId, int taskNumber)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( taskNumber < 0 )
+            if (taskNumber < 0)
                 throw new ArgumentOutOfRangeException(nameof(taskNumber), "Task number cannot be less than zero.");
-            if( stageId.IndexOfAny(_invalidStageIdCharacters) >= 0 )
+            if (stageId.IndexOfAny(_invalidStageIdCharacters) >= 0)
                 throw new ArgumentException("The characters '-', '.' and '_' may not occur in a stage ID.");
 
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}{1}{2:000}", stageId, TaskNumberSeparator, taskNumber);
@@ -218,7 +218,7 @@ namespace Ookii.Jumbo.Jet
         /// </exception>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            if( info == null )
+            if (info == null)
                 throw new ArgumentNullException(nameof(info));
 
             info.AddValue("TaskId", _taskId);
@@ -254,9 +254,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns><see langword="true"/> if this <see cref="TaskId"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(TaskId other)
         {
-            if( other == null )
+            if (other == null)
                 return false;
-            if( other == this )
+            if (other == this)
                 return true;
 
             return string.Equals(_taskId, other._taskId, StringComparison.Ordinal);
@@ -272,9 +272,9 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public int CompareTo(TaskId other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
-            if( other == this )
+            if (other == this)
                 return 0;
 
             return string.CompareOrdinal(_taskId, other._taskId);
@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Jet
         public int CompareTo(object obj)
         {
             TaskId other = obj as TaskId;
-            if( other != null )
+            if (other != null)
                 throw new ArgumentException("The specified object is not a TaskId.", nameof(obj));
 
             return CompareTo(other);
@@ -326,7 +326,7 @@ namespace Ookii.Jumbo.Jet
         private static void ParseStageIdAndNumber(string localTaskId, out string stageId, out int taskNumber)
         {
             string[] parts = localTaskId.Split(TaskNumberSeparator);
-            if( parts.Length != 2 )
+            if (parts.Length != 2)
                 throw new FormatException("Task ID doesn't have the format StageId-Number.");
             stageId = parts[0];
             taskNumber = Convert.ToInt32(parts[1], System.Globalization.CultureInfo.InvariantCulture);
@@ -334,7 +334,7 @@ namespace Ookii.Jumbo.Jet
 
         private void BuildCompoundStageId(StringBuilder result)
         {
-            if( ParentTaskId != null )
+            if (ParentTaskId != null)
             {
                 TaskId parent = ParentTaskId;
                 parent.BuildCompoundStageId(result);

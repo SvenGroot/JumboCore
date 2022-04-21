@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Jet.Tasks
 
         internal ProgressContext(IConfigurable configurable)
         {
-            if( configurable == null )
+            if (configurable == null)
                 throw new ArgumentNullException(nameof(configurable));
             _configurable = configurable;
         }

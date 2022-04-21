@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="writer">The <see cref="TextWriter"/> to print the metrics to.</param>
         public void PrintMetrics(TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Name server:      {0}", NameServer);
             writer.WriteLine("Total size:       {0:#,0} bytes", TotalSize);
@@ -120,7 +120,7 @@ namespace Ookii.Jumbo.Dfs
             writer.WriteLine("Under-replicated: {0}", UnderReplicatedBlockCount);
             writer.WriteLine("Pending blocks:   {0}", PendingBlockCount);
             writer.WriteLine("Data servers:     {0}", DataServers.Count);
-            foreach( ServerMetrics server in DataServers )
+            foreach (ServerMetrics server in DataServers)
                 writer.WriteLine("  {0}", server);
         }
     }

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace NameServerApplication
@@ -49,16 +49,16 @@ namespace NameServerApplication
         /// <param name="writer">The <see cref="TextWriter"/> </param>
         public void PrintListing(TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 
-            if( Children.Count == 0 )
+            if (Children.Count == 0)
                 writer.WriteLine("No entries.");
             else
             {
-                foreach( var entry in Children )
+                foreach (var entry in Children)
                     writer.WriteLine(entry.ToString());
             }
         }
@@ -69,11 +69,11 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="BinaryWriter"/> used to write to the file system image.</param>
         public override void SaveToFileSystemImage(BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             base.SaveToFileSystemImage(writer);
             writer.Write(Children.Count);
-            foreach( DfsFileSystemEntry entry in Children )
+            foreach (DfsFileSystemEntry entry in Children)
                 entry.SaveToFileSystemImage(writer);
         }
 
@@ -84,12 +84,12 @@ namespace NameServerApplication
         /// <param name="notifyFileSizeCallback">A function that should be called to notify the caller of the size of deserialized files.</param>
         protected override void LoadFromFileSystemImage(BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             int childCount = reader.ReadInt32();
             _children.Clear();
             _children.Capacity = childCount;
-            for( int x = 0; x < childCount; ++x )
+            for (int x = 0; x < childCount; ++x)
             {
                 // The FileSystemEntry constructor adds it to the Children collection, no need to do that here.
                 DfsFileSystemEntry.LoadFromFileSystemImage(reader, this, notifyFileSizeCallback);

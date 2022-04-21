@@ -81,7 +81,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns><see langword="true"/> if this instance is equal to <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            if( !(obj is UInt128) )
+            if (!(obj is UInt128))
                 return false;
             UInt128 other = (UInt128)obj;
             return this == other;
@@ -93,10 +93,10 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>A decimal string representation of the <see cref="UInt128"/>.</returns>
         public override string ToString()
         {
-            ulong          hi8 = High64;
-            ulong          lo8 = Low64;
-            int         himod;
-            int         lomod;
+            ulong hi8 = High64;
+            ulong lo8 = Low64;
+            int himod;
+            int lomod;
             char[] temp = new char[39];
             int digit = 0;
 
@@ -107,7 +107,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
                 lomod = (int)(lo8 % 10);
                 lo8 /= 10;
 
-                lo8 += _hi2loQuot[himod] ;
+                lo8 += _hi2loQuot[himod];
                 lomod += _hi2loMod[himod];
 
                 if (lomod >= 10)       /* if adding to 2 mods caused a "carry" */
@@ -121,7 +121,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             StringBuilder result = new StringBuilder(lowString.Length + digit);
             result.Append(lowString);
             /* concatenate low order digits computed before hi8 was reduced to 0 */
-            while( digit > 0 )
+            while (digit > 0)
                 result.Append(temp[--digit]);
             return result.ToString();
         }
@@ -132,7 +132,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>A hexadecimal string representation of the <see cref="UInt128"/>.</returns>
         public string ToHexString()
         {
-            if( High64 != 0 )
+            if (High64 != 0)
                 return High64.ToString("x") + Low64.ToString("x");
             else
                 return Low64.ToString("x");
@@ -202,7 +202,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             highBit1 = (right.Low64 & 0x8000000000000000L);
             sumLow = left.Low64 + right.Low64;
             resultHighBit = (sumLow & 0x8000000000000000L);
-            if( (highBit0 & highBit1) != 0L || ((highBit0 ^ highBit1) != 0L && resultHighBit == 0L) )
+            if ((highBit0 & highBit1) != 0L || ((highBit0 ^ highBit1) != 0L && resultHighBit == 0L))
                 ++sumHigh; // add carry
             return new UInt128(sumHigh, sumLow);
         }
@@ -238,7 +238,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             hibit1 = (productLow & 0x8000000000000000L);
             productLow += temp;
             reshibit = (productLow & 0x8000000000000000L);
-            if( (hibit0 & hibit1) != 0L || ((hibit0 ^ hibit1) != 0L && reshibit == 0L) )
+            if ((hibit0 & hibit1) != 0L || ((hibit0 ^ hibit1) != 0L && reshibit == 0L))
                 productHigh++;  /* add carry bit */
 
             temp = alow4 * bhi4; /* mult low 4 bytes of "a" by high 4 bytes of "b" */
@@ -248,7 +248,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             hibit1 = (productLow & 0x8000000000000000L);
             productLow += temp;
             reshibit = (productLow & 0x8000000000000000L);
-            if( (hibit0 & hibit1) != 0L || ((hibit0 ^ hibit1) != 0L && reshibit == 0L) )
+            if ((hibit0 & hibit1) != 0L || ((hibit0 ^ hibit1) != 0L && reshibit == 0L))
                 productHigh++;  /* add carry bit */
 
             productHigh += ahi4 * bhi4;

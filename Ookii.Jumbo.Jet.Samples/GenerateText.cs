@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet.Jobs.Builder;
-using System.ComponentModel;
-using Ookii.Jumbo.IO;
 using Ookii.CommandLine;
-using System.IO;
-using Ookii.Jumbo.Jet.Tasks;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs;
+using Ookii.Jumbo.Jet.Jobs.Builder;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Samples
 {
@@ -73,10 +73,10 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="job">The <see cref="JobBuilder"/> used to create the job.</param>
         protected override void BuildJob(JobBuilder job)
         {
-            if( SizePerTask == 0 )
+            if (SizePerTask == 0)
             {
                 SizePerTask = BlockSize;
-                if( SizePerTask == 0 )
+                if (SizePerTask == 0)
                     SizePerTask = FileSystemClient.DefaultBlockSize ?? (64 * BinarySize.Megabyte); // Default to 64MB if the file system doesn't support blocks
             }
 
@@ -102,7 +102,7 @@ namespace Ookii.Jumbo.Jet.Samples
             Utf8String line = new Utf8String();
             GenerateLine(rnd, line, words, wordsPerLine + rnd.Next(wordsPerLineRandomization));
             int lines = 0;
-            while( output.OutputBytes + line.ByteLength + Environment.NewLine.Length < sizePerTask )
+            while (output.OutputBytes + line.ByteLength + Environment.NewLine.Length < sizePerTask)
             {
                 context.Progress = (float)output.OutputBytes / (float)sizePerTask;
                 output.WriteRecord(line);
@@ -116,9 +116,9 @@ namespace Ookii.Jumbo.Jet.Samples
         private static void GenerateLine(Random rnd, Utf8String line, Utf8String[] words, int numWords)
         {
             line.ByteLength = 0;
-            for( int x = 0; x < numWords; ++x )
+            for (int x = 0; x < numWords; ++x)
             {
-                if( x > 0 )
+                if (x > 0)
                     line.Append(_space);
                 Utf8String word = words[rnd.Next(words.Length)];
                 line.Append(word);

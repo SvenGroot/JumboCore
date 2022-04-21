@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using Ookii.Jumbo.IO;
 using System.Configuration;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public FileOutputChannel(TaskExecutionUtility taskExecution)
             : base(taskExecution)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
             TaskExecutionUtility root = taskExecution.RootTask;
 
@@ -37,7 +37,7 @@ namespace Ookii.Jumbo.Jet.Channels
             string inputTaskAttemptId = root.Context.TaskAttemptId.ToString();
             _localJobDirectory = taskExecution.Context.LocalJobDirectory;
             string directory = Path.Combine(_localJobDirectory, inputTaskAttemptId);
-            if( !Directory.Exists(directory) )
+            if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
             _outputType = taskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.Spill);
@@ -64,7 +64,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                if( _writer == null )
+                if (_writer == null)
                     return 0;
                 else
                     return _writer.BytesWritten;
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public override RecordWriter<T> CreateRecordWriter<T>()
         {
-            if( _writer != null )
+            if (_writer != null)
                 throw new InvalidOperationException("The channel record writer has already been created.");
 
             BinarySize writeBufferSize = TaskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.WriteBufferSize, TaskExecution.JetClient.Configuration.FileChannel.WriteBufferSize);
@@ -124,9 +124,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
             BinarySize outputBufferSize = TaskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.SpillBufferSize, TaskExecution.JetClient.Configuration.FileChannel.SpillBufferSize);
             float outputBufferLimit = TaskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.SpillBufferLimit, TaskExecution.JetClient.Configuration.FileChannel.SpillBufferLimit);
-            if( outputBufferSize.Value < 0 || outputBufferSize.Value > Int32.MaxValue )
+            if (outputBufferSize.Value < 0 || outputBufferSize.Value > Int32.MaxValue)
                 throw new ConfigurationErrorsException("Invalid output buffer size: " + outputBufferSize.Value);
-            if( outputBufferLimit < 0.1f || outputBufferLimit > 1.0f )
+            if (outputBufferLimit < 0.1f || outputBufferLimit > 1.0f)
                 throw new ConfigurationErrorsException("Invalid output buffer limit: " + outputBufferLimit);
             int outputBufferLimitSize = (int)(outputBufferLimit * outputBufferSize.Value);
 
@@ -136,7 +136,7 @@ namespace Ookii.Jumbo.Jet.Channels
             partitioner.Partitions = OutputPartitionIds.Count;
             RecordWriter<T> result;
             string fileName = CreateChannelFileName(TaskExecution.RootTask.Context.TaskAttemptId.ToString());
-            if( _outputType == FileChannelOutputType.SortSpill )
+            if (_outputType == FileChannelOutputType.SortSpill)
             {
                 int maxDiskInputsPerMergePass = TaskExecution.Context.GetSetting(MergeRecordReaderConstants.MaxFileInputsSetting, TaskExecution.JetClient.Configuration.MergeRecordReader.MaxFileInputs);
                 ITask<T, T> combiner = (ITask<T, T>)CreateCombiner();
@@ -153,7 +153,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private object CreateCombiner()
         {
             string combinerTypeName = TaskExecution.Context.StageConfiguration.GetSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, null);
-            if( combinerTypeName == null )
+            if (combinerTypeName == null)
                 return null;
 
             Type combinerType = Type.GetType(combinerTypeName, true);
@@ -163,7 +163,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private object CreateComparer()
         {
             string comparerTypeName = TaskExecution.Context.StageConfiguration.GetSetting(JumboSettings.FileChannel.Stage.SpillSortComparerType, null);
-            if( comparerTypeName == null )
+            if (comparerTypeName == null)
                 return null;
 
             Type comparerType = Type.GetType(comparerTypeName, true);

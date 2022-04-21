@@ -43,11 +43,11 @@ namespace JobServerApplication
 
         public JobInfo(Job job, JobConfiguration config, FileSystemClient fileSystem)
         {
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
-            if( config == null )
+            if (config == null)
                 throw new ArgumentNullException(nameof(config));
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
             _job = job;
             _config = config;
@@ -57,25 +57,25 @@ namespace JobServerApplication
 
             List<StageInfo> stages = new List<StageInfo>();
             _stages = stages.AsReadOnly();
-            foreach( StageConfiguration stage in config.GetDependencyOrderedStages() )
+            foreach (StageConfiguration stage in config.GetDependencyOrderedStages())
             {
-                if( stage.TaskCount < 1 )
+                if (stage.TaskCount < 1)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has no tasks.", stage.StageId), nameof(config));
                 // Don't allow failures for a job with a TCP channel.
-                if( stage.Leaf.OutputChannel != null && stage.Leaf.OutputChannel.ChannelType == Ookii.Jumbo.Jet.Channels.ChannelType.Tcp )
+                if (stage.Leaf.OutputChannel != null && stage.Leaf.OutputChannel.ChannelType == Ookii.Jumbo.Jet.Channels.ChannelType.Tcp)
                     _maxTaskFailures = 1;
                 bool nonDataInputStage = !stage.HasDataInput;
                 // Don't do the work trying to find the input stages if the stage has data inputs.
                 StageConfiguration[] inputStages = nonDataInputStage ? config.GetInputStagesForStage(stage.StageId).ToArray() : null;
                 StageInfo stageInfo = new StageInfo(this, stage);
                 IList<string[]> inputLocations = nonDataInputStage ? null : TaskInputUtility.ReadTaskInputLocations(fileSystem, job.Path, stage.StageId);
-                if( inputLocations != null && inputLocations.Count != stage.TaskCount )
+                if (inputLocations != null && inputLocations.Count != stage.TaskCount)
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "The number of input splits for stage {0} doesn't match the stage's task count.", stage.StageId));
-                for( int x = 1; x <= stage.TaskCount; ++x )
+                for (int x = 1; x <= stage.TaskCount; ++x)
                 {
                     TaskInfo taskInfo;
 
-                    taskInfo = new TaskInfo(this, stageInfo, inputStages, x, nonDataInputStage ? null : inputLocations[x-1]);
+                    taskInfo = new TaskInfo(this, stageInfo, inputStages, x, nonDataInputStage ? null : inputLocations[x - 1]);
                     _schedulingTasksById.Add(taskInfo.TaskId.ToString(), taskInfo);
 
                     stageInfo.Tasks.Add(taskInfo);
@@ -85,15 +85,15 @@ namespace JobServerApplication
 
             // This must be done afterwards because stages using TCP channels can appear in the depenency ordered list in reverse order
             // and we must be sure both are already in the list before soft dependencies can be set up.
-            foreach( StageInfo stage in stages )
+            foreach (StageInfo stage in stages)
                 stage.SetupSoftDependencies(this);
 
-            if( stages.Count == 0 )
+            if (stages.Count == 0)
                 throw new ArgumentException("The job configuration has no stages.", nameof(config));
 
-            if( _config.SchedulerOptions.DataInputSchedulingMode == SchedulingMode.Default )
+            if (_config.SchedulerOptions.DataInputSchedulingMode == SchedulingMode.Default)
                 _config.SchedulerOptions.DataInputSchedulingMode = JobServer.Instance.Configuration.JobServer.DataInputSchedulingMode;
-            if( _config.SchedulerOptions.NonDataInputSchedulingMode == SchedulingMode.Default || _config.SchedulerOptions.NonDataInputSchedulingMode == SchedulingMode.OptimalLocality )
+            if (_config.SchedulerOptions.NonDataInputSchedulingMode == SchedulingMode.Default || _config.SchedulerOptions.NonDataInputSchedulingMode == SchedulingMode.OptimalLocality)
                 _config.SchedulerOptions.NonDataInputSchedulingMode = JobServer.Instance.Configuration.JobServer.NonDataInputSchedulingMode;
 
             _log.InfoFormat("Job {0:B} is using data input scheduling mode {1} and non-data input scheduling mode {1}.", job.JobId, _config.SchedulerOptions.DataInputSchedulingMode, _config.SchedulerOptions.NonDataInputSchedulingMode);
@@ -203,7 +203,7 @@ namespace JobServerApplication
         /// <param name="server"></param>
         public void CleanupServer(TaskServerInfo server)
         {
-            foreach( TaskInfo task in _schedulingTasksById.Values )
+            foreach (TaskInfo task in _schedulingTasksById.Values)
             {
                 // No need to use the scheduler lock for a job in _jobsNeedingCleanup
                 server.SchedulerInfo.AssignedTasks.Remove(task);
@@ -218,12 +218,12 @@ namespace JobServerApplication
         {
 #pragma warning disable 420 // volatile field not treated as volatile warning
 
-            if( _failedTaskAttempts == null )
+            if (_failedTaskAttempts == null)
                 Interlocked.CompareExchange(ref _failedTaskAttempts, new List<TaskStatus>(), null);
 
 #pragma warning restore 420
 
-            lock( _failedTaskAttempts )
+            lock (_failedTaskAttempts)
             {
                 _failedTaskAttempts.Add(failedTaskAttempt);
                 return _failedTaskAttempts.Count;
@@ -245,14 +245,14 @@ namespace JobServerApplication
                 FailureReason = FailureReason
             };
             result.Stages.AddRange(from stage in Stages select stage.ToStageStatus());
-            if( _failedTaskAttempts != null )
+            if (_failedTaskAttempts != null)
             {
-                lock( _failedTaskAttempts )
+                lock (_failedTaskAttempts)
                 {
                     result.FailedTaskAttempts.AddRange(_failedTaskAttempts);
                 }
             }
-            if( _config.AdditionalProgressCounters != null )
+            if (_config.AdditionalProgressCounters != null)
             {
                 result.AdditionalProgressCounters.AddRange(_config.AdditionalProgressCounters);
             }

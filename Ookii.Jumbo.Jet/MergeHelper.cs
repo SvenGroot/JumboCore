@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 using System.Globalization;
 using System.IO;
-using Ookii.Jumbo.Jet.Channels;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Jet
 
             public bool ReadRecord()
             {
-                if( RawRecordReader != null )
+                if (RawRecordReader != null)
                     return RawRecordReader.ReadRecord();
                 else
                     return RecordReader.ReadRecord();
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Jet
 
             public void GetCurrentRecord(MergeResultRecord<T> record)
             {
-                if( RawRecordReader != null )
+                if (RawRecordReader != null)
                     record.Reset(RawRecordReader.CurrentRecord);
                 else
                     record.Reset(RecordReader.CurrentRecord);
@@ -60,9 +60,9 @@ namespace Ookii.Jumbo.Jet
 
             public void Dispose()
             {
-                if( RawRecordReader != null )
+                if (RawRecordReader != null)
                     RawRecordReader.Dispose();
-                if( RecordReader != null )
+                if (RecordReader != null)
                     RecordReader.Dispose();
             }
         }
@@ -84,17 +84,17 @@ namespace Ookii.Jumbo.Jet
 
             public int Compare(MergeInput x, MergeInput y)
             {
-                if( x == null )
+                if (x == null)
                 {
-                    if( y == null )
+                    if (y == null)
                         return 0;
                     else
                         return -1;
                 }
-                else if( y == null )
+                else if (y == null)
                     return 1;
 
-                if( _rawComparer == null )
+                if (_rawComparer == null)
                     return _comparer.Compare(x.RecordReader.CurrentRecord, y.RecordReader.CurrentRecord);
                 else
                     return _rawComparer.Compare(x.RawRecordReader.CurrentRecord, y.RawRecordReader.CurrentRecord);
@@ -177,11 +177,11 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public MergeResult<T> Merge(IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, bool forceDeserialization, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
-            if( diskInputs == null && memoryInputs == null )
+            if (diskInputs == null && memoryInputs == null)
                 throw new ArgumentException("diskInputs and memoryInputs cannot both be null.");
-            if( intermediateOutputPath == null )
+            if (intermediateOutputPath == null)
                 throw new ArgumentNullException(nameof(intermediateOutputPath));
-            if( passFilePrefix == null )
+            if (passFilePrefix == null)
                 throw new ArgumentNullException(nameof(passFilePrefix));
 
             // When the specified comparer is not a raw comparer or some of the inputs don't support raw records, we must use deserialization.
@@ -191,13 +191,13 @@ namespace Ookii.Jumbo.Jet
             bool rawReaderSupported = (comparer == null || comparer is IRawComparer<T>) && (deserializingComparer == null || !deserializingComparer.UsesDeserialization) && (memoryInputs == null || memoryInputs.All(i => i.IsRawReaderSupported)) && (diskInputs == null || diskInputs.All(i => i.IsRawReaderSupported));
 
             int diskInputsProcessed = 0;
-            if( diskInputs != null && diskInputs.Count > maxDiskInputsPerPass )
+            if (diskInputs != null && diskInputs.Count > maxDiskInputsPerPass)
             {
                 // Make a copy of the list that we can add the intermediate results to
                 List<RecordInput> actualDiskInputs = diskInputs.ToList();
 
                 int pass = 0;
-                while( actualDiskInputs.Count - diskInputsProcessed > maxDiskInputsPerPass )
+                while (actualDiskInputs.Count - diskInputsProcessed > maxDiskInputsPerPass)
                 {
                     string outputFileName = Path.Combine(intermediateOutputPath, string.Format(CultureInfo.InvariantCulture, "{0}merge_pass{1}.tmp", passFilePrefix, pass));
                     int numDiskInputsForPass = GetNumDiskInputsForPass(pass, actualDiskInputs.Count - diskInputsProcessed, maxDiskInputsPerPass);
@@ -214,7 +214,7 @@ namespace Ookii.Jumbo.Jet
             IEnumerable<RecordInput> inputs = memoryInputs ?? Enumerable.Empty<RecordInput>();
             int memoryInputCount = inputs.Count();
             int diskInputCount = 0;
-            if( diskInputs != null )
+            if (diskInputs != null)
             {
                 inputs = inputs.Concat(diskInputs.Skip(diskInputsProcessed));
                 diskInputCount = diskInputs.Count - diskInputsProcessed;
@@ -244,7 +244,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public long WriteMerge(Stream stream, IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             IEnumerable<MergeResultRecord<T>> mergeResult = Merge(diskInputs, memoryInputs, maxDiskInputsPerPass, comparer, allowRecordReuse, false, intermediateOutputPath, passFilePrefix, compressionType, bufferSize, enableChecksum);
             return WriteMergePass(mergeResult, stream, IsUsingRawRecords);
@@ -269,7 +269,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public long WriteMerge(string fileName, IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
-            if( fileName == null )
+            if (fileName == null)
                 throw new ArgumentNullException(nameof(fileName));
             IEnumerable<MergeResultRecord<T>> mergeResult = Merge(diskInputs, memoryInputs, maxDiskInputsPerPass, comparer, allowRecordReuse, false, intermediateOutputPath, passFilePrefix, compressionType, bufferSize, enableChecksum);
             return WriteMergePass(mergeResult, fileName, bufferSize, compressionType, enableChecksum, IsUsingRawRecords);
@@ -277,8 +277,8 @@ namespace Ookii.Jumbo.Jet
 
         private long WriteMergePass(IEnumerable<MergeResultRecord<T>> pass, string outputFileName, int bufferSize, CompressionType compressionType, bool enableChecksum, bool rawReaderSupported)
         {
-            using( Stream fileStream = File.Create(outputFileName, bufferSize) )
-            using( Stream outputStream = new ChecksumOutputStream(fileStream, true, enableChecksum).CreateCompressor(compressionType) )
+            using (Stream fileStream = File.Create(outputFileName, bufferSize))
+            using (Stream outputStream = new ChecksumOutputStream(fileStream, true, enableChecksum).CreateCompressor(compressionType))
             {
                 return WriteMergePass(pass, outputStream, rawReaderSupported);
             }
@@ -286,12 +286,12 @@ namespace Ookii.Jumbo.Jet
 
         private long WriteMergePass(IEnumerable<MergeResultRecord<T>> pass, Stream outputStream, bool rawReaderSupported)
         {
-            using( BinaryRecordWriter<RawRecord> rawWriter = rawReaderSupported ? new BinaryRecordWriter<RawRecord>(outputStream) : null )
-            using( BinaryRecordWriter<T> writer = rawReaderSupported ? null : new BinaryRecordWriter<T>(outputStream) )
+            using (BinaryRecordWriter<RawRecord> rawWriter = rawReaderSupported ? new BinaryRecordWriter<RawRecord>(outputStream) : null)
+            using (BinaryRecordWriter<T> writer = rawReaderSupported ? null : new BinaryRecordWriter<T>(outputStream))
             {
-                foreach( MergeResultRecord<T> record in pass )
+                foreach (MergeResultRecord<T> record in pass)
                 {
-                    if( rawWriter == null )
+                    if (rawWriter == null)
                         writer.WriteRecord(record.GetValue());
                     else
                         record.WriteRawRecord(rawWriter);
@@ -316,12 +316,12 @@ namespace Ookii.Jumbo.Jet
 
             try
             {
-                while( mergeQueue.Count > 0 )
+                while (mergeQueue.Count > 0)
                 {
                     MergeInput front = mergeQueue.Peek();
                     front.GetCurrentRecord(record);
                     yield return record;
-                    if( front.ReadRecord() )
+                    if (front.ReadRecord())
                         mergeQueue.AdjustFirstItem();
                     else
                     {
@@ -333,7 +333,7 @@ namespace Ookii.Jumbo.Jet
             }
             finally
             {
-                while( mergeQueue.Count > 0 )
+                while (mergeQueue.Count > 0)
                     mergeQueue.Dequeue().Dispose();
             }
         }
@@ -343,12 +343,12 @@ namespace Ookii.Jumbo.Jet
             IEnumerable<MergeInput> mergeInputs;
             MergeInputComparer mergeComparer;
             readers = null;
-            if( rawReaderSupported )
+            if (rawReaderSupported)
             {
                 IRawComparer<T> rawComparer = (IRawComparer<T>)comparer; // Caller makes sure that rawReaderSupported is only true if comparer is a raw comparer or null.
                 mergeComparer = new MergeInputComparer(rawComparer ?? RawComparer<T>.CreateComparer());
                 mergeInputs = inputs.Select(i => new MergeInput(i.GetRawReader(), i.IsMemoryBased)).Where(i => i.RawRecordReader.ReadRecord());
-                if( returnReaders )
+                if (returnReaders)
                 {
                     mergeInputs = mergeInputs.ToArray();
                     readers = mergeInputs.Select(i => i.RawRecordReader).ToArray();
@@ -358,7 +358,7 @@ namespace Ookii.Jumbo.Jet
             {
                 mergeComparer = new MergeInputComparer(comparer ?? Comparer<T>.Default);
                 mergeInputs = inputs.Select(i => new MergeInput((RecordReader<T>)i.Reader, i.IsMemoryBased)).Where(i => i.RecordReader.ReadRecord());
-                if( returnReaders )
+                if (returnReaders)
                 {
                     mergeInputs = mergeInputs.ToArray();
                     readers = mergeInputs.Select(i => i.RecordReader).ToArray();
@@ -377,10 +377,10 @@ namespace Ookii.Jumbo.Jet
              * number of segments - 1 to be divisible by the factor - 1 (each pass
              * takes X segments and produces 1) to minimize the number of merges.
              */
-            if( pass > 0 || diskInputsRemaining <= maxDiskInputsPerPass || maxDiskInputsPerPass == 1 )
+            if (pass > 0 || diskInputsRemaining <= maxDiskInputsPerPass || maxDiskInputsPerPass == 1)
                 return Math.Min(diskInputsRemaining, maxDiskInputsPerPass);
             int mod = (diskInputsRemaining - 1) % (maxDiskInputsPerPass - 1);
-            if( mod == 0 )
+            if (mod == 0)
                 return Math.Min(diskInputsRemaining, maxDiskInputsPerPass); ;
             return mod + 1;
         }

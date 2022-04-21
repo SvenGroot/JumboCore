@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Jet.Tasks
     ///   with the <see cref="TaskConstants.GeneratePairTaskDefaultValueKey"/> in the <see cref="Jobs.StageConfiguration.StageSettings"/>.
     /// </para>
     /// </remarks>
-    [AllowRecordReuse(PassThrough=true)]
+    [AllowRecordReuse(PassThrough = true)]
     public sealed class GenerateInt32PairTask<T> : Configurable, ITask<T, Pair<T, int>>
         where T : IComparable<T>
     {
@@ -30,15 +30,15 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public void Run(RecordReader<T> input, RecordWriter<Pair<T, int>> output)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if( TaskContext != null && TaskContext.StageConfiguration.AllowOutputRecordReuse )
+            if (TaskContext != null && TaskContext.StageConfiguration.AllowOutputRecordReuse)
             {
                 // Record reuse allowed
                 Pair<T, int> result = new Pair<T, int>(default(T), _value);
-                while( input.ReadRecord() )
+                while (input.ReadRecord())
                 {
                     result.Key = input.CurrentRecord;
                     output.WriteRecord(result);
@@ -47,7 +47,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             else
             {
                 // Record reuse not allowed
-                while( input.ReadRecord() )
+                while (input.ReadRecord())
                 {
                     output.WriteRecord(new Pair<T, int>(input.CurrentRecord, _value));
                 }
@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         public override void NotifyConfigurationChanged()
         {
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 _value = TaskContext.StageConfiguration.GetSetting(TaskConstants.GeneratePairTaskDefaultValueKey, 1);
             }

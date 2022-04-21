@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             _partitionReader = input as MultiPartitionRecordReader<Pair<int, Transaction>>;
             bool reuseHeaps = TaskContext.GetSetting("PFPGrowth.ReusePatternHeaps", true);
 
-            if( input.ReadRecord() )
+            if (input.ReadRecord())
             {
                 TaskContext config = TaskContext;
                 // job settings
@@ -39,10 +39,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 List<FGListItem> fglist = PFPGrowth.LoadFGList(TaskContext, null);
 
                 int maxPerGroup = fglist.Count / numGroups;
-                if( fglist.Count % numGroups != 0 )
+                if (fglist.Count % numGroups != 0)
                     maxPerGroup++;
                 FrequentPatternMaxHeap[] itemHeaps = null;
-                while( !input.HasFinished )
+                while (!input.HasFinished)
                 {
                     int groupId;
                     groupId = input.CurrentRecord.Key;
@@ -50,28 +50,28 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                     _log.Info(message);
                     TaskContext.StatusMessage = message;
                     // Prevent fetching new partitions while building the FP tree.
-                    if( _partitionReader != null )
+                    if (_partitionReader != null)
                         _partitionReader.StopAtEndOfPartition = true;
 
-                    using( FPTree tree = new FPTree(EnumerateGroup(input), minSupport, Math.Min((groupId + 1) * maxPerGroup, fglist.Count), TaskContext) )
+                    using (FPTree tree = new FPTree(EnumerateGroup(input), minSupport, Math.Min((groupId + 1) * maxPerGroup, fglist.Count), TaskContext))
                     {
                         tree.ProgressChanged += new EventHandler(FPTree_ProgressChanged);
 
                         // The tree needs to do mining only for the items in its group.
                         itemHeaps = tree.Mine(k, false, groupId * maxPerGroup, itemHeaps);
                         _log.InfoFormat("Done mining.");
-                        if( !reuseHeaps )
+                        if (!reuseHeaps)
                         {
                             OutputPatternHeaps(output, itemHeaps);
                             itemHeaps = null;
                         }
                     }
                     ++_groupsProcessed;
-                    if( _partitionReader != null )
+                    if (_partitionReader != null)
                     {
                         // Re-enable allow additional partitions, and if we had finished before try calling ReadRecord again.
                         _partitionReader.StopAtEndOfPartition = false;
-                        if( input.HasFinished )
+                        if (input.HasFinished)
                             input.ReadRecord();
                     }
                 }
@@ -82,12 +82,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private static void OutputPatternHeaps(RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output, FrequentPatternMaxHeap[] itemHeaps)
         {
-            if( itemHeaps != null )
+            if (itemHeaps != null)
             {
-                for( int item = 0; item < itemHeaps.Length; ++item )
+                for (int item = 0; item < itemHeaps.Length; ++item)
                 {
                     FrequentPatternMaxHeap heap = itemHeaps[item];
-                    if( heap != null )
+                    if (heap != null)
                         heap.OutputItems(item, output);
                 }
                 _log.InfoFormat("Done writing pattern heaps.");
@@ -101,7 +101,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             {
                 //_log.Debug(reader.CurrentRecord);
                 yield return reader.CurrentRecord.Value;
-            } while( reader.ReadRecord() && reader.CurrentRecord.Key == groupId );
+            } while (reader.ReadRecord() && reader.CurrentRecord.Key == groupId);
         }
 
         private void FPTree_ProgressChanged(object sender, EventArgs e)

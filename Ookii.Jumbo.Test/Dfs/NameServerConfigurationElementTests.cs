@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public void TestEditLogDirectory()
         {
             NameServerConfigurationElement target = new NameServerConfigurationElement();
-            string expected = "c:\\log" ;
+            string expected = "c:\\log";
             target.ImageDirectory = expected;
             Assert.AreEqual(expected, target.ImageDirectory);
         }

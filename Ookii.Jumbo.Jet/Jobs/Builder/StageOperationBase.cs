@@ -31,11 +31,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="taskType">Type of the task.</param>
         protected StageOperationBase(JobBuilder builder, Type taskType)
         {
-            if( builder == null )
+            if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( taskType.IsGenericTypeDefinition )
+            if (taskType.IsGenericTypeDefinition)
                 throw new ArgumentException("Task type must be a concrete type.", nameof(taskType));
 
             _builder = builder;
@@ -93,16 +93,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="stage">The stage that this stage depends on.</param>
         public void AddSchedulingDependency(StageOperation stage)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            if( stage._builder != _builder )
+            if (stage._builder != _builder)
                 throw new ArgumentException("The specified stage does not belong to the same job.", nameof(stage));
 
             // Dependencies are recorded in both directions so it doesn't matter which of the stages is created first by the JobBuilderCompiler.
-            if( _dependencies == null )
+            if (_dependencies == null)
                 _dependencies = new List<StageOperationBase>();
             _dependencies.Add(stage);
-            if( stage._dependentStages == null )
+            if (stage._dependentStages == null)
                 stage._dependentStages = new List<StageOperationBase>();
             stage._dependentStages.Add(this);
         }
@@ -116,34 +116,34 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private void ApplySchedulingDependencies()
         {
-            if( _dependencies != null )
+            if (_dependencies != null)
             {
                 // We depend on other stages.
-                if( _stage.Parent != null )
+                if (_stage.Parent != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} is a child stage which cannot have scheduler dependencies.", _stage.CompoundStageId));
-                foreach( StageOperation stage in _dependencies )
+                foreach (StageOperation stage in _dependencies)
                 {
                     // If the stage config is null it hasn't been created yet, and the dependency will be set once it is created.
-                    if( stage._stage != null )
+                    if (stage._stage != null)
                     {
-                        if( stage._stage.ChildStage != null )
+                        if (stage._stage.ChildStage != null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot add a dependency to stage {0} because it has a child stage.", stage._stage.CompoundStageId));
                         stage._stage.DependentStages.Add(_stage.StageId);
                     }
                 }
             }
 
-            if( _dependentStages != null )
+            if (_dependentStages != null)
             {
                 // Other stages depend on us.
-                if( _stage.ChildStage != null )
+                if (_stage.ChildStage != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot add a dependency to stage {0} because it has a child stage.", _stage.CompoundStageId));
-                foreach( StageOperation stage in _dependentStages )
+                foreach (StageOperation stage in _dependentStages)
                 {
                     // If the stage config is null it hasn't been created yet, and the dependency will be set once it is created.
-                    if( stage._stage != null )
+                    if (stage._stage != null)
                     {
-                        if( stage._stage.Parent != null )
+                        if (stage._stage.Parent != null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} is a child stage which cannot have scheduler dependencies.", stage._stage.CompoundStageId));
                         _stage.DependentStages.Add(stage._stage.StageId);
                     }
@@ -170,9 +170,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         void IJobBuilderOperation.SetOutput(IOperationOutput output)
         {
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if( _output != null )
+            if (_output != null)
                 throw new InvalidOperationException("This operation already has an output.");
             _output = output;
         }

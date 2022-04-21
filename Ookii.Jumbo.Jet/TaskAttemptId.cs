@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -28,9 +28,9 @@ namespace Ookii.Jumbo.Jet
         /// <param name="attempt">The attempt number.</param>
         public TaskAttemptId(TaskId taskId, int attempt)
         {
-            if( taskId == null )
+            if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
-            if( attempt <= 0 )
+            if (attempt <= 0)
                 throw new ArgumentOutOfRangeException(nameof(attempt), "The attempt number must be greater than zero.");
 
             _taskId = taskId;
@@ -99,9 +99,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns><see langword="true"/> if this <see cref="TaskId"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(TaskAttemptId other)
         {
-            if( other == null )
+            if (other == null)
                 return false;
-            if( other == this )
+            if (other == this)
                 return true;
 
             return _taskId.Equals(other._taskId) && _attempt == other._attempt;
@@ -117,13 +117,13 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public int CompareTo(TaskAttemptId other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
-            if( other == this )
+            if (other == this)
                 return 0;
 
             int result = _taskId.CompareTo(other._taskId);
-            if( result == 0 )
+            if (result == 0)
             {
                 result = _attempt > other._attempt ? 1 :
                     (_attempt < other._attempt ? -1 : 0);
@@ -142,7 +142,7 @@ namespace Ookii.Jumbo.Jet
         public int CompareTo(object obj)
         {
             TaskAttemptId other = obj as TaskAttemptId;
-            if( other == null )
+            if (other == null)
                 throw new ArgumentException("obj is not a TaskAttemptId.", nameof(obj));
             return CompareTo(other);
         }
@@ -172,6 +172,6 @@ namespace Ookii.Jumbo.Jet
         {
             return !EqualityComparer<TaskAttemptId>.Default.Equals(left, right);
         }
-    
+
     }
 }

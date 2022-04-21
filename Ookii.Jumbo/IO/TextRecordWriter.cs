@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -50,7 +50,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="record">The record to write.</param>
         protected override void WriteRecordInternal(T record)
         {
-            if( _utf8StringRecords )
+            if (_utf8StringRecords)
             {
                 // Doing (Utf8String)record is not allowed on generic type arguments.
                 // No need to check for null because we already know it must be a Utf8String.
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.IO
                 string recordString = record.ToString();
                 int charsLeft = recordString.Length;
                 int index = 0;
-                while( charsLeft > 0 )
+                while (charsLeft > 0)
                 {
                     int copySize = Math.Min(charsLeft, _charBuffer.Length);
                     recordString.CopyTo(index, _charBuffer, 0, copySize);

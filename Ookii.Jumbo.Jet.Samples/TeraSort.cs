@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using Ookii.CommandLine;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs;
 using Ookii.Jumbo.Jet.Jobs.Builder;
 using Ookii.Jumbo.Jet.Samples.IO;
 using Ookii.Jumbo.Jet.Tasks;
-using Ookii.Jumbo.Dfs;
-using System.Runtime.InteropServices;
-using Ookii.CommandLine;
-using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet.Samples
 {
@@ -99,8 +99,8 @@ namespace Ookii.Jumbo.Jet.Samples
             // Sample the input and create the partition split points for the RangePartitioner.
             string partitionFileName = FileSystemClient.Path.Combine(job.Path, RangePartitioner.SplitFileName);
             var input = (from stage in jobConfiguration.Stages
-                            where stage.DataInput != null
-                            select stage.DataInput).SingleOrDefault();
+                         where stage.DataInput != null
+                         select stage.DataInput).SingleOrDefault();
             RangePartitioner.CreatePartitionFile(FileSystemClient, partitionFileName, input, MergeTasks, SampleSize);
         }
     }

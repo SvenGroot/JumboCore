@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 
 namespace Ookii.Jumbo.IO
 {
@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.IO
         public override bool Equals(object obj)
         {
             RecordIndexEntry? entry = obj as RecordIndexEntry?;
-            if( entry == null )
+            if (entry == null)
                 return false;
             return Equals(entry.Value);
         }

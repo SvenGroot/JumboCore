@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet.Jobs.Builder;
 using Ookii.CommandLine;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Jobs.Builder;
 using Ookii.Jumbo.Jet.Samples.IO;
 using Ookii.Jumbo.Jet.Tasks;
-using Ookii.Jumbo.IO;
-using System.ComponentModel;
 
 namespace Ookii.Jumbo.Jet.Samples
 {
@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="job">The <see cref="JobBuilder"/> used to create the job.</param>
         protected override void BuildJob(JobBuilder job)
         {
-            switch( Kind )
+            switch (Kind)
             {
             case WordCountKind.Optimized:
                 BuildJobOptimized(job);
@@ -136,10 +136,10 @@ namespace Ookii.Jumbo.Jet.Samples
         {
             Pair<Utf8String, int> record = Pair.MakePair(new Utf8String(), 1);
             char[] separator = new[] { ' ' };
-            foreach( Utf8String line in input.EnumerateRecords() )
+            foreach (Utf8String line in input.EnumerateRecords())
             {
                 string[] words = line.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                foreach( string word in words )
+                foreach (string word in words)
                 {
                     record.Key.Set(word);
                     output.WriteRecord(record);

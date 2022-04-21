@@ -32,9 +32,9 @@ namespace Ookii.Jumbo
         /// <param name="port">The port number of the server.</param>
         public ServerAddress(string hostName, int port)
         {
-            if( hostName == null )
+            if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
-            if( port <= 0 || port > 0xFFFF )
+            if (port <= 0 || port > 0xFFFF)
                 throw new ArgumentOutOfRangeException(nameof(port));
             _hostName = hostName;
             _port = port;
@@ -46,16 +46,16 @@ namespace Ookii.Jumbo
         /// <param name="address">A string representation of the server address, in the form hostname:port, e.g. "my_server:9000".</param>
         public ServerAddress(string address)
         {
-            if( address == null )
+            if (address == null)
                 throw new ArgumentNullException(nameof(address));
             string[] parts = address.Split(':');
-            if( parts.Length != 2 )
+            if (parts.Length != 2)
                 throw new ArgumentException("Invalid server address string.", nameof(address));
 
             _hostName = parts[0];
             _port = Convert.ToInt32(parts[1], System.Globalization.CultureInfo.InvariantCulture);
 
-            if( Port <= 0 || Port > 0xFFFF )
+            if (Port <= 0 || Port > 0xFFFF)
                 throw new ArgumentOutOfRangeException(nameof(address), "Invalid port number in server address string");
         }
 
@@ -187,10 +187,10 @@ namespace Ookii.Jumbo
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(ServerAddress other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
             int result = StringComparer.Ordinal.Compare(HostName, other.HostName);
-            if( result == 0 )
+            if (result == 0)
                 result = Port - other.Port;
             return result;
         }

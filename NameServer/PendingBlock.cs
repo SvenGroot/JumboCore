@@ -13,7 +13,7 @@ namespace NameServerApplication
 
         public PendingBlock(BlockInfo block)
         {
-            if( block == null )
+            if (block == null)
                 throw new ArgumentNullException(nameof(block));
             Block = block;
         }

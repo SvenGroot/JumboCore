@@ -72,16 +72,16 @@ namespace Ookii.Jumbo
         public PriorityQueue(IEnumerable<T> collection, IComparer<T> comparer)
             : this((List<T>)null, comparer)
         {
-            if( collection == null )
+            if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
             _heap = new List<T>(collection);
 
-            if( _heap.Count > 1 )
+            if (_heap.Count > 1)
             {
                 // Starting at the parent of the last element (which is the last non-leaf node in the tree), perform the
                 // down-heap operation to establish the heap property. This provides O(n) initialization, faster than calling
                 // Enqueue for each item which would be O(n log n)
-                for( int index = (_heap.Count - 1) >> 1; index >= 0; --index )
+                for (int index = (_heap.Count - 1) >> 1; index >= 0; --index)
                 {
                     DownHeap(index);
                 }
@@ -265,13 +265,13 @@ namespace Ookii.Jumbo
         /// <exception cref="InvalidOperationException">The <see cref="PriorityQueue{T}"/> is empty.</exception>
         public T Dequeue()
         {
-            if( _heap.Count == 0 )
+            if (_heap.Count == 0)
                 throw new InvalidOperationException("The priority queue is empty.");
             T result = _heap[0];
             int lastIndex = _heap.Count - 1;
             _heap[0] = _heap[lastIndex];
             _heap.RemoveAt(lastIndex);
-            if( _heap.Count > 0 )
+            if (_heap.Count > 0)
             {
                 DownHeap(0);
             }
@@ -296,7 +296,7 @@ namespace Ookii.Jumbo
         /// <exception cref="InvalidOperationException">The <see cref="PriorityQueue{T}"/> is empty.</exception>
         public T Peek()
         {
-            if( _heap.Count == 0 )
+            if (_heap.Count == 0)
                 throw new InvalidOperationException("The priority queue is empty.");
             return _heap[0];
         }
@@ -332,7 +332,7 @@ namespace Ookii.Jumbo
         /// <exception cref="InvalidOperationException">The <see cref="PriorityQueue{T}"/> is empty.</exception>
         public void AdjustFirstItem()
         {
-            if( _heap.Count == 0 )
+            if (_heap.Count == 0)
                 throw new InvalidOperationException("The priority queue is empty.");
 
             DownHeap(0);
@@ -413,11 +413,11 @@ namespace Ookii.Jumbo
         public bool Remove(T item)
         {
             int index = _heap.IndexOf(item);
-            if( index < 0 )
+            if (index < 0)
                 return false;
 
             int lastIndex = _heap.Count - 1;
-            if( index == lastIndex )
+            if (index == lastIndex)
                 _heap.RemoveAt(lastIndex);
             else
             {
@@ -436,12 +436,12 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if the heap is valid; otherwise, <see langword="false" />.</returns>
         public bool CheckHeap()
         {
-            for( int x = 0; x < _heap.Count; ++x )
+            for (int x = 0; x < _heap.Count; ++x)
             {
                 int firstChild = (x << 1) + 1;
                 int secondChild = firstChild + 1;
-                if( !((firstChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[firstChild]) <= 0) &&
-                      (secondChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[secondChild]) <= 0)) )
+                if (!((firstChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[firstChild]) <= 0) &&
+                      (secondChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[secondChild]) <= 0)))
                     return false;
             }
             return true;
@@ -503,7 +503,7 @@ namespace Ookii.Jumbo
             T item = _heap[index];
             int parentIndex = (index - 1) >> 1;
             // Because we can't easily tell when parentIndex goes beyond 0, we check index instead; if that was already zero, then we're at the top
-            while( index > 0 && Comparer.Compare(item, _heap[parentIndex]) < 0 )
+            while (index > 0 && Comparer.Compare(item, _heap[parentIndex]) < 0)
             {
                 _heap[index] = _heap[parentIndex];
                 index = parentIndex;
@@ -519,7 +519,7 @@ namespace Ookii.Jumbo
             int firstChild = (index << 1) + 1;
             int secondChild = firstChild + 1;
             int smallestChild = (secondChild < count && Comparer.Compare(_heap[secondChild], _heap[firstChild]) < 0) ? secondChild : firstChild;
-            while( smallestChild < count && Comparer.Compare(_heap[smallestChild], item) < 0 )
+            while (smallestChild < count && Comparer.Compare(_heap[smallestChild], item) < 0)
             {
                 _heap[index] = _heap[smallestChild];
                 index = smallestChild;
@@ -614,7 +614,7 @@ namespace Ookii.Jumbo
         {
             get
             {
-                if( _syncRoot == null )
+                if (_syncRoot == null)
                     System.Threading.Interlocked.CompareExchange(ref _syncRoot, new object(), null);
                 return _syncRoot;
             }

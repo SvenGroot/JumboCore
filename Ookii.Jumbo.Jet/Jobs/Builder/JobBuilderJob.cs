@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
-using Ookii.CommandLine;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Text;
+using Ookii.CommandLine;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -43,14 +43,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
                 JobConfiguration config = builder.CreateJob();
 
-                if( config.JobName == null )
+                if (config.JobName == null)
                     config.JobName = GetType().Name; // Use the class name as the job's friendly name, if it hasn't been set explicitly.
 
                 ApplyJobPropertiesAndSettings(config);
 
-                if( ConfigOnly != null )
+                if (ConfigOnly != null)
                 {
-                    using( Stream stream = File.Create(ConfigOnly) )
+                    using (Stream stream = File.Create(ConfigOnly))
                     {
                         config.SaveXml(stream);
                     }
@@ -101,7 +101,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected FileOutput WriteOutput(IJobBuilderOperation operation, string outputPath, Type recordWriterType)
         {
-            if( operation == null )
+            if (operation == null)
                 throw new ArgumentNullException(nameof(operation));
             FileOutput output = operation.JobBuilder.Write(operation, outputPath, recordWriterType);
             output.BlockSize = (int)BlockSize;

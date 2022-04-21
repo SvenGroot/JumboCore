@@ -29,13 +29,13 @@ namespace Ookii.Jumbo
         /// <param name="random">The randomizer to use.</param>
         public static void Randomize<T>(this IList<T> list, Random random)
         {
-            if( list == null )
+            if (list == null)
                 throw new ArgumentNullException(nameof(list));
 
-            if( random == null )
+            if (random == null)
                 throw new ArgumentNullException(nameof(random));
             int n = list.Count;        // The number of items left to shuffle (loop invariant).
-            while( n > 1 )
+            while (n > 1)
             {
                 int k = random.Next(n);  // 0 <= k < n.
                 n--;                     // n is now the last pertinent index;
@@ -54,16 +54,16 @@ namespace Ookii.Jumbo
         /// <returns>A string containing the delimited list.</returns>
         public static string ToDelimitedString<T>(this IEnumerable<T> list, string delimiter)
         {
-            if( list == null )
+            if (list == null)
                 throw new ArgumentNullException(nameof(list));
-            if( delimiter == null )
+            if (delimiter == null)
                 throw new ArgumentNullException(nameof(delimiter));
 
             StringBuilder result = new StringBuilder();
             bool first = true;
-            foreach( T item in list )
+            foreach (T item in list)
             {
-                if( first )
+                if (first)
                     first = false;
                 else
                     result.Append(delimiter);
@@ -92,10 +92,10 @@ namespace Ookii.Jumbo
         /// <returns>A hash code for the entire sequence.</returns>
         public static int GetSequenceHashCode<T>(this IEnumerable<T> list)
         {
-            if( list == null )
+            if (list == null)
                 throw new ArgumentNullException(nameof(list));
             int hash = 0x218A9B2C;
-            foreach( var item in list )
+            foreach (var item in list)
             {
                 int itemHash = item.GetHashCode();
                 //mix up the bits. 
@@ -113,9 +113,9 @@ namespace Ookii.Jumbo
         /// <param name="index2">The second index.</param>
         public static void Swap<T>(this IList<T> list, int index1, int index2)
         {
-            if( list == null )
+            if (list == null)
                 throw new ArgumentNullException(nameof(list));
-            if( index1 != index2 )
+            if (index1 != index2)
             {
                 T temp = list[index1];
                 list[index1] = list[index2];
@@ -134,7 +134,7 @@ namespace Ookii.Jumbo
         /// <returns>An <see cref="IOrderedEnumerable{TElement}"/> whose elements are sorted according to a key.</returns>
         public static IOrderedEnumerable<TElement> OrderBy<TElement, TKey>(this IEnumerable<TElement> source, Func<TElement, TKey> keySelector, bool ascending)
         {
-            if( ascending )
+            if (ascending)
                 return source.OrderBy(keySelector);
             else
                 return source.OrderByDescending(keySelector);

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -35,9 +35,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="dateCreated">The date the entry was created.</param>
         protected JumboFileSystemEntry(string fullPath, string name, DateTime dateCreated)
         {
-            if( fullPath == null )
+            if (fullPath == null)
                 throw new ArgumentNullException(nameof(fullPath));
-            if( name == null )
+            if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             _fullPath = fullPath;
@@ -102,11 +102,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboFileSystemEntry FromFileSystemInfo(FileSystemInfo info, string rootPath, bool includeChildren)
         {
-            if( info == null )
+            if (info == null)
                 throw new ArgumentNullException(nameof(info));
 
             FileInfo file = info as FileInfo;
-            if( file != null )
+            if (file != null)
                 return JumboFile.FromFileInfo(file, rootPath);
             else
                 return JumboDirectory.FromDirectoryInfo((DirectoryInfo)info, rootPath, includeChildren);
@@ -114,16 +114,16 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
         internal static string StripRootPath(string fullPath, string rootPath)
         {
-            if( rootPath == null )
+            if (rootPath == null)
                 return fullPath;
 
-            if( !fullPath.StartsWith(rootPath, StringComparison.Ordinal) )
+            if (!fullPath.StartsWith(rootPath, StringComparison.Ordinal))
                 throw new ArgumentException("Invalid path.");
 
             int length = rootPath.Length;
-            if( rootPath[rootPath.Length - 1] == Path.DirectorySeparatorChar || rootPath[rootPath.Length - 1] == Path.AltDirectorySeparatorChar )
+            if (rootPath[rootPath.Length - 1] == Path.DirectorySeparatorChar || rootPath[rootPath.Length - 1] == Path.AltDirectorySeparatorChar)
                 length -= 1;
-            if( fullPath.Length == length )
+            if (fullPath.Length == length)
                 return Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture); // Root
             else
                 return fullPath.Substring(length);

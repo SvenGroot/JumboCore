@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public int GetPartition(T value)
         {
             // Assign 90% of the data to the first partition.
-            if( value.GetHashCode() % 10 < 9 )
+            if (value.GetHashCode() % 10 < 9)
                 return 0;
             else
                 return value.GetHashCode() % (Partitions - 1) + 1;

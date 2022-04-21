@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Configuration;
 using System.Xml;
 
 namespace Ookii.Jumbo.Dfs
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Dfs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static DfsConfiguration GetConfiguration(Configuration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
             DfsConfiguration config = (DfsConfiguration)configuration.GetSection("ookii.jumbo.dfs");
             return config ?? new DfsConfiguration();

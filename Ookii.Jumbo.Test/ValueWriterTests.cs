@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test
@@ -26,9 +26,9 @@ namespace Ookii.Jumbo.Test
 
         private void TestSerialization<T>(T expected)
         {
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 ValueWriter<T>.WriteValue(expected, writer);
                 writer.Flush();

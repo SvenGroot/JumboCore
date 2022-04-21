@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.IO
 {
@@ -25,11 +25,11 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="outputFileName">Name of the output file that the temporary file should be renamed to.</param>
         public FileOutputCommitter(IRecordWriter recordWriter, string tempFileName, string outputFileName)
         {
-            if( recordWriter == null )
+            if (recordWriter == null)
                 throw new ArgumentNullException(nameof(recordWriter));
-            if( tempFileName == null )
+            if (tempFileName == null)
                 throw new ArgumentNullException(nameof(tempFileName));
-            if( outputFileName == null )
+            if (outputFileName == null)
                 throw new ArgumentNullException(nameof(outputFileName));
 
             _recordWriter = recordWriter;
@@ -54,7 +54,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="fileSystem">The file system.</param>
         public void Commit(FileSystemClient fileSystem)
         {
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
 
             fileSystem.Move(_tempFileName, _outputFileName);

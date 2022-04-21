@@ -36,13 +36,13 @@ namespace Ookii.Jumbo.Topology
         /// <param name="configuration">The jumbo configuration to use. May be <see langword="null"/>.</param>
         public PatternTopologyResolver(JumboConfiguration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 configuration = JumboConfiguration.GetConfiguration();
 
-            foreach( RackConfigurationElement rackConfig in configuration.PatternTopologyResolver.Racks )
+            foreach (RackConfigurationElement rackConfig in configuration.PatternTopologyResolver.Racks)
             {
                 RackInfo rack = new RackInfo() { RackId = rackConfig.RackId };
-                switch( configuration.PatternTopologyResolver.PatternType )
+                switch (configuration.PatternTopologyResolver.PatternType)
                 {
                 case PatternType.RegularExpression:
                     rack.Regex = new Regex(rackConfig.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -66,18 +66,18 @@ namespace Ookii.Jumbo.Topology
         /// <returns>The rack ID of the rack that the server belongs to.</returns>
         public string ResolveNode(string hostName)
         {
-            if( hostName == null )
+            if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
 
-            foreach( RackInfo rack in _racks )
+            foreach (RackInfo rack in _racks)
             {
                 bool match;
-                if( rack.Regex != null )
+                if (rack.Regex != null)
                     match = rack.Regex.IsMatch(hostName);
                 else
                     match = rack.RangeExpression.Match(hostName, false);
 
-                if( match )
+                if (match)
                     return rack.RackId;
             }
 

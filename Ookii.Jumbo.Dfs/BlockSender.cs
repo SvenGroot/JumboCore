@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Globalization;
-using System.Collections.Concurrent;
+using System.Text;
 using System.Threading;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -56,7 +56,7 @@ namespace Ookii.Jumbo.Dfs
             _blockId = blockId;
             _clientWriter = clientWriter;
             _dataServers = dataServers == null ? Array.Empty<ServerAddress>() : dataServers.ToArray();
-            if( _dataServers.Length > 0 )
+            if (_dataServers.Length > 0)
             {
                 ServerAddress server = _dataServers[0];
                 try
@@ -65,10 +65,10 @@ namespace Ookii.Jumbo.Dfs
                     _serverStream = _serverClient.GetStream();
                     _serverReader = new BinaryReader(_serverStream);
                     _serverWriter = new BinaryWriter(_serverStream);
-                    if( !WriteHeader() )
+                    if (!WriteHeader())
                         throw new DfsException(string.Format(CultureInfo.CurrentCulture, "There was an error connecting to the downstream data server {0}.", server));
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     throw new DfsException(string.Format(CultureInfo.CurrentCulture, "There was an error connecting to the downstream data server {0}.", server), ex);
                 }
@@ -105,18 +105,18 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="packet">The packet.</param>
         public void SendPacket(Packet packet)
         {
-            if( packet == null )
+            if (packet == null)
                 throw new ArgumentNullException(nameof(packet));
             ThrowIfErrorOccurred();
 
-            if( _hasLastPacket )
+            if (_hasLastPacket)
                 throw new InvalidOperationException("The last packet has been sent.");
 
-            if( _serverWriter != null )
+            if (_serverWriter != null)
                 packet.Write(_serverWriter, PacketFormatOption.Default);
 
             _pendingAcknowledgements.Add(packet.SequenceNumber, _cancellation.Token);
-            if( packet.IsLastPacket )
+            if (packet.IsLastPacket)
             {
                 _hasLastPacket = true;
                 _pendingAcknowledgements.CompleteAdding();
@@ -146,7 +146,7 @@ namespace Ookii.Jumbo.Dfs
         /// </summary>
         public void ThrowIfErrorOccurred()
         {
-            if( _serverStatus != DataServerClientProtocolResult.Ok )
+            if (_serverStatus != DataServerClientProtocolResult.Ok)
                 throw new DfsException("There was an error sending the block to the downstream data server.");
         }
 
@@ -161,19 +161,19 @@ namespace Ookii.Jumbo.Dfs
 
         private void Dispose(bool disposing)
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( disposing )
+                if (disposing)
                 {
                     _cancellation.Cancel();
-                    if( _serverWriter != null )
+                    if (_serverWriter != null)
                         _serverWriter.Dispose();
-                    if( _serverReader != null )
+                    if (_serverReader != null)
                         _serverReader.Dispose();
-                    if( _serverStream != null )
+                    if (_serverStream != null)
                         _serverStream.Dispose();
-                    if( _serverClient != null )
+                    if (_serverClient != null)
                         ((IDisposable)_serverClient).Dispose();
 
                     _acknowledgementThread.Join();
@@ -198,7 +198,7 @@ namespace Ookii.Jumbo.Dfs
         private bool ReadResult()
         {
             DataServerClientProtocolResult result = (DataServerClientProtocolResult)_serverReader.ReadInt16();
-            if( result != DataServerClientProtocolResult.Ok )
+            if (result != DataServerClientProtocolResult.Ok)
             {
                 _serverStatus = result;
                 return false;
@@ -208,7 +208,7 @@ namespace Ookii.Jumbo.Dfs
 
         private void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
         }
 
@@ -217,24 +217,24 @@ namespace Ookii.Jumbo.Dfs
         {
             try
             {
-                if( _serverClient != null )
+                if (_serverClient != null)
                 {
                     long expected;
-                    while( !_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out expected, Timeout.Infinite, _cancellation.Token) )
+                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out expected, Timeout.Infinite, _cancellation.Token))
                     {
                         long sequenceNumber = _serverReader.ReadInt64();
-                        if( sequenceNumber != expected )
+                        if (sequenceNumber != expected)
                         {
                             _log.ErrorFormat("Block sender received unexpected sequence number acknowledgement {0}", sequenceNumber);
                             _serverStatus = DataServerClientProtocolResult.Error;
                         }
 
-                        if( _clientWriter != null )
+                        if (_clientWriter != null)
                         {
                             _clientWriter.Write(sequenceNumber);
                         }
                     }
-                    if( _cancellation.IsCancellationRequested )
+                    if (_cancellation.IsCancellationRequested)
                         _log.Warn("The block sender was cancelled.");
                     else
                     {
@@ -247,7 +247,7 @@ namespace Ookii.Jumbo.Dfs
                 else
                 {
                     long sequenceNumber;
-                    while( !_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out sequenceNumber, Timeout.Infinite, _cancellation.Token) )
+                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out sequenceNumber, Timeout.Infinite, _cancellation.Token))
                     {
                         _clientWriter.Write(sequenceNumber);
                     }
@@ -256,11 +256,11 @@ namespace Ookii.Jumbo.Dfs
                     // Final Ok is written by BlockServer, not us.
                 }
             }
-            catch( OperationCanceledException )
+            catch (OperationCanceledException)
             {
                 _log.Warn("The block sender was cancelled.");
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 _log.Error("Error while waiting for or writing acknowledgements.", ex);
                 _serverStatus = DataServerClientProtocolResult.Error;

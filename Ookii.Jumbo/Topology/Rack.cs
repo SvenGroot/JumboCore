@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Topology
 {
@@ -25,9 +25,9 @@ namespace Ookii.Jumbo.Topology
 
             protected override void InsertItem(int index, TopologyNode item)
             {
-                if( item == null )
+                if (item == null)
                     throw new ArgumentNullException(nameof(item));
-                if( item.Rack != null )
+                if (item.Rack != null)
                     throw new ArgumentException("The specified node is already part of another rack.");
                 base.InsertItem(index, item);
                 item.Rack = _rack;
@@ -35,9 +35,9 @@ namespace Ookii.Jumbo.Topology
 
             protected override void SetItem(int index, TopologyNode item)
             {
-                if( item == null )
+                if (item == null)
                     throw new ArgumentNullException(nameof(item));
-                if( item.Rack != null )
+                if (item.Rack != null)
                     throw new ArgumentException("The specified node is already part of another rack.");
                 this[index].Rack = null;
                 base.SetItem(index, item);
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Topology
 
             protected override void ClearItems()
             {
-                foreach( TopologyNode node in this )
+                foreach (TopologyNode node in this)
                     node.Rack = null;
                 base.ClearItems();
             }
@@ -68,7 +68,7 @@ namespace Ookii.Jumbo.Topology
         /// <param name="rackId">The unique identifier for the rack.</param>
         public Rack(string rackId)
         {
-            if( rackId == null )
+            if (rackId == null)
                 throw new ArgumentNullException(nameof(rackId));
 
             _nodes = new NodeCollection(this);

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Ookii.Jumbo.Dfs;
-using System.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
@@ -21,9 +21,9 @@ namespace DfsShell.Commands
         public GetCommand([Description("The path of the DFS file or directory to retrieve."), ArgumentName("DfsPath")] string dfsPath,
                           [Optional, DefaultParameterValue("."), Description("The local path where the file should be stored. The default value is the current directory."), ArgumentName("LocalPath")] string localPath)
         {
-            if( dfsPath == null )
+            if (dfsPath == null)
                 throw new ArgumentNullException(nameof(dfsPath));
-            if( localPath == null )
+            if (localPath == null)
                 throw new ArgumentNullException(nameof(localPath));
 
             _dfsPath = dfsPath;
@@ -36,7 +36,7 @@ namespace DfsShell.Commands
         public override void Run()
         {
             JumboFileSystemEntry entry = Client.GetFileSystemEntryInfo(_dfsPath);
-            if( entry == null )
+            if (entry == null)
             {
                 Console.Error.WriteLine("Path {0} does not exist on the DFS.", _dfsPath);
                 return;
@@ -47,32 +47,32 @@ namespace DfsShell.Commands
 
             try
             {
-                if( entry is JumboFile )
+                if (entry is JumboFile)
                 {
-                    if( Directory.Exists(localPath) )
+                    if (Directory.Exists(localPath))
                     {
                         // It's a directory, so append the file name
                         localPath = Path.Combine(localPath, entry.Name);
                     }
-                    if( !Quiet )
+                    if (!Quiet)
                         Console.WriteLine("Copying DFS file \"{0}\" to local file \"{1}\"...", entry.FullPath, localPath);
                     Client.DownloadFile(_dfsPath, localPath, progressCallback);
                 }
                 else
                 {
-                    if( !Quiet )
+                    if (!Quiet)
                         Console.WriteLine("Copying DFS directory \"{0}\" to local directory \"{1}\"...", entry.FullPath, localPath);
                     Client.DownloadDirectory(_dfsPath, localPath, progressCallback);
                 }
-                if( !Quiet )
+                if (!Quiet)
                     Console.WriteLine();
             }
-            catch( UnauthorizedAccessException ex )
+            catch (UnauthorizedAccessException ex)
             {
                 Console.Error.WriteLine("Unable to open local file:");
                 Console.Error.WriteLine(ex.Message);
             }
-            catch( IOException ex )
+            catch (IOException ex)
             {
                 Console.Error.WriteLine("Unable to get file:");
                 Console.Error.WriteLine(ex.Message);

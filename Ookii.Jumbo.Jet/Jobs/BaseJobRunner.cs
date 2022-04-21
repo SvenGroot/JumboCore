@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Dfs;
-using Ookii.CommandLine;
 using System.ComponentModel;
-using System.Reflection;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Ookii.CommandLine;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Jobs
@@ -156,9 +156,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// to prompt for exit.</param>
         protected void PromptIfInteractive(bool promptForStart)
         {
-            if( IsInteractive )
+            if (IsInteractive)
             {
-                if( promptForStart )
+                if (promptForStart)
                     Console.WriteLine("Press any key to start . . .");
                 else
                     Console.WriteLine("Press any key to exit . . .");
@@ -173,17 +173,17 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="outputPath">The directory where the job's output will be stored.</param>
         protected void CheckAndCreateOutputPath(string outputPath)
         {
-            if( outputPath == null )
+            if (outputPath == null)
                 throw new ArgumentNullException(nameof(outputPath));
 
-            if( OverwriteOutput )
+            if (OverwriteOutput)
             {
                 FileSystemClient.Delete(outputPath, true);
             }
             else
             {
                 JumboDirectory outputDir = FileSystemClient.GetDirectoryInfo(outputPath);
-                if( outputDir != null )
+                if (outputDir != null)
                     throw new ArgumentException("The specified output path already exists on the DFS.", nameof(outputPath));
             }
             FileSystemClient.CreateDirectory(outputPath);
@@ -197,7 +197,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         protected JumboFileSystemEntry GetInputFileSystemEntry(string inputPath)
         {
             JumboFileSystemEntry input = FileSystemClient.GetFileSystemEntryInfo(inputPath);
-            if( input == null )
+            if (input == null)
                 throw new ArgumentException("The specified input path doesn't exist.", nameof(inputPath));
             return input;
         }
@@ -210,7 +210,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="jobConfiguration">The job configuration.</param>
         protected void ApplyJobPropertiesAndSettings(JobConfiguration jobConfiguration)
         {
-            if( jobConfiguration == null )
+            if (jobConfiguration == null)
                 throw new ArgumentNullException(nameof(jobConfiguration));
 
             ApplySettingProperties(jobConfiguration);
@@ -234,13 +234,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         private void ApplySettingProperties(JobConfiguration jobConfiguration)
         {
             PropertyInfo[] props = GetType().GetProperties();
-            foreach( PropertyInfo prop in props )
+            foreach (PropertyInfo prop in props)
             {
                 JobSettingAttribute attribute = (JobSettingAttribute)Attribute.GetCustomAttribute(prop, typeof(JobSettingAttribute));
-                if( attribute != null )
+                if (attribute != null)
                 {
                     string key = attribute.Key;
-                    if( key == null )
+                    if (key == null)
                         key = string.Format(CultureInfo.InvariantCulture, "{0}.{1}", prop.DeclaringType.Name, prop.Name);
 
                     jobConfiguration.AddSetting(key, prop.GetValue(this, null));
@@ -250,27 +250,27 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         private void ApplyJobOrStageSettings(JobConfiguration jobConfiguration)
         {
-            if( _jobOrStageSettings != null )
+            if (_jobOrStageSettings != null)
             {
-                foreach( KeyValuePair<string, string> setting in _jobOrStageSettings )
+                foreach (KeyValuePair<string, string> setting in _jobOrStageSettings)
                 {
                     string compoundStageId;
                     string settingName;
                     ParsePropertyOrSetting(setting.Key, out compoundStageId, out settingName);
 
                     SettingsDictionary target = null;
-                    if( compoundStageId == null )
+                    if (compoundStageId == null)
                     {
-                        if( jobConfiguration.JobSettings == null )
+                        if (jobConfiguration.JobSettings == null)
                             jobConfiguration.JobSettings = new SettingsDictionary();
                         target = jobConfiguration.JobSettings;
                     }
                     else
                     {
                         StageConfiguration stage = jobConfiguration.GetStageWithCompoundId(compoundStageId);
-                        if( stage == null )
+                        if (stage == null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} specified in command line argument -Setting {1}={2} does not exist.", compoundStageId, setting.Key, setting.Value));
-                        if( stage.StageSettings == null )
+                        if (stage.StageSettings == null)
                             stage.StageSettings = new SettingsDictionary();
                         target = stage.StageSettings;
                     }
@@ -282,9 +282,9 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         private void ApplyJobProperties(JobConfiguration jobConfiguration)
         {
-            if( _jobOrStageProperties != null )
+            if (_jobOrStageProperties != null)
             {
-                foreach( KeyValuePair<string, string> property in _jobOrStageProperties )
+                foreach (KeyValuePair<string, string> property in _jobOrStageProperties)
                 {
                     ApplyJobProperty(jobConfiguration, property);
                 }
@@ -298,10 +298,10 @@ namespace Ookii.Jumbo.Jet.Jobs
             ParsePropertyOrSetting(property.Key, out compoundStageId, out propName);
 
             object target = job;
-            if( compoundStageId != null )
+            if (compoundStageId != null)
             {
                 target = job.GetStageWithCompoundId(compoundStageId);
-                if( target == null )
+                if (target == null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} specified in command line argument -Property {1}={2} does not exist.", compoundStageId, property.Key, property.Value));
             }
 
@@ -313,7 +313,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             compoundStageId = null;
 
             int colonIndex = propOrSettingKey.IndexOf(':', StringComparison.Ordinal);
-            if( colonIndex >= 0 )
+            if (colonIndex >= 0)
             {
                 compoundStageId = propOrSettingKey.Substring(0, colonIndex);
             }
@@ -325,20 +325,20 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             string[] pathItems = path.Split('.');
             PropertyInfo prop = null;
-            foreach( string propName in pathItems )
+            foreach (string propName in pathItems)
             {
-                if( prop != null )
+                if (prop != null)
                 {
-                    if( !prop.CanRead )
+                    if (!prop.CanRead)
                         throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} in property path {1} is not readable.", prop.Name, path));
                     target = prop.GetValue(target, null);
                 }
                 prop = target.GetType().GetProperty(propName);
-                if( prop == null )
+                if (prop == null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} in property path {1} is does not exist.", propName, path));
             }
 
-            if( !prop.CanWrite )
+            if (!prop.CanWrite)
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} is not writable.", path));
 
             TypeConverter converter = TypeDescriptor.GetConverter(prop.PropertyType);

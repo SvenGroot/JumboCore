@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.IO;
 
 namespace NameServerApplication
 {
@@ -298,9 +298,9 @@ namespace NameServerApplication
 
         public EditLog(string logFileDirectory)
         {
-            if( logFileDirectory == null )
+            if (logFileDirectory == null)
                 logFileDirectory = string.Empty;
-            if( logFileDirectory.Length > 0 )
+            if (logFileDirectory.Length > 0)
                 System.IO.Directory.CreateDirectory(logFileDirectory);
             _logFileDirectory = logFileDirectory;
             _logFilePath = Path.Combine(logFileDirectory, _logFileName);
@@ -313,7 +313,7 @@ namespace NameServerApplication
 
         public void LoadFileSystemFromLog(bool readOnly, FileSystem fileSystem)
         {
-            if( !File.Exists(_logFilePath) )
+            if (!File.Exists(_logFilePath))
                 throw new DfsException("The file system edit log file is missing.");
             _log.Info("Replaying log file.");
 
@@ -321,12 +321,12 @@ namespace NameServerApplication
 
             ReplayLog(fileSystem);
             // A read only file system is used to create a checkpoint, and doesn't need to read the new log file.
-            if( !readOnly )
+            if (!readOnly)
             {
                 string newLogFilePath = Path.Combine(_logFileDirectory, _newLogFileName);
                 // We don't need to check for this if _logFilePath doesn't exist; if _logFilePath doesn't exist and newLogFilePath does,
                 // it means that there's also a temp image file which the name server will catch while restarting.
-                if( File.Exists(newLogFilePath) )
+                if (File.Exists(newLogFilePath))
                 {
                     _logFilePath = newLogFilePath;
                     _log.Info("Replaying new log file.");
@@ -338,7 +338,7 @@ namespace NameServerApplication
             }
             _log.Info("Replaying log file finished.");
             _loggingEnabled = !readOnly;
-            if( !readOnly )
+            if (!readOnly)
                 OpenExistingLogFile(oldCrc);
         }
 
@@ -350,7 +350,7 @@ namespace NameServerApplication
 
         public void LogCreateDirectory(string path, DateTime date)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CreateDirectoryEditLogEntry(date, path));
@@ -358,7 +358,7 @@ namespace NameServerApplication
 
         public void LogCreateFile(string path, DateTime date, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CreateFileEditLogEntry(date, path, blockSize, replicationFactor, recordOptions));
@@ -366,7 +366,7 @@ namespace NameServerApplication
 
         public void LogAppendBlock(string path, DateTime date, Guid blockId)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new AppendBlockEditLogEntry(date, path, blockId));
@@ -374,7 +374,7 @@ namespace NameServerApplication
 
         public void LogCommitBlock(string path, DateTime date, Guid blockId, int size)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CommitBlockEditLogEntry(date, path, blockId, size));
@@ -382,7 +382,7 @@ namespace NameServerApplication
 
         public void LogCommitFile(string path)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new CommitFileEditLogEntry(DateTime.UtcNow, path));
@@ -390,7 +390,7 @@ namespace NameServerApplication
 
         public void LogDelete(string path, bool recursive)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             LogMutation(new DeleteEditLogEntry(DateTime.UtcNow, path, recursive));
@@ -398,9 +398,9 @@ namespace NameServerApplication
 
         public void LogMove(string from, string to)
         {
-            if( from == null )
+            if (from == null)
                 throw new ArgumentNullException(nameof(from));
-            if( to == null )
+            if (to == null)
                 throw new ArgumentNullException(nameof(to));
 
             LogMutation(new MoveEditLogEntry(DateTime.UtcNow, from, to));
@@ -408,10 +408,10 @@ namespace NameServerApplication
 
         public void SwitchToNewLogFile()
         {
-            lock( _logFileLock )
+            lock (_logFileLock)
             {
                 string newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
-                if( _logFilePath == newLogFileName )
+                if (_logFilePath == newLogFileName)
                     _log.Warn("The edit log was already using the new log file.");
                 else
                 {
@@ -426,11 +426,11 @@ namespace NameServerApplication
 
         public void DiscardOldLogFile()
         {
-            lock( _logFileLock )
+            lock (_logFileLock)
             {
                 string newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
                 string logFileName = Path.Combine(_logFileDirectory, _logFileName);
-                if( _logFilePath != newLogFileName )
+                if (_logFilePath != newLogFileName)
                     _log.Warn("No old edit log file to discard; no action taken.");
                 else
                 {
@@ -461,9 +461,9 @@ namespace NameServerApplication
         private static long CreateLogFile(string logFilePath)
         {
             _log.InfoFormat("Initializing new edit log file at '{0}'.", logFilePath);
-            using( Stream stream = File.Open(logFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None) )
-            using( ChecksumOutputStream logFileStream = new ChecksumOutputStream(stream, logFilePath + ".crc", 0L) )
-            using( BinaryWriter logFileWriter = new BinaryWriter(logFileStream) )
+            using (Stream stream = File.Open(logFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            using (ChecksumOutputStream logFileStream = new ChecksumOutputStream(stream, logFilePath + ".crc", 0L))
+            using (BinaryWriter logFileWriter = new BinaryWriter(logFileStream))
             {
                 logFileWriter.Write(FileSystem.FileSystemFormatVersion);
                 logFileWriter.Flush();
@@ -476,15 +476,15 @@ namespace NameServerApplication
             try
             {
                 _loggingEnabled = false;
-                using( FileStream stream = File.OpenRead(_logFilePath) )
-                using( BinaryReader reader = new BinaryReader(stream) )
+                using (FileStream stream = File.OpenRead(_logFilePath))
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
                     int version = reader.ReadInt32();
-                    if( version != FileSystem.FileSystemFormatVersion )
+                    if (version != FileSystem.FileSystemFormatVersion)
                         throw new NotSupportedException("The log file uses an unsupported file system version.");
-                    
+
                     long length = stream.Length;
-                    while( stream.Position < length )
+                    while (stream.Position < length)
                     {
                         EditLogEntry entry = EditLogEntry.ReadEntry(reader);
                         entry.Replay(fileSystem);
@@ -504,17 +504,17 @@ namespace NameServerApplication
 
         private void LogMutation(EditLogEntry entry)
         {
-            if( _loggingEnabled )
+            if (_loggingEnabled)
             {
                 try
                 {
-                    lock( _logFileLock )
+                    lock (_logFileLock)
                     {
                         entry.Write(_logFileWriter);
                         _logFileWriter.Flush();
                     }
                 }
-                catch( IOException ex )
+                catch (IOException ex)
                 {
                     HandleLoggingError(ex);
                     throw;
@@ -532,9 +532,9 @@ namespace NameServerApplication
 
         private void CloseLogFile()
         {
-            if( _logFileWriter != null )
+            if (_logFileWriter != null)
                 ((IDisposable)_logFileWriter).Dispose();
-            if( _logFileStream != null )
+            if (_logFileStream != null)
                 _logFileStream.Dispose();
             _logFileWriter = null;
             _logFileStream = null;

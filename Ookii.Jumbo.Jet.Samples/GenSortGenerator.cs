@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Jet.Samples
         {
             Random128 rnd = new Random128(startRecord);
             UInt128 recordNumber = startRecord;
-            for( ulong x = 0; x < count; ++x )
+            for (ulong x = 0; x < count; ++x)
             {
                 GenerateAsciiRecord(rnd.Next(), recordNumber);
                 yield return _record;
@@ -60,9 +60,9 @@ namespace Ookii.Jumbo.Jet.Samples
             /* convert the 128-bit record number to 32 bits of ascii hexadecimal
              * as the next 32 bytes of the record.
              */
-            for( i = 0; i < 16; i++ )
+            for (i = 0; i < 16; i++)
                 _record.RecordBuffer[12 + i] = HexDigit((recordNumber.High64 >> (60 - 4 * i)) & 0xF);
-            for( i = 0; i < 16; i++ )
+            for (i = 0; i < 16; i++)
                 _record.RecordBuffer[28 + i] = HexDigit((recordNumber.Low64 >> (60 - 4 * i)) & 0xF);
 
             /* add 2 bytes of "break" data */
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
             /* add 2 bytes of "break" data */
             _record.RecordBuffer[98] = (byte)'\r';	/* nice for Windows */
-            _record.RecordBuffer[99] = (byte)'\n';            
+            _record.RecordBuffer[99] = (byte)'\n';
         }
 
         private static byte HexDigit(ulong value)

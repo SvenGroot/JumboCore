@@ -2,10 +2,10 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Ookii.Jumbo.Dfs.FileSystem;
-using Ookii.Jumbo;
 using System.Globalization;
+using System.Linq;
+using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs.FileSystem;
 
 /// <summary>
 /// Summary description for FileSystemEntryInfo
@@ -25,7 +25,7 @@ public class FileSystemEntryInfo
         DateCreated = entry.DateCreated.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         FullPath = entry.FullPath;
         JumboFile file = entry as JumboFile;
-        if( file != null )
+        if (file != null)
         {
             SizeInBytes = file.Size.ToString("#,##0", CultureInfo.InvariantCulture);
             FormattedSize = new BinarySize(file.Size).ToString("0.##SB", CultureInfo.InvariantCulture);
@@ -38,7 +38,7 @@ public class FileSystemEntryInfo
         {
             JumboDirectory dir = (JumboDirectory)entry;
             IsDirectory = true;
-            if( includeChildren )
+            if (includeChildren)
             {
                 Children = (from child in dir.Children
                             orderby !(child is JumboDirectory), child.Name

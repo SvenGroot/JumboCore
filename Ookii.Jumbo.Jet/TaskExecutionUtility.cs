@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -14,8 +16,6 @@ using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.IO;
 using Ookii.Jumbo.Jet.Jobs;
-using System.Globalization;
-using System.Configuration;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -38,15 +38,15 @@ namespace Ookii.Jumbo.Jet
 
             public float AdditionalProgress
             {
-                get 
+                get
                 {
                     float totalProgress;
-                    lock( _task._taskProgressLock )
+                    lock (_task._taskProgressLock)
                     {
                         totalProgress = _task.InputPartitionsFinished;
                         // This property will be called on a different thread. There is therefore a chance it will get called exactly when Task is being reset so we need to check for null.
                         IHasAdditionalProgress progressTask = _task.Task as IHasAdditionalProgress;
-                        if( progressTask != null )
+                        if (progressTask != null)
                         {
                             totalProgress += progressTask.AdditionalProgress;
                         }
@@ -96,13 +96,13 @@ namespace Ookii.Jumbo.Jet
 
         internal TaskExecutionUtility(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, TaskExecutionUtility parentTask, TaskContext configuration)
         {
-            if( fileSystemClient == null )
+            if (fileSystemClient == null)
                 throw new ArgumentNullException(nameof(fileSystemClient));
-            if( jetClient == null )
+            if (jetClient == null)
                 throw new ArgumentNullException(nameof(jetClient));
-            if( umbilical == null )
+            if (umbilical == null)
                 throw new ArgumentNullException(nameof(umbilical));
-            if( configuration == null )
+            if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
             _fileSystemClient = fileSystemClient;
@@ -114,20 +114,20 @@ namespace Ookii.Jumbo.Jet
             configuration.TaskExecution = this;
             _progressInterval = _jetClient.Configuration.TaskServer.ProgressInterval;
 
-            if( parentTask == null ) // that means it's not a child task
+            if (parentTask == null) // that means it's not a child task
             {
                 _rootTask = this;
                 _inputChannels = CreateInputChannels(configuration.JobConfiguration.GetInputStagesForStage(configuration.TaskId.StageId));
 
                 // Create the status message array with room for the channel message and this task's message.
-                _statusMessageLevel = 1;                
+                _statusMessageLevel = 1;
                 _statusMessages = new List<string>() { null, null };
             }
             else
             {
                 _isAssociatedTask = true;
                 _rootTask = parentTask.RootTask;
-                if( parentTask._associatedTasks == null )
+                if (parentTask._associatedTasks == null)
                     parentTask._associatedTasks = new List<TaskExecutionUtility>();
                 parentTask._associatedTasks.Add(this);
                 _statusMessageLevel = parentTask._statusMessageLevel + 1;
@@ -136,7 +136,7 @@ namespace Ookii.Jumbo.Jet
             }
 
             // If the partitions aren't already combined by the parent task, we check the task type if it has the attribute set.
-            if( !_processesAllPartitions )
+            if (!_processesAllPartitions)
             {
                 _processesAllPartitions = Attribute.IsDefined(_taskType, typeof(ProcessAllInputPartitionsAttribute));
             }
@@ -152,7 +152,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( _outputWriter == null )
+                if (_outputWriter == null)
                     _outputWriter = CreateOutputRecordWriter();
                 return _outputWriter;
             }
@@ -190,7 +190,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( _inputReader == null )
+                if (_inputReader == null)
                     _inputReader = CreateInputRecordReader();
                 return _inputReader;
             }
@@ -237,7 +237,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( _task == null )
+                if (_task == null)
                     _task = CreateTaskInstance();
                 return _task;
             }
@@ -245,17 +245,17 @@ namespace Ookii.Jumbo.Jet
 
         internal IOutputChannel OutputChannel { get; private set; }
 
-        internal List<IInputChannel> InputChannels 
-        { 
-            get { return _inputChannels; } 
+        internal List<IInputChannel> InputChannels
+        {
+            get { return _inputChannels; }
         }
 
         internal string ChannelStatusMessage
         {
             get { return _rootTask._statusMessages[0]; }
-            set 
+            set
             {
-                lock( _rootTask._statusMessages )
+                lock (_rootTask._statusMessages)
                 {
                     _rootTask._statusMessages[0] = value;
                 }
@@ -265,9 +265,9 @@ namespace Ookii.Jumbo.Jet
         internal string TaskStatusMessage
         {
             get { return _rootTask._statusMessages[_statusMessageLevel]; }
-            set 
+            set
             {
-                lock( _rootTask._statusMessages )
+                lock (_rootTask._statusMessages)
                 {
                     _rootTask._statusMessages[_statusMessageLevel] = value;
                 }
@@ -278,15 +278,15 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                lock( _rootTask._statusMessages )
+                lock (_rootTask._statusMessages)
                 {
                     StringBuilder status = new StringBuilder(100);
                     bool first = true;
-                    foreach( string message in _rootTask._statusMessages )
+                    foreach (string message in _rootTask._statusMessages)
                     {
-                        if( message != null )
+                        if (message != null)
                         {
-                            if( first )
+                            if (first)
                                 first = false;
                             else
                                 status.Append(" > ");
@@ -323,7 +323,7 @@ namespace Ookii.Jumbo.Jet
 
             AssemblyResolver.Register();
 
-            using( ProcessorStatus processorStatus = new ProcessorStatus() )
+            using (ProcessorStatus processorStatus = new ProcessorStatus())
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -349,7 +349,7 @@ namespace Ookii.Jumbo.Jet
                     JobConfiguration config = LoadJobConfiguration(jobDirectory);
 
                     TaskMetrics metrics;
-                    using( TaskExecutionUtility taskExecution = TaskExecutionUtility.Create(fileSystemClient, jetClient, umbilical, jobId, config, taskAttemptId, dfsJobDirectory, jobDirectory) )
+                    using (TaskExecutionUtility taskExecution = TaskExecutionUtility.Create(fileSystemClient, jetClient, umbilical, jobId, config, taskAttemptId, dfsJobDirectory, jobDirectory))
                     {
                         metrics = taskExecution.RunTask();
                     }
@@ -359,7 +359,7 @@ namespace Ookii.Jumbo.Jet
                     _log.Debug("Reporting completion to task server.");
                     umbilical.ReportCompletion(jobId, taskAttemptId, metrics);
                 }
-                catch( Exception ex )
+                catch (Exception ex)
                 {
                     _log.Fatal("Failed to execute task.", ex);
                     try
@@ -391,19 +391,19 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A <see cref="TaskExecutionUtility"/>.</returns>
         public static TaskExecutionUtility Create(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, Guid jobId, JobConfiguration jobConfiguration, TaskAttemptId taskAttemptId, string dfsJobDirectory, string localJobDirectory)
         {
-            if( fileSystemClient == null )
+            if (fileSystemClient == null)
                 throw new ArgumentNullException(nameof(fileSystemClient));
-            if( jetClient == null )
+            if (jetClient == null)
                 throw new ArgumentNullException(nameof(jetClient));
-            if( umbilical == null )
+            if (umbilical == null)
                 throw new ArgumentNullException(nameof(umbilical));
-            if( jobConfiguration == null )
+            if (jobConfiguration == null)
                 throw new ArgumentNullException(nameof(jobConfiguration));
-            if( taskAttemptId == null )
+            if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
-            if( dfsJobDirectory == null )
+            if (dfsJobDirectory == null)
                 throw new ArgumentNullException(nameof(dfsJobDirectory));
-            if( localJobDirectory == null )
+            if (localJobDirectory == null)
                 throw new ArgumentNullException(nameof(localJobDirectory));
 
             TaskContext configuration = new TaskContext(jobId, jobConfiguration, taskAttemptId, jobConfiguration.GetStage(taskAttemptId.TaskId.StageId), localJobDirectory, dfsJobDirectory);
@@ -431,21 +431,21 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         protected void ResetForNextPartition()
         {
-            if( !ProcessesAllInputPartitions )
+            if (!ProcessesAllInputPartitions)
             {
-                if( _task != null )
+                if (_task != null)
                 {
                     // The lock is needed because we must prevent the progress thread from seeing the updated value of InputPartitionsFinished and the old task instance at the same time.
-                    lock( _taskProgressLock )
+                    lock (_taskProgressLock)
                     {
                         ++InputPartitionsFinished;
                         _task = null;
                     }
                 }
 
-                if( _associatedTasks != null )
+                if (_associatedTasks != null)
                 {
-                    foreach( TaskExecutionUtility childTask in _associatedTasks )
+                    foreach (TaskExecutionUtility childTask in _associatedTasks)
                     {
                         childTask.ResetForNextPartition();
                     }
@@ -457,20 +457,20 @@ namespace Ookii.Jumbo.Jet
         {
             // Stages with multiple input channels cannot use PartitionsPerTask>1, so this method should not be called for such stages
             Debug.Assert(InputChannels.Count == 1);
-            if( InputChannels[0].Configuration.DisableDynamicPartitionAssignment )
+            if (InputChannels[0].Configuration.DisableDynamicPartitionAssignment)
                 return true;
             else
             {
                 bool result = _jobServerTaskClient.NotifyStartPartitionProcessing(Context.JobId, Context.TaskAttemptId.TaskId, partitionNumber);
-                if( !result )
+                if (!result)
                 {
                     _log.InfoFormat("Assignment of partition {0} has been revoked; skipping.", partitionNumber);
                     ++_discardedPartitionCount;
 
                     // TotalInputPartitions is not used for tasks with the ProcessAllInputPartitionsAttribute.
-                    if( !ProcessesAllInputPartitions )
+                    if (!ProcessesAllInputPartitions)
                     {
-                        lock( _taskProgressLock )
+                        lock (_taskProgressLock)
                         {
                             --TotalInputPartitions;
                         }
@@ -486,18 +486,18 @@ namespace Ookii.Jumbo.Jet
             // Stages with multiple input channels cannot use PartitionsPerTask>1, so this method should not be called for such stages
             Debug.Assert(InputChannels.Count == 1);
 
-            if( InputChannels[0].Configuration.DisableDynamicPartitionAssignment )
+            if (InputChannels[0].Configuration.DisableDynamicPartitionAssignment)
                 return false;
             else
             {
                 int[] additionalPartitions = _jobServerTaskClient.GetAdditionalPartitions(Context.JobId, Context.TaskAttemptId.TaskId);
-                if( additionalPartitions != null && additionalPartitions.Length > 0 )
+                if (additionalPartitions != null && additionalPartitions.Length > 0)
                 {
                     _log.InfoFormat("Received additional partitions for processing: {0}", additionalPartitions.ToDelimitedString());
                     _additionalPartitionCount += additionalPartitions.Length;
                     reader.AssignAdditionalPartitions(additionalPartitions);
 
-                    foreach( IInputChannel channel in InputChannels )
+                    foreach (IInputChannel channel in InputChannels)
                     {
                         channel.AssignAdditionalPartitions(additionalPartitions);
                     }
@@ -512,9 +512,9 @@ namespace Ookii.Jumbo.Jet
 
         internal TaskExecutionUtility CreateAssociatedTask(StageConfiguration childStage, int taskNumber)
         {
-            if( childStage == null )
+            if (childStage == null)
                 throw new ArgumentNullException(nameof(childStage));
-            
+
             TaskId childTaskId = new TaskId(Context.TaskAttemptId.TaskId, childStage.StageId, taskNumber);
             TaskContext configuration = new TaskContext(Context.JobId, Context.JobConfiguration, new TaskAttemptId(childTaskId, Context.TaskAttemptId.Attempt), childStage, Context.LocalJobDirectory, Context.DfsJobDirectory);
 
@@ -534,7 +534,7 @@ namespace Ookii.Jumbo.Jet
         internal void EnsureStatusLevels(int maxLevel)
         {
             // Only call this on the root task!
-            while( _statusMessages.Count < maxLevel + 1 )
+            while (_statusMessages.Count < maxLevel + 1)
                 _statusMessages.Add(null);
         }
 
@@ -560,18 +560,18 @@ namespace Ookii.Jumbo.Jet
 
         private IRecordReader CreateInputRecordReader()
         {
-            if( Context.StageConfiguration.HasDataInput )
+            if (Context.StageConfiguration.HasDataInput)
             {
                 WarnIfNoRecordReuse();
                 IDataInput input = (IDataInput)JetActivator.CreateInstance(Context.StageConfiguration.DataInputType.ReferencedType, this);
                 TaskInput = TaskInputUtility.ReadTaskInput(new LocalFileSystemClient(), _context.LocalJobDirectory, _context.TaskAttemptId.TaskId.StageId, _context.TaskAttemptId.TaskId.TaskNumber - 1);
                 return input.CreateRecordReader(TaskInput);
             }
-            else if( _inputChannels != null )
+            else if (_inputChannels != null)
             {
                 WarnIfNoRecordReuse();
                 IRecordReader result;
-                if( _inputChannels.Count == 1 )
+                if (_inputChannels.Count == 1)
                 {
                     result = _inputChannels[0].CreateRecordReader();
                 }
@@ -581,7 +581,7 @@ namespace Ookii.Jumbo.Jet
                     int bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)JetClient.Configuration.FileChannel.ReadBufferSize;
                     CompressionType compressionType = Context.GetSetting(FileOutputChannel.CompressionTypeSetting, JetClient.Configuration.FileChannel.CompressionType);
                     IMultiInputRecordReader reader = (IMultiInputRecordReader)JetActivator.CreateInstance(multiInputRecordReaderType, this, new int[] { 0 }, _inputChannels.Count, Context.StageConfiguration.AllowRecordReuse, bufferSize, compressionType);
-                    foreach( IInputChannel inputChannel in _inputChannels )
+                    foreach (IInputChannel inputChannel in _inputChannels)
                     {
                         IRecordReader channelReader = inputChannel.CreateRecordReader();
                         AddAdditionalProgressSource(channelReader);
@@ -609,10 +609,10 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         protected void WarnIfNoRecordReuse()
         {
-            if( !_context.StageConfiguration.AllowRecordReuse )
+            if (!_context.StageConfiguration.AllowRecordReuse)
             {
                 // We don't warn for value types, since record reuse is irrelevant in that case.
-                if( !_context.StageConfiguration.TaskTypeInfo.InputRecordType.IsValueType )
+                if (!_context.StageConfiguration.TaskTypeInfo.InputRecordType.IsValueType)
                     _log.WarnFormat("Input record reuse not allowed for task {0}.", Context.TaskId);
             }
             else
@@ -632,9 +632,9 @@ namespace Ookii.Jumbo.Jet
         {
             RunTaskFinishMethod();
 
-            if( _associatedTasks != null )
+            if (_associatedTasks != null)
             {
-                foreach( TaskExecutionUtility childTask in _associatedTasks )
+                foreach (TaskExecutionUtility childTask in _associatedTasks)
                 {
                     childTask.FinishTask();
                 }
@@ -649,9 +649,9 @@ namespace Ookii.Jumbo.Jet
             if (metrics == null)
                 throw new ArgumentNullException(nameof(metrics));
 
-            if( _associatedTasks != null )
+            if (_associatedTasks != null)
             {
-                foreach( TaskExecutionUtility associatedTask in _associatedTasks )
+                foreach (TaskExecutionUtility associatedTask in _associatedTasks)
                 {
                     associatedTask.FinalizeTask(metrics);
                 }
@@ -660,22 +660,22 @@ namespace Ookii.Jumbo.Jet
             _finished = true;
             _finishedEvent.Set();
 
-            if( _inputReader != null )
+            if (_inputReader != null)
                 _log.InfoFormat("{0} read time: {1}", Context.TaskAttemptId, _inputReader.ReadTime.TotalSeconds);
-            if( _outputWriter != null )
+            if (_outputWriter != null)
                 _log.InfoFormat("{0} write time: {1}", Context.TaskAttemptId, _outputWriter.WriteTime.TotalSeconds);
 
             CalculateMetrics(metrics);
 
-            if( Context.StageConfiguration.HasDataOutput )
+            if (Context.StageConfiguration.HasDataOutput)
             {
-                if( _outputWriter != null )
+                if (_outputWriter != null)
                 {
                     ((IDisposable)_outputWriter).Dispose();
                     // Not setting it to null so there's no chance it'll get recreated.
                 }
 
-                foreach( IOutputCommitter output in _dataOutputs )
+                foreach (IOutputCommitter output in _dataOutputs)
                     output.Commit(FileSystemClient);
             }
         }
@@ -690,7 +690,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         protected void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(TaskExecutionUtility).FullName);
         }
 
@@ -700,35 +700,35 @@ namespace Ookii.Jumbo.Jet
         /// <param name="disposing"><see langword="true"/> to release managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                if( disposing )
+                if (disposing)
                 {
-                    if( _associatedTasks != null )
+                    if (_associatedTasks != null)
                     {
-                        foreach( TaskExecutionUtility task in _associatedTasks )
+                        foreach (TaskExecutionUtility task in _associatedTasks)
                             task.Dispose();
                     }
-                    if( _outputWriter != null )
+                    if (_outputWriter != null)
                         ((IDisposable)_outputWriter).Dispose();
-                    if( _inputReader != null )
+                    if (_inputReader != null)
                     {
                         ((IDisposable)_inputReader).Dispose();
                     }
-                    if( _inputChannels != null )
+                    if (_inputChannels != null)
                     {
-                        foreach( IInputChannel inputChannel in _inputChannels )
+                        foreach (IInputChannel inputChannel in _inputChannels)
                         {
                             IDisposable inputChannelDisposable = inputChannel as IDisposable;
-                            if( inputChannelDisposable != null )
+                            if (inputChannelDisposable != null)
                                 inputChannelDisposable.Dispose();
                         }
                     }
                     IDisposable outputChannelDisposable = OutputChannel as IDisposable;
-                    if( outputChannelDisposable != null )
+                    if (outputChannelDisposable != null)
                         outputChannelDisposable.Dispose();
-                    if( _progressThread != null )
+                    if (_progressThread != null)
                     {
                         _finishedEvent.Set();
                         _progressThread.Join();
@@ -748,15 +748,15 @@ namespace Ookii.Jumbo.Jet
             _log.DebugFormat("Creating {0} task instance.", _taskType.AssemblyQualifiedName);
             object task = JetActivator.CreateInstance(_taskType, this);
 
-            if( !_hasAddedTaskProgressSource )
+            if (!_hasAddedTaskProgressSource)
             {
                 _hasAddedTaskProgressSource = true;
 
-                if( !ProcessesAllInputPartitions && InputChannels != null && InputChannels.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1 )
+                if (!ProcessesAllInputPartitions && InputChannels != null && InputChannels.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1)
                 {
                     // There may be multiple input partitions, so use the TaskProgressSource class which can handle that.
                     IHasAdditionalProgress progressTask = task as IHasAdditionalProgress;
-                    if( progressTask != null )
+                    if (progressTask != null)
                     {
                         AddAdditionalProgressSource(task.GetType().FullName, new TaskProgressSource(this));
                     }
@@ -774,12 +774,12 @@ namespace Ookii.Jumbo.Jet
 
         private void AddAdditionalProgressSource(object obj)
         {
-            if( _isAssociatedTask )
+            if (_isAssociatedTask)
                 _rootTask.AddAdditionalProgressSource(obj);
             else
             {
                 IHasAdditionalProgress progressObj = obj as IHasAdditionalProgress;
-                if( progressObj != null )
+                if (progressObj != null)
                 {
                     string progressName = obj.GetType().FullName;
                     AddAdditionalProgressSource(progressName, progressObj);
@@ -789,10 +789,10 @@ namespace Ookii.Jumbo.Jet
 
         private void AddAdditionalProgressSource(string progressName, IHasAdditionalProgress progressObj)
         {
-            if( _additionalProgressSources == null )
+            if (_additionalProgressSources == null)
                 _additionalProgressSources = new Dictionary<string, List<IHasAdditionalProgress>>();
             List<IHasAdditionalProgress> sources;
-            if( !_additionalProgressSources.TryGetValue(progressName, out sources) )
+            if (!_additionalProgressSources.TryGetValue(progressName, out sources))
             {
                 sources = new List<IHasAdditionalProgress>();
                 _additionalProgressSources.Add(progressName, sources);
@@ -804,10 +804,10 @@ namespace Ookii.Jumbo.Jet
         private List<IInputChannel> CreateInputChannels(IEnumerable<StageConfiguration> inputStages)
         {
             List<IInputChannel> result = null;
-            foreach( StageConfiguration inputStage in inputStages )
+            foreach (StageConfiguration inputStage in inputStages)
             {
                 IInputChannel channel;
-                switch( inputStage.OutputChannel.ChannelType )
+                switch (inputStage.OutputChannel.ChannelType)
                 {
                 case ChannelType.File:
                     channel = new FileInputChannel(this, inputStage);
@@ -818,7 +818,7 @@ namespace Ookii.Jumbo.Jet
                 default:
                     throw new InvalidOperationException("Invalid channel type.");
                 }
-                if( result == null )
+                if (result == null)
                     result = new List<IInputChannel>();
                 result.Add(channel);
                 AddAdditionalProgressSource(channel);
@@ -828,14 +828,14 @@ namespace Ookii.Jumbo.Jet
 
         private IOutputChannel CreateOutputChannel()
         {
-            if( Context.StageConfiguration.ChildStage != null )
+            if (Context.StageConfiguration.ChildStage != null)
                 return new PipelineOutputChannel(this);
             else
             {
                 ChannelConfiguration config = Context.StageConfiguration.OutputChannel;
-                if( config != null )
+                if (config != null)
                 {
-                    switch( config.ChannelType )
+                    switch (config.ChannelType)
                     {
                     case ChannelType.File:
                         return new FileOutputChannel(this);
@@ -855,7 +855,7 @@ namespace Ookii.Jumbo.Jet
             _log.DebugFormat("Opening output file {0}", file);
 
             IDataOutput output = (IDataOutput)JetActivator.CreateInstance(Context.StageConfiguration.DataOutputType.ReferencedType, this);
-            if( _dataOutputs == null )
+            if (_dataOutputs == null)
                 _dataOutputs = new List<IOutputCommitter>();
 
             IOutputCommitter committer = output.CreateOutput(partition);
@@ -868,7 +868,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         protected void StartProgressThread()
         {
-            if( _progressThread == null && !_isAssociatedTask )
+            if (_progressThread == null && !_isAssociatedTask)
             {
                 _progressThread = new Thread(ProgressThread) { Name = "ProgressThread", IsBackground = true };
                 _progressThread.Start();
@@ -883,9 +883,9 @@ namespace Ookii.Jumbo.Jet
             JobConfiguration config = JobConfiguration.LoadXml(xmlConfigPath);
             _log.Debug("Job configuration loaded.");
 
-            if( config.AssemblyFileNames != null )
+            if (config.AssemblyFileNames != null)
             {
-                foreach( string assemblyFileName in config.AssemblyFileNames )
+                foreach (string assemblyFileName in config.AssemblyFileNames)
                 {
                     _log.DebugFormat("Loading assembly {0}.", assemblyFileName);
                     Assembly.LoadFrom(Path.Combine(jobDirectory, assemblyFileName));
@@ -912,7 +912,7 @@ namespace Ookii.Jumbo.Jet
 
 
 
-            if( File.Exists(appConfigFile) )
+            if (File.Exists(appConfigFile))
             {
                 Configuration appConfig = ConfigurationManager.OpenMappedExeConfiguration(new ExeConfigurationFileMap() { ExeConfigFilename = appConfigFile }, ConfigurationUserLevel.None);
 
@@ -932,13 +932,13 @@ namespace Ookii.Jumbo.Jet
         {
             TaskProgress progress = null;
 
-            using( MemoryStatus memStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new MemoryStatus() : null )
-            using( ProcessorStatus procStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new ProcessorStatus() : null )
+            using (MemoryStatus memStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new MemoryStatus() : null)
+            using (ProcessorStatus procStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new ProcessorStatus() : null)
             {
 
                 _log.Info("Progress thread has started.");
                 // Thread that reports progress
-                while( !(_finished || _disposed) )
+                while (!(_finished || _disposed))
                 {
                     progress = ReportProgress(progress, memStatus, procStatus);
                     _finishedEvent.WaitOne(_progressInterval, false);
@@ -950,16 +950,16 @@ namespace Ookii.Jumbo.Jet
         private TaskProgress ReportProgress(TaskProgress previousProgress, MemoryStatus memStatus, ProcessorStatus procStatus)
         {
             bool progressChanged = false;
-            if( previousProgress == null )
+            if (previousProgress == null)
             {
                 progressChanged = true;
                 previousProgress = new TaskProgress();
                 previousProgress.StatusMessage = CurrentStatus;
-                if( InputReader != null )
+                if (InputReader != null)
                     previousProgress.Progress = InputReader.Progress;
-                if( _additionalProgressSources != null )
+                if (_additionalProgressSources != null)
                 {
-                    foreach( KeyValuePair<string, List<IHasAdditionalProgress>> progressSource in _additionalProgressSources )
+                    foreach (KeyValuePair<string, List<IHasAdditionalProgress>> progressSource in _additionalProgressSources)
                     {
                         float value = progressSource.Value.Average(i => i.AdditionalProgress);
                         previousProgress.AddAdditionalProgressValue(progressSource.Key, value);
@@ -969,10 +969,10 @@ namespace Ookii.Jumbo.Jet
             else
             {
                 // Reuse the instance.
-                if( InputReader != null )
+                if (InputReader != null)
                 {
                     float newProgress = InputReader.Progress;
-                    if( newProgress != previousProgress.Progress )
+                    if (newProgress != previousProgress.Progress)
                     {
                         previousProgress.Progress = newProgress;
                         progressChanged = true;
@@ -980,21 +980,21 @@ namespace Ookii.Jumbo.Jet
                 }
 
                 string status = CurrentStatus;
-                if( previousProgress.StatusMessage != status )
+                if (previousProgress.StatusMessage != status)
                 {
                     previousProgress.StatusMessage = status;
                     progressChanged = true;
                 }
 
-                if( _additionalProgressSources != null )
+                if (_additionalProgressSources != null)
                 {
                     // These are always in the same order so we can do this.
                     int x = 0;
-                    foreach( KeyValuePair<string, List<IHasAdditionalProgress>> progressSource in _additionalProgressSources )
+                    foreach (KeyValuePair<string, List<IHasAdditionalProgress>> progressSource in _additionalProgressSources)
                     {
                         float value = progressSource.Value.Average(i => i.AdditionalProgress);
                         AdditionalProgressValue additionalProgress = previousProgress.AdditionalProgressValues[x];
-                        if( additionalProgress.Progress != value )
+                        if (additionalProgress.Progress != value)
                         {
                             additionalProgress.Progress = value;
                             progressChanged = true;
@@ -1005,15 +1005,15 @@ namespace Ookii.Jumbo.Jet
             }
 
             // If there's no input reader but there are additional progress values, we use their average as the base progress.
-            if( InputReader == null && progressChanged && previousProgress.AdditionalProgressValues != null )
+            if (InputReader == null && progressChanged && previousProgress.AdditionalProgressValues != null)
                 previousProgress.Progress = previousProgress.AdditionalProgressValues.Average(v => v.Progress);
 
-            if( progressChanged || _mustReportProgress )
+            if (progressChanged || _mustReportProgress)
             {
                 try
                 {
                     _log.InfoFormat("Reporting progress: {0}", previousProgress);
-                    if( procStatus != null )
+                    if (procStatus != null)
                     {
                         procStatus.Refresh();
                         memStatus.Refresh();
@@ -1022,7 +1022,7 @@ namespace Ookii.Jumbo.Jet
                     }
                     Umbilical.ReportProgress(Context.JobId, Context.TaskAttemptId, previousProgress);
                 }
-                catch( SocketException ex )
+                catch (SocketException ex)
                 {
                     _log.Error("Failed to report progress to the task server.", ex);
                 }
@@ -1036,24 +1036,24 @@ namespace Ookii.Jumbo.Jet
         {
             // TODO: Metrics for TCP channels.
 
-            if( !_isAssociatedTask )
+            if (!_isAssociatedTask)
             {
                 // This is the root stage of a compound stage (or it's not a compound stage), so we need to calculate input metrics.
-                if( _inputReader != null )
+                if (_inputReader != null)
                 {
                     metrics.InputRecords += _inputReader.RecordsRead;
                     metrics.InputBytes += _inputReader.InputBytes;
                 }
 
-                if( Context.StageConfiguration.HasDataInput )
+                if (Context.StageConfiguration.HasDataInput)
                 {
                     // It's currently not possible to have a multi input record reader with data inputs, so this is safe.
-                    if( _inputReader != null )
+                    if (_inputReader != null)
                         metrics.DfsBytesRead += _inputReader.BytesRead;
                 }
-                else if( _inputChannels != null )
+                else if (_inputChannels != null)
                 {
-                    foreach( IInputChannel inputChannel in _inputChannels )
+                    foreach (IInputChannel inputChannel in _inputChannels)
                     {
                         UpdateMetricsFromSource(metrics, inputChannel);
                     }
@@ -1063,17 +1063,17 @@ namespace Ookii.Jumbo.Jet
                 metrics.DiscardedPartitions += _discardedPartitionCount;
             }
 
-            if( _associatedTasks == null || _associatedTasks.Count == 0 )
+            if (_associatedTasks == null || _associatedTasks.Count == 0)
             {
                 // This is the final stage of a compound stage (or it's not a compound stage), so we need to calculate output metrics.
-                if( _outputWriter != null )
+                if (_outputWriter != null)
                 {
                     _outputWriter.FinishWriting();
                     metrics.OutputRecords += _outputWriter.RecordsWritten;
                     metrics.OutputBytes += _outputWriter.OutputBytes;
                 }
 
-                if( Context.StageConfiguration.HasDataOutput )
+                if (Context.StageConfiguration.HasDataOutput)
                 {
                     metrics.DfsBytesWritten += _outputWriter.BytesWritten;
                 }
@@ -1087,7 +1087,7 @@ namespace Ookii.Jumbo.Jet
         private static void UpdateMetricsFromSource(TaskMetrics metrics, object source)
         {
             IHasMetrics metricsSource = source as IHasMetrics;
-            if( metricsSource != null )
+            if (metricsSource != null)
             {
                 metrics.LocalBytesRead += metricsSource.LocalBytesRead;
                 metrics.LocalBytesWritten += metricsSource.LocalBytesWritten;
@@ -1113,7 +1113,7 @@ namespace Ookii.Jumbo.Jet
         private void OnTaskInstanceCreated(EventArgs e)
         {
             EventHandler handler = TaskInstanceCreated;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
     }

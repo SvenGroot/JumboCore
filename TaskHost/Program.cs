@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Jet;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Jet.Channels;
-using Ookii.Jumbo.IO;
+using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
-using System.Diagnostics;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
+using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Rpc;
-using System.Globalization;
 
 namespace TaskHost
 {
@@ -25,7 +25,7 @@ namespace TaskHost
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            if( args.Length != 5 )
+            if (args.Length != 5)
             {
                 _log.Error("Invalid invocation.");
                 return 1;
@@ -41,13 +41,13 @@ namespace TaskHost
             TaskExecutionUtility.RunTask(jobId, jobDirectory, dfsJobDirectory, taskAttemptId);
 
             RpcHelper.CloseConnections(); // Cleanly close connections helps save server resources
-            
+
             return 0;
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             _log.Fatal("An unhandled exception occurred.", (Exception)e.ExceptionObject);
-        } 
+        }
     }
 }

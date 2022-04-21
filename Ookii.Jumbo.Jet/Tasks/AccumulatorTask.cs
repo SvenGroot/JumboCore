@@ -47,7 +47,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         protected AccumulatorTask()
         {
-            if( Attribute.IsDefined(GetType(), typeof(AllowRecordReuseAttribute)) )
+            if (Attribute.IsDefined(GetType(), typeof(AllowRecordReuseAttribute)))
             {
                 _cloneKey = !typeof(TKey).IsValueType;
                 _cloneValue = !typeof(TValue).IsValueType;
@@ -62,22 +62,22 @@ namespace Ookii.Jumbo.Jet.Tasks
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public override void ProcessRecord(Pair<TKey, TValue> record, RecordWriter<Pair<TKey, TValue>> output)
         {
-            if( _acculumatedValues == null )
+            if (_acculumatedValues == null)
                 _acculumatedValues = new Dictionary<TKey, ValueContainer>();
 
             ValueContainer value;
-            if( _acculumatedValues.TryGetValue(record.Key, out value) )
+            if (_acculumatedValues.TryGetValue(record.Key, out value))
                 value.Value = Accumulate(record.Key, value.Value, record.Value);
             else
             {
                 TKey key;
-                if( _cloneKey )
+                if (_cloneKey)
                     key = (TKey)((ICloneable)record.Key).Clone();
                 else
                     key = record.Key;
 
                 value = new ValueContainer();
-                if( _cloneValue )
+                if (_cloneValue)
                     value.Value = (TValue)((ICloneable)record.Value).Clone();
                 else
                     value.Value = record.Value;
@@ -95,15 +95,15 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </remarks>
         public override void Finish(RecordWriter<Pair<TKey, TValue>> output)
         {
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
             bool allowRecordReuse = TaskContext.StageConfiguration.AllowOutputRecordReuse;
             Pair<TKey, TValue> record = null;
-            if( allowRecordReuse )
+            if (allowRecordReuse)
                 record = new Pair<TKey, TValue>();
-            foreach( KeyValuePair<TKey, ValueContainer> item in _acculumatedValues )
+            foreach (KeyValuePair<TKey, ValueContainer> item in _acculumatedValues)
             {
-                if( !allowRecordReuse )
+                if (!allowRecordReuse)
                     record = new Pair<TKey, TValue>();
                 record.Key = item.Key;
                 record.Value = item.Value.Value;
@@ -134,14 +134,14 @@ namespace Ookii.Jumbo.Jet.Tasks
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
-                if( _acculumatedValues != null && _acculumatedValues.Count > 0 )
+                if (_acculumatedValues != null && _acculumatedValues.Count > 0)
                     throw new InvalidOperationException("Cannot change configuration after accumulation has started.");
 
                 string comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.AccumulatorTaskKeyComparerSettingKey, null);
                 IEqualityComparer<TKey> comparer = null;
-                if( comparerTypeName != null )
+                if (comparerTypeName != null)
                 {
                     Type comparerType = Type.GetType(comparerTypeName, true);
                     comparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(comparerType, DfsConfiguration, JetConfiguration, TaskContext);

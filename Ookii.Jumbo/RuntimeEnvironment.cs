@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Management;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Management;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -47,15 +47,15 @@ namespace Ookii.Jumbo
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
             {
-                if( _operatingSystemDescription == null )
+                if (_operatingSystemDescription == null)
                 {
                     string description = null;
-                    if( OperatingSystem.IsWindows() )
+                    if (OperatingSystem.IsWindows())
                         description = GetOSDescriptionWindows();
-                    else if( OperatingSystem.IsLinux() )
+                    else if (OperatingSystem.IsLinux())
                         description = GetOSDescriptionUnix();
 
-                    if( description == null )
+                    if (description == null)
                         _operatingSystemDescription = Environment.OSVersion.ToString();
                     else
                         _operatingSystemDescription = string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0} ({1})", description, Environment.OSVersion);
@@ -75,14 +75,14 @@ namespace Ookii.Jumbo
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
             {
-                if( _processorName == null )
+                if (_processorName == null)
                 {
                     if (OperatingSystem.IsWindows())
                         _processorName = GetProcessorNameWindows();
                     else if (OperatingSystem.IsLinux())
                         _processorName = GetProcessorNameUnix();
 
-                    if( _processorName == null )
+                    if (_processorName == null)
                         _processorName = "unknown";
                 }
                 return _processorName;
@@ -103,7 +103,7 @@ namespace Ookii.Jumbo
             get
             {
                 AssemblyFileVersionAttribute config = (AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute));
-                if( config != null )
+                if (config != null)
                     return new Version(config.Version);
                 else
                     return Assembly.GetExecutingAssembly().GetName().Version;
@@ -124,7 +124,7 @@ namespace Ookii.Jumbo
             get
             {
                 AssemblyConfigurationAttribute config = (AssemblyConfigurationAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyConfigurationAttribute));
-                if( config != null )
+                if (config != null)
                     return config.Configuration;
                 else
                     return null;
@@ -137,19 +137,19 @@ namespace Ookii.Jumbo
         /// <param name="log">The log to write the information to.</param>
         public static void LogEnvironmentInformation(this log4net.ILog log)
         {
-            if( log == null )
+            if (log == null)
                 throw new ArgumentNullException(nameof(log));
 
-            if( log.IsInfoEnabled )
+            if (log.IsInfoEnabled)
             {
                 log.InfoFormat("Jumbo Version: {0} ({1})", JumboVersion, JumboConfiguration);
                 Assembly entry = Assembly.GetEntryAssembly();
-                if( entry != null ) // entry is null when running under nunit.
+                if (entry != null) // entry is null when running under nunit.
                     log.InfoFormat("{0} Version: {1}", entry.GetName().Name, entry.GetName().Version);
                 log.InfoFormat("   OS Version: {0}", OperatingSystemDescription);
                 log.InfoFormat("  CLR Version: {0} ({1} bit runtime)", Description, IntPtr.Size * 8);
                 log.InfoFormat("          CPU: {0} CPUs ({1})", Environment.ProcessorCount, ProcessorName);
-                using( MemoryStatus status = new MemoryStatus() )
+                using (MemoryStatus status = new MemoryStatus())
                 {
                     log.InfoFormat("       Memory: {0}", status);
                 }
@@ -161,10 +161,10 @@ namespace Ookii.Jumbo
         {
             // Use WMI to get the OS name.
             SelectQuery query = new SelectQuery("Win32_OperatingSystem", null, new[] { "Caption" });
-            using( ManagementObjectSearcher searcher = new ManagementObjectSearcher(query) )
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
             {
 
-                foreach( ManagementBaseObject obj in searcher.Get() )
+                foreach (ManagementBaseObject obj in searcher.Get())
                 {
                     return (string)obj["Caption"];
                 }
@@ -204,29 +204,29 @@ namespace Ookii.Jumbo
         private static string GetProcessorNameWindows()
         {
             SelectQuery query = new SelectQuery("Win32_Processor", null, new[] { "Name" });
-            using( ManagementObjectSearcher searcher = new ManagementObjectSearcher(query) )
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
             {
 
                 // We assume all CPUs are identical, which should be true in an SMP system.
-                foreach( ManagementBaseObject obj in searcher.Get() )
+                foreach (ManagementBaseObject obj in searcher.Get())
                 {
                     return (string)obj["Name"];
                 }
             }
-            return null;            
+            return null;
         }
 
         private static string GetProcessorNameUnix()
         {
-            if( File.Exists("/proc/cpuinfo") )
+            if (File.Exists("/proc/cpuinfo"))
             {
-                using( StreamReader reader = File.OpenText("/proc/cpuinfo") )
+                using (StreamReader reader = File.OpenText("/proc/cpuinfo"))
                 {
                     string line;
-                    while( (line = reader.ReadLine()) != null )
+                    while ((line = reader.ReadLine()) != null)
                     {
                         // We assume all CPUs are identical, which should be true in an SMP system.
-                        if( line.StartsWith("model name", StringComparison.Ordinal) )
+                        if (line.StartsWith("model name", StringComparison.Ordinal))
                         {
                             return line.Substring(line.IndexOf(":", StringComparison.Ordinal) + 1).Trim();
                         }

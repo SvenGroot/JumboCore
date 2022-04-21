@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
-using System.Threading;
-using System.Diagnostics;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Test.Dfs
@@ -43,7 +43,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public void TestDataServerDeath()
         {
             Utilities.TraceLineAndFlush("Writing file.");
-            using( DfsOutputStream stream = new DfsOutputStream(_nameServer, "/testfile") )
+            using (DfsOutputStream stream = new DfsOutputStream(_nameServer, "/testfile"))
             {
                 Utilities.GenerateData(stream, 10000000);
             }
@@ -59,11 +59,11 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.Greater(metrics.UnderReplicatedBlockCount, 0);
             Assert.AreEqual(_dataServers - 1, metrics.DataServers.Count);
             Utilities.TraceLineAndFlush(string.Format("Waiting for re-replication of {0} blocks.", metrics.UnderReplicatedBlockCount));
-            for( int x = 0; x < 10; ++x )
+            for (int x = 0; x < 10; ++x)
             {
                 Thread.Sleep(5000);
                 metrics = _nameServer.GetMetrics();
-                if( metrics.UnderReplicatedBlockCount == 0 )
+                if (metrics.UnderReplicatedBlockCount == 0)
                     break;
             }
             metrics = _nameServer.GetMetrics();

@@ -23,12 +23,12 @@ namespace Ookii.Jumbo.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
         {
-            if( writers == null )
+            if (writers == null)
                 throw new ArgumentNullException(nameof(writers));
-            if( partitioner == null )
+            if (partitioner == null)
                 throw new ArgumentNullException(nameof(partitioner));
             _writers = writers.ToArray();
-            if( _writers.Length == 0 )
+            if (_writers.Length == 0)
                 throw new ArgumentException("You must provide at least one record writer.");
 
             _partitioner = partitioner;
@@ -86,7 +86,7 @@ namespace Ookii.Jumbo.IO
         public override void FinishWriting()
         {
             base.FinishWriting();
-            foreach( var writer in _writers )
+            foreach (var writer in _writers)
                 writer.FinishWriting();
         }
 
@@ -96,7 +96,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="record">The record to write to the stream.</param>
         protected override void WriteRecordInternal(T record)
         {
-            if( _writers == null )
+            if (_writers == null)
                 throw new ObjectDisposedException("MultiRecordWriter");
             int partition = _partitioner.GetPartition(record);
             _writers[partition].WriteRecord(record);
@@ -113,11 +113,11 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _writers != null )
+                if (_writers != null)
                 {
-                    foreach( var writer in _writers )
+                    foreach (var writer in _writers)
                         writer.Dispose();
                     _writers = null;
                 }

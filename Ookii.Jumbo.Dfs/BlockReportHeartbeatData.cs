@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="blocks">The list of blocks that this data server has.</param>
         public BlockReportHeartbeatData(IEnumerable<Guid> blocks)
         {
-            if( blocks == null )
+            if (blocks == null)
                 throw new ArgumentNullException(nameof(blocks));
             _blocks = new List<Guid>(blocks).AsReadOnly();
         }

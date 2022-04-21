@@ -1,10 +1,10 @@
-﻿using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet;
-// Copyright (c) Sven Groot (Ookii.org)
+﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
@@ -12,7 +12,7 @@ namespace Ookii.Jumbo.Test.Tasks
     {
         public void Run(RecordReader<Utf8String> input, RecordWriter<Pair<Utf8String, int>> output)
         {
-            foreach( var record in input.EnumerateRecords() )
+            foreach (var record in input.EnumerateRecords())
             {
                 // No output
             }

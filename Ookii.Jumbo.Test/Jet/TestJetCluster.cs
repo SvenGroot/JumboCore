@@ -1,21 +1,21 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using TaskServerApplication;
-using Ookii.Jumbo.Jet;
 using JobServerApplication;
-using System.IO;
-using Ookii.Jumbo.Dfs;
-using System.Diagnostics;
-using Ookii.Jumbo.Dfs.FileSystem;
 using log4net.Appender;
 using log4net.Core;
-using NUnit.Framework;
 using log4net.Layout;
-using System.Reflection;
+using NUnit.Framework;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Jet;
+using TaskServerApplication;
 
 namespace Ookii.Jumbo.Test.Jet
 {
@@ -38,11 +38,11 @@ namespace Ookii.Jumbo.Test.Jet
         public TestJetCluster(int? blockSize, bool eraseExistingData, int taskSlots, CompressionType compressionType, bool localFs = false)
         {
             // We can't run more than one TaskServer because they are single instance.
-            if( !localFs )
+            if (!localFs)
             {
                 _dfsCluster = new Ookii.Jumbo.Test.Dfs.TestDfsCluster(1, 1, blockSize, eraseExistingData);
                 _dfsCluster.Client.WaitForSafeModeOff(Timeout.Infinite);
-                _fileSystemClient = _dfsCluster.Client;                
+                _fileSystemClient = _dfsCluster.Client;
             }
             else
             {
@@ -51,9 +51,9 @@ namespace Ookii.Jumbo.Test.Jet
             }
 
             _path = Utilities.TestOutputPath; // The DFS cluster will have made sure this path is created.
-            if( localFs )
+            if (localFs)
             {
-                if( eraseExistingData && System.IO.Directory.Exists(_path) )
+                if (eraseExistingData && System.IO.Directory.Exists(_path))
                     System.IO.Directory.Delete(_path, true);
                 System.IO.Directory.CreateDirectory(_path);
                 _localFsRoot = Path.Combine(_path, "FileSystem");
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Test.Jet
             _taskServerThread.Join();
             _log.Info("Stopping job server.");
             JobServer.Shutdown();
-            if( _dfsCluster != null )
+            if (_dfsCluster != null)
                 _dfsCluster.Shutdown();
             Thread.Sleep(5000);
             _log.Info("Jet cluster shutdown complete.");

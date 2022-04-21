@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Configuration;
 using System.Xml;
 
 namespace Ookii.Jumbo.Jet
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public static JetConfiguration GetConfiguration(Configuration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
             JetConfiguration config = (JetConfiguration)configuration.GetSection("ookii.jumbo.jet");
             return config ?? new JetConfiguration();

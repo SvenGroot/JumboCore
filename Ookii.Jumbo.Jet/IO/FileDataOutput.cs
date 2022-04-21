@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs;
-using System.Globalization;
-using System.IO;
-using Ookii.Jumbo.Dfs;
 
 namespace Ookii.Jumbo.Jet.IO
 {
@@ -70,19 +70,19 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="recordOptions">The <see cref="RecordStreamOptions" /> for the output.</param>
         public FileDataOutput(DfsConfiguration dfsConfiguration, Type recordWriterType, string outputPath, int blockSize = 0, int replicationFactor = 0, RecordStreamOptions recordOptions = RecordStreamOptions.None)
         {
-            if( dfsConfiguration == null )
+            if (dfsConfiguration == null)
                 throw new ArgumentNullException(nameof(dfsConfiguration));
-            if( recordWriterType == null )
+            if (recordWriterType == null)
                 throw new ArgumentNullException(nameof(recordWriterType));
-            if( outputPath == null )
+            if (outputPath == null)
                 throw new ArgumentNullException(nameof(outputPath));
-            if( blockSize < 0 )
+            if (blockSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize));
-            if( replicationFactor < 0 )
+            if (replicationFactor < 0)
                 throw new ArgumentOutOfRangeException(nameof(replicationFactor));
-            if( recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), false) == null )
+            if (recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), false) == null)
                 throw new ArgumentException("The type is not a record writer.", nameof(recordWriterType));
-            if( FileSystemClient.Create(dfsConfiguration).GetDirectoryInfo(outputPath) == null )
+            if (FileSystemClient.Create(dfsConfiguration).GetDirectoryInfo(outputPath) == null)
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, "The directory '{0}' does not exist.", outputPath));
 
             DfsConfiguration = dfsConfiguration;
@@ -113,7 +113,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </returns>
         public IOutputCommitter CreateOutput(int partitionNumber)
         {
-            if( TaskContext == null || DfsConfiguration == null || JetConfiguration == null )
+            if (TaskContext == null || DfsConfiguration == null || JetConfiguration == null)
                 throw new InvalidOperationException("No task configuration stored in this instance.");
 
             FileSystemClient fileSystem = FileSystemClient.Create(DfsConfiguration);
@@ -131,19 +131,19 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="stage">The stage configuration of the stage.</param>
         public void NotifyAddedToStage(StageConfiguration stage)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            if( _outputPath == null )
+            if (_outputPath == null)
                 throw new InvalidOperationException("No data output configuration is stored in this instance.");
 
             stage.AddSetting(RecordWriterTypeSettingKey, _recordWriterType.AssemblyQualifiedName);
             string outputPathFormat = FileSystemClient.Create(DfsConfiguration).Path.Combine(_outputPath, stage.StageId + "-{0:00000}");
             stage.AddSetting(OutputPathFormatSettingKey, outputPathFormat);
-            if( _blockSize != 0 )
+            if (_blockSize != 0)
                 stage.AddSetting(BlockSizeSettingKey, _blockSize);
-            if( _replicationFactor != 0 )
+            if (_replicationFactor != 0)
                 stage.AddSetting(ReplicationFactorSettingKey, _replicationFactor);
-            if( _recordOptions != RecordStreamOptions.None )
+            if (_recordOptions != RecordStreamOptions.None)
                 stage.AddSetting(RecordOptionsSettingKey, _recordOptions);
         }
 
@@ -154,7 +154,7 @@ namespace Ookii.Jumbo.Jet.IO
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 _recordWriterType = Type.GetType(TaskContext.StageConfiguration.GetSetting(RecordWriterTypeSettingKey, null), true);
                 _blockSize = TaskContext.StageConfiguration.GetSetting(FileDataOutput.BlockSizeSettingKey, 0);
@@ -171,10 +171,10 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>The path of the output file for this partition.</returns>
         public static string GetOutputPath(StageConfiguration stage, int partitionNumber)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
             string outputPathFormat = stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null);
-            if( outputPathFormat == null )
+            if (outputPathFormat == null)
                 throw new InvalidOperationException("The stage settings do not contain an output path format.");
             return string.Format(CultureInfo.InvariantCulture, outputPathFormat, partitionNumber);
         }

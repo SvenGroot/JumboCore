@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Test.Jet
             FileSystemClient client = Cluster.FileSystemClient;
             JobConfiguration config = CreateWordCountJob(client, outputPath, taskKind, channelType, forceFileDownload, maxSplitSize, mapReduce);
             RunJob(client, config);
-            if( taskKind == TaskKind.NoOutput )
+            if (taskKind == TaskKind.NoOutput)
                 VerifyEmptyWordCountOutput(client, config);
             else
                 VerifyWordCountOutput(client, config);
@@ -97,7 +97,7 @@ namespace Ookii.Jumbo.Test.Jet
             var words = job.Process(input, taskKind == TaskKind.NoOutput ? typeof(WordCountNoOutputTask) : (taskKind == TaskKind.Push ? typeof(WordCountPushTask) : typeof(WordCountTask)));
             words.StageId = "WordCount";
             StageOperation countedWords;
-            if( mapReduce )
+            if (mapReduce)
             {
                 // Spill sort with combiner
                 var sorted = job.SpillSortCombine(words, typeof(WordCountReduceTask));
@@ -114,16 +114,16 @@ namespace Ookii.Jumbo.Test.Jet
             JobConfiguration config = job.CreateJob();
 
             // Assumes that if split size is specified, it is always less than the block size.
-            if( maxSplitSize < Int32.MaxValue )
+            if (maxSplitSize < Int32.MaxValue)
                 Assert.Greater(config.GetStage("WordCount").TaskCount, client.GetFileInfo(inputFileName).Blocks.Count);
             else
                 Assert.AreEqual(client.GetFileInfo(inputFileName).Blocks.Count, config.GetStage("WordCount").TaskCount);
 
-            if( forceFileDownload )
+            if (forceFileDownload)
             {
-                foreach( ChannelConfiguration channel in config.GetAllChannels() )
+                foreach (ChannelConfiguration channel in config.GetAllChannels())
                 {
-                    if( channel.ChannelType == ChannelType.File )
+                    if (channel.ChannelType == ChannelType.File)
                         channel.ForceFileDownload = true;
                 }
             }
@@ -153,7 +153,7 @@ namespace Ookii.Jumbo.Test.Jet
             var converted = job.Process(input, typeof(StringConversionTask));
             var sorted = job.MemorySort(converted);
             // Set spill buffer to ensure multiple spills
-            if( channelType == ChannelType.Tcp )
+            if (channelType == ChannelType.Tcp)
                 sorted.InputChannel.Settings.AddSetting(TcpOutputChannel.SpillBufferSizeSettingKey, "1MB");
             else
                 sorted.InputChannel.Settings.AddSetting(JumboSettings.FileChannel.StageOrJob.SpillBufferSize, "1MB");
@@ -166,7 +166,7 @@ namespace Ookii.Jumbo.Test.Jet
 
         protected static string CreateOutputPath(FileSystemClient client, string outputPath)
         {
-            if( outputPath == null )
+            if (outputPath == null)
                 outputPath = "/" + TestContext.CurrentContext.Test.Name;
 
             client.CreateDirectory(outputPath);
@@ -202,11 +202,11 @@ namespace Ookii.Jumbo.Test.Jet
 
             JobConfiguration config = job.CreateJob();
 
-            if( forceFileDownload )
+            if (forceFileDownload)
             {
-                foreach( ChannelConfiguration channel in config.GetAllChannels() )
+                foreach (ChannelConfiguration channel in config.GetAllChannels())
                 {
-                    if( channel.ChannelType == ChannelType.File )
+                    if (channel.ChannelType == ChannelType.File)
                         channel.ForceFileDownload = true;
                 }
             }
@@ -218,27 +218,27 @@ namespace Ookii.Jumbo.Test.Jet
         {
             StageConfiguration stage = config.GetStage("WordCountAggregate");
 
-            List<Pair<Utf8String, int>>[] expectedPartitions = new List<Pair<Utf8String,int>>[stage.TaskCount];
+            List<Pair<Utf8String, int>>[] expectedPartitions = new List<Pair<Utf8String, int>>[stage.TaskCount];
             IPartitioner<Pair<Utf8String, int>> partitioner = new HashPartitioner<Pair<Utf8String, int>>() { Partitions = stage.TaskCount };
             expectedPartitions = new List<Pair<Utf8String, int>>[stage.TaskCount];
-            for( int x = 0; x < expectedPartitions.Length; ++x )
+            for (int x = 0; x < expectedPartitions.Length; ++x)
                 expectedPartitions[x] = new List<Pair<Utf8String, int>>();
-            if( _expectedWordCountOutput == null )
+            if (_expectedWordCountOutput == null)
             {
                 _expectedWordCountOutput = (from w in _words
                                             group w by w into g
                                             select Pair.MakePair(new Utf8String(g.Key), g.Count())).ToList();
             }
-            foreach( var word in _expectedWordCountOutput )
+            foreach (var word in _expectedWordCountOutput)
             {
                 expectedPartitions[partitioner.GetPartition(word)].Add(word);
             }
 
-            for( int partition = 0; partition < stage.TaskCount; ++partition )
+            for (int partition = 0; partition < stage.TaskCount; ++partition)
             {
                 string outputFileName = FileDataOutput.GetOutputPath(stage, partition + 1);
-                using( Stream stream = client.OpenFile(outputFileName) )
-                using( BinaryRecordReader<Pair<Utf8String, int>> reader = new BinaryRecordReader<Pair<Utf8String, int>>(stream) )
+                using (Stream stream = client.OpenFile(outputFileName))
+                using (BinaryRecordReader<Pair<Utf8String, int>> reader = new BinaryRecordReader<Pair<Utf8String, int>>(stream))
                 {
                     List<Pair<Utf8String, int>> actual = reader.EnumerateRecords().ToList();
                     CollectionAssert.AreEquivalent(expectedPartitions[partition], actual);
@@ -249,7 +249,7 @@ namespace Ookii.Jumbo.Test.Jet
         protected void VerifyEmptyWordCountOutput(FileSystemClient client, JobConfiguration config)
         {
             StageConfiguration stage = config.GetStage("WordCountAggregate");
-            for( int partition = 0; partition < stage.TaskCount; ++partition )
+            for (int partition = 0; partition < stage.TaskCount; ++partition)
             {
                 string outputFileName = FileDataOutput.GetOutputPath(stage, partition + 1);
                 Assert.AreEqual(0L, client.GetFileInfo(outputFileName).Size);
@@ -265,20 +265,20 @@ namespace Ookii.Jumbo.Test.Jet
             IPartitioner<int> partitioner = partitionerType == null ? new HashPartitioner<int>() : (IPartitioner<int>)Activator.CreateInstance(partitionerType);
             partitioner.Partitions = partitions;
             List<int>[] expectedSortPartitions = new List<int>[partitions];
-            for( int x = 0; x < partitions; ++x )
+            for (int x = 0; x < partitions; ++x)
                 expectedSortPartitions[x] = new List<int>();
 
-            foreach( int value in _sortData )
+            foreach (int value in _sortData)
             {
                 expectedSortPartitions[partitioner.GetPartition(value)].Add(value);
             }
 
-            for( int x = 0; x < partitions; ++x )
+            for (int x = 0; x < partitions; ++x)
             {
                 expectedSortPartitions[x].Sort();
 
-                using( Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)) )
-                using( BinaryRecordReader<int> reader = new BinaryRecordReader<int>(stream) )
+                using (Stream stream = client.OpenFile(FileDataOutput.GetOutputPath(stage, x + 1)))
+                using (BinaryRecordReader<int> reader = new BinaryRecordReader<int>(stream))
                 {
                     CollectionAssert.AreEqual(expectedSortPartitions[x], reader.EnumerateRecords().ToList());
                 }
@@ -289,11 +289,11 @@ namespace Ookii.Jumbo.Test.Jet
         {
             const string fileName = "/input.txt";
 
-            if( _words == null )
+            if (_words == null)
             {
                 FileSystemClient fileSystemClient = Cluster.FileSystemClient;
-                using( Stream stream = fileSystemClient.CreateFile(fileName) )
-                using( StreamWriter writer = new StreamWriter(stream) )
+                using (Stream stream = fileSystemClient.CreateFile(fileName))
+                using (StreamWriter writer = new StreamWriter(stream))
                 {
                     _words = Utilities.GenerateDataWords(writer, 200000, 10);
                 }
@@ -307,15 +307,15 @@ namespace Ookii.Jumbo.Test.Jet
         {
             const int recordCount = 2500000;
             const string fileName = "/sort.txt";
-            if( _sortData == null )
+            if (_sortData == null)
             {
                 Random rnd = new Random();
 
                 _sortData = new List<int>();
-                using( Stream stream = client.CreateFile(fileName) )
-                using( TextRecordWriter<int> writer = new TextRecordWriter<int>(stream) )
+                using (Stream stream = client.CreateFile(fileName))
+                using (TextRecordWriter<int> writer = new TextRecordWriter<int>(stream))
                 {
-                    for( int x = 0; x < recordCount; ++x )
+                    for (int x = 0; x < recordCount; ++x)
                     {
                         int record = rnd.Next();
                         _sortData.Add(record);

@@ -42,17 +42,17 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
             int numGroups = TaskContext.JobConfiguration.GetSetting("PFPGrowth.Groups", 50);
             int maxPerGroup = _fgList.Count / numGroups;
-            if( _fgList.Count % numGroups != 0 )
+            if (_fgList.Count % numGroups != 0)
                 maxPerGroup++;
 
             _log.InfoFormat("Dividing {0} items into {1} groups with {2} items per group...", _fgList.Count, numGroups, maxPerGroup);
 
             int groupSize = 0;
             int groupId = 0;
-            foreach( FGListItem item in _fgList )
+            foreach (FGListItem item in _fgList)
             {
                 item.GroupId = groupId;
-                if( ++groupSize == maxPerGroup )
+                if (++groupSize == maxPerGroup)
                 {
                     groupSize = 0;
                     ++groupId;

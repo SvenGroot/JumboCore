@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -16,7 +16,7 @@ namespace DfsShell.Commands
         public override void Run()
         {
             DfsClient client = Client as DfsClient;
-            if( client == null )
+            if (client == null)
                 Console.WriteLine("No metrics for the configured file system.");
             else
             {

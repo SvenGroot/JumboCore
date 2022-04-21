@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -31,9 +31,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public SegmentedChecksumInputStream(Stream baseStream, int segmentCount, CompressionType compressionType, long uncompressedSize)
         {
-            if( baseStream == null )
+            if (baseStream == null)
                 throw new ArgumentNullException(nameof(baseStream));
-            if( segmentCount < 1 )
+            if (segmentCount < 1)
                 throw new ArgumentOutOfRangeException(nameof(segmentCount));
             _baseStream = baseStream;
             _length = uncompressedSize;
@@ -80,20 +80,20 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(SegmentedChecksumInputStream).FullName);
 
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
-            if( _currentSegment == null ) // Can only happen if the stream was empty
+            if (_currentSegment == null) // Can only happen if the stream was empty
                 return 0;
 
             int totalBytesRead = 0;
-            while( count > 0 )
+            while (count > 0)
             {
                 int bytesRead = _currentSegment.Read(buffer, offset, count);
-                if( bytesRead == 0 && !NextSegment() )
+                if (bytesRead == 0 && !NextSegment())
                     break;
                 count -= bytesRead;
                 offset += bytesRead;
@@ -123,29 +123,29 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
                     _disposed = true;
-                    if( _currentSegment != null )
+                    if (_currentSegment != null)
                     {
                         _currentSegment.Dispose();
                         _currentSegment = null;
                     }
                     _baseStream.Dispose();
-                    if( _deleteFile )
+                    if (_deleteFile)
                     {
                         try
                         {
-                            if( File.Exists(_fileName) )
+                            if (File.Exists(_fileName))
                             {
                                 File.Delete(_fileName);
                             }
                         }
-                        catch( IOException ex )
+                        catch (IOException ex)
                         {
                             _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                         }
-                        catch( UnauthorizedAccessException ex )
+                        catch (UnauthorizedAccessException ex)
                         {
                             _log.Error(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Failed to delete file {0}.", _fileName), ex);
                         }
@@ -160,10 +160,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private bool NextSegment()
         {
-            if( _currentSegment != null )
+            if (_currentSegment != null)
                 _currentSegment.Dispose();
 
-            if( _position < _length )
+            if (_position < _length)
             {
                 long segmentLength = ReadInt64();
                 long uncompressedLength = ReadInt64();
@@ -177,7 +177,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private long ReadInt64()
         {
             int bytesRead = _baseStream.Read(_sizeBuffer, 0, _sizeBuffer.Length);
-            if( bytesRead < _sizeBuffer.Length )
+            if (bytesRead < _sizeBuffer.Length)
                 throw new IOException("Invalid segmented stream.");
 
             return BitConverter.ToInt64(_sizeBuffer, 0);

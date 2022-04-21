@@ -50,7 +50,7 @@ namespace Ookii.Jumbo.Test.Jet
             JobConfiguration config = CreateSpillSortJob(client, null, 1, forceFileDownload);
             config.AddSetting(JumboSettings.FileChannel.StageOrJob.SpillBufferSize, "3MB");
             config.AddTypedSetting(MergeRecordReaderConstants.PurgeMemorySettingKey, true);
-            if( !useMemoryStorage )
+            if (!useMemoryStorage)
                 config.AddTypedSetting(JumboSettings.FileChannel.StageOrJob.MemoryStorageSize, 0L);
             JobStatus status = RunJob(client, config);
             VerifySortOutput(client, config);

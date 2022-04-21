@@ -30,11 +30,11 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcClientConnectionHandler GetConnection()
         {
-            if( _connectionCount != 0 )
+            if (_connectionCount != 0)
             {
-                lock( this )
+                lock (this)
                 {
-                    if( _firstConnection != null )
+                    if (_firstConnection != null)
                     {
                         RpcClientConnectionHandler handler = _firstConnection.Handler;
                         _firstConnection = _firstConnection.Next;
@@ -48,7 +48,7 @@ namespace Ookii.Jumbo.Rpc
 
         public void ReturnConnection(RpcClientConnectionHandler handler)
         {
-            lock( this )
+            lock (this)
             {
                 _firstConnection = new CachedConnection() { Handler = handler, Next = _firstConnection, LastUsed = DateTime.UtcNow };
                 ++_connectionCount;
@@ -57,9 +57,9 @@ namespace Ookii.Jumbo.Rpc
 
         public void CloseConnections()
         {
-            lock( this )
+            lock (this)
             {
-                while( _firstConnection != null )
+                while (_firstConnection != null)
                 {
                     _firstConnection.Handler.Close();
                     _firstConnection = _firstConnection.Next;
@@ -70,18 +70,18 @@ namespace Ookii.Jumbo.Rpc
 
         public void TimeoutConnections(DateTime now)
         {
-            if( _connectionCount != 0 )
+            if (_connectionCount != 0)
             {
-                lock( this )
+                lock (this)
                 {
                     CachedConnection connection = _firstConnection;
                     CachedConnection previous = null;
-                    while( connection != null )
+                    while (connection != null)
                     {
-                        if( now - connection.LastUsed > _connectionTimeout )
+                        if (now - connection.LastUsed > _connectionTimeout)
                         {
                             // Connection timed out, remove it from the list
-                            if( previous == null )
+                            if (previous == null)
                                 _firstConnection = connection.Next;
                             else
                                 previous.Next = connection.Next;

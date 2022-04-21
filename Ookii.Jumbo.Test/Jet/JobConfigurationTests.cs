@@ -38,14 +38,14 @@ namespace Ookii.Jumbo.Test.Jet
 
             public override JumboDirectory GetDirectoryInfo(string path)
             {
-                if( path == "/output" )
+                if (path == "/output")
                     return new JumboDirectory("/output", "output", DateTime.UtcNow, null);
                 return null;
             }
 
             public override JumboFile GetFileInfo(string path)
             {
-                if( path.StartsWith("/test") )
+                if (path.StartsWith("/test"))
                     return new JumboFile(path, Path.GetFileName(path), DateTime.UtcNow, 5 * _blockSize, _blockSize, 1, RecordStreamOptions.None, false, Enumerable.Repeat(Guid.Empty, 5));
                 return null;
             }
@@ -150,7 +150,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(typeof(LineRecordReader).AssemblyQualifiedName, stage.GetSetting(FileDataInput.RecordReaderTypeSettingKey, null));
             Assert.AreEqual(file.FullPath, stage.GetSetting(FileDataInput.InputPathSettingKey, null));
             int x = 0;
-            foreach( FileTaskInput input in stage.DataInput.TaskInputs )
+            foreach (FileTaskInput input in stage.DataInput.TaskInputs)
             {
                 Assert.AreEqual(x++ * (_blockSize / splitsPerBlock), input.Offset);
                 Assert.AreEqual(_blockSize / splitsPerBlock, input.Size);
@@ -207,7 +207,7 @@ namespace Ookii.Jumbo.Test.Jet
             var stage = target.AddStage("SecondStage", typeof(Tasks.LineAdderTask), taskCount, new[] { new InputStageInfo(inputStage1), new InputStageInfo(inputStage2) }, typeof(MultiRecordReader<int>));
             stage.DataOutput = new FileDataOutput(_fakeConfiguration, typeof(TextRecordWriter<int>), outputPath);
 
-            
+
             List<StageConfiguration> stages = target.GetInputStagesForStage("SecondStage").ToList();
 
             Assert.IsTrue(stages.Contains(inputStage1));
@@ -283,7 +283,7 @@ namespace Ookii.Jumbo.Test.Jet
             const int taskCount = 3;
             const string outputPath = "/output";
             StageConfiguration stage = target.AddStage("SecondStage", typeof(Tasks.LineAdderTask), taskCount, new[] { new InputStageInfo(inputStage1), new InputStageInfo(inputStage2) }, typeof(MultiRecordReader<int>));
-            if( useOutput )
+            if (useOutput)
                 stage.DataOutput = new FileDataOutput(_fakeConfiguration, typeof(TextRecordWriter<int>), outputPath);
 
             Assert.AreEqual(taskCount, stage.TaskCount);
@@ -294,7 +294,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.IsNull(stage.DataInput);
             Assert.IsNull(stage.DataInputType.ReferencedType);
             Assert.IsFalse(stage.HasDataInput);
-            if( useOutput )
+            if (useOutput)
             {
                 Assert.IsNotNull(stage.DataOutput);
                 Assert.IsTrue(stage.HasDataOutput);

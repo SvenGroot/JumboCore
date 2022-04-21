@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.IO;
-using System.Globalization;
-using System.Collections.Concurrent;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
     /// </summary>
     public abstract class FileSystemClient
     {
-        private static readonly ConcurrentDictionary<string, Type> _fileSystemTypes = new ConcurrentDictionary<string,Type>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, Type> _fileSystemTypes = new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
         private readonly DfsConfiguration _configuration;
 
@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="configuration">The <see cref="DfsConfiguration"/> for the file system.</param>
         protected FileSystemClient(DfsConfiguration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
             _configuration = configuration;
         }
@@ -64,15 +64,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="fileSystemClientType">Type of the file system client.</param>
         public static void RegisterFileSystem(string scheme, Type fileSystemClientType)
         {
-            if( scheme == null )
+            if (scheme == null)
                 throw new ArgumentNullException(nameof(scheme));
-            if( fileSystemClientType == null )
+            if (fileSystemClientType == null)
                 throw new ArgumentNullException(nameof(fileSystemClientType));
-            if( string.IsNullOrWhiteSpace(scheme) )
+            if (string.IsNullOrWhiteSpace(scheme))
                 throw new ArgumentException("The scheme may not be empty.", nameof(scheme));
-            if( scheme.Equals("jdfs", StringComparison.OrdinalIgnoreCase) || scheme.Equals("file", StringComparison.OrdinalIgnoreCase) )
+            if (scheme.Equals("jdfs", StringComparison.OrdinalIgnoreCase) || scheme.Equals("file", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("You cannot replace the jdfs or file schemes.", nameof(scheme));
-            if( !fileSystemClientType.IsSubclassOf(typeof(FileSystemClient)) )
+            if (!fileSystemClientType.IsSubclassOf(typeof(FileSystemClient)))
                 throw new ArgumentException("The specified type does not derive from FileSystemClient.", nameof(fileSystemClientType));
 
             _fileSystemTypes[scheme] = fileSystemClientType;
@@ -85,12 +85,12 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>An instance of a class deriving form <see cref="FileSystemClient"/>.</returns>
         public static FileSystemClient Create(DfsConfiguration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
-            if( configuration.FileSystem.Url.Scheme == "file" )
+            if (configuration.FileSystem.Url.Scheme == "file")
                 return new LocalFileSystemClient(configuration);
-            else if( configuration.FileSystem.Url.Scheme == "jdfs" )
+            else if (configuration.FileSystem.Url.Scheme == "jdfs")
                 return new DfsClient(configuration);
             else
             {
@@ -138,7 +138,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// If the directory specified by <paramref name="path"/> already exists, this function does nothing and no exception is thrown.
         /// </remarks>
         public abstract void CreateDirectory(string path);
-        
+
         /// <summary>
         /// Uploads the contents of the specified stream to the file system.
         /// </summary>
@@ -160,12 +160,12 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadStream(Stream stream, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if( targetPath == null )
+            if (targetPath == null)
                 throw new ArgumentNullException(nameof(targetPath));
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            using( Stream outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None) )
+            using (Stream outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None))
             {
                 CopyStream(targetPath, stream, outputStream, progressCallback);
             }
@@ -194,17 +194,17 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadFile(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if( targetPath == null )
+            if (targetPath == null)
                 throw new ArgumentNullException(nameof(targetPath));
-            if( localSourcePath == null )
+            if (localSourcePath == null)
                 throw new ArgumentNullException(nameof(localSourcePath));
             JumboDirectory dir = GetDirectoryInfo(targetPath);
-            if( dir != null )
+            if (dir != null)
             {
                 string fileName = System.IO.Path.GetFileName(localSourcePath);
                 targetPath = Path.Combine(targetPath, fileName);
             }
-            using( FileStream inputStream = File.OpenRead(localSourcePath) )
+            using (FileStream inputStream = File.OpenRead(localSourcePath))
             {
                 UploadStream(inputStream, targetPath, blockSize, replicationFactor, useLocalReplica, progressCallback);
             }
@@ -232,19 +232,19 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadDirectory(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if( localSourcePath == null )
+            if (localSourcePath == null)
                 throw new ArgumentNullException(nameof(localSourcePath));
-            if( targetPath == null )
+            if (targetPath == null)
                 throw new ArgumentNullException(nameof(targetPath));
 
             string[] files = System.IO.Directory.GetFiles(localSourcePath);
 
             JumboDirectory directory = GetDirectoryInfo(targetPath);
-            if( directory != null )
+            if (directory != null)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the file system.", targetPath), nameof(targetPath));
             CreateDirectory(targetPath);
 
-            foreach( string file in files )
+            foreach (string file in files)
             {
                 string targetFile = Path.Combine(targetPath, System.IO.Path.GetFileName(file));
                 UploadFile(file, targetFile, blockSize, replicationFactor, useLocalReplica, progressCallback);
@@ -269,11 +269,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadStream(string sourcePath, Stream stream, ProgressCallback progressCallback)
         {
-            if( sourcePath == null )
+            if (sourcePath == null)
                 throw new ArgumentNullException(nameof(sourcePath));
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            using( Stream inputStream = OpenFile(sourcePath) )
+            using (Stream inputStream = OpenFile(sourcePath))
             {
                 CopyStream(sourcePath, inputStream, stream, progressCallback);
             }
@@ -299,17 +299,17 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadFile(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
-            if( sourcePath == null )
+            if (sourcePath == null)
                 throw new ArgumentNullException(nameof(sourcePath));
-            if( localTargetPath == null )
+            if (localTargetPath == null)
                 throw new ArgumentNullException(nameof(localTargetPath));
 
-            if( Directory.Exists(localTargetPath) )
+            if (Directory.Exists(localTargetPath))
             {
                 string fileName = Path.GetFileName(sourcePath);
                 localTargetPath = System.IO.Path.Combine(localTargetPath, fileName);
             }
-            using( FileStream stream = File.Create(localTargetPath) )
+            using (FileStream stream = File.Create(localTargetPath))
             {
                 DownloadStream(sourcePath, stream, progressCallback);
             }
@@ -328,7 +328,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         {
             DownloadDirectory(sourcePath, localTargetPath, null);
         }
-        
+
         /// <summary>
         /// Downloads the files in the specified directory on the file system.
         /// </summary>
@@ -341,18 +341,18 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadDirectory(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
-            if( sourcePath == null )
+            if (sourcePath == null)
                 throw new ArgumentNullException(nameof(sourcePath));
-            if( localTargetPath == null )
+            if (localTargetPath == null)
                 throw new ArgumentNullException(nameof(localTargetPath));
 
             JumboDirectory dir = GetDirectoryInfo(sourcePath);
-            if( dir == null )
+            if (dir == null)
                 throw new DfsException("The specified directory does not exist.");
-            foreach( JumboFileSystemEntry entry in dir.Children )
+            foreach (JumboFileSystemEntry entry in dir.Children)
             {
                 JumboFile file = entry as JumboFile;
-                if( file != null )
+                if (file != null)
                 {
                     string localFile = System.IO.Path.Combine(localTargetPath, file.Name);
                     DownloadFile(file.FullPath, localFile, progressCallback);
@@ -440,20 +440,20 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             int bytesRead;
             int prevPercentage = -1;
             float length = inputStream.Length;
-            if( progressCallback != null )
+            if (progressCallback != null)
                 progressCallback(fileName, 0, 0L);
-            while( (bytesRead = inputStream.Read(buffer, 0, buffer.Length)) != 0 )
+            while ((bytesRead = inputStream.Read(buffer, 0, buffer.Length)) != 0)
             {
                 int percentage = (int)((inputStream.Position / length) * 100);
-                if( percentage > prevPercentage )
+                if (percentage > prevPercentage)
                 {
                     prevPercentage = percentage;
-                    if( progressCallback != null )
+                    if (progressCallback != null)
                         progressCallback(fileName, percentage, inputStream.Position);
                 }
                 outputStream.Write(buffer, 0, bytesRead);
             }
-            if( progressCallback != null )
+            if (progressCallback != null)
                 progressCallback(fileName, 100, inputStream.Length);
         }
     }

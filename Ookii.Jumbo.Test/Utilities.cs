@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Test.Tasks;
-using Ookii.Jumbo.IO;
-using log4net.Layout;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using log4net.Appender;
 using log4net.Core;
+using log4net.Layout;
 using NUnit.Framework;
-using System.Reflection;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Test.Tasks;
 
 namespace Ookii.Jumbo.Test
 {
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Test
         private static string GetOutputPath()
         {
             string path = Environment.GetEnvironmentVariable("JUMBO_TESTOUTPUT");
-            if( string.IsNullOrEmpty(path) )
+            if (string.IsNullOrEmpty(path))
                 path = System.IO.Path.Combine(Environment.CurrentDirectory, "TestOutput");
             return path;
         }
@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.Test
         public static string GenerateFile(string name, int size)
         {
             string path = System.IO.Path.Combine(TestOutputPath, name);
-            using( FileStream stream = System.IO.File.Create(path) )
+            using (FileStream stream = System.IO.File.Create(path))
             {
                 GenerateData(stream, size);
             }
@@ -74,7 +74,7 @@ namespace Ookii.Jumbo.Test
             Random rnd = new Random();
             int sizeRemaining = size;
             byte[] buffer = new byte[4096];
-            while( sizeRemaining > 0 )
+            while (sizeRemaining > 0)
             {
                 int writeSize = Math.Min(buffer.Length, sizeRemaining);
                 rnd.NextBytes(buffer);
@@ -87,9 +87,9 @@ namespace Ookii.Jumbo.Test
         {
             Random rnd = new Random();
             byte[] data = new byte[recordSize];
-            for( int x = 0; x < records; ++x )
+            for (int x = 0; x < records; ++x)
             {
-                for( int i = 0; i < recordSize; ++i )
+                for (int i = 0; i < recordSize; ++i)
                     data[i] = (byte)rnd.Next('a', 'z');
                 yield return new Utf8String(data);
             }
@@ -100,10 +100,10 @@ namespace Ookii.Jumbo.Test
             Random rnd = new Random();
             int sizeRemaining = size;
             int lines = 0;
-            while( sizeRemaining > 0 )
+            while (sizeRemaining > 0)
             {
                 stream.WriteByte((byte)rnd.Next('a', 'z'));
-                if( sizeRemaining % 80 == 0 )
+                if (sizeRemaining % 80 == 0)
                 {
                     stream.WriteByte((byte)'\n');
                     --sizeRemaining;
@@ -118,18 +118,18 @@ namespace Ookii.Jumbo.Test
         {
             List<string> result = new List<string>();
             Random rnd = new Random();
-            for( int line = 0; line < lines; ++line )
+            for (int line = 0; line < lines; ++line)
             {
-                for( int word = 0; word < wordsPerLine; ++word )
+                for (int word = 0; word < wordsPerLine; ++word)
                 {
-                    if( writer != null && word != 0 )
+                    if (writer != null && word != 0)
                         writer.Write(" ");
                     string wordToWrite = _words[rnd.Next(_words.Length)];
                     result.Add(wordToWrite);
-                    if( writer != null )
+                    if (writer != null)
                         writer.Write(wordToWrite);
                 }
-                if( writer != null )
+                if (writer != null)
                     writer.WriteLine();
             }
             return result;
@@ -140,10 +140,10 @@ namespace Ookii.Jumbo.Test
             List<string> result = new List<string>(count);
             StringBuilder sb = new StringBuilder(length);
             Random rnd = new Random();
-            for( int x = 0; x < count; ++x )
+            for (int x = 0; x < count; ++x)
             {
                 sb.Length = 0;
-                for( int l = 0; l < length; ++l )
+                for (int l = 0; l < length; ++l)
                 {
                     sb.Append((char)rnd.Next('a', 'z'));
                 }
@@ -160,7 +160,7 @@ namespace Ookii.Jumbo.Test
         public static List<int> GenerateNumberData(int count, Random rnd)
         {
             List<int> result = new List<int>();
-            for( int x = 0; x < count; ++x )
+            for (int x = 0; x < count; ++x)
                 result.Add(rnd.Next());
             return result;
         }
@@ -193,11 +193,11 @@ namespace Ookii.Jumbo.Test
             do
             {
                 bytesRead = src.Read(buffer, 0, buffer.Length);
-                if( bytesRead > 0 )
+                if (bytesRead > 0)
                 {
                     dest.Write(buffer, 0, bytesRead);
                 }
-            } while( bytesRead > 0 );
+            } while (bytesRead > 0);
         }
 
         public static bool CompareStream(Stream stream1, Stream stream2)
@@ -215,12 +215,12 @@ namespace Ookii.Jumbo.Test
             {
                 bytesRead1 = stream1.Read(buffer1, 0, buffer1.Length);
                 bytesRead2 = stream2.Read(buffer2, 0, buffer2.Length);
-                if( bytesRead1 > 0 && bytesRead1 == bytesRead2 )
+                if (bytesRead1 > 0 && bytesRead1 == bytesRead2)
                 {
-                    if( !CompareArray(buffer1, 0, buffer2, 0, bytesRead1) )
+                    if (!CompareArray(buffer1, 0, buffer2, 0, bytesRead1))
                         return false;
                 }
-            } while( bytesRead1 > 0 && bytesRead1 == bytesRead2 );
+            } while (bytesRead1 > 0 && bytesRead1 == bytesRead2);
             return bytesRead1 == bytesRead2;
         }
 
@@ -232,9 +232,9 @@ namespace Ookii.Jumbo.Test
         public static bool CompareList<T>(IList<T> list1, int offset1, IList<T> list2, int offset2, int count)
         {
             int end = offset1 + count;
-            for( int i1 = offset1, i2 = offset2; i1 < end; ++i1, ++i2 )
+            for (int i1 = offset1, i2 = offset2; i1 < end; ++i1, ++i2)
             {
-                if( !object.Equals(list1[i1], list2[i2]) )
+                if (!object.Equals(list1[i1], list2[i2]))
                     return false;
             }
             return true;
@@ -242,7 +242,7 @@ namespace Ookii.Jumbo.Test
 
         public static bool CompareList<T>(IList<T> list1, IList<T> list2)
         {
-            if( list1.Count != list2.Count )
+            if (list1.Count != list2.Count)
                 return false;
             else
                 return CompareList(list1, 0, list2, 0, list1.Count);

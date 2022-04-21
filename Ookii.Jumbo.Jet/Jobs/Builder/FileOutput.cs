@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.IO;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
@@ -19,11 +19,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         internal FileOutput(string path, Type recordWriterType)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( recordWriterType == null )
+            if (recordWriterType == null)
                 throw new ArgumentNullException(nameof(recordWriterType));
-            if( recordWriterType.ContainsGenericParameters )
+            if (recordWriterType.ContainsGenericParameters)
                 throw new ArgumentException("The record writer type must be a closed constructed generic type.", nameof(recordWriterType));
 
             _path = path;
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             get { return _recordWriterType; }
         }
-        
+
         /// <summary>
         /// Gets the type of the records that can be written to this output.
         /// </summary>
@@ -81,9 +81,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         void IOperationOutput.ApplyOutput(FileSystemClient fileSystem, StageConfiguration stage)
         {
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
 
             stage.DataOutput = new FileDataOutput(fileSystem.Configuration, RecordWriterType, Path, BlockSize, ReplicationFactor, RecordOptions);

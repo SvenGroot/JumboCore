@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="job">The job.</param>
         public ArchivedJob(JobStatus job)
         {
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
 
             JobId = job.JobId;
@@ -82,16 +82,16 @@ namespace Ookii.Jumbo.Jet
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(BinaryWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.Write(JobId.ToByteArray());
             writer.Write(JobName != null);
-            if( JobName != null )
+            if (JobName != null)
                 writer.Write(JobName);
             writer.Write(IsSuccessful);
             writer.Write(StartTime.Ticks);
             writer.Write(EndTime.Ticks);
-            writer.Write(TaskCount);            
+            writer.Write(TaskCount);
         }
 
         /// <summary>
@@ -100,11 +100,11 @@ namespace Ookii.Jumbo.Jet
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(BinaryReader reader)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
             JobId = new Guid(reader.ReadBytes(16));
-            if( reader.ReadBoolean() )
+            if (reader.ReadBoolean())
                 JobName = reader.ReadString();
             IsSuccessful = reader.ReadBoolean();
             StartTime = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);

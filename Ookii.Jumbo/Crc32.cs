@@ -52,7 +52,7 @@ namespace Ookii.Jumbo
         /// <param name="buffer">An array of bytes.</param>
         public void Update(byte[] buffer)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
 
             Update(buffer, 0, buffer.Length);
@@ -66,13 +66,13 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes from <paramref name="buffer"/> to be used in the checksum calculation.</param>
         public void Update(byte[] buffer, int offset, int count)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > buffer.Length )
+            if (offset + count > buffer.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
             _crc = Force.Crc32.Crc32Algorithm.Append(_crc, buffer, offset, count);

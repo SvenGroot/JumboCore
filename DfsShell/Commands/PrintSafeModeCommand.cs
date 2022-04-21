@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
@@ -15,7 +15,7 @@ namespace DfsShell.Commands
         public override void Run()
         {
             DfsClient client = Client as DfsClient;
-            if( client != null && client.NameServer.SafeMode )
+            if (client != null && client.NameServer.SafeMode)
                 Console.WriteLine("Safe mode is ON.");
             else
                 Console.WriteLine("Safe mode is OFF.");

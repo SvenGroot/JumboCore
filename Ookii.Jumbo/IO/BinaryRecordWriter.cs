@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="record">The record to write.</param>
         protected override void WriteRecordInternal(T record)
         {
-            if( record == null )
+            if (record == null)
                 throw new ArgumentNullException(nameof(record));
             CheckDisposed();
 
@@ -56,9 +56,9 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _writer != null )
+                if (_writer != null)
                 {
                     ((IDisposable)_writer).Dispose();
                     _writer = null;
@@ -68,7 +68,7 @@ namespace Ookii.Jumbo.IO
 
         private void CheckDisposed()
         {
-            if( _writer == null )
+            if (_writer == null)
                 throw new ObjectDisposedException("BinaryRecordWriter");
         }
     }

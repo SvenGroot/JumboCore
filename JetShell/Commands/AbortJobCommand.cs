@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 
 namespace JetShell.Commands
 {
@@ -20,7 +20,7 @@ namespace JetShell.Commands
 
         public override void Run()
         {
-            if( JetClient.JobServer.AbortJob(_jobId) )
+            if (JetClient.JobServer.AbortJob(_jobId))
             {
                 Console.WriteLine("Aborted job {0:B}.", _jobId);
             }

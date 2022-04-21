@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -15,14 +15,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(SByte value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public SByte Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadSByte();
             }
@@ -32,14 +32,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Int16 value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Int16 Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadInt16();
             }
@@ -49,14 +49,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(int value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public int Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadInt32();
             }
@@ -66,14 +66,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Int64 value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Int64 Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadInt64();
             }
@@ -83,14 +83,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Byte value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Byte Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadByte();
             }
@@ -100,14 +100,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(UInt16 value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public UInt16 Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadUInt16();
             }
@@ -117,14 +117,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(UInt32 value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public UInt32 Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadUInt32();
             }
@@ -134,14 +134,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(UInt64 value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public UInt64 Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadUInt64();
             }
@@ -151,14 +151,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Decimal value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Decimal Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadDecimal();
             }
@@ -168,14 +168,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Single value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Single Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadSingle();
             }
@@ -185,14 +185,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Double value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public Double Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadDouble();
             }
@@ -202,14 +202,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(String value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public String Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadString();
             }
@@ -219,7 +219,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(DateTime value, System.IO.BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write((int)value.Kind);
                 writer.Write(value.Ticks);
@@ -227,7 +227,7 @@ namespace Ookii.Jumbo.IO
 
             public DateTime Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 DateTimeKind kind = (DateTimeKind)reader.ReadInt32();
                 long ticks = reader.ReadInt64();
@@ -239,14 +239,14 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(bool value, BinaryWriter writer)
             {
-                if( writer == null )
+                if (writer == null)
                     throw new ArgumentNullException(nameof(writer));
                 writer.Write(value);
             }
 
             public bool Read(BinaryReader reader)
             {
-                if( reader == null )
+                if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
                 return reader.ReadBoolean();
             }
@@ -258,7 +258,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
             }
@@ -273,7 +273,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -289,7 +289,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -306,7 +306,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3, T4> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -324,7 +324,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3, T4, T5> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -343,7 +343,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -363,7 +363,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6, T7> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -384,7 +384,7 @@ namespace Ookii.Jumbo.IO
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> value, BinaryWriter writer)
             {
-                if( value == null )
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
                 ValueWriter<T1>.WriteValue(value.Item1, writer);
                 ValueWriter<T2>.WriteValue(value.Item2, writer);
@@ -409,52 +409,52 @@ namespace Ookii.Jumbo.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public static object GetWriter(Type type)
         {
-            if( type == typeof(int) )
+            if (type == typeof(int))
                 return new Int32Writer();
-            else if( type == typeof(long) )
+            else if (type == typeof(long))
                 return new Int64Writer();
-            else if( type == typeof(String) )
+            else if (type == typeof(String))
                 return new StringWriter();
-            else if( type == typeof(Single) )
+            else if (type == typeof(Single))
                 return new SingleWriter();
-            else if( type == typeof(Double) )
+            else if (type == typeof(Double))
                 return new DoubleWriter();
-            else if( type == typeof(SByte) )
+            else if (type == typeof(SByte))
                 return new SByteWriter();
-            else if( type == typeof(Int16) )
+            else if (type == typeof(Int16))
                 return new Int16Writer();
-            else if( type == typeof(Byte) )
+            else if (type == typeof(Byte))
                 return new ByteWriter();
-            else if( type == typeof(UInt16) )
+            else if (type == typeof(UInt16))
                 return new UInt16Writer();
-            else if( type == typeof(UInt32) )
+            else if (type == typeof(UInt32))
                 return new UInt32Writer();
-            else if( type == typeof(UInt64) )
+            else if (type == typeof(UInt64))
                 return new UInt64Writer();
-            else if( type == typeof(Decimal) )
+            else if (type == typeof(Decimal))
                 return new DecimalWriter();
-            else if( type == typeof(DateTime) )
+            else if (type == typeof(DateTime))
                 return new DateTimeWriter();
-            else if( type == typeof(Boolean) )
+            else if (type == typeof(Boolean))
                 return new BooleanWriter();
-            else if( type.IsGenericType )
+            else if (type.IsGenericType)
             {
                 Type definition = type.GetGenericTypeDefinition();
-                if( definition == typeof(Tuple<>) )
+                if (definition == typeof(Tuple<>))
                     return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,>) )
+                if (definition == typeof(Tuple<,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,>) )
+                if (definition == typeof(Tuple<,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,,>) )
+                if (definition == typeof(Tuple<,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,,,>) )
+                if (definition == typeof(Tuple<,,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,,,,>) )
+                if (definition == typeof(Tuple<,,,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,,,,,>) )
+                if (definition == typeof(Tuple<,,,,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()));
-                if( definition == typeof(Tuple<,,,,,,,>) )
+                if (definition == typeof(Tuple<,,,,,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()));
                 else
                     throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));

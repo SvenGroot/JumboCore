@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo
 {
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( _buffer != null && disposing )
+            if (_buffer != null && disposing)
             {
                 _buffer.Dispose();
                 _buffer = null;
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo
         private void OnDisposed(EventArgs e)
         {
             EventHandler handler = Disposed;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
     }

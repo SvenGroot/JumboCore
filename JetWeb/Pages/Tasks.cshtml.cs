@@ -57,7 +57,7 @@ namespace JetWeb.Pages
             IEnumerable<TaskStatus> tasks;
             if (string.IsNullOrEmpty(StageId))
             {
-                Stages = new StageTableModel 
+                Stages = new StageTableModel
                 {
                     Job = job,
                     Archived = Archived,

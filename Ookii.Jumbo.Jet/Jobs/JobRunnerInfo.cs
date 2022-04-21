@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using System.Reflection;
-using Ookii.Jumbo.Dfs;
-using Ookii.CommandLine;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Ookii.CommandLine;
+using Ookii.Jumbo.Dfs;
 
 namespace Ookii.Jumbo.Jet.Jobs
 {
@@ -28,9 +28,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="type">The type of the job runner.</param>
         public JobRunnerInfo(Type type)
         {
-            if( type == null )
+            if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if( !type.GetInterfaces().Contains(typeof(IJobRunner)) )
+            if (!type.GetInterfaces().Contains(typeof(IJobRunner)))
                 throw new ArgumentException("Specified type is not a job runner.", nameof(type));
 
             _jobRunnerType = type;
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An array holding the job runners in the assembly.</returns>
         public static JobRunnerInfo[] GetJobRunners(Assembly assembly)
         {
-            if( assembly == null )
+            if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
 
             Type[] types = assembly.GetTypes();
@@ -93,9 +93,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The <see cref="JobRunnerInfo"/> for the specified job runner, or <see langword="null" /> if it was not found.</returns>
         public static JobRunnerInfo GetJobRunner(Assembly assembly, string name)
         {
-            if( assembly == null )
+            if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
-            if( name == null )
+            if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             Type[] types = assembly.GetTypes();
@@ -114,11 +114,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
         public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index)
         {
-            if( dfsConfiguration == null )
+            if (dfsConfiguration == null)
                 throw new ArgumentNullException(nameof(dfsConfiguration));
-            if( jetConfiguration == null )
+            if (jetConfiguration == null)
                 throw new ArgumentNullException(nameof(jetConfiguration));
-            if( args == null )
+            if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
             IJobRunner jobRunner = null;
@@ -126,28 +126,28 @@ namespace Ookii.Jumbo.Jet.Jobs
             {
                 jobRunner = (IJobRunner)CommandLineParser.Parse(args, index);
             }
-            catch( CommandLineArgumentException ex )
+            catch (CommandLineArgumentException ex)
             {
                 Console.Error.WriteLine(ex.Message);
             }
 
-            if( jobRunner != null )
+            if (jobRunner != null)
             {
                 StringBuilder logMessage = new StringBuilder("Created job runner for job ");
                 logMessage.Append(Name);
 
-                if( _log.IsInfoEnabled )
+                if (_log.IsInfoEnabled)
                 {
-                    foreach( CommandLineArgument argument in CommandLineParser.Arguments )
+                    foreach (CommandLineArgument argument in CommandLineParser.Arguments)
                     {
-                        if( argument.HasValue )
+                        if (argument.HasValue)
                         {
                             logMessage.Append(", ");
                             logMessage.Append(argument.MemberName);
                             logMessage.Append(" = ");
-                            if( argument.IsDictionary )
+                            if (argument.IsDictionary)
                                 AppendDictionayArgument(logMessage, (IDictionary)argument.Value);
-                            else if( argument.IsMultiValue )
+                            else if (argument.IsMultiValue)
                                 AppendMultiValueArgument(logMessage, (IEnumerable)argument.Value);
                             else
                                 logMessage.Append(argument.Value);
@@ -178,9 +178,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             logMessage.Append("{ ");
             bool first = true;
-            foreach( DictionaryEntry entry in values )
+            foreach (DictionaryEntry entry in values)
             {
-                if( first )
+                if (first)
                     first = false;
                 else
                     logMessage.Append(", ");

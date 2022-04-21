@@ -91,18 +91,18 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="success"><see langword="true"/> if the job completed successfully; <see langword="false"/> if the job failed.</param>
         public override void FinishJob(bool success)
         {
-            if( success )
+            if (success)
             {
                 Console.WriteLine();
                 try
                 {
-                    using( Stream stream = FileSystemClient.OpenFile(_outputFile) )
-                    using( StreamReader reader = new StreamReader(stream) )
+                    using (Stream stream = FileSystemClient.OpenFile(_outputFile))
+                    using (StreamReader reader = new StreamReader(stream))
                     {
                         Console.WriteLine(reader.ReadToEnd());
                     }
                 }
-                catch( System.IO.FileNotFoundException )
+                catch (System.IO.FileNotFoundException)
                 {
                     Console.WriteLine("The output file was not found (did the job fail?).");
                 }
@@ -128,24 +128,24 @@ namespace Ookii.Jumbo.Jet.Samples
             GenSortRecord first = null;
             GenSortRecord prev = null;
             UInt128? firstUnordered = null;
-            foreach( GenSortRecord record in input.EnumerateRecords() )
+            foreach (GenSortRecord record in input.EnumerateRecords())
             {
                 crc.Reset();
                 crc.Update(record.RecordBuffer);
                 recordCrc = crc.Value;
                 checksum += new UInt128(0, (ulong)recordCrc);
-                if( prev == null )
+                if (prev == null)
                 {
                     first = record;
                 }
                 else
                 {
                     int diff = prev.CompareTo(record);
-                    if( diff == 0 )
+                    if (diff == 0)
                         ++duplicates;
-                    else if( diff > 0 )
+                    else if (diff > 0)
                     {
-                        if( firstUnordered == null )
+                        if (firstUnordered == null)
                             firstUnordered = count;
                         ++unsorted;
                     }
@@ -190,33 +190,33 @@ namespace Ookii.Jumbo.Jet.Samples
             UInt128 records = UInt128.Zero;
             UInt128? firstUnsorted = null;
 
-            foreach( ValSortRecord record in input.EnumerateRecords() )
+            foreach (ValSortRecord record in input.EnumerateRecords())
             {
                 bool verbose = context.GetSetting("ValSort.VerboseLogging", false);
 
-                if( prev != null )
+                if (prev != null)
                 {
                     int diff = GenSortRecord.CompareKeys(prev.LastKey, record.FirstKey);
-                    if( diff == 0 )
+                    if (diff == 0)
                         ++duplicates;
-                    else if( diff > 0 )
+                    else if (diff > 0)
                     {
-                        if( verbose )
+                        if (verbose)
                             _log.InfoFormat("Input parts {0}-{1} and {2}-{3} are not sorted in relation to each other.", prev.InputId, prev.InputOffset, record.InputId, record.InputOffset);
 
-                        if( firstUnsorted == null )
+                        if (firstUnsorted == null)
                             firstUnsorted = records;
                         ++unsortedRecords;
                     }
                 }
 
-                if( verbose && record.UnsortedRecords.High64 > 0 || record.UnsortedRecords.Low64 > 0 )
+                if (verbose && record.UnsortedRecords.High64 > 0 || record.UnsortedRecords.Low64 > 0)
                     _log.InfoFormat("Input part {0}-{1} has {2} unsorted records.", prev.InputId, prev.InputOffset, record.UnsortedRecords);
 
                 unsortedRecords += record.UnsortedRecords;
                 checksum += record.Checksum;
                 duplicates += record.Duplicates;
-                if( firstUnsorted == null && record.UnsortedRecords != UInt128.Zero )
+                if (firstUnsorted == null && record.UnsortedRecords != UInt128.Zero)
                 {
                     firstUnsorted = records + record.FirstUnsorted;
                 }
@@ -225,13 +225,13 @@ namespace Ookii.Jumbo.Jet.Samples
                 prev = record;
             }
 
-            if( unsortedRecords != UInt128.Zero )
+            if (unsortedRecords != UInt128.Zero)
             {
                 output.WriteRecord(string.Format("First unordered record is record {0}", firstUnsorted.Value));
             }
             output.WriteRecord(string.Format("Records: {0}", records));
             output.WriteRecord(string.Format("Checksum: {0}", checksum.ToHexString()));
-            if( unsortedRecords == UInt128.Zero )
+            if (unsortedRecords == UInt128.Zero)
             {
                 output.WriteRecord(string.Format("Duplicate keys: {0}", duplicates));
                 output.WriteRecord("SUCCESS - all records are in order");

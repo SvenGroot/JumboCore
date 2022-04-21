@@ -35,7 +35,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>The enumerator.</returns>
         public IEnumerator<MergeResultRecord<T>> GetEnumerator()
         {
-            if( _mergeResult == null )
+            if (_mergeResult == null)
                 throw new InvalidOperationException("Merge pass can be enumerated only once.");
             IEnumerator<MergeResultRecord<T>> result = _mergeResult;
             _mergeResult = null;

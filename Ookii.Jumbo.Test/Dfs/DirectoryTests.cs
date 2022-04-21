@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NameServerApplication;
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
-using NameServerApplication;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Test.Dfs

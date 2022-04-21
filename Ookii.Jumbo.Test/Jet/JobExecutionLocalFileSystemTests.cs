@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Test.Jet
         {
             RunWordCountJob(null, TaskKind.Pull, Jumbo.Jet.Channels.ChannelType.File, false);
         }
-        
+
         [Test]
         public void TestWordCountMaxSplitSize()
         {

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -98,11 +98,11 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="isLastPacket"><see langword="true"/> if this is the last packet being sent; otherwise <see langword="false"/>.</param>
         public void CopyFrom(byte[] data, int size, long sequenceNumber, bool isLastPacket)
         {
-            if( data == null )
+            if (data == null)
                 throw new ArgumentNullException(nameof(data));
-            if( size < 0 || size > data.Length || size > PacketSize )
+            if (size < 0 || size > data.Length || size > PacketSize)
                 throw new ArgumentOutOfRangeException(nameof(size));
-            if( !isLastPacket && size != PacketSize )
+            if (!isLastPacket && size != PacketSize)
                 throw new ArgumentException("The packet has an invalid size.");
 
             Array.Copy(data, _data, size);
@@ -120,11 +120,11 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="isLastPacket"><see langword="true"/> if this is the last packet being sent; otherwise <see langword="false"/>.</param>
         public void CopyFrom(Stream stream, long sequenceNumber, bool isLastPacket)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             int size = (int)Math.Min(PacketSize, stream.Length);
-            if( !isLastPacket && size != PacketSize )
+            if (!isLastPacket && size != PacketSize)
                 throw new ArgumentException("The packet has an invalid size.");
 
             stream.Read(_data, 0, size);
@@ -140,7 +140,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="packet">The packet whose data to copy.</param>
         public void CopyFrom(Packet packet)
         {
-            if( packet == null )
+            if (packet == null)
                 throw new ArgumentNullException(nameof(packet));
 
             Array.Copy(packet._data, _data, packet.Size);
@@ -160,15 +160,15 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>The actual number of bytes written into the buffer.</returns>
         public int CopyTo(int sourceOffset, byte[] buffer, int destinationOffset, int count)
         {
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( sourceOffset < 0 || sourceOffset >= Size )
+            if (sourceOffset < 0 || sourceOffset >= Size)
                 throw new ArgumentOutOfRangeException(nameof(sourceOffset));
-            if( destinationOffset < 0 )
+            if (destinationOffset < 0)
                 throw new ArgumentOutOfRangeException(nameof(destinationOffset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( destinationOffset + count > buffer.Length )
+            if (destinationOffset + count > buffer.Length)
                 throw new ArgumentException("The combined value of destOffset and count is larger than the buffer size.");
 
             count = Math.Min(count, Size - sourceOffset);
@@ -185,11 +185,11 @@ namespace Ookii.Jumbo.Dfs
         /// the actual checksum of the data; <see langword="false"/> to skip verifying the checksum.</param>
         public void Read(BinaryReader reader, PacketFormatOption format, bool verifyChecksum)
         {
-            if( reader == null )
+            if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
             uint expectedChecksum = reader.ReadUInt32();
-            if( format == PacketFormatOption.ChecksumOnly )
+            if (format == PacketFormatOption.ChecksumOnly)
             {
                 // Determine the size from the stream length.
                 Size = (int)Math.Min(reader.BaseStream.Length - reader.BaseStream.Position, PacketSize);
@@ -199,22 +199,22 @@ namespace Ookii.Jumbo.Dfs
             {
                 Size = reader.ReadInt32();
                 IsLastPacket = reader.ReadBoolean();
-                if( format != PacketFormatOption.NoSequenceNumber )
+                if (format != PacketFormatOption.NoSequenceNumber)
                     SequenceNumber = reader.ReadInt64();
-                if( Size > PacketSize || (!IsLastPacket && Size != PacketSize) )
+                if (Size > PacketSize || (!IsLastPacket && Size != PacketSize))
                     throw new InvalidPacketException("The packet has an invalid size.");
             }
             int bytesRead = 0;
             // We loop because the reader may use a NetworkStream which might not return all data at once.
-            while( bytesRead < Size )
+            while (bytesRead < Size)
             {
                 bytesRead += reader.Read(_data, bytesRead, Size - bytesRead);
             }
 
-            if( _computeChecksums && verifyChecksum )
+            if (_computeChecksums && verifyChecksum)
             {
                 RecomputeChecksum();
-                if( Checksum != expectedChecksum )
+                if (Checksum != expectedChecksum)
                 {
                     throw new InvalidPacketException("Computed packet checksum doesn't match expected checksum.");
                 }
@@ -230,15 +230,15 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="format">The format.</param>
         public void Write(BinaryWriter writer, PacketFormatOption format)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
             writer.Write((uint)Checksum);
-            if( format != PacketFormatOption.ChecksumOnly )
+            if (format != PacketFormatOption.ChecksumOnly)
             {
                 writer.Write(Size);
                 writer.Write(IsLastPacket);
-                if( format != PacketFormatOption.NoSequenceNumber )
+                if (format != PacketFormatOption.NoSequenceNumber)
                     writer.Write(SequenceNumber);
             }
             writer.Write(_data, 0, Size);
@@ -250,7 +250,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="stream">The <see cref="Stream"/> to write the packet data to.</param>
         public void WriteDataOnly(Stream stream)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             stream.Write(_data, 0, Size);
@@ -264,13 +264,13 @@ namespace Ookii.Jumbo.Dfs
         public override bool Equals(object obj)
         {
             Packet other = obj as Packet;
-            if( other != null )
+            if (other != null)
             {
-                if( IsLastPacket == other.IsLastPacket && Size == other.Size && Checksum == other.Checksum && SequenceNumber == other.SequenceNumber )
+                if (IsLastPacket == other.IsLastPacket && Size == other.Size && Checksum == other.Checksum && SequenceNumber == other.SequenceNumber)
                 {
-                    for( int x = 0; x < Size; ++x )
+                    for (int x = 0; x < Size; ++x)
                     {
-                        if( _data[x] != other._data[x] )
+                        if (_data[x] != other._data[x])
                             return false;
                     }
                     return true;
@@ -294,7 +294,7 @@ namespace Ookii.Jumbo.Dfs
 
         private void RecomputeChecksum()
         {
-            if( _computeChecksums )
+            if (_computeChecksums)
             {
                 _checksum.Reset();
                 _checksum.Update(_data, 0, Size);

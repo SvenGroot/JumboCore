@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -61,23 +61,23 @@ namespace Ookii.Jumbo.IO
         public RecordFileReader(Stream stream, long offset, long size, bool allowRecordReuse)
             : base(stream, offset, size, false)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            
+
             _reader = new BinaryReader(stream);
             ((IWritable)_header).Read(_reader);
 
-            if( _header.RecordType != typeof(T) )
+            if (_header.RecordType != typeof(T))
                 throw new InvalidOperationException("The specified record file uses a different record type than the one specified for this reader.");
 
             _allowRecordReuse = allowRecordReuse;
             _end = offset + size;
-            if( offset > stream.Position )
+            if (offset > stream.Position)
             {
                 stream.Position = offset;
                 _recordInputStream = stream as IRecordInputStream;
-                if( _recordInputStream == null || (_recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
-                    _recordInputStream.OffsetFromBoundary(offset) != 0 )
+                if (_recordInputStream == null || (_recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) != RecordStreamOptions.DoNotCrossBoundary ||
+                    _recordInputStream.OffsetFromBoundary(offset) != 0)
                 {
                     SeekToRecordMarker();
                     FirstRecordOffset = stream.Position;
@@ -106,28 +106,28 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
 
-            while( true )
+            while (true)
             {
-                if( _lastRecordMarkerPosition >= _end || Stream.Position == Stream.Length || (_recordInputStream != null && _recordInputStream.IsStopped) )
+                if (_lastRecordMarkerPosition >= _end || Stream.Position == Stream.Length || (_recordInputStream != null && _recordInputStream.IsStopped))
                 {
                     CurrentRecord = default(T);
                     return false;
                 }
 
                 int recordPrefix = _reader.ReadInt32();
-                if( recordPrefix == RecordFile.RecordMarkerPrefix )
+                if (recordPrefix == RecordFile.RecordMarkerPrefix)
                     CheckRecordMarker();
                 else
                 {
                     Debug.Assert(recordPrefix == RecordFile.RecordPrefix);
 
-                    if( _valueWriter != null )
+                    if (_valueWriter != null)
                     {
                         CurrentRecord = _valueWriter.Read(_reader);
                     }
                     else
                     {
-                        if( !_allowRecordReuse || CurrentRecord == null )
+                        if (!_allowRecordReuse || CurrentRecord == null)
                             CurrentRecord = (T)FormatterServices.GetUninitializedObject(typeof(T));
                         ((IWritable)CurrentRecord).Read(_reader);
                     }
@@ -144,9 +144,9 @@ namespace Ookii.Jumbo.IO
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _reader != null )
+                if (_reader != null)
                 {
                     ((IDisposable)_reader).Dispose();
                     _reader = null;
@@ -159,15 +159,15 @@ namespace Ookii.Jumbo.IO
             _reader.Read(_recordMarker, 0, RecordFile.RecordMarkerSize);
 
             byte[] fileRecordMarker = _header.RecordMarker;
-            for( int x = 0; Stream.Position < _end; ++x )
+            for (int x = 0; Stream.Position < _end; ++x)
             {
                 int y;
-                for( y = 0; y < RecordFile.RecordMarkerSize; ++y )
+                for (y = 0; y < RecordFile.RecordMarkerSize; ++y)
                 {
-                    if( fileRecordMarker[y] != _recordMarker[(x + y) % RecordFile.RecordMarkerSize] )
+                    if (fileRecordMarker[y] != _recordMarker[(x + y) % RecordFile.RecordMarkerSize])
                         break;
                 }
-                if( y == RecordFile.RecordMarkerSize )
+                if (y == RecordFile.RecordMarkerSize)
                 {
                     _lastRecordMarkerPosition = Stream.Position - RecordFile.RecordMarkerSize;
                     return;
@@ -181,9 +181,9 @@ namespace Ookii.Jumbo.IO
             _reader.Read(_recordMarker, 0, RecordFile.RecordMarkerSize);
 
             byte[] fileRecordMarker = _header.RecordMarker;
-            for( int x = 0; x < RecordFile.RecordMarkerSize; ++x )
+            for (int x = 0; x < RecordFile.RecordMarkerSize; ++x)
             {
-                if( fileRecordMarker[x] != _recordMarker[x] )
+                if (fileRecordMarker[x] != _recordMarker[x])
                     throw new InvalidOperationException("Invalid record marker in file.");
             }
 

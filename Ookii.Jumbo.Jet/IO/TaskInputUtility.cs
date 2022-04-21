@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.IO
@@ -22,27 +22,27 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="inputs">The inputs to write.</param>
         public static void WriteTaskInputs(FileSystemClient fileSystem, string path, string stageId, IEnumerable<ITaskInput> inputs)
         {
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
-            if( inputs == null )
+            if (inputs == null)
                 throw new ArgumentNullException(nameof(inputs));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
             string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
             string splitsIndexFile = GetSplitsIndexFileName(splitsFile);
             string locationsFile = GetLocationsFileName(fileSystem, path, stageId);
-            
-            using( BinaryWriter writer = new BinaryWriter(fileSystem.CreateFile(splitsFile)) )
-            using( BinaryWriter indexWriter = new BinaryWriter(fileSystem.CreateFile(splitsIndexFile)) )
-            using( BinaryWriter locationsWriter = new BinaryWriter(fileSystem.CreateFile(locationsFile)) )
+
+            using (BinaryWriter writer = new BinaryWriter(fileSystem.CreateFile(splitsFile)))
+            using (BinaryWriter indexWriter = new BinaryWriter(fileSystem.CreateFile(splitsIndexFile)))
+            using (BinaryWriter locationsWriter = new BinaryWriter(fileSystem.CreateFile(locationsFile)))
             {
                 bool first = true;
-                foreach( ITaskInput input in inputs )
+                foreach (ITaskInput input in inputs)
                 {
-                    if( first )
+                    if (first)
                     {
                         writer.Write(input.GetType().AssemblyQualifiedName);
                     }
@@ -50,12 +50,12 @@ namespace Ookii.Jumbo.Jet.IO
                     input.Write(writer);
                     writer.Flush();
 
-                    if( input.Locations == null )
+                    if (input.Locations == null)
                         WritableUtility.Write7BitEncodedInt32(locationsWriter, 0);
                     else
                     {
                         WritableUtility.Write7BitEncodedInt32(locationsWriter, input.Locations.Count);
-                        foreach( string location in input.Locations )
+                        foreach (string location in input.Locations)
                         {
                             locationsWriter.Write(location);
                         }
@@ -73,23 +73,23 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>A list of input locations for each task.</returns>
         public static IList<string[]> ReadTaskInputLocations(FileSystemClient fileSystem, string path, string stageId)
         {
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
             string locationsFile = GetLocationsFileName(fileSystem, path, stageId);
 
             List<string[]> result = new List<string[]>();
-            using( BinaryReader reader = new BinaryReader(fileSystem.OpenFile(locationsFile)) )
+            using (BinaryReader reader = new BinaryReader(fileSystem.OpenFile(locationsFile)))
             {
-                while( reader.BaseStream.Position < reader.BaseStream.Length )
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
                     int locationsCount = WritableUtility.Read7BitEncodedInt32(reader);
                     string[] locations = new string[locationsCount];
-                    for( int x = 0; x < locationsCount; ++x )
+                    for (int x = 0; x < locationsCount; ++x)
                         locations[x] = reader.ReadString();
                     result.Add(locations);
                 }
@@ -108,20 +108,20 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>The task input.</returns>
         public static ITaskInput ReadTaskInput(FileSystemClient fileSystem, string path, string stageId, int splitIndex)
         {
-            if( fileSystem == null )
+            if (fileSystem == null)
                 throw new ArgumentNullException(nameof(fileSystem));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( splitIndex < 0 )
+            if (splitIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(splitIndex));
 
             string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
             string splitsIndexFile = GetSplitsIndexFileName(splitsFile);
 
-            using( BinaryReader reader = new BinaryReader(fileSystem.OpenFile(splitsFile)) )
-            using( BinaryReader indexReader = new BinaryReader(fileSystem.OpenFile(splitsIndexFile)) )
+            using (BinaryReader reader = new BinaryReader(fileSystem.OpenFile(splitsFile)))
+            using (BinaryReader indexReader = new BinaryReader(fileSystem.OpenFile(splitsIndexFile)))
             {
                 string typeName = reader.ReadString();
                 indexReader.BaseStream.Position = splitIndex * sizeof(long);
@@ -147,6 +147,6 @@ namespace Ookii.Jumbo.Jet.IO
         private static string GetSplitsFileName(FileSystemClient fileSystem, string path, string stageId)
         {
             return fileSystem.Path.Combine(path, stageId + "_splits");
-        }    
+        }
     }
 }

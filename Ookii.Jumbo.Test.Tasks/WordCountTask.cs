@@ -17,15 +17,15 @@ namespace Ookii.Jumbo.Test.Tasks
         {
             // Delay used for task timeout test
             int delayTime = TaskContext.GetSetting(DelayTimeSettingKey, 0);
-            if( delayTime > 0 && TaskContext.TaskId.TaskNumber == 1 && TaskContext.TaskAttemptId.Attempt == 1 )
+            if (delayTime > 0 && TaskContext.TaskId.TaskNumber == 1 && TaskContext.TaskAttemptId.Attempt == 1)
                 Thread.Sleep(delayTime);
 
             Pair<Utf8String, int> record = Pair.MakePair(new Utf8String(), 1);
             char[] separator = new[] { ' ' };
-            foreach( Utf8String line in input.EnumerateRecords() )
+            foreach (Utf8String line in input.EnumerateRecords())
             {
                 string[] words = line.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                foreach( string word in words )
+                foreach (string word in words)
                 {
                     record.Key.Set(word);
                     output.WriteRecord(record);
@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Test.Tasks
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if( !TaskContext.StageConfiguration.AllowOutputRecordReuse )
+            if (!TaskContext.StageConfiguration.AllowOutputRecordReuse)
                 throw new NotSupportedException("Output record reuse required.");
         }
     }

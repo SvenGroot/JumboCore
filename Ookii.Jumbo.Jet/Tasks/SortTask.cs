@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using System.Threading;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Tasks
 {
@@ -35,20 +35,20 @@ namespace Ookii.Jumbo.Jet.Tasks
         public override void NotifyConfigurationChanged()
         {
             _comparer = null;
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 string comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.SortTaskComparerSettingKey, null);
-                if( !string.IsNullOrEmpty(comparerTypeName) )
+                if (!string.IsNullOrEmpty(comparerTypeName))
                     _comparer = (IComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
                 _partitions = new List<T>[TaskContext.StageConfiguration.InternalPartitionCount];
             }
             else
                 _partitions = new List<T>[1];
 
-            for( int x = 0; x < _partitions.Length; ++x )
+            for (int x = 0; x < _partitions.Length; ++x)
                 _partitions[x] = new List<T>();
 
-            if( _comparer == null )
+            if (_comparer == null)
                 _comparer = Comparer<T>.Default;
         }
 
@@ -69,13 +69,13 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">The <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public override void Finish(PrepartitionedRecordWriter<T> output)
         {
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
             bool parallelSort = TaskContext == null ? true : TaskContext.GetSetting(TaskConstants.SortTaskUseParallelSortSettingKey, true);
 
             // Don't do parallel sort if we've been told not do, or if it doesn't make sense (1 partition or 1 CPU).
-            if( parallelSort && _partitions.Length > 1 && Environment.ProcessorCount > 1 )
+            if (parallelSort && _partitions.Length > 1 && Environment.ProcessorCount > 1)
             {
                 SortAndOutputPartitionsParallel(output);
             }
@@ -88,12 +88,12 @@ namespace Ookii.Jumbo.Jet.Tasks
         private void SortAndOutputPartitionsNonParallel(PrepartitionedRecordWriter<T> output)
         {
             _log.DebugFormat("Sorting {0} partitions using non-parallel sort.", _partitions.Length);
-            for( int partition = 0; partition < _partitions.Length; ++partition )
+            for (int partition = 0; partition < _partitions.Length; ++partition)
             {
                 List<T> records = _partitions[partition];
                 records.Sort(_comparer);
                 _log.DebugFormat("Done sorting partition {0}.", partition);
-                foreach( T record in records )
+                foreach (T record in records)
                 {
                     output.WriteRecord(record, partition);
                 }
@@ -106,9 +106,9 @@ namespace Ookii.Jumbo.Jet.Tasks
         {
             _log.DebugFormat("Sorting {0} partitions using parallel sort.", _partitions.Length);
 
-            using( CountdownEvent evt = new CountdownEvent(_partitions.Length) )
+            using (CountdownEvent evt = new CountdownEvent(_partitions.Length))
             {
-                foreach( List<T> partition in _partitions )
+                foreach (List<T> partition in _partitions)
                 {
                     List<T> localPartition = partition; // Don't use iteration variable directly in lambda.
                     ThreadPool.QueueUserWorkItem(state =>
@@ -122,9 +122,9 @@ namespace Ookii.Jumbo.Jet.Tasks
 
             // Writing records is not done as part of the parallel sort because the recordwriter doesn't need to be thread safe.
             _log.Debug("Done sorting.");
-            for( int partition = 0; partition < _partitions.Length; ++partition )
+            for (int partition = 0; partition < _partitions.Length; ++partition)
             {
-                foreach( T record in _partitions[partition] )
+                foreach (T record in _partitions[partition])
                     output.WriteRecord(record, partition);
             }
             _log.Debug("Done writing partitions.");

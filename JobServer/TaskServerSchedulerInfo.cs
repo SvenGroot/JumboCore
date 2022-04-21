@@ -52,7 +52,7 @@ namespace JobServerApplication
         public void UnassignAllTasks()
         {
             // This is used if a task server is restarted.
-            foreach( TaskInfo task in AssignedTasks )
+            foreach (TaskInfo task in AssignedTasks)
             {
                 task.SchedulerInfo.Server = null;
                 task.SchedulerInfo.BadServers.Add(_taskServer);

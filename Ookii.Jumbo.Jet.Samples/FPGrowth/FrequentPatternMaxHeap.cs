@@ -21,24 +21,24 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             _minSupport = minSupport;
             _maxSize = maxSize;
-            if( collection == null )
+            if (collection == null)
                 _queue = new PriorityQueue<MappedFrequentPattern>(maxSize + 1, null);
             else
             {
                 _queue = new PriorityQueue<MappedFrequentPattern>(collection);
-                if( _queue.Capacity < maxSize )
+                if (_queue.Capacity < maxSize)
                     _queue.Capacity = maxSize + 1;
             }
             _subPatternCheck = subPatternCheck;
-            if( subPatternCheck )
+            if (subPatternCheck)
             {
                 _patternIndex = new Dictionary<int, HashSet<MappedFrequentPattern>>();
-                if( collection != null )
+                if (collection != null)
                 {
-                    foreach( MappedFrequentPattern pattern in collection )
+                    foreach (MappedFrequentPattern pattern in collection)
                     {
                         HashSet<MappedFrequentPattern> index;
-                        if( !_patternIndex.TryGetValue(pattern.Support, out index) )
+                        if (!_patternIndex.TryGetValue(pattern.Support, out index))
                         {
                             index = new HashSet<MappedFrequentPattern>();
                             _patternIndex.Add(pattern.Support, index);
@@ -61,38 +61,38 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public PriorityQueue<MappedFrequentPattern> Queue
         {
-            get 
+            get
             {
-                if( _subPatternCheck )
+                if (_subPatternCheck)
                 {
                     PriorityQueue<MappedFrequentPattern> result = new PriorityQueue<MappedFrequentPattern>(_maxSize, null);
-                    foreach( MappedFrequentPattern p in _queue )
+                    foreach (MappedFrequentPattern p in _queue)
                     {
-                        if( _patternIndex[p.Support].Contains(p) )
+                        if (_patternIndex[p.Support].Contains(p))
                             result.Enqueue(p);
                     }
                     return result;
                 }
-                return _queue; 
+                return _queue;
             }
         }
 
 
         public void Add(MappedFrequentPattern pattern)
         {
-            if( _queue.Count == _maxSize )
+            if (_queue.Count == _maxSize)
             {
-                if( pattern.CompareTo(_queue.Peek()) > 0 && AddInternal(pattern) )
+                if (pattern.CompareTo(_queue.Peek()) > 0 && AddInternal(pattern))
                 {
                     MappedFrequentPattern removedPattern = _queue.Dequeue();
-                    if( _subPatternCheck )
+                    if (_subPatternCheck)
                         _patternIndex[removedPattern.Support].Remove(removedPattern);
                     _minSupport = _queue.Peek().Support;
                 }
             }
             else
             {
-                if( AddInternal(pattern) )
+                if (AddInternal(pattern))
                 {
                     _minSupport = Math.Min(_minSupport, pattern.Support);
                 }
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             WritableCollection<MappedFrequentPattern> patterns = new WritableCollection<MappedFrequentPattern>();
             PriorityQueue<MappedFrequentPattern> queue = Queue;
             //_log.InfoFormat("{2}: Found {0} frequent items with min support {1}.", queue.Count, queue.Peek().Support, item);
-            while( queue.Count > 0 )
+            while (queue.Count > 0)
             {
                 patterns.Add(queue.Dequeue());
             }
@@ -116,9 +116,9 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         {
             PriorityQueue<MappedFrequentPattern> queue = Queue;
             //_log.InfoFormat("{2}: Found {0} frequent items with min support {1}.", queue.Count, queue.Peek().Support, item);
-            Pair<int, MappedFrequentPattern> record = new Pair<int,MappedFrequentPattern>();
+            Pair<int, MappedFrequentPattern> record = new Pair<int, MappedFrequentPattern>();
             record.Key = item;
-            while( queue.Count > 0 )
+            while (queue.Count > 0)
             {
                 record.Value = queue.Dequeue();
                 output.WriteRecord(record);
@@ -128,7 +128,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private bool AddInternal(MappedFrequentPattern pattern)
         {
             ++_addCount;
-            if( !_subPatternCheck )
+            if (!_subPatternCheck)
             {
                 _queue.Enqueue(pattern);
                 return true;
@@ -136,25 +136,25 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             else
             {
                 HashSet<MappedFrequentPattern> index;
-                if( _patternIndex.TryGetValue(pattern.Support, out index) )
+                if (_patternIndex.TryGetValue(pattern.Support, out index))
                 {
                     MappedFrequentPattern patternToReplace = null;
-                    foreach( MappedFrequentPattern p in index )
+                    foreach (MappedFrequentPattern p in index)
                     {
-                        if( pattern.IsSubpatternOf(p) )
+                        if (pattern.IsSubpatternOf(p))
                             return false;
-                        else if( p.IsSubpatternOf(pattern) )
+                        else if (p.IsSubpatternOf(pattern))
                         {
                             patternToReplace = p;
                             break;
                         }
                     }
 
-                    if( patternToReplace != null )
+                    if (patternToReplace != null)
                     {
                         index.Remove(patternToReplace);
                         _queue.Remove(patternToReplace);
-                        if( !index.Contains(pattern) )
+                        if (!index.Contains(pattern))
                         {
                             _queue.Enqueue(pattern);
                             index.Add(pattern);

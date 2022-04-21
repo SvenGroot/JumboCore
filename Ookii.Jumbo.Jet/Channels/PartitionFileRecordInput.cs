@@ -20,11 +20,11 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
-            if( recordReaderType == null )
+            if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
-            if( fileName == null )
+            if (fileName == null)
                 throw new ArgumentNullException(nameof(fileName));
-            if( indexEntries == null )
+            if (indexEntries == null)
                 throw new ArgumentNullException(nameof(indexEntries));
 
             _recordReaderType = recordReaderType;
@@ -59,7 +59,7 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         protected override RecordReader<RawRecord> CreateRawReader()
         {
-            if( !_inputContainsRecordSizes )
+            if (!_inputContainsRecordSizes)
                 throw new NotSupportedException("Cannot create a raw record reader for input without record size markers.");
 
             PartitionFileStream stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);

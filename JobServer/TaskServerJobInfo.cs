@@ -22,9 +22,9 @@ namespace JobServerApplication
 
         public TaskServerJobInfo(TaskServerInfo taskServer, JobInfo job)
         {
-            if( taskServer == null )
+            if (taskServer == null)
                 throw new ArgumentNullException(nameof(taskServer));
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
             _taskServer = taskServer;
             _job = job;
@@ -46,7 +46,7 @@ namespace JobServerApplication
 
         private List<TaskInfo> GetLocalTasks()
         {
-            if( _localTasks == null )
+            if (_localTasks == null)
                 _localTasks = CreateLocalTaskList();
 
             return _localTasks;
@@ -54,10 +54,10 @@ namespace JobServerApplication
 
         private List<TaskInfo> GetRackLocalTasks()
         {
-            if( _rackLocalTasks == null )
+            if (_rackLocalTasks == null)
             {
                 _rackLocalTasks = _job.SchedulerInfo.GetRackTasks(_taskServer.Rack.RackId);
-                if( _rackLocalTasks == null )
+                if (_rackLocalTasks == null)
                 {
                     _rackLocalTasks = CreateRackLocalTaskList();
                     _job.SchedulerInfo.AddRackTasks(_taskServer.Rack.RackId, _rackLocalTasks);
@@ -103,21 +103,21 @@ namespace JobServerApplication
 
         ITaskInfo ITaskServerJobInfo.FindDataInputTaskToSchedule(IStageInfo stage, int distance)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            if( !stage.Configuration.HasDataInput )
+            if (!stage.Configuration.HasDataInput)
                 throw new ArgumentException("Stage does not have data input.", nameof(stage));
-            if( !stage.IsReadyForScheduling )
+            if (!stage.IsReadyForScheduling)
                 return null;
 
             IEnumerable<ITaskInfo> eligibleTasks;
-            switch( distance )
+            switch (distance)
             {
             case 0:
                 eligibleTasks = GetLocalTasks().Where(task => task.Stage == stage);
                 break;
             case 1:
-                if( JobServer.Instance.RackCount > 1 )
+                if (JobServer.Instance.RackCount > 1)
                     eligibleTasks = GetRackLocalTasks().Where(task => task.Stage == stage);
                 else
                     eligibleTasks = stage.Tasks;
@@ -134,23 +134,23 @@ namespace JobServerApplication
 
         void ITaskServerJobInfo.AssignTask(ITaskInfo task, int? dataDistance)
         {
-            if( task == null )
+            if (task == null)
                 throw new ArgumentNullException(nameof(task));
             TaskInfo taskInfo = (TaskInfo)task;
             TaskServer.SchedulerInfo.AssignTask(_job, taskInfo);
 
-            if( dataDistance != null )
+            if (dataDistance != null)
                 taskInfo.SchedulerInfo.CurrentAttemptDataDistance = dataDistance.Value;
         }
 
 
         int ITaskServerJobInfo.GetLocalTaskCount(IStageInfo stage)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
             return (from task in GetLocalTasks()
                     where task.Stage == stage && !task.SchedulerInfo.BadServers.Contains(_taskServer)
-                    select task).Count();   
+                    select task).Count();
         }
     }
 }

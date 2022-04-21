@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test
@@ -20,9 +20,9 @@ namespace Ookii.Jumbo.Test
 
             byte[] data;
             long headerSize;
-            using( MemoryStream stream = new MemoryStream() )
+            using (MemoryStream stream = new MemoryStream())
             {
-                using( RecordFileWriter<Utf8String> writer = new RecordFileWriter<Utf8String>(stream) )
+                using (RecordFileWriter<Utf8String> writer = new RecordFileWriter<Utf8String>(stream))
                 {
                     Assert.AreEqual(typeof(Utf8String), writer.Header.RecordType);
                     Assert.AreEqual(typeof(Utf8String).FullName + ", " + typeof(Utf8String).Assembly.GetName().Name, writer.Header.RecordTypeName);
@@ -31,7 +31,7 @@ namespace Ookii.Jumbo.Test
                     Assert.AreNotEqual(0, writer.OutputBytes); // Because it must've written the header this isn't 0.
                     headerSize = writer.OutputBytes;
                     Utf8String record = new Utf8String();
-                    foreach( string item in records )
+                    foreach (string item in records)
                     {
                         record.Set(item);
                         writer.WriteRecord(record);
@@ -51,15 +51,15 @@ namespace Ookii.Jumbo.Test
             List<string> result = new List<string>(recordCount);
             const int stepSize = 10000;
             int totalRecordsRead = 0;
-            for( int offset = 0; offset < data.Length; offset += stepSize )
+            for (int offset = 0; offset < data.Length; offset += stepSize)
             {
-                using( MemoryStream stream = new MemoryStream(data) )
-                using( RecordFileReader<Utf8String> reader = new RecordFileReader<Utf8String>(stream, offset, Math.Min(stepSize, stream.Length - offset), true) )
+                using (MemoryStream stream = new MemoryStream(data))
+                using (RecordFileReader<Utf8String> reader = new RecordFileReader<Utf8String>(stream, offset, Math.Min(stepSize, stream.Length - offset), true))
                 {
                     Assert.AreEqual(typeof(Utf8String), reader.Header.RecordType);
                     Assert.AreEqual(typeof(Utf8String).FullName + ", " + typeof(Utf8String).Assembly.GetName().Name, reader.Header.RecordTypeName);
                     Assert.AreEqual(1, reader.Header.Version);
-                    foreach( Utf8String record in reader.EnumerateRecords() )
+                    foreach (Utf8String record in reader.EnumerateRecords())
                     {
                         result.Add(record.ToString());
                     }

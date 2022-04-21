@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.Dfs
         public DeleteBlocksHeartbeatResponse(Guid fileSystemId, IEnumerable<Guid> blocks)
             : base(fileSystemId, DataServerHeartbeatCommand.DeleteBlocks)
         {
-            if( blocks == null )
+            if (blocks == null)
                 throw new ArgumentNullException(nameof(blocks));
             Blocks = new List<Guid>(blocks);
         }

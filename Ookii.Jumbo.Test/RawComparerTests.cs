@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
-using System.IO;
-using System.Reflection;
-using System.Diagnostics;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test
@@ -23,10 +23,10 @@ namespace Ookii.Jumbo.Test
 
             byte[] buffer;
             RecordIndexEntry[] index = new RecordIndexEntry[count];
-            using( MemoryStream stream = new MemoryStream(count * sizeof(int)) )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
+            using (MemoryStream stream = new MemoryStream(count * sizeof(int)))
+            using (BinaryWriter writer = new BinaryWriter(stream))
             {
-                for( int x = 0; x < count; ++x )
+                for (int x = 0; x < count; ++x)
                 {
                     int value = rnd.Next();
                     values.Add(value);
@@ -61,8 +61,8 @@ namespace Ookii.Jumbo.Test
             // Make sure the value isn't used by checking that two pairs with identical keys but different values compare equal.
             byte[] buffer;
             int secondOffset;
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 ValueWriter<Pair<int, int>>.WriteValue(Pair.MakePair(10, 5), writer);
                 secondOffset = (int)stream.Length;
@@ -84,8 +84,8 @@ namespace Ookii.Jumbo.Test
             Assert.IsNotNull(RawComparer<T>.Comparer);
             byte[] buffer;
             int largeOffset;
-            using( MemoryStream stream = new MemoryStream() )
-            using( BinaryWriter writer = new BinaryWriter(stream) )
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 ValueWriter<T>.WriteValue(small, writer);
                 largeOffset = (int)stream.Length;

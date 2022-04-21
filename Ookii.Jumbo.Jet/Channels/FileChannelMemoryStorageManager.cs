@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public Reservation(FileChannelMemoryStorageManager manager, long size, bool waited)
             {
-                if( manager == null )
+                if (manager == null)
                     throw new ArgumentNullException(nameof(manager));
                 _manager = manager;
                 _waited = waited;
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public UnmanagedBufferMemoryStream CreateStream(long size)
             {
-                if( size > Size )
+                if (size > Size)
                     throw new ArgumentOutOfRangeException(nameof(size), "Stream size exceeds reservation.");
 
                 UnmanagedBufferMemoryStream stream = null;
@@ -53,7 +53,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 }
                 catch
                 {
-                    if( stream != null )
+                    if (stream != null)
                         stream.Dispose();
                     throw;
                 }
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private FileChannelMemoryStorageManager(long maxSize)
         {
-            if( maxSize < 0 )
+            if (maxSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(maxSize), "Memory storage size must be larger than zero.");
             _maxSize = maxSize;
             _log.InfoFormat("Created memory storage with maximum size {0}.", maxSize);
@@ -95,9 +95,9 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get
             {
-                lock( _inputs )
+                lock (_inputs)
                 {
-                    if( _maxSize == 0L )
+                    if (_maxSize == 0L)
                         return 0f;
                     return (float)_currentSize / (float)_maxSize;
                 }
@@ -107,9 +107,9 @@ namespace Ookii.Jumbo.Jet.Channels
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static FileChannelMemoryStorageManager GetInstance(long maxSize)
         {
-            if( _instance == null )
+            if (_instance == null)
                 _instance = new FileChannelMemoryStorageManager(maxSize);
-            else if( _instance._maxSize != maxSize )
+            else if (_instance._maxSize != maxSize)
                 _log.WarnFormat("A memory storage manager with a different max size ({0}) than the existing manager was requested; using the original size ({1}).", maxSize, _instance._maxSize);
             return _instance;
         }
@@ -117,32 +117,32 @@ namespace Ookii.Jumbo.Jet.Channels
         public Reservation WaitForSpaceAndReserve(long size, IDisposable disposeOnWait, int millisecondsTimeout)
         {
             CheckDisposed();
-            if( size > _maxSingleStreamSize )
+            if (size > _maxSingleStreamSize)
                 return null;
 
             bool waited = false;
-            lock( _inputs )
+            lock (_inputs)
             {
-                while( _currentSize + size > _maxSize )
+                while (_currentSize + size > _maxSize)
                 {
-                    if( !waited )
+                    if (!waited)
                     {
                         _log.Info("Waiting for buffer space...");
                         MemoryStorageFullEventArgs e = new MemoryStorageFullEventArgs(_currentSize + size - _maxSize);
                         OnWaitingForBuffer(e);
-                        if( e.CancelWaiting )
+                        if (e.CancelWaiting)
                             return null;
-                        if( disposeOnWait != null )
+                        if (disposeOnWait != null)
                             disposeOnWait.Dispose();
                     }
                     waited = true;
-                    if( !Monitor.Wait(_inputs, millisecondsTimeout) )
+                    if (!Monitor.Wait(_inputs, millisecondsTimeout))
                     {
                         _log.Warn("Waiting for buffer space timed out.");
                         return null;
                     }
                 }
-                if( waited )
+                if (waited)
                     _log.Info("Buffer space available");
 
                 _currentSize += size;
@@ -154,22 +154,22 @@ namespace Ookii.Jumbo.Jet.Channels
         private void OnStreamRemoved(EventArgs e)
         {
             EventHandler handler = StreamRemoved;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
         private void OnWaitingForBuffer(MemoryStorageFullEventArgs e)
         {
             EventHandler<MemoryStorageFullEventArgs> handler = WaitingForBuffer;
-            if( handler != null )
+            if (handler != null)
                 handler(this, e);
         }
 
         private void RemoveStream(UnmanagedBufferMemoryStream stream)
         {
-            lock( _inputs )
+            lock (_inputs)
             {
-                if( _inputs.Remove(stream) )
+                if (_inputs.Remove(stream))
                 {
                     _currentSize -= stream.InitialCapacity;
                     //_log.DebugFormat("Removed stream from memory storage, space used now {0}.", _currentSize);
@@ -185,7 +185,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void RegisterStream(UnmanagedBufferMemoryStream stream)
         {
-            lock( _inputs )
+            lock (_inputs)
             {
                 stream.Disposed += UnmanagedBufferMemoryStream_Disposed;
                 _inputs.Add(stream);
@@ -194,7 +194,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void CancelReservation(Reservation reservation)
         {
-            lock( _inputs )
+            lock (_inputs)
             {
                 _currentSize -= reservation.Size;
             }
@@ -202,7 +202,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(FileChannelMemoryStorageManager).FullName);
         }
 
@@ -215,12 +215,12 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public void Dispose()
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
-                lock( _inputs )
+                lock (_inputs)
                 {
-                    foreach( UnmanagedBufferMemoryStream stream in _inputs )
+                    foreach (UnmanagedBufferMemoryStream stream in _inputs)
                     {
                         stream.Dispose();
                     }

@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
 using System.Threading;
+using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const int size = 1000000;
             FileSystemClient target = _cluster.Client;
-            using( System.IO.MemoryStream stream = new System.IO.MemoryStream() )
+            using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {
                 Utilities.GenerateData(stream, size);
                 stream.Position = 0;
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Test.Dfs
             }
             finally
             {
-                if( System.IO.File.Exists(tempFile) )
+                if (System.IO.File.Exists(tempFile))
                     System.IO.File.Delete(tempFile);
             }
         }
@@ -108,7 +108,7 @@ namespace Ookii.Jumbo.Test.Dfs
             }
             finally
             {
-                if( System.IO.File.Exists(tempFile) )
+                if (System.IO.File.Exists(tempFile))
                     System.IO.File.Delete(tempFile);
             }
         }
@@ -118,12 +118,12 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const int size = 1000000;
             FileSystemClient target = _cluster.Client;
-            using( System.IO.MemoryStream stream = new System.IO.MemoryStream() )
+            using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {
                 Utilities.GenerateData(stream, size);
                 stream.Position = 0;
                 target.UploadStream(stream, "/downloadstream");
-                using( System.IO.MemoryStream stream2 = new System.IO.MemoryStream() )
+                using (System.IO.MemoryStream stream2 = new System.IO.MemoryStream())
                 {
                     target.DownloadStream("/downloadstream", stream2);
                     stream2.Position = 0;

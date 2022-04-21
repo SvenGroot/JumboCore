@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo
 {
@@ -20,17 +20,17 @@ namespace Ookii.Jumbo
         /// <param name="collection">The collection containing the elements to add.</param>
         public static void AddRange<T>(this Collection<T> target, IEnumerable<T> collection)
         {
-            if( target == null )
+            if (target == null)
                 throw new ArgumentNullException(nameof(target));
-            if( collection == null )
+            if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
 
             ExtendedCollection<T> extendedCollection = target as ExtendedCollection<T>;
-            if( extendedCollection != null )
+            if (extendedCollection != null)
                 extendedCollection.AddRange(collection);
             else
             {
-                foreach( T item in collection )
+                foreach (T item in collection)
                     target.Add(item);
             }
         }

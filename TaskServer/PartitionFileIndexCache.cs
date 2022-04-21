@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Jet.Channels;
-using System.IO;
 using System.Collections;
-using Ookii.Jumbo.IO;
-using System.Threading;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Channels;
 
 namespace TaskServerApplication
 {
@@ -30,15 +30,15 @@ namespace TaskServerApplication
         public PartitionFileIndex GetIndex(string outputFile)
         {
             PartitionFileIndex index = (PartitionFileIndex)_indices[outputFile];
-            if( index == null )
+            if (index == null)
             {
-                lock( _indices.SyncRoot )
+                lock (_indices.SyncRoot)
                 {
                     index = (PartitionFileIndex)_indices[outputFile];
-                    if( index == null )
+                    if (index == null)
                     {
                         _log.DebugFormat("Index cache MISS: {0}", outputFile);
-                        if( _indices.Count == _maxSize )
+                        if (_indices.Count == _maxSize)
                         {
                             // We cannot safely Dispose the index we removed because some thread may still be using it, so we don't and just wait for the GC to clean up the WaitHandle.
                             PartitionFileIndex indexToRemove = _indexQueue.Dequeue();

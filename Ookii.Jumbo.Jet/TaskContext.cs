@@ -21,13 +21,13 @@ namespace Ookii.Jumbo.Jet
         /// <param name="dfsJobDirectory">The DFS directory where files related to the job are stored.</param>
         public TaskContext(Guid jobId, JobConfiguration jobConfiguration, TaskAttemptId taskAttemptId, StageConfiguration stageConfiguration, string localJobDirectory, string dfsJobDirectory)
         {
-            if( jobConfiguration == null )
+            if (jobConfiguration == null)
                 throw new ArgumentNullException(nameof(jobConfiguration));
-            if( stageConfiguration == null )
+            if (stageConfiguration == null)
                 throw new ArgumentNullException(nameof(stageConfiguration));
-            if( localJobDirectory == null )
+            if (localJobDirectory == null)
                 throw new ArgumentNullException(nameof(localJobDirectory));
-            if( dfsJobDirectory == null )
+            if (dfsJobDirectory == null)
                 throw new ArgumentNullException(nameof(dfsJobDirectory));
 
             JobId = jobId;
@@ -102,13 +102,13 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( TaskExecution == null )
+                if (TaskExecution == null)
                     throw new InvalidOperationException("No task execution utility available.");
                 return TaskExecution.TaskStatusMessage;
             }
             set
             {
-                if( TaskExecution == null )
+                if (TaskExecution == null)
                     throw new InvalidOperationException("No task execution utility available.");
                 TaskExecution.TaskStatusMessage = value;
             }
@@ -137,7 +137,7 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public void ReportProgress()
         {
-            if( TaskExecution != null )
+            if (TaskExecution != null)
                 TaskExecution.ReportProgress();
         }
 
@@ -158,10 +158,10 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public string DownloadDfsFile(string dfsPath)
         {
-            if( dfsPath == null )
+            if (dfsPath == null)
                 throw new ArgumentNullException(nameof(dfsPath));
 
-            if( TaskExecution == null )
+            if (TaskExecution == null)
                 throw new InvalidOperationException("There's no TaskExecutionUtility associated with this instance.");
 
             return TaskExecution.Umbilical.DownloadDfsFile(JobId, dfsPath);
@@ -176,8 +176,8 @@ namespace Ookii.Jumbo.Jet
         public string GetSetting(string key, string defaultValue)
         {
             return SettingsDictionary.GetJobOrStageSetting(JobConfiguration, StageConfiguration, key, defaultValue);
-        }        
-        
+        }
+
         /// <summary>
         /// Gets a setting with the specified type and default value, checking first in the stage settings and then in the job settings.
         /// </summary>

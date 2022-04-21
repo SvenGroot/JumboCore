@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using System.IO;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test
@@ -84,9 +84,9 @@ namespace Ookii.Jumbo.Test
                 EnumProperty = DayOfWeek.Friday
             };
             byte[] data;
-            using( MemoryStream stream = new MemoryStream() )
+            using (MemoryStream stream = new MemoryStream())
             {
-                using( BinaryWriter writer = new BinaryWriter(stream) )
+                using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     writeMethod(expected, writer);
                 }
@@ -94,9 +94,9 @@ namespace Ookii.Jumbo.Test
             }
 
             TestClass actual = new TestClass();
-            using( MemoryStream stream = new MemoryStream(data) )
+            using (MemoryStream stream = new MemoryStream(data))
             {
-                using( BinaryReader reader = new BinaryReader(stream) )
+                using (BinaryReader reader = new BinaryReader(stream))
                 {
                     readMethod(actual, reader);
                 }

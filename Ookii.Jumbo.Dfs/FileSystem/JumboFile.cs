@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -40,11 +40,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public JumboFile(string fullPath, string name, DateTime dateCreated, long size, long blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool isOpenForWriting, IEnumerable<Guid> blocks)
             : base(fullPath, name, dateCreated)
         {
-            if( size < 0 )
+            if (size < 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
-            if( blockSize < 0 )
+            if (blockSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize));
-            if( replicationFactor < 1 )
+            if (replicationFactor < 1)
                 throw new ArgumentOutOfRangeException(nameof(replicationFactor));
 
             _size = size;
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             _replicationFactor = replicationFactor;
             _recordOptions = recordOptions;
             _isOpenForWriting = isOpenForWriting;
-            if( blocks != null )
+            if (blocks != null)
                 _blocks = new List<Guid>(blocks);
             else
                 _blocks = _emptyBlocks;
@@ -137,9 +137,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboFile FromFileInfo(FileInfo file, string rootPath)
         {
-            if( file == null )
+            if (file == null)
                 throw new ArgumentNullException(nameof(file));
-            if( !file.Exists )
+            if (!file.Exists)
                 throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "The file '{0}' does not exist.", file.FullName), file.FullName);
 
             return new JumboFile(StripRootPath(file.FullName, rootPath), file.Name, file.CreationTimeUtc, file.Length, file.Length, 1, RecordStreamOptions.None, false, null);
@@ -160,7 +160,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="writer">The <see cref="System.IO.TextWriter"/> to write the information to.</param>
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
-            if( writer == null )
+            if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
@@ -169,7 +169,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             writer.WriteLine("Record options:   {0}", RecordOptions);
             writer.WriteLine("Open for writing: {0}", IsOpenForWriting);
             writer.WriteLine("Blocks:           {0}", Blocks.Count);
-            foreach( Guid block in Blocks )
+            foreach (Guid block in Blocks)
                 writer.WriteLine("{{{0}}}", block);
         }
     }

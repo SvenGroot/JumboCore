@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.IO
 {
@@ -67,10 +67,10 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// greater than zero if this instance follows <paramref name="other"/>.</returns>
         public int CompareTo(ValSortRecord other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
             int result = StringComparer.Ordinal.Compare(InputId, other.InputId);
-            if( result == 0 )
+            if (result == 0)
                 result = InputOffset.CompareTo(other.InputOffset);
             return result;
         }

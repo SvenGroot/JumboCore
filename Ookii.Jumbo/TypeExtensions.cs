@@ -32,24 +32,24 @@ namespace Ookii.Jumbo
         /// <returns>The instantiated generic interface type.</returns>
         public static Type FindGenericInterfaceType(this Type type, Type interfaceType, bool throwOnNotFound)
         {
-            if( type == null )
+            if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if( interfaceType == null )
+            if (interfaceType == null)
                 throw new ArgumentNullException(nameof(interfaceType));
             // This is necessary because while in .Net you can use type.GetInterface with a generic interface type,
             // in Mono that only works if you specify the type arguments which is precisely what we don't want.
 
             // First check if the specified type is the requested interface type.
-            if( type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == interfaceType )
+            if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == interfaceType)
                 return type;
 
             Type[] interfaces = type.GetInterfaces();
-            foreach( Type i in interfaces )
+            foreach (Type i in interfaces)
             {
-                if( i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType )
+                if (i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType)
                     return i;
             }
-            if( throwOnNotFound )
+            if (throwOnNotFound)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Type {0} does not implement interface {1}.", type, interfaceType));
             else
                 return null;
@@ -65,16 +65,16 @@ namespace Ookii.Jumbo
         /// <returns>The instantiated generic base type.</returns>
         public static Type FindGenericBaseType(this Type type, Type baseType, bool throwOnNotFound)
         {
-            if( type == null )
+            if (type == null)
                 throw new ArgumentNullException(nameof(type));
             Type current = type.BaseType;
-            while( current != null )
+            while (current != null)
             {
-                if( current.IsGenericType && current.GetGenericTypeDefinition() == baseType )
+                if (current.IsGenericType && current.GetGenericTypeDefinition() == baseType)
                     return current;
                 current = current.BaseType;
             }
-            if( throwOnNotFound )
+            if (throwOnNotFound)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Type {0} does not inherit from {1}.", type, baseType));
             else
                 return null;

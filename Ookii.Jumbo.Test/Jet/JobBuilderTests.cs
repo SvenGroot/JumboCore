@@ -44,11 +44,11 @@ namespace Ookii.Jumbo.Test.Jet
             Trace.WriteLine("Cluster running.");
 
             // This file will purely be used so we have something to use as input when creating jobs, it won't be read so the contents don't matter.
-            using( Stream stream = _fileSystemClient.CreateFile(_inputPath) )
+            using (Stream stream = _fileSystemClient.CreateFile(_inputPath))
             {
                 Utilities.GenerateData(stream, 10000000);
             }
-            using( Stream stream = _fileSystemClient.CreateFile(_inputPath2) )
+            using (Stream stream = _fileSystemClient.CreateFile(_inputPath2))
             {
                 Utilities.GenerateData(stream, 10000000);
             }
@@ -640,7 +640,7 @@ namespace Ookii.Jumbo.Test.Jet
             VerifyDataOutput(stage, typeof(TextRecordWriter<int>));
             config.Validate();
         }
-        
+
         [Test]
         public void TestGenerateDelegate()
         {
@@ -760,7 +760,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(stage.TaskCount, stage.DataInput.TaskInputs.Count);
             Assert.IsInstanceOf(typeof(FileDataInput), stage.DataInput);
             Assert.AreEqual(recordReaderType.AssemblyQualifiedName, stage.GetSetting(FileDataInput.RecordReaderTypeSettingKey, null));
-            for( int x = 0; x < stage.TaskCount; ++x )
+            for (int x = 0; x < stage.TaskCount; ++x)
             {
                 FileTaskInput input = (FileTaskInput)stage.DataInput.TaskInputs[x];
                 Assert.AreEqual(x * _blockSize, input.Offset);
@@ -787,15 +787,15 @@ namespace Ookii.Jumbo.Test.Jet
         private static void VerifyChannel(StageConfiguration sender, StageConfiguration receiver, ChannelType channelType, Type partitionerType = null, Type multiInputRecordReaderType = null, int partitionsPerTask = 1, PartitionAssignmentMethod assigmentMethod = PartitionAssignmentMethod.Linear)
         {
             TaskTypeInfo info = new TaskTypeInfo(sender.TaskType.ReferencedType);
-            if( partitionerType == null )
+            if (partitionerType == null)
                 partitionerType = typeof(HashPartitioner<>).MakeGenericType(info.OutputRecordType);
-            if( multiInputRecordReaderType == null )
+            if (multiInputRecordReaderType == null)
                 multiInputRecordReaderType = typeof(MultiRecordReader<>).MakeGenericType(info.OutputRecordType);
             Assert.IsNull(sender.DataOutput);
             Assert.IsNull(sender.DataOutputType.ReferencedType);
             Assert.IsFalse(sender.HasDataOutput);
             Assert.IsNull(receiver.DataInput);
-            if( channelType == ChannelType.Pipeline )
+            if (channelType == ChannelType.Pipeline)
             {
                 Assert.IsNull(sender.OutputChannel);
                 Assert.AreEqual(receiver, sender.ChildStage);

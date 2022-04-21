@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="support">The support.</param>
         public FrequentPattern(IEnumerable<Utf8String> items, int support)
         {
-            if( items != null )
+            if (items != null)
                 _items.AddRange(items);
 
             Support = support;
@@ -72,7 +72,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(BinaryReader reader)
         {
-            if( _items == null )
+            if (_items == null)
                 _items = (WritableCollection<Utf8String>)FormatterServices.GetUninitializedObject(typeof(WritableCollection<Utf8String>));
             _items.Read(reader);
             Support = reader.ReadInt32();

@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.Net;
-using System.Threading;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 
 namespace Ookii.Jumbo
 {
@@ -45,15 +45,15 @@ namespace Ookii.Jumbo
         /// </remarks>
         protected TcpServer(IPAddress[] localAddresses, int port, int maxConnections)
         {
-            if( localAddresses == null )
+            if (localAddresses == null)
                 throw new ArgumentNullException(nameof(localAddresses));
-            if( localAddresses.Length == 0 )
+            if (localAddresses.Length == 0)
                 throw new ArgumentException("You must specify at least one address to listen on.", nameof(localAddresses));
-            if( maxConnections < 0 )
+            if (maxConnections < 0)
                 throw new ArgumentOutOfRangeException(nameof(maxConnections), "The maximum number of connections must be zero or more.");
 
             _listeners = new TcpListener[localAddresses.Length];
-            for( int x = 0; x < localAddresses.Length; ++x )
+            for (int x = 0; x < localAddresses.Length; ++x)
                 _listeners[x] = new TcpListener(localAddresses[x], port);
             _maxConnections = maxConnections;
         }
@@ -76,9 +76,9 @@ namespace Ookii.Jumbo
         /// <returns>The IPv6 and/or IPv4 "any" addresses to listen on.</returns>
         public static IPAddress[] GetDefaultListenerAddresses(bool listen4And6)
         {
-            if( System.Net.Sockets.Socket.OSSupportsIPv6 )
+            if (System.Net.Sockets.Socket.OSSupportsIPv6)
             {
-                if( listen4And6 )
+                if (listen4And6)
                     return new[] { IPAddress.IPv6Any, IPAddress.Any };
                 else
                     return new[] { IPAddress.IPv6Any };
@@ -98,10 +98,10 @@ namespace Ookii.Jumbo
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Start()
         {
-            if( _listenerThreads == null )
+            if (_listenerThreads == null)
             {
                 _listenerThreads = new Thread[_listeners.Length];
-                for( int x = 0; x < _listeners.Length; ++x )
+                for (int x = 0; x < _listeners.Length; ++x)
                 {
                     Thread listenerThread = new Thread(Run) { Name = "TcpServer_" + _listeners[x].LocalEndpoint.ToString(), IsBackground = true };
                     _listenerThreads[x] = listenerThread;
@@ -116,10 +116,10 @@ namespace Ookii.Jumbo
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Stop()
         {
-            if( _listenerThreads != null )
+            if (_listenerThreads != null)
             {
                 _running = false;
-                foreach( TcpListener listener in _listeners )
+                foreach (TcpListener listener in _listeners)
                 {
                     // On Linux, the synchronous accept won't cancel if Stop is called without calling
                     // shutdown first. On Windows, calling Shutdown throws.
@@ -150,12 +150,12 @@ namespace Ookii.Jumbo
             listener.Start(Int32.MaxValue);
             _log.InfoFormat("TCP server started on address {0}.", listener.LocalEndpoint);
 
-            while( _running )
+            while (_running)
             {
                 WaitForConnections(listener);
             }
         }
-        
+
         private void WaitForConnections(TcpListener listener)
         {
             try
@@ -164,19 +164,19 @@ namespace Ookii.Jumbo
                 // if there was already a connection in the queue, thus blocking the server until that connection was
                 // handled. So I switch to manually creating threads.
                 TcpClient client = listener.AcceptTcpClient();
-                if( _maxConnections != 0 )
+                if (_maxConnections != 0)
                 {
                     int currentValue;
                     do
                     {
                         currentValue = _connections;
-                        if( currentValue >= _maxConnections )
+                        if (currentValue >= _maxConnections)
                         {
                             client.Client.Send(_connectionRejected);
                             client.Close();
                             return;
                         }
-                    } while( currentValue != Interlocked.CompareExchange(ref _connections, currentValue + 1, currentValue) );
+                    } while (currentValue != Interlocked.CompareExchange(ref _connections, currentValue + 1, currentValue));
 
                     // If _maxConnections > 0, we need to send a value to indicate we accepted the connection.
                     client.Client.Send(_connectionAccepted);
@@ -185,16 +185,16 @@ namespace Ookii.Jumbo
                 handlerThread.IsBackground = true;
                 handlerThread.Start(client);
             }
-            catch( SocketException ex )
+            catch (SocketException ex)
             {
                 // Don't log errors when shutting down.
-                if( _running )
+                if (_running)
                     _log.Error("An error occurred accepting a client connection.", ex);
             }
-            catch( ObjectDisposedException )
+            catch (ObjectDisposedException)
             {
                 // Only ignore when shutting down.
-                if( _running )
+                if (_running)
                     throw;
             }
         }
@@ -203,25 +203,25 @@ namespace Ookii.Jumbo
         {
             try
             {
-                using( TcpClient client = (TcpClient)parameter )
+                using (TcpClient client = (TcpClient)parameter)
                 {
                     //_log.InfoFormat("Connection accepted from {0}.", client.Client.RemoteEndPoint);
                     HandleConnection(client);
                 }
             }
-            catch( SocketException ex )
+            catch (SocketException ex)
             {
                 _log.Error("An error occurred handling a client connection.", ex);
             }
-            catch( ObjectDisposedException )
+            catch (ObjectDisposedException)
             {
                 // Only ignore when shutting down.
-                if( _running )
+                if (_running)
                     throw;
             }
             finally
             {
-                if( _maxConnections != 0 )
+                if (_maxConnections != 0)
                     Interlocked.Decrement(ref _connections);
             }
         }

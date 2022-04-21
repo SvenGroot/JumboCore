@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
 
 namespace DfsShell.Commands
 {
@@ -15,7 +15,7 @@ namespace DfsShell.Commands
 
         public DeleteCommand([Description("The path of the file or directory on the DFS to delete."), ArgumentName("Path")] string path)
         {
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
             _path = path;
@@ -26,7 +26,7 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            if( !Client.Delete(_path, Recursive) )
+            if (!Client.Delete(_path, Recursive))
                 Console.Error.WriteLine("Path did not exist.");
         }
     }

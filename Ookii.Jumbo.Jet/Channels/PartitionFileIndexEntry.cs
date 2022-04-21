@@ -38,7 +38,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             get { return _partition; }
         }
-        
+
 
         /// <summary>
         /// Gets or sets the offset.
@@ -81,11 +81,11 @@ namespace Ookii.Jumbo.Jet.Channels
         public override bool Equals(object obj)
         {
             RecordIndexEntry? entry = obj as RecordIndexEntry?;
-            if( entry == null )
+            if (entry == null)
                 return false;
             return Equals(entry.Value);
         }
-        
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>

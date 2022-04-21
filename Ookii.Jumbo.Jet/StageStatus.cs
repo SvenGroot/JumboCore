@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo.Jet
@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if( IsFinished )
+                if (IsFinished)
                 {
                     return (from task in Tasks
                             select task.EndTime).Max();
@@ -99,36 +99,36 @@ namespace Ookii.Jumbo.Jet
             get
             {
                 TaskProgress result = new TaskProgress();
-                foreach( TaskStatus task in Tasks )
+                foreach (TaskStatus task in Tasks)
                 {
-                    if( task.TaskProgress != null )
+                    if (task.TaskProgress != null)
                     {
                         result.Progress += task.TaskProgress.Progress;
-                        if( task.TaskProgress.AdditionalProgressValues != null )
+                        if (task.TaskProgress.AdditionalProgressValues != null)
                         {
-                            if( result.AdditionalProgressValues == null )
+                            if (result.AdditionalProgressValues == null)
                             {
-                                foreach( AdditionalProgressValue value in task.TaskProgress.AdditionalProgressValues )
+                                foreach (AdditionalProgressValue value in task.TaskProgress.AdditionalProgressValues)
                                     result.AddAdditionalProgressValue(value.SourceName, value.Progress);
                             }
                             else
                             {
-                                for( int x = 0; x < result.AdditionalProgressValues.Count; ++x )
+                                for (int x = 0; x < result.AdditionalProgressValues.Count; ++x)
                                     result.AdditionalProgressValues[x].Progress += task.TaskProgress.AdditionalProgressValues[x].Progress;
                             }
                         }
-                        else if( result.AdditionalProgressValues != null && task.TaskProgress.OverallProgress >= 1.0f )
+                        else if (result.AdditionalProgressValues != null && task.TaskProgress.OverallProgress >= 1.0f)
                         {
-                            foreach( AdditionalProgressValue value in result.AdditionalProgressValues )
+                            foreach (AdditionalProgressValue value in result.AdditionalProgressValues)
                                 value.Progress += 1.0f;
                         }
                     }
                 }
 
                 result.Progress /= Tasks.Count;
-                if( result.AdditionalProgressValues != null )
+                if (result.AdditionalProgressValues != null)
                 {
-                    foreach( AdditionalProgressValue value in result.AdditionalProgressValues )
+                    foreach (AdditionalProgressValue value in result.AdditionalProgressValues)
                         value.Progress /= Tasks.Count;
                 }
 
@@ -143,17 +143,17 @@ namespace Ookii.Jumbo.Jet
         [XmlIgnore]
         public TaskMetrics Metrics
         {
-            get 
+            get
             {
                 // Stage metrics will be non-null only if the job was loaded with JobStatus.FromXml().
-                if( _stageMetrics != null )
+                if (_stageMetrics != null)
                     return _stageMetrics;
 
                 TaskMetrics result = new TaskMetrics();
-                foreach( TaskStatus task in Tasks )
+                foreach (TaskStatus task in Tasks)
                 {
                     TaskMetrics metrics = task.Metrics;
-                    if( metrics != null )
+                    if (metrics != null)
                     {
                         result.Add(metrics);
                     }

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using Ookii.Jumbo.Dfs;
 using System.Globalization;
-using Ookii.Jumbo.Jet.Tasks;
-using Ookii.Jumbo.Jet.Channels;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Jet.Channels;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -24,11 +24,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         internal JobBuilderCompiler(IEnumerable<Assembly> assemblies, FileSystemClient fileSystemClient, JetClient jetClient)
         {
-            if( assemblies == null )
+            if (assemblies == null)
                 throw new ArgumentNullException(nameof(assemblies));
-            if( fileSystemClient == null )
+            if (fileSystemClient == null)
                 throw new ArgumentNullException(nameof(fileSystemClient));
-            if( jetClient == null )
+            if (jetClient == null)
                 throw new ArgumentNullException(nameof(jetClient));
 
             _job = new JobConfiguration(assemblies.ToArray());
@@ -69,17 +69,17 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
         public StageConfiguration CreateStage(string stageId, Type taskType, FileInput input, IOperationOutput output)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             stageId = CreateUniqueStageId(stageId);
-            
+
             StageConfiguration stage = _job.AddDataInputStage(stageId, input.CreateStageInput(_fileSystemClient), taskType);
-            if( output != null )
+            if (output != null)
                 output.ApplyOutput(_fileSystemClient, stage);
             return stage;
         }
@@ -104,18 +104,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo input, IOperationOutput output, bool allowEmptyTaskReplacement, SettingsDictionary channelSettings)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
 
             StageConfiguration stage;
-            if( input != null && allowEmptyTaskReplacement && taskCount <= 1 && input.ChannelType == Channels.ChannelType.Pipeline && IsEmptyTask(input.InputStage.TaskType.ReferencedType) )
+            if (input != null && allowEmptyTaskReplacement && taskCount <= 1 && input.ChannelType == Channels.ChannelType.Pipeline && IsEmptyTask(input.InputStage.TaskType.ReferencedType))
             {
-                if( stageId != input.InputStage.StageId )
+                if (stageId != input.InputStage.StageId)
                 {
                     // Must ensure a unique name if input is not a child stage.
-                    if( input.InputStage.Parent == null )
+                    if (input.InputStage.Parent == null)
                     {
                         _stageIds.Remove(input.InputStage.StageId);
                         stageId = CreateUniqueStageId(stageId);
@@ -128,16 +128,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             else
             {
                 // Must ensure a unique name if not a child stage.
-                if( input == null || input.ChannelType != Channels.ChannelType.Pipeline )
+                if (input == null || input.ChannelType != Channels.ChannelType.Pipeline)
                     stageId = CreateUniqueStageId(stageId);
 
-                if( input != null && channelSettings != null )
+                if (input != null && channelSettings != null)
                     input.InputStage.AddSettings(channelSettings);
 
                 stage = _job.AddStage(stageId, taskType, DetermineTaskCount(taskCount, input), input);
             }
 
-            if( output != null )
+            if (output != null)
                 output.ApplyOutput(_fileSystemClient, stage);
 
             return stage;
@@ -157,31 +157,31 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi")]
         public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo[] input, IOperationOutput output, SettingsDictionary[] channelSettings, Type stageMultiInputRecordReaderType)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( channelSettings == null )
+            if (channelSettings == null)
                 throw new ArgumentNullException(nameof(channelSettings));
-            if( input.Length == 0 )
+            if (input.Length == 0)
                 throw new ArgumentException("Empty input list.", nameof(input));
-            if( input.Length != channelSettings.Length )
+            if (input.Length != channelSettings.Length)
                 throw new ArgumentException("Incorrect number of channel settings entries.");
-            if( stageMultiInputRecordReaderType == null )
+            if (stageMultiInputRecordReaderType == null)
                 throw new ArgumentNullException(nameof(stageMultiInputRecordReaderType));
 
             stageId = CreateUniqueStageId(stageId);
-            for( int x = 0; x < input.Length; ++x )
+            for (int x = 0; x < input.Length; ++x)
             {
-                if( channelSettings[x] != null )
+                if (channelSettings[x] != null)
                     input[x].InputStage.AddSettings(channelSettings[x]);
             }
 
             StageConfiguration stage = _job.AddStage(stageId, taskType, taskCount == 0 ? DefaultChannelInputTaskCount : taskCount, input, stageMultiInputRecordReaderType);
 
-            if( output != null )
+            if (output != null)
                 output.ApplyOutput(_fileSystemClient, stage);
 
             return stage;
@@ -196,7 +196,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             string result = stageId;
             int number = 2;
-            while( _stageIds.Contains(result) )
+            while (_stageIds.Contains(result))
             {
                 result = string.Format(CultureInfo.InvariantCulture, "{0}_{1}", stageId, number);
             }
@@ -206,11 +206,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private int DetermineTaskCount(int taskCount, InputStageInfo input)
         {
-            if( taskCount != 0 )
+            if (taskCount != 0)
                 return taskCount;
-            else if( input == null || input.ChannelType == ChannelType.Pipeline )
+            else if (input == null || input.ChannelType == ChannelType.Pipeline)
                 return 1;
-            else if( input != null && input.ChannelType == ChannelType.Tcp )
+            else if (input != null && input.ChannelType == ChannelType.Tcp)
                 return DefaultChannelInputTaskCount / 2; // Don't use full capacity for TCP channel receiving stage because all must be scheduled simultaneously while still running sending stage tasks too.
             else
                 return DefaultChannelInputTaskCount;

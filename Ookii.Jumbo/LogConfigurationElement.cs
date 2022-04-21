@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Configuration;
-using Ookii.Jumbo.Rpc;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using log4net.Util;
+using Ookii.Jumbo.Rpc;
 
 namespace Ookii.Jumbo
 {
@@ -38,7 +38,7 @@ namespace Ookii.Jumbo
         {
             string dir = Directory;
 
-            if( !string.IsNullOrEmpty(dir) && !(dir[dir.Length - 1] == Path.DirectorySeparatorChar || dir[dir.Length - 1] == Path.AltDirectorySeparatorChar) )
+            if (!string.IsNullOrEmpty(dir) && !(dir[dir.Length - 1] == Path.DirectorySeparatorChar || dir[dir.Length - 1] == Path.AltDirectorySeparatorChar))
                 dir += Path.DirectorySeparatorChar;
             dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), dir);
             log4net.GlobalContext.Properties["LogDirectory"] = dir;

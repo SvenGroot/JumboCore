@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
-using System.Reflection;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet.IO;
 
 namespace Ookii.Jumbo.Jet.Jobs
@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// <summary>
     /// Provides configuration information for a specific job.
     /// </summary>
-    [XmlRoot("Job", Namespace=JobConfiguration.XmlNamespace)]
+    [XmlRoot("Job", Namespace = JobConfiguration.XmlNamespace)]
     public class JobConfiguration
     {
 
@@ -63,7 +63,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="assemblyFileNames">The file names of the assemblies containing the task types for this class.</param>
         public JobConfiguration(params string[] assemblyFileNames)
         {
-            if( assemblyFileNames != null )
+            if (assemblyFileNames != null)
                 _assemblyFileNames.AddRange(assemblyFileNames);
         }
 
@@ -134,13 +134,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </remarks>
         public StageConfiguration AddDataInputStage(string stageId, IDataInput input, Type taskType)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( stageId.Length == 0 )
+            if (stageId.Length == 0)
                 throw new ArgumentException("Stage ID cannot be empty.", nameof(stageId));
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
 
             StageConfiguration stage = CreateStage(stageId, taskType, 0, input);
@@ -178,11 +178,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3")]
         public StageConfiguration AddStage(string stageId, Type taskType, int taskCount, IEnumerable<InputStageInfo> inputStages, Type stageMultiInputRecordReaderType)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
-            if( taskType == null )
+            if (taskType == null)
                 throw new ArgumentNullException(nameof(taskType));
-            if( taskCount <= 0 )
+            if (taskCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(taskCount), "A stage must have at least one task.");
 
             Type taskInterfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>), true);
@@ -191,18 +191,18 @@ namespace Ookii.Jumbo.Jet.Jobs
 
             bool isPipelineChannel = false;
             bool hasInputs = false;
-            if( inputStages != null )
+            if (inputStages != null)
             {
-                if( inputStages.Count() > 1 && stageMultiInputRecordReaderType == null )
+                if (inputStages.Count() > 1 && stageMultiInputRecordReaderType == null)
                     throw new ArgumentNullException(nameof(stageMultiInputRecordReaderType), "You must specify a stage multi input record reader if there is more than one input stage.");
-                foreach( InputStageInfo info in inputStages )
+                foreach (InputStageInfo info in inputStages)
                 {
                     hasInputs = true;
-                    if( info.ChannelType == ChannelType.Pipeline )
+                    if (info.ChannelType == ChannelType.Pipeline)
                     {
-                        if( info.PartitionsPerTask > 1 )
+                        if (info.PartitionsPerTask > 1)
                             throw new ArgumentException("When using a pipeline channel, you cannot use multiple partitions per task.");
-                        if( inputStages.Count() > 1 )
+                        if (inputStages.Count() > 1)
                             throw new ArgumentException("When using a pipeline channel you can specify only one input.");
                         isPipelineChannel = true;
                     }
@@ -211,16 +211,16 @@ namespace Ookii.Jumbo.Jet.Jobs
             }
 
             StageConfiguration stage = CreateStage(stageId, taskType, taskCount, null);
-            if( isPipelineChannel )
+            if (isPipelineChannel)
             {
                 InputStageInfo parentStage = inputStages.First();
                 AddChildStage(parentStage.PartitionerType, inputType, stage, parentStage.InputStage);
             }
             else
             {
-                if( hasInputs )
+                if (hasInputs)
                 {
-                    if( inputStages.Count() > 1 )
+                    if (inputStages.Count() > 1)
                     {
                         stage.MultiInputRecordReaderType = stageMultiInputRecordReaderType;
                         AddAdditionalProgressCounter(stageMultiInputRecordReaderType);
@@ -228,17 +228,17 @@ namespace Ookii.Jumbo.Jet.Jobs
 
                     ValidateChannelConnectivityConstraints(inputStages, stage);
 
-                    foreach( InputStageInfo info in inputStages )
+                    foreach (InputStageInfo info in inputStages)
                     {
-                        if( info.InputStage.ChildStage != null )
+                        if (info.InputStage.ChildStage != null)
                             throw new ArgumentException("One of the specified input stages already has a child stage so cannot be used as input.", nameof(inputStages));
-                        else if( info.InputStage.HasDataOutput )
+                        else if (info.InputStage.HasDataOutput)
                             throw new ArgumentException("One of the specified input stages already has DFS output so cannot be used as input.", nameof(inputStages));
-                        else if( info.InputStage.OutputChannel != null )
+                        else if (info.InputStage.OutputChannel != null)
                             throw new ArgumentException("One of the specified input stages already has an output channel so cannot be used as input.", nameof(inputStages));
                     }
 
-                    foreach( InputStageInfo info in inputStages )
+                    foreach (InputStageInfo info in inputStages)
                     {
                         ChannelConfiguration channel = new ChannelConfiguration()
                         {
@@ -263,12 +263,12 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         private static void ValidateChannelConnectivityConstraints(IEnumerable<InputStageInfo> inputStages, StageConfiguration stage)
         {
-            foreach( InputStageInfo info in inputStages )
+            foreach (InputStageInfo info in inputStages)
             {
-                if( info.PartitionsPerTask > 1 && inputStages.Count() > 1 )
+                if (info.PartitionsPerTask > 1 && inputStages.Count() > 1)
                     throw new NotSupportedException("Using multiple partitions per task is not supported when using multiple input stages.");
 
-                if( info.InputStage.InternalPartitionCount > 1 && info.InputStage.InternalPartitionCount != (stage.TaskCount * info.PartitionsPerTask) )
+                if (info.InputStage.InternalPartitionCount > 1 && info.InputStage.InternalPartitionCount != (stage.TaskCount * info.PartitionsPerTask))
                     throw new ArgumentException("A fully connected stage with an internally partitioned compound stage as input needs to have the same number of tasks as the input child stage.");
                 break;
             }
@@ -276,13 +276,13 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         private static void AddChildStage(Type partitionerType, Type inputType, StageConfiguration stage, StageConfiguration parentStage)
         {
-            if( parentStage.ChildStage != null )
+            if (parentStage.ChildStage != null)
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot add child stage to stage {0} because it already has a child stage.", stage.CompoundStageId));
-            if( stage.TaskCount > 1 && parentStage.InternalPartitionCount > 1 )
+            if (stage.TaskCount > 1 && parentStage.InternalPartitionCount > 1)
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot add child stage with internal partitioning to stage {0} because it already uses internal partitioning.", stage.CompoundStageId));
-            if( stage.OutputChannel != null )
+            if (stage.OutputChannel != null)
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot add child stage to stage {0} because it already has an output channel.", stage.CompoundStageId));
-            if( stage.DependentStages != null && stage.DependentStages.Count > 0 )
+            if (stage.DependentStages != null && stage.DependentStages.Count > 0)
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot add child stage to stage {0} because other stages have a scheduling dependency on it.", stage.CompoundStageId));
             parentStage.ChildStage = stage;
             parentStage.ChildStagePartitionerType = partitionerType ?? typeof(HashPartitioner<>).MakeGenericType(inputType);
@@ -297,7 +297,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 TaskCount = taskCount,
             };
 
-            if( input != null )
+            if (input != null)
             {
                 // The property will validate the record types.
                 stage.DataInput = input;
@@ -328,18 +328,18 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// of the compound stage ID could not be found.</returns>
         public IList<StageConfiguration> GetPipelinedStages(string compoundStageId)
         {
-            if( compoundStageId == null )
+            if (compoundStageId == null)
                 throw new ArgumentNullException(nameof(compoundStageId));
 
             string[] stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             List<StageConfiguration> stages = new List<StageConfiguration>(stageIds.Length);
             StageConfiguration current = GetStage(stageIds[0]);
-            for( int x = 0; x < stageIds.Length; ++x )
+            for (int x = 0; x < stageIds.Length; ++x)
             {
-                if( x > 0 )
+                if (x > 0)
                     current = current.GetNamedChildStage(stageIds[x]);
 
-                if( current == null )
+                if (current == null)
                     return null;
                 else
                     stages.Add(current);
@@ -354,17 +354,17 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The <see cref="StageConfiguration"/> for the stage, or <see langword="null"/> if no stage with that ID exists.</returns>
         public StageConfiguration GetStageWithCompoundId(string compoundStageId)
         {
-            if( compoundStageId == null )
+            if (compoundStageId == null)
                 throw new ArgumentNullException(nameof(compoundStageId));
 
             string[] stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             StageConfiguration current = GetStage(stageIds[0]);
-            for( int x = 0; x < stageIds.Length; ++x )
+            for (int x = 0; x < stageIds.Length; ++x)
             {
-                if( x > 0 )
+                if (x > 0)
                     current = current.GetNamedChildStage(stageIds[x]);
 
-                if( current == null )
+                if (current == null)
                     return null;
             }
             return current;
@@ -389,11 +389,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The number of tasks that will be created for the pipelined stages, which is the product of the number of tasks in each stage in the compound ID.</returns>
         public static int GetTotalTaskCount(IList<StageConfiguration> stages, int start)
         {
-            if( stages == null )
+            if (stages == null)
                 throw new ArgumentNullException(nameof(stages));
 
             int result = 1;
-            for( int x = start; x < stages.Count; ++x )
+            for (int x = start; x < stages.Count; ++x)
             {
                 result *= stages[0].TaskCount;
             }
@@ -406,14 +406,14 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="stream">The stream to save to.</param>
         public void SaveXml(System.IO.Stream stream)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             XmlWriterSettings settings = new XmlWriterSettings()
             {
                 Indent = true,
                 IndentChars = "  "
             };
-            using( XmlWriter writer = XmlWriter.Create(stream, settings) )
+            using (XmlWriter writer = XmlWriter.Create(stream, settings))
             {
                 writer.WriteStartDocument();
                 writer.WriteProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"config.xslt\"");
@@ -428,7 +428,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>A list of stages whose <see cref="OutputChannel"/> is connected to the stage with the specified <paramref name="stageId"/>, or an empty list if the specified stage does not have an input channel or does not exist.</returns>
         public IEnumerable<StageConfiguration> GetInputStagesForStage(string stageId)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
             return from stage in Stages
@@ -444,7 +444,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>A list of root stages that have the specified <paramref name="stageId"/> listed in their <see cref="StageConfiguration.Leaf"/> child stage's <see cref="StageConfiguration.DependentStages"/> collection.</returns>
         public IEnumerable<StageConfiguration> GetExplicitDependenciesForStage(string stageId)
         {
-            if( stageId == null )
+            if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
             return from stage in Stages
@@ -460,19 +460,19 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="newName">The new name of the stage.</param>
         public void RenameStage(StageConfiguration stage, string newName)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            if( newName == null )
+            if (newName == null)
                 throw new ArgumentNullException(nameof(newName));
 
-            if( stage.Parent == null )
+            if (stage.Parent == null)
             {
-                foreach( StageConfiguration dependency in GetExplicitDependenciesForStage(stage.StageId) )
+                foreach (StageConfiguration dependency in GetExplicitDependenciesForStage(stage.StageId))
                 {
                     dependency.DependentStages.Remove(stage.StageId);
                     dependency.DependentStages.Add(newName);
                 }
-                foreach( StageConfiguration inputStage in GetInputStagesForStage(stage.StageId) )
+                foreach (StageConfiguration inputStage in GetInputStagesForStage(stage.StageId))
                 {
                     inputStage.OutputChannel.OutputStage = newName;
                 }
@@ -488,15 +488,15 @@ namespace Ookii.Jumbo.Jet.Jobs
         public IEnumerable<ChannelConfiguration> GetAllChannels()
         {
             Stack<StageConfiguration> nestedStages = new Stack<StageConfiguration>(Stages);
-            while( nestedStages.Count > 0 )
+            while (nestedStages.Count > 0)
             {
                 // TODO: This code was adapted from when multiple child stages was still possibe, it might not be the best solution anymore.
                 StageConfiguration stage = nestedStages.Pop();
-                if( stage.ChildStage != null )
+                if (stage.ChildStage != null)
                 {
                     nestedStages.Push(stage.ChildStage);
                 }
-                else if( stage.OutputChannel != null )
+                else if (stage.OutputChannel != null)
                     yield return stage.OutputChannel;
             }
         }
@@ -512,12 +512,12 @@ namespace Ookii.Jumbo.Jet.Jobs
 
             // Start with the stages that have no dependencies and no channel input.
             var dataInputStages = from stage in Stages
-                              where GetExplicitDependenciesForStage(stage.StageId).Count() == 0 && GetInputStagesForStage(stage.StageId).Count() == 0
-                              select stage;
+                                  where GetExplicitDependenciesForStage(stage.StageId).Count() == 0 && GetInputStagesForStage(stage.StageId).Count() == 0
+                                  select stage;
 
             Queue<StageConfiguration> nextStages = new Queue<StageConfiguration>(dataInputStages);
 
-            while( nextStages.Count > 0 )
+            while (nextStages.Count > 0)
             {
                 StageConfiguration nextStage = nextStages.Dequeue();
 
@@ -529,17 +529,17 @@ namespace Ookii.Jumbo.Jet.Jobs
                                                  where stage.OutputChannel.ChannelType == ChannelType.Tcp
                                                  select result.IndexOf(stage.Root)).DefaultIfEmpty(-1).Min();
 
-                if( tcpChannelInputStageIndex >= 0 )
+                if (tcpChannelInputStageIndex >= 0)
                     result.Insert(tcpChannelInputStageIndex, nextStage);
                 else
                     result.Add(nextStage);
 
                 nextStage = nextStage.Leaf;
 
-                if( nextStage.OutputChannel != null )
+                if (nextStage.OutputChannel != null)
                     nextStages.Enqueue(GetStage(nextStage.OutputChannel.OutputStage));
 
-                foreach( string stageId in nextStage.DependentStages )
+                foreach (string stageId in nextStage.DependentStages)
                     nextStages.Enqueue(GetStage(stageId));
             }
 
@@ -555,7 +555,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5369:Use XmlReader For Deserialize", Justification = "It's actually safe.")]
         public static JobConfiguration LoadXml(System.IO.Stream stream)
         {
-            if( stream == null )
+            if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             return (JobConfiguration)_serializer.Deserialize(stream);
@@ -568,9 +568,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An instance of the <see cref="JobConfiguration"/> class created from the XML.</returns>
         public static JobConfiguration LoadXml(string file)
         {
-            if( file == null )
+            if (file == null)
                 throw new ArgumentNullException(nameof(file));
-            using( System.IO.FileStream stream = System.IO.File.OpenRead(file) )
+            using (System.IO.FileStream stream = System.IO.File.OpenRead(file))
             {
                 return LoadXml(stream);
             }
@@ -584,13 +584,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// define an additional progress counter.</returns>
         public bool AddAdditionalProgressCounter(Type type)
         {
-            if( type == null )
+            if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            if( type.GetInterfaces().Contains(typeof(IHasAdditionalProgress)) )
+            if (type.GetInterfaces().Contains(typeof(IHasAdditionalProgress)))
             {
                 AdditionalProgressCounter counter = new AdditionalProgressCounter() { TypeName = type.FullName };
                 // DisplayName isn't used in comparied AdditionalProgressCounter objects so we can postpone setting it.
-                if( !_additionalProgressCounters.Contains(counter) )
+                if (!_additionalProgressCounters.Contains(counter))
                 {
                     AdditionalProgressCounterAttribute attribute = (AdditionalProgressCounterAttribute)Attribute.GetCustomAttribute(type, typeof(AdditionalProgressCounterAttribute));
                     counter.DisplayName = attribute == null ? type.Name : attribute.DisplayName;
@@ -614,13 +614,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <exception cref="NotSupportedException">One of the record types used is not supported by <see cref="ValueWriter{T}"/>.</exception>
         public void Validate()
         {
-            if( Stages.Count == 0 )
+            if (Stages.Count == 0)
                 throw new InvalidOperationException("The job has no stages.");
             HashSet<string> stageIds = new HashSet<string>();
-            foreach( StageConfiguration stage in Stages )
+            foreach (StageConfiguration stage in Stages)
             {
                 stage.Validate(this);
-                if( !stageIds.Add(stage.StageId) )
+                if (!stageIds.Add(stage.StageId))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "The job contains duplicate stage ID {0}.", stage.StageId));
             }
         }
@@ -634,7 +634,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
         public T GetSetting<T>(string key, T defaultValue)
         {
-            if( JobSettings == null )
+            if (JobSettings == null)
                 return defaultValue;
             else
                 return JobSettings.GetSetting(key, defaultValue);
@@ -649,7 +649,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns><see langword="true"/> if the settings dictionary contained the specified setting; otherwise, <see langword="false"/>.</returns>
         public bool TryGetSetting<T>(string key, out T value)
         {
-            if( JobSettings == null )
+            if (JobSettings == null)
             {
                 value = default(T);
                 return false;
@@ -666,7 +666,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
         public string GetSetting(string key, string defaultValue)
         {
-            if( JobSettings == null )
+            if (JobSettings == null)
                 return defaultValue;
             else
                 return JobSettings.GetSetting(key, defaultValue);
@@ -679,7 +679,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="value">The value of the setting.</param>
         public void AddSetting(string key, string value)
         {
-            if( JobSettings == null )
+            if (JobSettings == null)
                 JobSettings = new SettingsDictionary();
             JobSettings.Add(key, value);
         }
@@ -702,19 +702,19 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="settings">The settings. May be <see langword="null"/>.</param>
         public void AddSettings(IEnumerable<KeyValuePair<string, string>> settings)
         {
-            if( settings != null )
+            if (settings != null)
             {
-                if( JobSettings == null )
+                if (JobSettings == null)
                     JobSettings = new SettingsDictionary();
 
-                foreach( KeyValuePair<string, string> setting in settings )
+                foreach (KeyValuePair<string, string> setting in settings)
                     JobSettings.Add(setting.Key, setting.Value);
             }
         }
 
         internal void AddSetting(string key, object value)
         {
-            if( JobSettings == null )
+            if (JobSettings == null)
                 JobSettings = new SettingsDictionary();
             JobSettings.AddSetting(key, value);
         }

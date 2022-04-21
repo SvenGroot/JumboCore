@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
-using System.Globalization;
 
 namespace NameServerApplication
 {
@@ -42,7 +42,7 @@ namespace NameServerApplication
         public override void Flush()
         {
             _baseStream.Flush();
-            using( FileStream crcStream = File.Create(_crcFileName) )
+            using (FileStream crcStream = File.Create(_crcFileName))
             {
                 uint crc = (uint)_crc.Value;
                 _crcBytes[0] = (byte)(crc & 0xFF);
@@ -99,30 +99,30 @@ namespace NameServerApplication
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
                 _baseStream.Dispose();
         }
 
         public static long CheckCrc(string file)
         {
             byte[] crcBytes = new byte[4];
-            using( FileStream crcStream = File.OpenRead(file + ".crc") )
+            using (FileStream crcStream = File.OpenRead(file + ".crc"))
             {
-                if( crcStream.Read(crcBytes, 0, 4) != 4 )
+                if (crcStream.Read(crcBytes, 0, 4) != 4)
                     throw new DfsException(string.Format(CultureInfo.InvariantCulture, "{0} CRC file is corrupt.", file));
             }
             uint expectedCrc = (uint)crcBytes[0] | (uint)crcBytes[1] << 8 | (uint)crcBytes[2] << 16 | (uint)crcBytes[3] << 24;
 
-            using( FileStream stream = File.OpenRead(file) )
+            using (FileStream stream = File.OpenRead(file))
             {
                 Crc32Checksum crc = new Crc32Checksum();
                 byte[] buffer = new byte[4096];
                 int bytesRead;
-                while( (bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0 )
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     crc.Update(buffer, 0, bytesRead);
                 }
-                if( crc.Value != expectedCrc )
+                if (crc.Value != expectedCrc)
                     throw new DfsException(string.Format(CultureInfo.InvariantCulture, "{0} is corrupt (expected CRC 0x{1:x}, actual 0x{2:x}).", file, expectedCrc, crc.Value));
 
                 return crc.Value;

@@ -35,9 +35,9 @@ namespace JetWeb.Pages
                     Jobs = Metrics.RunningJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray()
                 };
 
-                FinishedJobs = new JobTableModel() 
+                FinishedJobs = new JobTableModel()
                 {
-                    Jobs = Metrics.FinishedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray() 
+                    Jobs = Metrics.FinishedJobs.Select(id => client.JobServer.GetJobStatus(id)).ToArray()
                 };
 
                 FailedJobs = new JobTableModel()

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -37,9 +37,9 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public LocalFileSystemClient(string rootPath)
             : base(CreateLocalConfiguration(rootPath))
         {
-            if( rootPath == null )
+            if (rootPath == null)
                 throw new ArgumentNullException(nameof(rootPath));
-            if( !Directory.Exists(rootPath) )
+            if (!Directory.Exists(rootPath))
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.InvariantCulture, "The root directory '{0}' does not exist.", rootPath));
 
             _rootPath = rootPath;
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             : base(configuration)
         {
             // HostName is always a file:// URI when this method is used.
-            if( configuration.FileSystem.Url.AbsolutePath != "/" )
+            if (configuration.FileSystem.Url.AbsolutePath != "/")
                 _rootPath = System.IO.Path.GetFullPath(Uri.UnescapeDataString(configuration.FileSystem.Url.AbsolutePath));
         }
 
@@ -132,11 +132,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
             path = AdjustPath(path);
             FileInfo file = new FileInfo(path);
-            if( file.Exists )
+            if (file.Exists)
                 return JumboFile.FromFileInfo(file, RootPath);
 
             DirectoryInfo directory = new DirectoryInfo(path);
-            if( directory.Exists )
+            if (directory.Exists)
                 return JumboDirectory.FromDirectoryInfo(directory, RootPath);
 
             return null;
@@ -205,12 +205,12 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 throw new ArgumentNullException(nameof(path));
 
             path = AdjustPath(path);
-            if( File.Exists(path) )
+            if (File.Exists(path))
             {
                 File.Delete(path);
                 return true;
             }
-            else if( Directory.Exists(path) )
+            else if (Directory.Exists(path))
             {
                 Directory.Delete(path, recursive);
                 return true;
@@ -233,16 +233,16 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
             source = AdjustPath(source);
             destination = AdjustPath(destination);
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
 
             // This is the way the DFS behaves, so we need to mimic that.
-            if( Directory.Exists(destination) )
+            if (Directory.Exists(destination))
                 destination = System.IO.Path.Combine(destination, System.IO.Path.GetFileName(source));
 
-            if( File.Exists(source) )
+            if (File.Exists(source))
                 File.Move(source, destination);
             else
                 Directory.Move(source, destination);
@@ -257,11 +257,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
         private string AdjustPath(string path)
         {
-            if( _rootPath == null )
+            if (_rootPath == null)
                 return path;
             else
             {
-                if( System.IO.Path.IsPathRooted(path) )
+                if (System.IO.Path.IsPathRooted(path))
                 {
                     int rootLength = System.IO.Path.GetPathRoot(path).Length;
                     path = path.Substring(rootLength);

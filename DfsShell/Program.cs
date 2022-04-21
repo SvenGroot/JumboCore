@@ -1,20 +1,20 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Dfs;
-using System.Net.Sockets;
-using IO = System.IO;
-using System.Threading;
-using Ookii.Jumbo;
-using Ookii.CommandLine;
-using System.Reflection;
-using DfsShell.Commands;
-using Ookii.Jumbo.Rpc;
-using Ookii.Jumbo.Dfs.FileSystem;
-using System.IO;
 using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using DfsShell.Commands;
+using Ookii.CommandLine;
+using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.Rpc;
+using IO = System.IO;
 
 namespace DfsShell
 {
@@ -45,27 +45,27 @@ namespace DfsShell
             {
                 return ShellCommand.RunShellCommand(Assembly.GetExecutingAssembly(), args, 0, options);
             }
-            catch( SocketException ex )
+            catch (SocketException ex)
             {
                 WriteError("An error occurred communicating with the server:", ex.Message);
             }
-            catch( DfsException ex )
+            catch (DfsException ex)
             {
                 WriteError("An error occurred executing the command:", ex.Message);
             }
-            catch( IOException ex )
+            catch (IOException ex)
             {
                 WriteError("An error occurred executing the command:", ex.Message);
             }
-            catch( ArgumentException ex )
+            catch (ArgumentException ex)
             {
                 WriteError("An error occurred executing the command:", ex.Message);
             }
-            catch( InvalidOperationException ex )
+            catch (InvalidOperationException ex)
             {
                 WriteError("Invalid operation:", ex.Message);
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 WriteError(null, ex.ToString());
             }
@@ -78,7 +78,7 @@ namespace DfsShell
 
         private static void PrintUsage()
         {
-            using( LineWrappingTextWriter writer = LineWrappingTextWriter.ForConsoleOut() )
+            using (LineWrappingTextWriter writer = LineWrappingTextWriter.ForConsoleOut())
             {
                 writer.WriteLine("Usage: DfsShell <command> [args...]");
                 writer.WriteLine();
@@ -90,9 +90,9 @@ namespace DfsShell
 
         private static void WriteError(string errorType, string message)
         {
-            using( TextWriter writer = LineWrappingTextWriter.ForConsoleError() )
+            using (TextWriter writer = LineWrappingTextWriter.ForConsoleError())
             {
-                if( errorType != null )
+                if (errorType != null)
                     writer.WriteLine(errorType);
                 writer.WriteLine(message);
             }

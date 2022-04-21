@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -47,11 +47,11 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <returns></returns>
         public int CompareTo(FGListItem other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
 
             int result = other.Support.CompareTo(Support); // Sort on support descending
-            if( result == 0 )
+            if (result == 0)
             {
                 result = Feature.CompareTo(other.Feature); // And feature ascending
             }

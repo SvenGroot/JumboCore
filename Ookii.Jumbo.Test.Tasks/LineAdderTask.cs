@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Test.Tasks
         {
             _log.InfoFormat("Running, input = {0}, output = {1}", input, output);
             int totalLines = 0;
-            foreach( int value in input.EnumerateRecords() )
+            foreach (int value in input.EnumerateRecords())
             {
                 totalLines += value;
                 TaskContext.StatusMessage = string.Format("Counted {0} lines", totalLines);

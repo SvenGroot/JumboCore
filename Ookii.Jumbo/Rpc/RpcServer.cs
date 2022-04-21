@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -16,20 +16,20 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcServer(IPAddress[] localAddresses, int port)
         {
-            if( localAddresses == null )
+            if (localAddresses == null)
                 throw new ArgumentNullException(nameof(localAddresses));
-            if( localAddresses.Length == 0 )
+            if (localAddresses.Length == 0)
                 throw new ArgumentException("You must specify a local address to listen on.");
 
             _listeners = new TcpListener[localAddresses.Length];
-            for( int x = 0; x < localAddresses.Length; ++x )
+            for (int x = 0; x < localAddresses.Length; ++x)
                 _listeners[x] = new TcpListener(localAddresses[x], port);
             _acceptSocketCallback = new AsyncCallback(AcceptSocketCallback);
         }
 
         public void StartListening()
         {
-            foreach( TcpListener listener in _listeners )
+            foreach (TcpListener listener in _listeners)
             {
                 listener.Start(Int32.MaxValue);
                 listener.BeginAcceptSocket(_acceptSocketCallback, listener);
@@ -40,7 +40,7 @@ namespace Ookii.Jumbo.Rpc
         public void StopListening()
         {
             _isListening = false;
-            foreach( TcpListener listener in _listeners )
+            foreach (TcpListener listener in _listeners)
             {
                 listener.Stop();
             }
@@ -50,7 +50,7 @@ namespace Ookii.Jumbo.Rpc
         private void AcceptSocketCallback(IAsyncResult ar)
         {
             TcpListener listener = (TcpListener)ar.AsyncState;
-            if( _isListening )
+            if (_isListening)
                 listener.BeginAcceptSocket(_acceptSocketCallback, listener);
 
             Socket socket = null;
@@ -64,14 +64,14 @@ namespace Ookii.Jumbo.Rpc
                 handler = new RpcServerConnectionHandler(socket);
                 handler.BeginReadRequest();
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
-                if( handler != null )
+                if (handler != null)
                 {
                     handler.TrySendError(ex);
                     handler.Dispose();
                 }
-                if( socket != null )
+                if (socket != null)
                     socket.Close();
             }
         }

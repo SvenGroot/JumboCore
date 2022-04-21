@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet
     ///   is written to the DFS, it will be a single file (rather than a file for each partition, which is the default).
     /// </para>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple=false, Inherited=true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class ProcessAllInputPartitionsAttribute : Attribute
     {
     }

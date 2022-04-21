@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Channels;
-using System.IO;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test.Jet
 {
@@ -20,11 +20,11 @@ namespace Ookii.Jumbo.Test.Jet
             public void Run(RecordReader<int> input, RecordWriter<int> output)
             {
                 int? prev = null;
-                foreach( int record in input.EnumerateRecords() )
+                foreach (int record in input.EnumerateRecords())
                 {
                     // Eliminates duplicates. This was chosen because its correct operation depends on the
                     // input being sorted.
-                    if( prev == null || prev.Value != record )
+                    if (prev == null || prev.Value != record)
                         output.WriteRecord(record);
                     prev = record;
                 }
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Test.Jet
         private void TestSpillRecordWriter(int partitionCount, int records, int bufferSize, int expectedSpillCount, bool useCombiner = false, CompressionType compressionType = CompressionType.None, IComparer<int> comparer = null)
         {
             List<int> values;
-            if( useCombiner )
+            if (useCombiner)
             {
                 List<int> temp = Utilities.GenerateNumberData(records / 2);
                 values = new List<int>(temp.Concat(temp)); // Make sure there are duplicates
@@ -114,21 +114,21 @@ namespace Ookii.Jumbo.Test.Jet
             HashPartitioner<int> partitioner = new HashPartitioner<int>();
             partitioner.Partitions = partitionCount;
             List<int>[] expectedPartitions = new List<int>[partitionCount];
-            for( int x = 0; x < partitionCount; ++x )
+            for (int x = 0; x < partitionCount; ++x)
                 expectedPartitions[x] = new List<int>();
 
             string outputPath = Path.Combine(Utilities.TestOutputPath, "spilloutput.tmp");
-            if( File.Exists(outputPath) )
+            if (File.Exists(outputPath))
                 File.Delete(outputPath);
 
             try
             {
                 ITask<int, int> combiner = null;
-                if( useCombiner )
+                if (useCombiner)
                     combiner = new DuplicateEliminationCombiner();
-                using( SortSpillRecordWriter<int> target = new SortSpillRecordWriter<int>(outputPath, partitioner, bufferSize, (int)(0.8 * bufferSize), 4096, true, compressionType, 5, comparer, combiner, 1) )
+                using (SortSpillRecordWriter<int> target = new SortSpillRecordWriter<int>(outputPath, partitioner, bufferSize, (int)(0.8 * bufferSize), 4096, true, compressionType, 5, comparer, combiner, 1))
                 {
-                    foreach( int value in values )
+                    foreach (int value in values)
                     {
                         expectedPartitions[partitioner.GetPartition(value)].Add(value);
                         target.WriteRecord(value);
@@ -139,20 +139,20 @@ namespace Ookii.Jumbo.Test.Jet
                 }
 
                 PartitionFileIndex index = new PartitionFileIndex(outputPath);
-                for( int partition = 0; partition < partitionCount; ++partition )
+                for (int partition = 0; partition < partitionCount; ++partition)
                 {
                     IEnumerable<PartitionFileIndexEntry> entries = index.GetEntriesForPartition(partition + 1);
-                    if( entries == null )
+                    if (entries == null)
                         CollectionAssert.IsEmpty(expectedPartitions[partition]);
                     else
                     {
                         Assert.AreEqual(1, entries.Count());
-                        using( PartitionFileStream stream = new PartitionFileStream(outputPath, 4096, entries, compressionType) )
-                        using( BinaryRecordReader<int> reader = new BinaryRecordReader<int>(stream, 0, stream.Length, true, true) )
+                        using (PartitionFileStream stream = new PartitionFileStream(outputPath, 4096, entries, compressionType))
+                        using (BinaryRecordReader<int> reader = new BinaryRecordReader<int>(stream, 0, stream.Length, true, true))
                         {
                             List<int> actualPartition = reader.EnumerateRecords().ToList();
                             expectedPartitions[partition].Sort(comparer);
-                            if( useCombiner )
+                            if (useCombiner)
                                 CollectionAssert.AreEqual(expectedPartitions[partition].Distinct().ToList(), actualPartition);
                             else
                                 CollectionAssert.AreEqual(expectedPartitions[partition], actualPartition);
@@ -162,7 +162,7 @@ namespace Ookii.Jumbo.Test.Jet
             }
             finally
             {
-                if( File.Exists(outputPath) )
+                if (File.Exists(outputPath))
                     File.Delete(outputPath);
             }
         }

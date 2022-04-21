@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="taskExecution">The task execution utility for the task that this channel is for.</param>
         public PipelineOutputChannel(TaskExecutionUtility taskExecution)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
 
             _taskExecution = taskExecution;
@@ -46,26 +46,26 @@ namespace Ookii.Jumbo.Jet.Channels
             IPartitioner<T> partitioner;
             int taskCount = childStage.TaskCount;
 
-            if( _taskExecution.Context.StageConfiguration.IsOutputPrepartitioned && _taskExecution.Context.StageConfiguration.InternalPartitionCount != 1 )
+            if (_taskExecution.Context.StageConfiguration.IsOutputPrepartitioned && _taskExecution.Context.StageConfiguration.InternalPartitionCount != 1)
             {
                 // If the parent stage has multiple internal partitions and uses pre-partitioned output, but the next childstage doesn't use IPrepartitionedPushTask
                 // we need to split here to match the number of internal partitions.
                 taskCount = _taskExecution.Context.StageConfiguration.InternalPartitionCount;
             }
 
-            if( childStage.IsOutputPrepartitioned )
+            if (childStage.IsOutputPrepartitioned)
             {
                 partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.ReferencedType, _taskExecution);
                 return (RecordWriter<T>)_taskExecution.CreateAssociatedTask(childStage, 1).CreatePipelineRecordWriter(partitioner);
             }
-            else if( taskCount == 1 )
+            else if (taskCount == 1)
                 return (RecordWriter<T>)_taskExecution.CreateAssociatedTask(childStage, 1).CreatePipelineRecordWriter(null);
             else
             {
                 List<RecordWriter<T>> writers = new List<RecordWriter<T>>();
                 partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.ReferencedType, _taskExecution);
 
-                for( int x = 1; x <= taskCount; ++x )
+                for (int x = 1; x <= taskCount; ++x)
                 {
                     TaskExecutionUtility childTaskExecution = _taskExecution.CreateAssociatedTask(childStage, x);
                     writers.Add((RecordWriter<T>)childTaskExecution.CreatePipelineRecordWriter(null));

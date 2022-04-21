@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -64,9 +64,9 @@ namespace Ookii.Jumbo
             {
                 get
                 {
-                    if( CanRead && _uncompressedLength >= 0 )
+                    if (CanRead && _uncompressedLength >= 0)
                         return _uncompressedLength;
-                    else if( CanWrite )
+                    else if (CanWrite)
                         return _bytesWritten;
                     else
                         return base.Length;
@@ -77,9 +77,9 @@ namespace Ookii.Jumbo
             {
                 get
                 {
-                    if( CanRead )
+                    if (CanRead)
                         return _bytesRead;
-                    else if( CanWrite )
+                    else if (CanWrite)
                         return _bytesWritten;
                     else
                         return base.Position;
@@ -125,10 +125,10 @@ namespace Ookii.Jumbo
         /// if <see cref="CompressionType.None"/> was specified.</returns>
         public static Stream CreateCompressor(this Stream target, CompressionType type)
         {
-            if( target == null )
+            if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            switch( type )
+            switch (type)
             {
             case CompressionType.None:
                 return target;
@@ -150,10 +150,10 @@ namespace Ookii.Jumbo
         /// if <see cref="CompressionType.None"/> was specified.</returns>
         public static Stream CreateDecompressor(this Stream source, CompressionType type, long uncompressedSize)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            switch( type )
+            switch (type)
             {
             case CompressionType.None:
                 return source;

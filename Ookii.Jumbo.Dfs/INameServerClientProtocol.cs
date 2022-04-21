@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Dfs
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, contains a file name, or refers to an existing file or directory.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Part of the path specified in <paramref name="path"/> does not exist.</exception>
-        BlockAssignment CreateFile(string path,  int blockSize, int replicationFactor, bool localReplica, RecordStreamOptions recordOptions);
+        BlockAssignment CreateFile(string path, int blockSize, int replicationFactor, bool localReplica, RecordStreamOptions recordOptions);
 
         /// <summary>
         /// Deletes the specified file or directory.

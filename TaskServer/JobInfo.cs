@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
-using System.Globalization;
 
 namespace TaskServerApplication
 {
@@ -25,12 +25,12 @@ namespace TaskServerApplication
         public string DownloadDfsFile(string dfsPath)
         {
             string localPath;
-            if( _downloadedFiles == null )
+            if (_downloadedFiles == null)
                 _downloadedFiles = new Dictionary<string, string>();
             else
             {
                 // Did we already download this file?
-                if( _downloadedFiles.TryGetValue(dfsPath, out localPath) )
+                if (_downloadedFiles.TryGetValue(dfsPath, out localPath))
                     return localPath;
             }
 

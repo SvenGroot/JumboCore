@@ -26,9 +26,9 @@ namespace JobServerApplication
 
         public TaskInfo(JobInfo job, StageInfo stage, IList<StageConfiguration> inputStages, int taskNumber, string[] inputLocations)
         {
-            if( stage == null )
+            if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            if( job == null )
+            if (job == null)
                 throw new ArgumentNullException(nameof(job));
             _stage = stage;
             _taskId = new TaskId(stage.StageId, taskNumber);
@@ -36,7 +36,7 @@ namespace JobServerApplication
             _job = job;
             _inputLocations = inputLocations;
 
-            if( inputStages != null && inputStages.Count > 0 )
+            if (inputStages != null && inputStages.Count > 0)
             {
                 _partitionInfo = new TaskPartitionInfo(this, inputStages);
             }
@@ -82,13 +82,13 @@ namespace JobServerApplication
 
         public TaskState State
         {
-            get 
+            get
             {
                 return _schedulerInfo.State;
             }
         }
 
-        public TaskServerInfo Server 
+        public TaskServerInfo Server
         {
             get
             {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 using System.Threading;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public ProducerConsumerBuffer(int bufferSize, int chunkSize)
             {
-                if( bufferSize < 2 )
+                if (bufferSize < 2)
                     throw new ArgumentOutOfRangeException(nameof(bufferSize), "bufferSize must be larger than one.");
 
 
@@ -46,11 +46,11 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 _buffer[_writePos] = item;
                 int newPos = (_writePos + 1) % _bufferSize;
-                while( !_cancelled && newPos == _readPos )
+                while (!_cancelled && newPos == _readPos)
                     WaitHandle.WaitAny(_writeWaitHandles);
 
                 _writePos = newPos;
-                if( _writePos % _chunkSize == 0 )
+                if (_writePos % _chunkSize == 0)
                     _writePosChanged.Set();
                 return !_cancelled;
             }
@@ -59,14 +59,14 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 int newPos = (_readPos + 1) % _bufferSize;
                 _readPos = newPos;
-                if( _readPos % _chunkSize == 0 )
+                if (_readPos % _chunkSize == 0)
                     _readPosChanged.Set();
-                while( !_cancelled && !_finished && _readPos == _writePos )
+                while (!_cancelled && !_finished && _readPos == _writePos)
                 {
                     WaitHandle.WaitAny(_readWaitHandles);
                 }
 
-                if( _cancelled || (_finished && _readPos == _writePos) )
+                if (_cancelled || (_finished && _readPos == _writePos))
                 {
                     item = default(TRecord);
                     return false;
@@ -92,7 +92,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public void Dispose()
             {
-                if( !_disposed )
+                if (!_disposed)
                 {
                     _disposed = true;
                     ((IDisposable)_cancelEvent).Dispose();
@@ -121,7 +121,7 @@ namespace Ookii.Jumbo.Jet.Channels
             protected override bool ReadRecordInternal()
             {
                 TRecord record;
-                if( _buffer.Read(out record) )
+                if (_buffer.Read(out record))
                 {
                     CurrentRecord = record;
                     return true;
@@ -144,11 +144,11 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PipelinePullTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, TaskId taskId)
         {
-            if( taskExecution == null )
+            if (taskExecution == null)
                 throw new ArgumentNullException(nameof(taskExecution));
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if( taskId == null )
+            if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
 
             _taskExecution = taskExecution;
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public void Finish()
         {
-            if( _taskThread != null )
+            if (_taskThread != null)
             {
                 _buffer.Finish();
                 _taskThread.Join();
@@ -168,7 +168,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         protected override void WriteRecordInternal(TRecord record)
         {
-            if( _taskThread == null )
+            if (_taskThread == null)
             {
                 _buffer = new ProducerConsumerBuffer(10000, 100);
                 _taskThread = new Thread(TaskThread) { Name = "PipelineChannel_" + _taskId.ToString(), IsBackground = true };
@@ -181,7 +181,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private void TaskThread()
         {
             _task = (ITask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
-            using( BufferRecordReader reader = new BufferRecordReader(_buffer) )
+            using (BufferRecordReader reader = new BufferRecordReader(_buffer))
             {
                 _task.Run(reader, _output);
             }
@@ -191,7 +191,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
                 _buffer.Dispose();
         }
     }

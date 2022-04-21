@@ -7,7 +7,7 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// <summary>
     /// Provides job configuration options to configure the behaviour of the scheduler.
     /// </summary>
-    [XmlType("SchedulerOptions", Namespace=JobConfiguration.XmlNamespace)]
+    [XmlType("SchedulerOptions", Namespace = JobConfiguration.XmlNamespace)]
     public sealed class SchedulerOptions
     {
         private int _maximumDataDistance = 2;
@@ -27,14 +27,14 @@ namespace Ookii.Jumbo.Jet.Jobs
         public int MaximumDataDistance
         {
             get { return _maximumDataDistance; }
-            set 
+            set
             {
-                if( _maximumDataDistance < 0 )
+                if (_maximumDataDistance < 0)
                     throw new ArgumentOutOfRangeException(nameof(value));
-                _maximumDataDistance = value; 
+                _maximumDataDistance = value;
             }
         }
-        
+
 
         /// <summary>
         /// Gets or sets a value indicating how the server will assign DFS input tasks to task servers.

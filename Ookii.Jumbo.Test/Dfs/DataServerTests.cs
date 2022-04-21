@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using System.Threading;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading;
+using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -48,14 +48,14 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const int size = 20000000;
 
-            using( MemoryStream stream = new MemoryStream() )
+            using (MemoryStream stream = new MemoryStream())
             {
                 // Create a file. This size is chosen so it's not a whole number of packets.
                 Utilities.TraceLineAndFlush("Creating file");
                 Utilities.GenerateData(stream, size);
                 stream.Position = 0;
                 Utilities.TraceLineAndFlush("Uploading file");
-                using( DfsOutputStream output = new DfsOutputStream(_nameServer, "/TestStreams.dat") )
+                using (DfsOutputStream output = new DfsOutputStream(_nameServer, "/TestStreams.dat"))
                 {
                     Utilities.CopyStream(stream, output);
                     Assert.AreEqual(size, output.Length);
@@ -68,7 +68,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 ServerAddress[] servers = _nameServer.GetDataServersForBlock(file.Blocks[0]);
                 Assert.AreEqual(_replicationFactor, servers.Length);
                 Assert.AreNotEqual(servers[0], servers[1]);
-                foreach( ServerAddress server in servers )
+                foreach (ServerAddress server in servers)
                     DownloadAndCompareBlock(file.Blocks[0], server, stream);
             }
         }
@@ -77,9 +77,9 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             Utilities.TraceLineAndFlush(string.Format("Comparing file for server {0}", server));
             dataStream.Position = 0;
-            using( TcpClient client = new TcpClient(server.HostName, server.Port) )
-            using( NetworkStream stream = client.GetStream() )
-            using( BinaryReader reader = new BinaryReader(stream) )
+            using (TcpClient client = new TcpClient(server.HostName, server.Port))
+            using (NetworkStream stream = client.GetStream())
+            using (BinaryReader reader = new BinaryReader(stream))
             {
                 DataServerClientProtocolReadHeader header = new DataServerClientProtocolReadHeader();
                 header.BlockId = blockID;
@@ -94,7 +94,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 Packet packet = new Packet();
                 byte[] buffer1 = new byte[Packet.PacketSize];
                 byte[] buffer2 = new byte[Packet.PacketSize];
-                while( !packet.IsLastPacket )
+                while (!packet.IsLastPacket)
                 {
                     result = (DataServerClientProtocolResult)reader.ReadInt16();
                     Assert.AreEqual(DataServerClientProtocolResult.Ok, result);

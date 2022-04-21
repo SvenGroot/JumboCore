@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Topology;
 
 namespace NameServerApplication
@@ -38,22 +38,22 @@ namespace NameServerApplication
 
         public void AddResponseForNextHeartbeat(HeartbeatResponse response)
         {
-            if( response == null )
+            if (response == null)
                 throw new ArgumentNullException(nameof(response));
 
-            lock( _pendingResponses )
+            lock (_pendingResponses)
                 _pendingResponses.Add(response);
         }
 
         public void AddBlockToDelete(Guid blockID)
         {
-            lock( _pendingResponses )
+            lock (_pendingResponses)
             {
                 DeleteBlocksHeartbeatResponse response = (from r in _pendingResponses
-                                                          let dr = r as DeleteBlocksHeartbeatResponse 
+                                                          let dr = r as DeleteBlocksHeartbeatResponse
                                                           where dr != null
                                                           select dr).SingleOrDefault();
-                if( response == null )
+                if (response == null)
                 {
                     _pendingResponses.Add(new DeleteBlocksHeartbeatResponse(_fileSystemId, new[] { blockID }));
                 }
@@ -66,7 +66,7 @@ namespace NameServerApplication
 
         public HeartbeatResponse[] GetAndClearPendingResponses()
         {
-            lock( _pendingResponses )
+            lock (_pendingResponses)
             {
                 HeartbeatResponse[] result = _pendingResponses.ToArray();
                 _pendingResponses.Clear();

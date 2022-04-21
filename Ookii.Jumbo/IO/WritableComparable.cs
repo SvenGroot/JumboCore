@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Collections;
-using System.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -90,9 +90,9 @@ namespace Ookii.Jumbo.IO
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
         public static bool operator <(WritableComparable<T> left, WritableComparable<T> right)
         {
-            if( left == null )
+            if (left == null)
             {
-                if( right == null )
+                if (right == null)
                     return false;
                 else
                     return true;
@@ -127,7 +127,7 @@ namespace Ookii.Jumbo.IO
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
         public static bool operator >(WritableComparable<T> left, WritableComparable<T> right)
         {
-            if( left == null )
+            if (left == null)
             {
                 return false;
             }
@@ -179,7 +179,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
         public int CompareTo(WritableComparable<T> other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
 
             return Comparer.Compare(Value, other.Value);
@@ -213,7 +213,7 @@ namespace Ookii.Jumbo.IO
         /// <see cref="WritableComparable{T}"/>; otherwise, <see langword="false"/>.</returns>
         public virtual bool Equals(WritableComparable<T> other)
         {
-            if( other == null )
+            if (other == null)
                 return false;
             return object.Equals(Value, other.Value);
         }

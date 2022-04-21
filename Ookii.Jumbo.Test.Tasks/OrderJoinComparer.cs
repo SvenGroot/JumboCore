@@ -27,9 +27,9 @@ namespace Ookii.Jumbo.Test.Tasks
 
         public bool Equals(Order x, Order y)
         {
-            if( x == y )
+            if (x == y)
                 return true;
-            else if( x == null || y == null )
+            else if (x == null || y == null)
                 return false;
             else
                 return x.CustomerId == y.CustomerId;

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Globalization;
 
 namespace Ookii.Jumbo
 {
@@ -21,7 +21,7 @@ namespace Ookii.Jumbo
             long factor;
 
             // Must support the "G" specifier, required by IFormattable
-            if( string.IsNullOrEmpty(format) || string.Equals(format, "g", StringComparison.OrdinalIgnoreCase) )
+            if (string.IsNullOrEmpty(format) || string.Equals(format, "g", StringComparison.OrdinalIgnoreCase))
             {
                 factor = DetermineAutomaticScalingFactor(value, false, out realPrefix);
                 after = "B";
@@ -29,7 +29,7 @@ namespace Ookii.Jumbo
             else
             {
                 Match m = _formatRegex.Match(format);
-                if( !m.Success )
+                if (!m.Success)
                     throw new FormatException("Invalid format string.");
 
                 before = m.Groups["before"].Value;
@@ -38,14 +38,14 @@ namespace Ookii.Jumbo
                 after = m.Groups["after"].Value;
                 numberFormat = format.Substring(0, m.Index);
 
-                if( prefix == null )
+                if (prefix == null)
                 {
                     realPrefix = null;
                     factor = BinarySize.Byte;
                 }
-                else if( prefix == "A" || prefix == "a" )
+                else if (prefix == "A" || prefix == "a")
                     factor = DetermineAutomaticScalingFactor(value, false, out realPrefix);
-                else if( prefix == "S" || prefix == "s" )
+                else if (prefix == "S" || prefix == "s")
                     factor = DetermineAutomaticScalingFactor(value, true, out realPrefix);
                 else
                 {
@@ -53,10 +53,10 @@ namespace Ookii.Jumbo
                     factor = BinarySize.GetUnitScalingFactor(prefix);
                 }
 
-                if( prefix != null && char.IsLower(prefix, 0) )
+                if (prefix != null && char.IsLower(prefix, 0))
                     realPrefix = realPrefix.ToLower(CultureInfo.CurrentCulture);
 
-                if( factor > 1 )
+                if (factor > 1)
                     realPrefix += iec;
             }
 
@@ -65,27 +65,27 @@ namespace Ookii.Jumbo
 
         private static long DetermineAutomaticScalingFactor(BinarySize value, bool allowRounding, out string prefix)
         {
-            if( value >= BinarySize.Petabyte && (allowRounding || value.Value % BinarySize.Petabyte == 0) )
+            if (value >= BinarySize.Petabyte && (allowRounding || value.Value % BinarySize.Petabyte == 0))
             {
                 prefix = "P";
                 return BinarySize.Petabyte;
             }
-            else if( value >= BinarySize.Terabyte && (allowRounding || value.Value % BinarySize.Terabyte == 0) )
+            else if (value >= BinarySize.Terabyte && (allowRounding || value.Value % BinarySize.Terabyte == 0))
             {
                 prefix = "T";
                 return BinarySize.Terabyte;
             }
-            else if( value >= BinarySize.Gigabyte && (allowRounding || value.Value % BinarySize.Gigabyte == 0) )
+            else if (value >= BinarySize.Gigabyte && (allowRounding || value.Value % BinarySize.Gigabyte == 0))
             {
                 prefix = "G";
                 return BinarySize.Gigabyte;
             }
-            else if( value >= BinarySize.Megabyte && (allowRounding || value.Value % BinarySize.Megabyte == 0) )
+            else if (value >= BinarySize.Megabyte && (allowRounding || value.Value % BinarySize.Megabyte == 0))
             {
                 prefix = "M";
                 return BinarySize.Megabyte;
             }
-            else if( value >= BinarySize.Kilobyte && (allowRounding || value.Value % BinarySize.Kilobyte == 0) )
+            else if (value >= BinarySize.Kilobyte && (allowRounding || value.Value % BinarySize.Kilobyte == 0))
             {
                 prefix = "K";
                 return BinarySize.Kilobyte;

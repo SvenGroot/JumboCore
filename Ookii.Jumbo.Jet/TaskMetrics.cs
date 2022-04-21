@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Globalization;
 using System.Xml.Linq;
 
 namespace Ookii.Jumbo.Jet
@@ -108,7 +108,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="other">A <see cref="TaskMetrics"/> instance.</param>
         public void Add(TaskMetrics other)
         {
-            if( other == null )
+            if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
             DfsBytesRead += other.DfsBytesRead;
@@ -131,7 +131,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A string representation of the <see cref="TaskMetrics"/> object.</returns>
         public override string ToString()
         {
-            using( StringWriter result = new StringWriter(CultureInfo.CurrentCulture) )
+            using (StringWriter result = new StringWriter(CultureInfo.CurrentCulture))
             {
                 result.WriteLine("Input records: {0}", InputRecords);
                 result.WriteLine("Output records: {0}", OutputRecords);
@@ -197,9 +197,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A <see cref="TaskMetrics"/> object created from the XML element, or <see langword="null"/> if <paramref name="element"/> was <see langword="null"/>.</returns>
         public static TaskMetrics FromXml(XElement element)
         {
-            if( element == null )
+            if (element == null)
                 return null;
-            if( element.Name != "Metrics" )
+            if (element.Name != "Metrics")
                 throw new ArgumentException("Invalid metrics element.", nameof(element));
 
             return new TaskMetrics()

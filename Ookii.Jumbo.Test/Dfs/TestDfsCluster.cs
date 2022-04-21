@@ -1,20 +1,20 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NameServerApplication;
-using System.Threading;
-using DataServerApplication;
 using System.Configuration;
 using System.Diagnostics;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading;
+using DataServerApplication;
 using log4net.Appender;
 using log4net.Core;
-using NUnit.Framework;
 using log4net.Layout;
+using NameServerApplication;
+using NUnit.Framework;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Test.Dfs
 {
@@ -46,10 +46,10 @@ namespace Ookii.Jumbo.Test.Dfs
                 config.FileSystem.Url = new Uri("jdfs://localhost:" + NameServerPort);
                 config.NameServer.ReplicationFactor = replicationFactor;
                 config.NameServer.ImageDirectory = imagePath;
-                if( blockSize != null )
+                if (blockSize != null)
                     config.NameServer.BlockSize = blockSize.Value;
 
-                if( format )
+                if (format)
                     FileSystem.Format(config);
 
                 NameServer.Run(new JumboConfiguration(), config);
@@ -59,9 +59,9 @@ namespace Ookii.Jumbo.Test.Dfs
 
             public void StartDataServers(int dataServers)
             {
-                if( dataServers > 0 )
+                if (dataServers > 0)
                 {
-                    for( int x = 0; x < dataServers; ++x, ++_nextDataServerPort )
+                    for (int x = 0; x < dataServers; ++x, ++_nextDataServerPort)
                     {
                         string blocksPath = System.IO.Path.Combine(_path, "blocks" + x.ToString(System.Globalization.CultureInfo.InvariantCulture));
                         System.IO.Directory.CreateDirectory(blocksPath);
@@ -73,9 +73,9 @@ namespace Ookii.Jumbo.Test.Dfs
             public void Shutdown()
             {
                 _log.Info("Shutting down cluster.");
-                lock( _dataServers )
+                lock (_dataServers)
                 {
-                    foreach( var info in _dataServers )
+                    foreach (var info in _dataServers)
                     {
                         _log.Info("Shutting down data server.");
                         info.Server.Abort();
@@ -91,7 +91,7 @@ namespace Ookii.Jumbo.Test.Dfs
             public ServerAddress ShutdownDataServer(int index)
             {
                 _log.Info("Shutting down data server.");
-                lock( _dataServers )
+                lock (_dataServers)
                 {
                     var info = _dataServers[index];
                     ServerAddress address = info.Server.LocalAddress;
@@ -118,7 +118,7 @@ namespace Ookii.Jumbo.Test.Dfs
             {
                 DfsConfiguration config = (DfsConfiguration)parameter;
                 DataServer server = new DataServer(config);
-                lock( _dataServers )
+                lock (_dataServers)
                 {
                     _dataServers.Add(new DataServerInfo() { Thread = Thread.CurrentThread, Server = server });
                 }
@@ -141,7 +141,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public TestDfsCluster(int dataServers, int replicationFactor, int? blockSize, bool eraseExistingData)
         {
             string path = Utilities.TestOutputPath;
-            if( eraseExistingData && System.IO.Directory.Exists(path) )
+            if (eraseExistingData && System.IO.Directory.Exists(path))
                 System.IO.Directory.Delete(path, true);
             System.IO.Directory.CreateDirectory(path);
 

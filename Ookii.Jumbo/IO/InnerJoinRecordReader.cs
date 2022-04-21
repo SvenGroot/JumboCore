@@ -43,9 +43,9 @@ namespace Ookii.Jumbo.IO
         protected InnerJoinRecordReader(IEnumerable<int> partitions, int totalInputCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
             : base(partitions, totalInputCount, allowRecordReuse, bufferSize, compressionType)
         {
-            if( totalInputCount != 2 )
+            if (totalInputCount != 2)
                 throw new ArgumentOutOfRangeException(nameof(totalInputCount), "InnerJoinRecordReader must have exactly two input readers.");
-            if( PartitionCount != 1 )
+            if (PartitionCount != 1)
                 throw new NotSupportedException("You cannot use multiple partitions with the InnerJoinRecordReader.");
             _needOuterClone = allowRecordReuse && !typeof(TOuter).IsValueType;
         }
@@ -56,7 +56,7 @@ namespace Ookii.Jumbo.IO
         /// <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
         protected sealed override bool ReadRecordInternal()
         {
-            if( !_started )
+            if (!_started)
             {
                 WaitForInputs(2, Timeout.Infinite);
 
@@ -67,9 +67,9 @@ namespace Ookii.Jumbo.IO
 
             TOuter outer;
 
-            while( !_hasTempOuterObject )
+            while (!_hasTempOuterObject)
             {
-                if( _outer.HasFinished || _inner.HasFinished )
+                if (_outer.HasFinished || _inner.HasFinished)
                 {
                     CurrentRecord = default(TResult);
                     return false;
@@ -79,52 +79,52 @@ namespace Ookii.Jumbo.IO
                 TInner inner = _inner.CurrentRecord;
 
                 int compareResult = Compare(outer, inner);
-                if( compareResult < 0 )
+                if (compareResult < 0)
                     _outer.ReadRecord();
-                else if( compareResult > 0 )
+                else if (compareResult > 0)
                     _inner.ReadRecord();
                 else
                 {
                     _hasTempOuterObject = true;
-                    if( _needOuterClone )
+                    if (_needOuterClone)
                         _tempOuterObject = (TOuter)((ICloneable)outer).Clone();
                     else
                         _tempOuterObject = outer;
-                    if( _outer.ReadRecord() )
+                    if (_outer.ReadRecord())
                     {
                         TOuter nextOuter = _outer.CurrentRecord;
-                        if( Compare(nextOuter, inner) == 0 )
+                        if (Compare(nextOuter, inner) == 0)
                         {
                             // There's more than one record in outer that matches inner, which means we need to store the inner records matching this key
                             // so we can compute the cross product.
                             do
                             {
-                                if( AllowRecordReuse )
+                                if (AllowRecordReuse)
                                     _tempInnerList.Add((TInner)((ICloneable)inner).Clone());
                                 else
                                     _tempInnerList.Add(inner);
-                                if( _inner.ReadRecord() )
+                                if (_inner.ReadRecord())
                                     inner = _inner.CurrentRecord;
-                            } while( !_inner.HasFinished && Compare(outer, inner) == 0 );
+                            } while (!_inner.HasFinished && Compare(outer, inner) == 0);
                         }
                     }
                 }
             }
 
             // We're computing a cross product of an existing matching set of records
-            if( !AllowRecordReuse || CurrentRecord == null )
+            if (!AllowRecordReuse || CurrentRecord == null)
                 CurrentRecord = new TResult();
-            if( _tempInnerList.Count > 0 )
+            if (_tempInnerList.Count > 0)
             {
                 CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject, _tempInnerList[_tempInnerListIndex]);
                 ++_tempInnerListIndex;
-                if( _tempInnerList.Count == _tempInnerListIndex )
+                if (_tempInnerList.Count == _tempInnerListIndex)
                 {
                     _tempInnerListIndex = 0;
-                    if( !_outer.HasFinished && Compare(_outer.CurrentRecord, _tempInnerList[0]) == 0 )
+                    if (!_outer.HasFinished && Compare(_outer.CurrentRecord, _tempInnerList[0]) == 0)
                     {
                         _hasTempOuterObject = true;
-                        if( AllowRecordReuse )
+                        if (AllowRecordReuse)
                             _tempOuterObject = (TOuter)((ICloneable)_outer.CurrentRecord).Clone();
                         else
                             _tempOuterObject = _outer.CurrentRecord;
@@ -141,7 +141,7 @@ namespace Ookii.Jumbo.IO
             else
             {
                 CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject, _inner.CurrentRecord);
-                if( !(_inner.ReadRecord() && Compare(_tempOuterObject, _inner.CurrentRecord) == 0) )
+                if (!(_inner.ReadRecord() && Compare(_tempOuterObject, _inner.CurrentRecord) == 0))
                 {
                     _tempOuterObject = default(TOuter);
                     _hasTempOuterObject = false;
@@ -166,10 +166,10 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public override void AddInput(IList<RecordInput> partitions)
         {
-            if( partitions == null )
+            if (partitions == null)
                 throw new ArgumentNullException(nameof(partitions));
             IRecordReader reader = partitions[0].Reader;
-            switch( CurrentInputCount )
+            switch (CurrentInputCount)
             {
             case 0:
                 _outer = (RecordReader<TOuter>)reader;
@@ -233,6 +233,6 @@ namespace Ookii.Jumbo.IO
             // Although ReadRecord may not need to wait even if one of them is false (because it's in the middle of computing a cross product)
             // that's too difficult to guarantee so we just check both of them.
             HasRecords = _outer.HasRecords && _inner.HasRecords;
-        }    
+        }
     }
 }

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 
 namespace Ookii.Jumbo.IO
 {
@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="comparer">The <see cref="IRawComparer{T}"/> for the records in the buffer.</param>
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer)
         {
-            if( index == null )
+            if (index == null)
                 throw new ArgumentNullException(nameof(index));
             Sort(index, buffer, comparer, 0, index.Length);
         }
@@ -35,33 +35,33 @@ namespace Ookii.Jumbo.IO
         /// <param name="count">The number of items in <paramref name="index"/> starting at <paramref name="offset"/> to sort.</param>
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer, int offset, int count)
         {
-            if( index == null )
+            if (index == null)
                 throw new ArgumentNullException(nameof(index));
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( comparer == null )
+            if (comparer == null)
                 throw new ArgumentNullException(nameof(comparer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > index.Length )
+            if (offset + count > index.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the index length.");
             SortCore(buffer, index, comparer, offset, offset + count);
         }
 
         private static void SortCore<T>(byte[] buffer, RecordIndexEntry[] index, IRawComparer<T> comparer, int left, int right)
         {
-            while( true )
+            while (true)
             {
                 int i;
                 int j;
-                if( right - left < 13 )
+                if (right - left < 13)
                 {
                     // Perform insertion sort on small array.
-                    for( i = left; i < right; ++i )
+                    for (i = left; i < right; ++i)
                     {
-                        for( j = i; j > left && Compare(buffer, index, comparer, j - 1, j) > 0; --j )
+                        for (j = i; j > left && Compare(buffer, index, comparer, j - 1, j) > 0; --j)
                         {
                             Swap(index, j, j - 1);
                         }
@@ -79,38 +79,38 @@ namespace Ookii.Jumbo.IO
                 int ll = left;
                 int rr = right;
                 int cr;
-                while( true )
+                while (true)
                 {
-                    while( ++i < j )
+                    while (++i < j)
                     {
-                        if( (cr = Compare(buffer, index, comparer, i, left)) > 0 ) 
+                        if ((cr = Compare(buffer, index, comparer, i, left)) > 0)
                             break;
-                        if( 0 == cr && ++ll != i )
+                        if (0 == cr && ++ll != i)
                             Swap(index, ll, i);
                     }
-                    while( --j > i )
+                    while (--j > i)
                     {
-                        if( (cr = Compare(buffer, index, comparer, left, j)) > 0 ) 
+                        if ((cr = Compare(buffer, index, comparer, left, j)) > 0)
                             break;
-                        if( 0 == cr && --rr != j )
+                        if (0 == cr && --rr != j)
                             Swap(index, rr, j);
                     }
-                    if( i < j ) 
+                    if (i < j)
                         Swap(index, i, j);
-                    else 
+                    else
                         break;
                 }
                 j = i;
                 // swap pivot- and all eq values- into position
-                while( ll >= left )
+                while (ll >= left)
                     Swap(index, ll--, --i);
-                while( rr < right )
+                while (rr < right)
                     Swap(index, rr++, j++);
 
                 // Conquer
                 // Recurse on smaller interval first to keep stack shallow
                 Debug.Assert(i != j);
-                if( i - left < right - j )
+                if (i - left < right - j)
                 {
                     SortCore(buffer, index, comparer, left, i);
                     left = j;
@@ -137,7 +137,7 @@ namespace Ookii.Jumbo.IO
 
         private static void Order<T>(byte[] buffer, RecordIndexEntry[] s, IRawComparer<T> comparer, int p, int r)
         {
-            if( Compare(buffer, s, comparer, p, r) > 0 )
+            if (Compare(buffer, s, comparer, p, r) > 0)
                 Swap(s, p, r);
         }
     }

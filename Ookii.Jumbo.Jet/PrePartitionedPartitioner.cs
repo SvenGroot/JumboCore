@@ -16,14 +16,14 @@ namespace Ookii.Jumbo.Jet
         public int CurrentPartition
         {
             get { return _currentPartition; }
-            set 
+            set
             {
-                if( value < 0 || value >= Partitions )
+                if (value < 0 || value >= Partitions)
                     throw new ArgumentOutOfRangeException(nameof(value));
-                _currentPartition = value; 
+                _currentPartition = value;
             }
         }
-        
+
 
         public int GetPartition(T value)
         {

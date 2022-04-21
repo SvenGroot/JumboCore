@@ -8,7 +8,7 @@ namespace Ookii.Jumbo.Jet.Channels
     /// <summary>
     /// Represents configuration information about a channel through which two tasks communicate.
     /// </summary>
-    [XmlType("Channel", Namespace=JobConfiguration.XmlNamespace)]
+    [XmlType("Channel", Namespace = JobConfiguration.XmlNamespace)]
     public class ChannelConfiguration
     {
         private int _partitionsPerTask = 1;
@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// Gets or sets the type of multi input record reader to use to combine the the input readers of this channel.
         /// </summary>
         public TypeReference MultiInputRecordReaderType { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the ID of the stage whose tasks that read from the channel.
         /// </summary>

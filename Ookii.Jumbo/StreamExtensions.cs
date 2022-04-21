@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Ookii.Jumbo
 {
@@ -30,20 +30,20 @@ namespace Ookii.Jumbo
         /// <param name="bufferSize">The size of the buffer to use while copying.</param>
         public static void CopyTo(this Stream source, Stream destination, int bufferSize)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
             byte[] buffer = new byte[bufferSize];
             int bytesRead = 0;
             do
             {
                 bytesRead = source.Read(buffer, 0, buffer.Length);
-                if( bytesRead > 0 )
+                if (bytesRead > 0)
                 {
                     destination.Write(buffer, 0, bytesRead);
                 }
-            } while( bytesRead > 0 );
+            } while (bytesRead > 0);
         }
 
         /// <summary>
@@ -66,16 +66,16 @@ namespace Ookii.Jumbo
         /// <param name="bufferSize">The size of the buffer to use while copying.</param>
         public static void CopySize(this Stream source, Stream destination, long size, int bufferSize)
         {
-            if( source == null )
+            if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            if( destination == null )
+            if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
             byte[] buffer = new byte[bufferSize];
             long bytesLeft = size;
-            while( bytesLeft > 0 )
+            while (bytesLeft > 0)
             {
                 int bytesRead = source.Read(buffer, 0, (int)Math.Min(buffer.Length, bytesLeft));
-                if( bytesRead == 0 )
+                if (bytesRead == 0)
                 {
                     throw new EndOfStreamException("Reached end of stream before specified number of bytes was copied.");
                 }

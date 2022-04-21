@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
 
 namespace Ookii.Jumbo.Topology
 {
@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Topology
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(NetworkTopology));
 
-        private readonly SortedList<string, Rack> _racks = new SortedList<string,Rack>();
+        private readonly SortedList<string, Rack> _racks = new SortedList<string, Rack>();
         private readonly ITopologyResolver _resolver;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Topology
         /// <param name="configuration">The jumbo configuration to use, or <see langword="null"/> to use the application configuration.</param>
         public NetworkTopology(JumboConfiguration configuration)
         {
-            if( configuration == null )
+            if (configuration == null)
                 configuration = JumboConfiguration.GetConfiguration();
 
             _log.InfoFormat("Using topology resolver type {0}.", configuration.NetworkTopology.Resolver);
@@ -44,13 +44,13 @@ namespace Ookii.Jumbo.Topology
         /// <param name="node">The node to add.</param>
         public void AddNode(TopologyNode node)
         {
-            if( node == null )
+            if (node == null)
                 throw new ArgumentNullException(nameof(node));
 
             string rackId = ResolveNode(node.Address.HostName);
             _log.InfoFormat("Node {0} was resolved to rack {1}.", node.Address, rackId);
             Rack rack;
-            if( !_racks.TryGetValue(rackId, out rack) )
+            if (!_racks.TryGetValue(rackId, out rack))
             {
                 rack = new Rack(rackId);
                 _racks.Add(rackId, rack);
@@ -65,10 +65,10 @@ namespace Ookii.Jumbo.Topology
         /// <param name="node">The node to remove.</param>
         public static void RemoveNode(TopologyNode node)
         {
-            if( node == null )
+            if (node == null)
                 throw new ArgumentNullException(nameof(node));
 
-            if( node.Rack == null )
+            if (node.Rack == null)
                 throw new ArgumentException("The specified node is not part of a rack.");
 
             node.Rack.Nodes.Remove(node);
@@ -83,6 +83,6 @@ namespace Ookii.Jumbo.Topology
         {
             return _resolver.ResolveNode(hostName) ?? "(default)";
         }
-    
+
     }
 }

@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Jet;
-using Ookii.Jumbo;
-using System.Net;
-using System.Threading;
-using Ookii.Jumbo.Dfs;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
+using Ookii.Jumbo;
+using Ookii.Jumbo.Dfs;
+using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Rpc;
 
 namespace TaskServerApplication
@@ -36,16 +36,16 @@ namespace TaskServerApplication
 
         private TaskServer(JetConfiguration config, DfsConfiguration dfsConfiguration)
         {
-            if( config == null )
+            if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
             Configuration = config;
             DfsConfiguration = dfsConfiguration;
 
-            if( string.IsNullOrWhiteSpace(config.TaskServer.TaskDirectory) )
+            if (string.IsNullOrWhiteSpace(config.TaskServer.TaskDirectory))
                 throw new InvalidOperationException("TaskServer task directory is not configured.");
 
-            if( !System.IO.Directory.Exists(config.TaskServer.TaskDirectory) )
+            if (!System.IO.Directory.Exists(config.TaskServer.TaskDirectory))
                 System.IO.Directory.CreateDirectory(config.TaskServer.TaskDirectory);
 
             _jobServer = JetClient.CreateJobServerHeartbeatClient(config);
@@ -80,7 +80,7 @@ namespace TaskServerApplication
             // Prevent type references in job configurations from loading assemblies into the task server.
             TypeReference.ResolveTypes = false;
 
-            lock( _startupLock )
+            lock (_startupLock)
             {
                 Instance = new TaskServer(jetConfig, dfsConfig);
 
@@ -93,7 +93,7 @@ namespace TaskServerApplication
 
         public static void Shutdown()
         {
-            lock( _startupLock )
+            lock (_startupLock)
             {
                 Instance.ShutdownInternal();
 
@@ -107,7 +107,7 @@ namespace TaskServerApplication
         public void NotifyTaskStatusChanged(Guid jobID, TaskAttemptId taskAttemptId, TaskAttemptStatus newStatus, TaskProgress progress, TaskMetrics metrics)
         {
             AddDataForNextHeartbeat(new TaskStatusChangedJetHeartbeatData(jobID, taskAttemptId, newStatus, progress, metrics));
-            if( _immediateCompletedTaskNotification && newStatus == TaskAttemptStatus.Completed )
+            if (_immediateCompletedTaskNotification && newStatus == TaskAttemptStatus.Completed)
                 _heartbeatEvent.Set();
         }
 
@@ -120,7 +120,7 @@ namespace TaskServerApplication
 
         public void ReportCompletion(Guid jobID, TaskAttemptId taskAttemptId, TaskMetrics metrics)
         {
-            if( taskAttemptId == null )
+            if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
             string fullTaskID = Job.CreateFullTaskId(jobID, taskAttemptId);
             _log.DebugFormat("ReportCompletion, fullTaskID = \"{0}\"", fullTaskID);
@@ -134,16 +134,16 @@ namespace TaskServerApplication
 
         public void ReportError(Guid jobId, TaskAttemptId taskAttemptId, string failureReason)
         {
-            if( taskAttemptId == null )
+            if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
             _taskRunner.ReportError(Job.CreateFullTaskId(jobId, taskAttemptId), failureReason);
         }
 
         public void RegisterTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId, int port)
         {
-            if( taskAttemptId == null )
+            if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
-            if( port <= 0 )
+            if (port <= 0)
                 throw new ArgumentOutOfRangeException(nameof(port), "Port must be greater than zero.");
 
             string fullTaskId = Job.CreateFullTaskId(jobId, taskAttemptId);
@@ -155,7 +155,7 @@ namespace TaskServerApplication
         {
             JobInfo job = GetJobInfo(jobId, true);
 
-            lock( job )
+            lock (job)
             {
                 return job.DownloadDfsFile(dfsPath);
             }
@@ -198,12 +198,12 @@ namespace TaskServerApplication
             _log.DebugFormat("GetTaskLogFileContents; jobId = {{{0}}}, taskAttemptId = \"{1}\", maxSize = {2}", jobId, taskAttemptId, maxSize);
             string jobDirectory = GetJobDirectory(jobId);
             string logFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + ".log");
-            if( System.IO.File.Exists(logFileName) )
+            if (System.IO.File.Exists(logFileName))
             {
-                using( System.IO.FileStream stream = System.IO.File.Open(logFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite) )
-                using( System.IO.StreamReader reader = new System.IO.StreamReader(stream) )
+                using (System.IO.FileStream stream = System.IO.File.Open(logFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
                 {
-                    if( stream.Length > maxSize )
+                    if (stream.Length > maxSize)
                     {
                         stream.Position = stream.Length - maxSize;
                         reader.ReadLine(); // Scan to the first new line.
@@ -218,20 +218,20 @@ namespace TaskServerApplication
         {
             _log.DebugFormat("GetCompressedTaskLogFiles; jobId = {{{0}}}", jobId);
             string jobDirectory = GetJobDirectory(jobId);
-            if( System.IO.Directory.Exists(jobDirectory) )
+            if (System.IO.Directory.Exists(jobDirectory))
             {
                 string[] logFiles = System.IO.Directory.GetFiles(jobDirectory, "*.log");
-                if( logFiles.Length > 0 )
+                if (logFiles.Length > 0)
                 {
-                    using( MemoryStream outputStream = new MemoryStream() )
-                    using( ICSharpCode.SharpZipLib.Zip.ZipOutputStream zipStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(outputStream) )
+                    using (MemoryStream outputStream = new MemoryStream())
+                    using (ICSharpCode.SharpZipLib.Zip.ZipOutputStream zipStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(outputStream))
                     {
                         zipStream.SetLevel(9);
 
-                        foreach( string logFile in logFiles )
+                        foreach (string logFile in logFiles)
                         {
                             zipStream.PutNextEntry(new ICSharpCode.SharpZipLib.Zip.ZipEntry(System.IO.Path.GetFileName(logFile)));
-                            using( System.IO.FileStream stream = System.IO.File.Open(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite) )
+                            using (System.IO.FileStream stream = System.IO.File.Open(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
                             {
                                 stream.CopyTo(zipStream);
                             }
@@ -251,14 +251,14 @@ namespace TaskServerApplication
         {
             if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
-            
+
             _log.DebugFormat("GetTaskProfileOutput; jobId = {{{0}}}, taskAttemptId = \"{1}\"", jobId, taskAttemptId);
             string jobDirectory = GetJobDirectory(jobId);
             string profileOutputFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + "_profile.txt");
-            if( System.IO.File.Exists(profileOutputFileName) )
+            if (System.IO.File.Exists(profileOutputFileName))
             {
-                using( System.IO.FileStream stream = System.IO.File.Open(profileOutputFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite) )
-                using( System.IO.StreamReader reader = new System.IO.StreamReader(stream) )
+                using (System.IO.FileStream stream = System.IO.File.Open(profileOutputFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
                 {
                     return reader.ReadToEnd();
                 }
@@ -268,14 +268,14 @@ namespace TaskServerApplication
 
         public int GetTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId)
         {
-            if( taskAttemptId == null )
+            if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
             _log.DebugFormat("GetTcpChannelPort; jobId = {{{0}}}, taskId = \"{1}\"", jobId, taskAttemptId);
             return _taskRunner.GetTcpChannelPort(Job.CreateFullTaskId(jobId, taskAttemptId));
         }
 
         #endregion
-        
+
         private void RunInternal()
         {
             AddDataForNextHeartbeat(new InitialStatusJetHeartbeatData() { TaskSlots = Configuration.TaskServer.TaskSlots, FileServerPort = Configuration.TaskServer.FileServerPort });
@@ -285,13 +285,13 @@ namespace TaskServerApplication
             {
                 SendHeartbeat();
                 _taskRunner.KillTimedOutTasks();
-            } while( WaitHandle.WaitAny(handles, _heartbeatInterval) != 1 );
+            } while (WaitHandle.WaitAny(handles, _heartbeatInterval) != 1);
         }
 
         private void ShutdownInternal()
         {
             _taskRunner.Stop();
-            if( _fileServer != null )
+            if (_fileServer != null)
                 _fileServer.Stop();
             _shutdownEvent.Set();
             RpcHelper.AbortRetries();
@@ -302,9 +302,9 @@ namespace TaskServerApplication
         private void SendHeartbeat()
         {
             JetHeartbeatData[] data = null;
-            lock( _pendingHeartbeatData )
+            lock (_pendingHeartbeatData)
             {
-                if( _pendingHeartbeatData.Count > 0 )
+                if (_pendingHeartbeatData.Count > 0)
                 {
                     data = _pendingHeartbeatData.ToArray();
                     _pendingHeartbeatData.Clear();
@@ -315,18 +315,18 @@ namespace TaskServerApplication
 
             RpcHelper.TryRemotingCall(() => responses = _jobServer.Heartbeat(LocalAddress, data), _heartbeatInterval, -1);
 
-            if( responses != null )
+            if (responses != null)
                 ProcessResponses(responses);
         }
 
         private void ProcessResponses(JetHeartbeatResponse[] responses)
         {
-            foreach( var response in responses )
+            foreach (var response in responses)
             {
-                if( response.Command != TaskServerHeartbeatCommand.None )
+                if (response.Command != TaskServerHeartbeatCommand.None)
                     _log.InfoFormat("Received {0} command.", response.Command);
 
-                switch( response.Command )
+                switch (response.Command)
                 {
                 case TaskServerHeartbeatCommand.ReportStatus:
                     AddDataForNextHeartbeat(new InitialStatusJetHeartbeatData() { TaskSlots = Configuration.TaskServer.TaskSlots, FileServerPort = Configuration.TaskServer.FileServerPort });
@@ -354,48 +354,48 @@ namespace TaskServerApplication
 
         private void AddDataForNextHeartbeat(JetHeartbeatData data)
         {
-            lock( _pendingHeartbeatData )
+            lock (_pendingHeartbeatData)
                 _pendingHeartbeatData.Add(data);
         }
 
         private void CleanupJobFiles(Guid jobId, string directory)
         {
-            foreach( string file in System.IO.Directory.GetFiles(directory) )
+            foreach (string file in System.IO.Directory.GetFiles(directory))
             {
-                if( file.EndsWith(".output", StringComparison.Ordinal) || file.EndsWith(".input", StringComparison.Ordinal) )
+                if (file.EndsWith(".output", StringComparison.Ordinal) || file.EndsWith(".input", StringComparison.Ordinal))
                 {
                     _log.DebugFormat("Job {0} cleanup: deleting file {1}.", jobId, file);
                     System.IO.File.Delete(file);
                 }
             }
-            foreach( string subDirectory in Directory.GetDirectories(directory) )
+            foreach (string subDirectory in Directory.GetDirectories(directory))
                 CleanupJobFiles(jobId, subDirectory);
         }
 
         private void CleanupJobFiles(Guid jobId)
         {
-            lock( _jobs )
+            lock (_jobs)
             {
                 _jobs.Remove(jobId);
             }
 
             try
             {
-                if( Configuration.FileChannel.DeleteIntermediateFiles )
+                if (Configuration.FileChannel.DeleteIntermediateFiles)
                 {
                     string jobDirectory = GetJobDirectory(jobId);
                     CleanupJobFiles(jobId, jobDirectory);
 
                     string downloadDirectory = Path.Combine(jobDirectory, "dfs");
-                    if( Directory.Exists(downloadDirectory) )
+                    if (Directory.Exists(downloadDirectory))
                         Directory.Delete(downloadDirectory, true);
                 }
             }
-            catch( UnauthorizedAccessException ex )
+            catch (UnauthorizedAccessException ex)
             {
                 _log.Error("Failed to clean up job files", ex);
             }
-            catch( IOException ex )
+            catch (IOException ex)
             {
                 _log.Error("Failed to clean up job files", ex);
             }
@@ -404,11 +404,11 @@ namespace TaskServerApplication
         private JobInfo GetJobInfo(Guid jobId, bool create)
         {
             JobInfo job;
-            lock( _jobs )
+            lock (_jobs)
             {
-                if( !_jobs.TryGetValue(jobId, out job) )
+                if (!_jobs.TryGetValue(jobId, out job))
                 {
-                    if( create )
+                    if (create)
                     {
                         job = new JobInfo(jobId);
                         _jobs.Add(jobId, job);

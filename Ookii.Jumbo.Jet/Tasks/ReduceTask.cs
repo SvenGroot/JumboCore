@@ -42,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         protected ReduceTask()
         {
-            if( Attribute.IsDefined(GetType(), typeof(AllowRecordReuseAttribute)) )
+            if (Attribute.IsDefined(GetType(), typeof(AllowRecordReuseAttribute)))
             {
                 _cloneKey = !typeof(TKey).IsValueType;
             }
@@ -55,13 +55,13 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public void Run(RecordReader<Pair<TKey, TValue>> input, RecordWriter<TOutput> output)
         {
-            if( input != null && input.ReadRecord() )
+            if (input != null && input.ReadRecord())
             {
                 do
                 {
                     TKey key = _cloneKey ? (TKey)((ICloneable)input.CurrentRecord.Key).Clone() : input.CurrentRecord.Key;
                     Reduce(key, EnumerateGroupRecords(key, input), output);
-                } while( !input.HasFinished );
+                } while (!input.HasFinished);
             }
         }
 
@@ -71,14 +71,14 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         public override void NotifyConfigurationChanged()
         {
-            if( TaskContext != null )
+            if (TaskContext != null)
             {
                 string comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.ReduceTaskKeyComparerSettingKey, null);
-                if( !string.IsNullOrEmpty(comparerTypeName) )
+                if (!string.IsNullOrEmpty(comparerTypeName))
                     _keyComparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
             }
 
-            if( _keyComparer == null )
+            if (_keyComparer == null)
                 _keyComparer = EqualityComparer<TKey>.Default;
         }
 
@@ -93,7 +93,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         private IEnumerable<TValue> EnumerateGroupRecords(TKey key, RecordReader<Pair<TKey, TValue>> input)
         {
             // Checking HasFinished and comparing the first key may seem pointless, but it guards against a reducer trying to use the iterator twice.
-            while( !input.HasFinished && _keyComparer.Equals(key, input.CurrentRecord.Key) )
+            while (!input.HasFinished && _keyComparer.Equals(key, input.CurrentRecord.Key))
             {
                 yield return input.CurrentRecord.Value;
                 input.ReadRecord();

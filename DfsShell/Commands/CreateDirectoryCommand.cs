@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Ookii.CommandLine;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace DfsShell.Commands
 {
@@ -14,7 +14,7 @@ namespace DfsShell.Commands
     {
         private readonly string _path;
 
-        public CreateDirectoryCommand([Description("The path of the new directory to create."), ArgumentName("Path")]string path)
+        public CreateDirectoryCommand([Description("The path of the new directory to create."), ArgumentName("Path")] string path)
         {
             _path = path;
         }

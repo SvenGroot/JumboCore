@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using Ookii.Jumbo.Jet.Channels;
-using System.Reflection;
-using System.IO;
 using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -45,7 +45,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public IEnumerable<PartitionFileIndexEntry> GetEntriesForPartition(int partition)
         {
             WaitUntilLoaded();
-            if( partition < 1 || partition > _index.Length )
+            if (partition < 1 || partition > _index.Length)
                 throw new ArgumentOutOfRangeException(nameof(partition));
             return _index[partition - 1];
         }
@@ -59,14 +59,14 @@ namespace Ookii.Jumbo.Jet.Channels
         public long GetPartitionSize(int partition, bool includeSegmentHeader)
         {
             WaitUntilLoaded();
-            if( partition < 1 || partition > _index.Length )
+            if (partition < 1 || partition > _index.Length)
                 throw new ArgumentOutOfRangeException(nameof(partition));
             List<PartitionFileIndexEntry> index = _index[partition - 1];
             long result = 0;
-            if( index != null )
+            if (index != null)
             {
                 result = index.Sum(e => e.CompressedSize);
-                if( includeSegmentHeader )
+                if (includeSegmentHeader)
                     result += index.Count * sizeof(long) * 2;
             }
             return result;
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private void WaitUntilLoaded()
         {
             _loadCompleteEvent.WaitOne();
-            if( _loadException != null )
+            if (_loadException != null)
                 throw new TargetInvocationException(_loadException);
         }
 
@@ -85,17 +85,17 @@ namespace Ookii.Jumbo.Jet.Channels
             try
             {
                 string indexFilePath = (string)state;
-                using( FileStream stream = File.OpenRead(indexFilePath) )
-                using( BinaryRecordReader<PartitionFileIndexEntry> reader = new BinaryRecordReader<PartitionFileIndexEntry>(stream, false) )
+                using (FileStream stream = File.OpenRead(indexFilePath))
+                using (BinaryRecordReader<PartitionFileIndexEntry> reader = new BinaryRecordReader<PartitionFileIndexEntry>(stream, false))
                 {
-                    foreach( PartitionFileIndexEntry entry in reader.EnumerateRecords() )
+                    foreach (PartitionFileIndexEntry entry in reader.EnumerateRecords())
                     {
-                        if( _index == null )
+                        if (_index == null)
                             _index = new List<PartitionFileIndexEntry>[entry.Partition]; // First entry isn't a real entry but gives us the total number of partitions.
                         else
                         {
                             List<PartitionFileIndexEntry> partition = _index[entry.Partition];
-                            if( partition == null )
+                            if (partition == null)
                             {
                                 partition = new List<PartitionFileIndexEntry>(1);
                                 _index[entry.Partition] = partition;
@@ -105,7 +105,7 @@ namespace Ookii.Jumbo.Jet.Channels
                     }
                 }
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
                 _loadException = ex;
             }
@@ -117,7 +117,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </summary>
         public void Dispose()
         {
-            if( !_disposed )
+            if (!_disposed)
             {
                 _disposed = true;
                 ((IDisposable)_loadCompleteEvent).Dispose();

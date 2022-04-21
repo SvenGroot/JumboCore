@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
-using System.Diagnostics;
-using System.Threading;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Dfs.FileSystem;
-using System.IO;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test.Dfs
 {
-    [TestFixture(Description="Tests reading and writing DFS data with record readers using various record stream options.")]
+    [TestFixture(Description = "Tests reading and writing DFS data with record readers using various record stream options.")]
     [Category("ClusterTest")]
     public class RecordReaderWriterTests
     {
@@ -49,10 +49,10 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const string fileName = "/lines";
             int recordSize = _records[0].ByteLength + Environment.NewLine.Length;
-            using( Stream stream = _dfsClient.CreateFile(fileName, 0, 0) )
-            using( TextRecordWriter<Utf8String> writer = new TextRecordWriter<Utf8String>(stream) )
+            using (Stream stream = _dfsClient.CreateFile(fileName, 0, 0))
+            using (TextRecordWriter<Utf8String> writer = new TextRecordWriter<Utf8String>(stream))
             {
-                foreach( Utf8String record in _records )
+                foreach (Utf8String record in _records)
                     writer.WriteRecord(record);
 
                 Assert.AreEqual(_records.Count, writer.RecordsWritten);
@@ -69,10 +69,10 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const string fileName = "/linesboundary";
             int recordSize = _records[0].ByteLength + Environment.NewLine.Length;
-            using( Stream stream = _dfsClient.CreateFile(fileName, 0, 0, RecordStreamOptions.DoNotCrossBoundary) )
-            using( TextRecordWriter<Utf8String> writer = new TextRecordWriter<Utf8String>(stream) )
+            using (Stream stream = _dfsClient.CreateFile(fileName, 0, 0, RecordStreamOptions.DoNotCrossBoundary))
+            using (TextRecordWriter<Utf8String> writer = new TextRecordWriter<Utf8String>(stream))
             {
-                foreach( Utf8String record in _records )
+                foreach (Utf8String record in _records)
                     writer.WriteRecord(record);
 
                 int blockPadding = _blockSize % recordSize;
@@ -93,10 +93,10 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const string fileName = "/linesbom";
 
-            using( Stream stream = _dfsClient.CreateFile(fileName) )
-            using( StreamWriter writer = new StreamWriter(stream, new UTF8Encoding(true)) )
+            using (Stream stream = _dfsClient.CreateFile(fileName))
+            using (StreamWriter writer = new StreamWriter(stream, new UTF8Encoding(true)))
             {
-                foreach( Utf8String record in _records )
+                foreach (Utf8String record in _records)
                     writer.WriteLine(record);
             }
 
@@ -108,10 +108,10 @@ namespace Ookii.Jumbo.Test.Dfs
         {
             const string fileName = "/binaryboundary";
             int recordSize = _records[0].ByteLength + 2; // BinaryRecordWriter writes string length which will take 2 bytes.
-            using( Stream stream = _dfsClient.CreateFile(fileName, 0, 0, RecordStreamOptions.DoNotCrossBoundary) )
-            using( BinaryRecordWriter<Utf8String> writer = new BinaryRecordWriter<Utf8String>(stream) )
+            using (Stream stream = _dfsClient.CreateFile(fileName, 0, 0, RecordStreamOptions.DoNotCrossBoundary))
+            using (BinaryRecordWriter<Utf8String> writer = new BinaryRecordWriter<Utf8String>(stream))
             {
-                foreach( Utf8String record in _records )
+                foreach (Utf8String record in _records)
                     writer.WriteRecord(record);
 
                 int blockPadding = _blockSize % recordSize;
@@ -127,14 +127,14 @@ namespace Ookii.Jumbo.Test.Dfs
             JumboFile file = _dfsClient.NameServer.GetFileInfo(fileName);
             int blocks = file.Blocks.Count;
             int totalRecordsRead = 0;
-            for( int block = 0; block < blocks; ++block )
+            for (int block = 0; block < blocks; ++block)
             {
                 int offset = block * _blockSize;
                 int size = Math.Min((int)(file.Size - offset), _blockSize);
-                using( Stream stream = _dfsClient.OpenFile(fileName) )
-                using( BinaryRecordReader<Utf8String> reader = new BinaryRecordReader<Utf8String>(stream, block * _blockSize, size, true) )
+                using (Stream stream = _dfsClient.OpenFile(fileName))
+                using (BinaryRecordReader<Utf8String> reader = new BinaryRecordReader<Utf8String>(stream, block * _blockSize, size, true))
                 {
-                    foreach( Utf8String record in reader.EnumerateRecords() )
+                    foreach (Utf8String record in reader.EnumerateRecords())
                     {
                         Assert.AreEqual(_records[recordIndex], record);
                         ++recordIndex;
@@ -160,14 +160,14 @@ namespace Ookii.Jumbo.Test.Dfs
             JumboFile file = _dfsClient.NameServer.GetFileInfo(fileName);
             int blocks = file.Blocks.Count;
             int totalRecordsRead = 0;
-            for( int block = 0; block < blocks; ++block )
+            for (int block = 0; block < blocks; ++block)
             {
                 int offset = block * _blockSize;
                 int size = Math.Min((int)(file.Size - offset), _blockSize);
-                using( Stream stream = _dfsClient.OpenFile(fileName) )
-                using( LineRecordReader reader = new LineRecordReader(stream, block * _blockSize, size, true) )
+                using (Stream stream = _dfsClient.OpenFile(fileName))
+                using (LineRecordReader reader = new LineRecordReader(stream, block * _blockSize, size, true))
                 {
-                    foreach( Utf8String record in reader.EnumerateRecords() )
+                    foreach (Utf8String record in reader.EnumerateRecords())
                     {
                         Assert.AreEqual(_records[recordIndex], record);
                         ++recordIndex;
@@ -175,7 +175,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
                     totalRecordsRead += reader.RecordsRead;
                     int recordCount;
-                    if( file.RecordOptions == RecordStreamOptions.DoNotCrossBoundary )
+                    if (file.RecordOptions == RecordStreamOptions.DoNotCrossBoundary)
                     {
                         recordCount = size / recordSize;
                     }
@@ -183,7 +183,7 @@ namespace Ookii.Jumbo.Test.Dfs
                     {
                         int firstRecord = offset == 0 ? 0 : (offset / recordSize) + 1;
                         int lastRecord = ((offset + size) / recordSize);
-                        if( offset + size < file.Size )
+                        if (offset + size < file.Size)
                             ++lastRecord;
                         recordCount = lastRecord - firstRecord;
                     }

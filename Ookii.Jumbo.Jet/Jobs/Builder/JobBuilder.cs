@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 using System.Reflection;
+using System.Text;
 using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Jet.Tasks;
 using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             {
                 var files = from a in _assemblies
                             select a.Location;
-                if( _taskBuilder.IsDynamicAssemblyCreated )
+                if (_taskBuilder.IsDynamicAssemblyCreated)
                 {
                     files = files.Concat(new[] { _taskBuilder.DynamicAssemblyPath });
                 }
@@ -98,7 +98,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>A <see cref="FileInput"/> instance representing this input.</returns>
         public FileInput Read(string path, Type recordReaderType)
         {
-            if( recordReaderType == null )
+            if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
             FileInput input = new FileInput(path, recordReaderType);
             AddAssembly(recordReaderType.Assembly);
@@ -138,14 +138,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public FileOutput Write(IJobBuilderOperation operation, string path, Type recordWriterType)
         {
-            if( operation == null )
+            if (operation == null)
                 throw new ArgumentNullException(nameof(operation));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( recordWriterType == null )
+            if (recordWriterType == null)
                 throw new ArgumentNullException(nameof(recordWriterType));
 
-            if( recordWriterType.IsGenericTypeDefinition )
+            if (recordWriterType.IsGenericTypeDefinition)
                 recordWriterType = recordWriterType.MakeGenericType(operation.RecordType);
 
             FileOutput output = new FileOutput(path, recordWriterType);
@@ -164,7 +164,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>A <see cref="StageOperation"/> instance that can be used to further customize the operation.</returns>
         public StageOperation Process(IOperationInput input, Type taskType)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
             CheckIfInputBelongsToJobBuilder(input);
             return new StageOperation(this, input, taskType);
@@ -245,10 +245,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public JobConfiguration CreateJob()
         {
             JobBuilderCompiler compiler = new JobBuilderCompiler(_assemblies, _fileSystemClient, _jetClient);
-            foreach( var operation in _operations )
+            foreach (var operation in _operations)
                 operation.CreateConfiguration(compiler);
             compiler.Job.JobName = JobName;
-            if( _taskBuilder.IsDynamicAssemblyCreated )
+            if (_taskBuilder.IsDynamicAssemblyCreated)
             {
                 _taskBuilder.SaveAssembly();
                 compiler.Job.AssemblyFileNames.Add(_taskBuilder.DynamicAssemblyFileName);
@@ -267,9 +267,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public void AddOperation(IJobBuilderOperation operation)
         {
-            if( operation == null )
+            if (operation == null)
                 throw new ArgumentNullException(nameof(operation));
-            if( operation.JobBuilder != this )
+            if (operation.JobBuilder != this)
                 throw new ArgumentException("The specified operation doesn't belong to this job builder.", nameof(operation));
             _operations.Add(operation);
         }
@@ -288,13 +288,13 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public void AddAssembly(Assembly assembly)
         {
-            if( assembly == null )
+            if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
 
-            if( !_dependencyAssemblies.Contains(assembly.FullName) &&
-                (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)) )
+            if (!_dependencyAssemblies.Contains(assembly.FullName) &&
+                (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)))
             {
-                foreach( AssemblyName reference in assembly.GetReferencedAssemblies() )
+                foreach (AssemblyName reference in assembly.GetReferencedAssemblies())
                 {
                     AddAssembly(Assembly.Load(reference));
                 }
@@ -311,15 +311,15 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public void CheckIfInputBelongsToJobBuilder(IOperationInput input)
         {
             IJobBuilderOperation operation = input as IJobBuilderOperation;
-            if( !(operation == null || operation.JobBuilder == this) )
+            if (!(operation == null || operation.JobBuilder == this))
                 throw new ArgumentException("The specified input doesn't belong to this job builder.", nameof(input));
         }
 
         private StageOperation ProcessCore<TInput, TOutput>(IOperationInput input, Delegate processor, RecordReuseMode recordReuse)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( processor == null )
+            if (processor == null)
                 throw new ArgumentNullException(nameof(processor));
             CheckIfInputBelongsToJobBuilder(input);
             Type taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
@@ -330,7 +330,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private void AddAssemblyAndSerializeDelegateIfNeeded(Delegate processor, StageOperation operation)
         {
-            if( !DynamicTaskBuilder.CanCallTargetMethodDirectly(processor) )
+            if (!DynamicTaskBuilder.CanCallTargetMethodDirectly(processor))
                 DynamicTaskBuilder.SerializeDelegate(operation.Settings, processor);
             AddAssembly(processor.Method.DeclaringType.Assembly);
         }

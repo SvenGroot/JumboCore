@@ -37,7 +37,7 @@ namespace Ookii.Jumbo.Jet
         public MultiPartitionRecordReader(TaskExecutionUtility taskExecution, MultiInputRecordReader<T> baseReader)
             : base(false)
         {
-            if( baseReader == null )
+            if (baseReader == null)
                 throw new ArgumentNullException(nameof(baseReader));
 
             _taskExecution = taskExecution;
@@ -123,9 +123,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns><see langword="true"/> if an object was successfully read; <see langword="false"/> if there are no more records.</returns>
         protected override bool ReadRecordInternal()
         {
-            while( !_baseReader.ReadRecord() )
+            while (!_baseReader.ReadRecord())
             {
-                if( !NextPartition() )
+                if (!NextPartition())
                 {
                     CurrentRecord = default(T);
                     return false;
@@ -139,7 +139,7 @@ namespace Ookii.Jumbo.Jet
         private bool NextPartition()
         {
             // If .NextPartition fails we will check for additional partitions, and if we got any, we need to call NextPartition again.
-            if( StopAtEndOfPartition || !(_baseReader.NextPartition() || (AllowAdditionalPartitions && _taskExecution != null && _taskExecution.GetAdditionalPartitions(_baseReader) && _baseReader.NextPartition())) )
+            if (StopAtEndOfPartition || !(_baseReader.NextPartition() || (AllowAdditionalPartitions && _taskExecution != null && _taskExecution.GetAdditionalPartitions(_baseReader) && _baseReader.NextPartition())))
                 return false;
 
             _log.InfoFormat("Now processing partition {0}.", _baseReader.CurrentPartition);
@@ -148,10 +148,10 @@ namespace Ookii.Jumbo.Jet
 
         private void _baseReader_CurrentPartitionChanging(object sender, CurrentPartitionChangingEventArgs e)
         {
-            if( _taskExecution != null )
+            if (_taskExecution != null)
                 e.Cancel = !_taskExecution.NotifyStartPartitionProcessing(e.NewPartitionNumber);
         }
-    
+
         private void _baseReader_HasRecordsChanged(object sender, EventArgs e)
         {
             HasRecords = _baseReader.HasRecords;

@@ -16,9 +16,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PipelinePrepartitionedPushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, IPartitioner<TRecord> partitioner)
         {
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if( partitioner == null )
+            if (partitioner == null)
                 throw new ArgumentNullException(nameof(partitioner));
 
             _taskExecution = taskExecution;
@@ -42,9 +42,9 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                if( disposing )
+                if (disposing)
                 {
-                    if( _output != null )
+                    if (_output != null)
                     {
                         _output.Dispose();
                         _output = null;
@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private void _taskExecution_TaskInstanceCreated(object sender, EventArgs e)
         {
             _task = (PrepartitionedPushTask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
-        }    
+        }
     }
 
 

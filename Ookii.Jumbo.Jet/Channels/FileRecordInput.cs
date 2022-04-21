@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -23,9 +23,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public FileRecordInput(Type recordReaderType, string fileName, string sourceName, long uncompressedSize, bool deleteFile, bool inputContainsRecordSizes, int segmentCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
-            if( recordReaderType == null )
+            if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
-            if( fileName == null )
+            if (fileName == null)
                 throw new ArgumentNullException(nameof(fileName));
 
             _recordReaderType = recordReaderType;
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         protected override RecordReader<RawRecord> CreateRawReader()
         {
-            if( !_inputContainsRecordSizes )
+            if (!_inputContainsRecordSizes)
                 throw new NotSupportedException("Cannot create a raw record reader for input without record size markers.");
 
             Stream stream = CreateStream();
@@ -72,9 +72,9 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( disposing )
+            if (disposing)
             {
-                if( _deleteFile && File.Exists(_fileName) )
+                if (_deleteFile && File.Exists(_fileName))
                     File.Delete(_fileName);
             }
         }
@@ -83,8 +83,8 @@ namespace Ookii.Jumbo.Jet.Channels
         private Stream CreateStream()
         {
             Stream stream;
-            if( _segmentCount == 0 )
-                stream = new ChecksumInputStream(_fileName,_bufferSize, _deleteFile).CreateDecompressor(_compressionType, _uncompressedSize);
+            if (_segmentCount == 0)
+                stream = new ChecksumInputStream(_fileName, _bufferSize, _deleteFile).CreateDecompressor(_compressionType, _uncompressedSize);
             else
                 stream = new SegmentedChecksumInputStream(_fileName, _bufferSize, _deleteFile, _segmentCount, _compressionType, _uncompressedSize);
             return stream;

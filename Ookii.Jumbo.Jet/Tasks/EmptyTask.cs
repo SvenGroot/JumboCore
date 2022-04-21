@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// <remarks>
     /// This task is useful if you immediately want to partition your input without processing it first.
     /// </remarks>
-    [AllowRecordReuse(PassThrough=true)]
+    [AllowRecordReuse(PassThrough = true)]
     public class EmptyTask<T> : ITask<T, T>
     {
         /// <summary>
@@ -24,11 +24,11 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">The output for the task.</param>
         public void Run(RecordReader<T> input, RecordWriter<T> output)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( output == null )
+            if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            foreach( T record in input.EnumerateRecords() )
+            foreach (T record in input.EnumerateRecords())
             {
                 output.WriteRecord(record);
             }

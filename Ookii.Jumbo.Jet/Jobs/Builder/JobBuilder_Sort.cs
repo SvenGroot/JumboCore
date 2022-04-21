@@ -22,7 +22,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public SortOperation MemorySort(IOperationInput input, Type comparerType = null)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
             CheckIfInputBelongsToJobBuilder(input);
             return SortOperation.CreateMemorySortOperation(this, input, comparerType);
@@ -38,7 +38,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         public SortOperation SpillSort(IOperationInput input, Type comparerType = null)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
             CheckIfInputBelongsToJobBuilder(input);
             return SortOperation.CreateSpillSortOperation(this, input, comparerType, null);
@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         public SortOperation SpillSortCombine(IOperationInput input, Type combinerType, Type comparerType = null)
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
             CheckIfInputBelongsToJobBuilder(input);
             return SortOperation.CreateSpillSortOperation(this, input, comparerType, combinerType);
@@ -142,14 +142,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private SortOperation SpillSortCombineCore<TKey, TValue>(IOperationInput input, Delegate combiner, Type comparerType, RecordReuseMode recordReuse)
             where TKey : IComparable<TKey>
         {
-            if( input == null )
+            if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if( combiner == null )
+            if (combiner == null)
                 throw new ArgumentNullException(nameof(combiner));
             CheckIfInputBelongsToJobBuilder(input);
 
             Type combinerType = CreateReduceTask<TKey, TValue, Pair<TKey, TValue>>(combiner, recordReuse);
-            
+
             SortOperation result = SpillSortCombine(input, combinerType, comparerType);
             AddAssemblyAndSerializeDelegateIfNeeded(combiner, result);
             return result;

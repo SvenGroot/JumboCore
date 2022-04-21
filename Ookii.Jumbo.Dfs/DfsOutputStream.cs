@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
@@ -83,18 +83,18 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="recordOptions">The record options for the file.</param>
         public DfsOutputStream(INameServerClientProtocol nameServer, string path, int blockSize, int replicationFactor, bool useLocalReplica, RecordStreamOptions recordOptions)
         {
-            if( nameServer == null )
+            if (nameServer == null)
                 throw new ArgumentNullException(nameof(nameServer));
-            if( path == null )
+            if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if( blockSize < 0 )
+            if (blockSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be zero or greater.");
-            if( blockSize % Packet.PacketSize != 0 )
+            if (blockSize % Packet.PacketSize != 0)
                 throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
-            if( replicationFactor < 0 )
+            if (replicationFactor < 0)
                 throw new ArgumentOutOfRangeException(nameof(replicationFactor), "Replication factor must be zero or greater.");
 
-            if( blockSize == 0 )
+            if (blockSize == 0)
             {
                 BlockSize = nameServer.BlockSize;
             }
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Dfs
             _useLocalReplica = useLocalReplica;
             _log.DebugFormat("Creating file {0} on name server.", _path);
             _block = nameServer.CreateFile(path, blockSize, replicationFactor, useLocalReplica, recordOptions);
-            if( (recordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary )
+            if ((recordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary)
             {
                 _recordBuffer = new MemoryStream(Packet.PacketSize);
             }
@@ -267,20 +267,20 @@ namespace Ookii.Jumbo.Dfs
         {
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
-            if( buffer == null )
+            if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if( offset < 0 )
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if( count < 0 )
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if( offset + count > buffer.Length )
+            if (offset + count > buffer.Length)
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
 
-            if( _sender != null )
+            if (_sender != null)
                 _sender.ThrowIfErrorOccurred();
 
             // If the DoNotCrossBoundary option is set, we write records into a temporary buffer and do not add them to the real buffer until MarkRecord is called.
-            if( _recordBuffer != null )
+            if (_recordBuffer != null)
             {
                 _recordBuffer.Write(buffer, offset, count);
                 _length += count;
@@ -290,9 +290,9 @@ namespace Ookii.Jumbo.Dfs
                 int bufferPos = offset;
                 int end = offset + count;
 
-                while( bufferPos < end )
+                while (bufferPos < end)
                 {
-                    if( _bufferPos == _buffer.Length )
+                    if (_bufferPos == _buffer.Length)
                     {
                         WriteBufferToPacket(false);
                     }
@@ -313,13 +313,13 @@ namespace Ookii.Jumbo.Dfs
         public void MarkRecord()
         {
             // _recordBuffer not null means DoNotCrossBoundary option is set.
-            if( _recordBuffer != null && _recordBuffer.Length > 0 )
+            if (_recordBuffer != null && _recordBuffer.Length > 0)
             {
-                if( _recordBuffer.Length > BlockSize )
+                if (_recordBuffer.Length > BlockSize)
                     throw new InvalidOperationException("The record is larger than a block."); // TODO: Allow this.
 
                 // Does the record fit in the current block?
-                if( _blockBytesWritten + _bufferPos + _recordBuffer.Length > BlockSize )
+                if (_blockBytesWritten + _bufferPos + _recordBuffer.Length > BlockSize)
                 {
                     int padding = BlockSize - (_blockBytesWritten + _bufferPos);
                     // Write the current buffer contents to the block and start a new block. We do this even if _bufferPos == 0 because we at least have to tell the block server the block is finished.
@@ -332,21 +332,21 @@ namespace Ookii.Jumbo.Dfs
                 _recordBuffer.Position = 0;
                 int remaining = (int)_recordBuffer.Length;
                 // If there is data in the buffer, we copy this record into the current buffer.
-                if( _bufferPos > 0 )
+                if (_bufferPos > 0)
                 {
-                    if( _bufferPos < _buffer.Length )
+                    if (_bufferPos < _buffer.Length)
                     {
                         int bytesRead = _recordBuffer.Read(_buffer, _bufferPos, _buffer.Length - _bufferPos);
                         remaining -= bytesRead;
                         _bufferPos += bytesRead;
                     }
 
-                    if( _bufferPos == _buffer.Length )
+                    if (_bufferPos == _buffer.Length)
                         WriteBufferToPacket(false);
                 }
 
                 // If the data left in the record is bigger than a single packet, we add those whole packets to the sender.
-                while( remaining > Packet.PacketSize )
+                while (remaining > Packet.PacketSize)
                 {
                     // We can never cross a record boundary here because of the check above, so no need to check for final packets.
                     WritePacket(_recordBuffer, false);
@@ -356,7 +356,7 @@ namespace Ookii.Jumbo.Dfs
                 }
 
                 // And copy the remaining data into the buffer.
-                if( remaining > 0 )
+                if (remaining > 0)
                 {
                     // _bufferPos should be zero here but anyway.
                     _bufferPos += _recordBuffer.Read(_buffer, _bufferPos, remaining);
@@ -377,30 +377,30 @@ namespace Ookii.Jumbo.Dfs
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if( !_disposed )
+            if (!_disposed)
             {
                 try
                 {
                     _disposed = true;
-                    if( _bufferPos > 0 || _fileBytesWritten == 0 && _block != null )
+                    if (_bufferPos > 0 || _fileBytesWritten == 0 && _block != null)
                     {
                         WritePacket(_buffer, _bufferPos, true);
                         _bufferPos = 0;
                     }
                     try
                     {
-                        if( _sender != null )
+                        if (_sender != null)
                         {
                             _sender.WaitForAcknowledgements();
                         }
                     }
                     finally
                     {
-                        if( disposing )
+                        if (disposing)
                         {
-                            if( _sender != null )
+                            if (_sender != null)
                                 _sender.Dispose();
-                            if( _recordBuffer != null )
+                            if (_recordBuffer != null)
                                 _recordBuffer.Dispose();
                         }
                     }
@@ -414,10 +414,10 @@ namespace Ookii.Jumbo.Dfs
 
         private void CheckDisposed()
         {
-            if( _disposed )
+            if (_disposed)
                 throw new ObjectDisposedException(typeof(DfsOutputStream).FullName);
         }
-        
+
         private void WritePacket(byte[] buffer, int length, bool finalPacket)
         {
             EnsureSenderCreated();
@@ -427,9 +427,9 @@ namespace Ookii.Jumbo.Dfs
 
         private void EnsureSenderCreated()
         {
-            if( _sender == null )
+            if (_sender == null)
             {
-                if( _block == null )
+                if (_block == null)
                     _block = _nameServer.AppendBlock(_path, _useLocalReplica);
                 _sender = new BlockSender(_block);
             }
@@ -450,7 +450,7 @@ namespace Ookii.Jumbo.Dfs
             _blockBytesWritten += _bufferPos;
             _fileBytesWritten += _bufferPos;
             _bufferPos = 0;
-            if( finalPacket )
+            if (finalPacket)
             {
                 // Do we really want to wait here? We could just let it run in the background and continue on our
                 // merry way. That would require keeping track of them so we know in Dispose when we're really finished.

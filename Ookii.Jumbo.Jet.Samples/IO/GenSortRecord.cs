@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Ookii.Jumbo.IO;
-using System.Runtime.InteropServices;
 
 namespace Ookii.Jumbo.Jet.Samples.IO
 {
@@ -75,9 +75,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// greater than zero if <paramref name="left"/> is greater than <paramref name="right"/>.</returns>
         public static int CompareKeys(byte[] left, byte[] right)
         {
-            for( int x = 0; x < GenSortRecord.KeySize; ++x )
+            for (int x = 0; x < GenSortRecord.KeySize; ++x)
             {
-                if( left[x] != right[x] )
+                if (left[x] != right[x])
                     return left[x] - right[x];
             }
             return 0;
@@ -93,9 +93,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         public static int ComparePartialKeys(byte[] left, byte[] right)
         {
             int length = Math.Min(left.Length, right.Length);
-            for( int x = 0; x < length; ++x )
+            for (int x = 0; x < length; ++x)
             {
-                if( left[x] != right[x] )
+                if (left[x] != right[x])
                     return left[x] - right[x];
             }
             return left.Length - right.Length;
@@ -119,7 +119,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         public void Read(System.IO.BinaryReader reader)
         {
             // _recordBuffer can be null because the ctor isn't called if this instance was created by a record reader.
-            if( _recordBuffer == null )
+            if (_recordBuffer == null)
                 _recordBuffer = new byte[RecordSize];
             reader.Read(_recordBuffer, 0, RecordSize);
         }
@@ -137,7 +137,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// greater than zero if this instance follows <paramref name="other"/>.</returns>
         public int CompareTo(GenSortRecord other)
         {
-            if( other == null )
+            if (other == null)
                 return 1;
 
             return CompareKeys(_recordBuffer, other._recordBuffer);

@@ -1,8 +1,8 @@
-﻿using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Jet;
 
 namespace Ookii.Jumbo.Test.Tasks
 {

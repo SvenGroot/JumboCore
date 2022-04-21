@@ -10,7 +10,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
     /// <summary>
     /// Task that filters out features with too low support.
     /// </summary>
-    [AllowRecordReuse(PassThrough=true)]
+    [AllowRecordReuse(PassThrough = true)]
     public class FeatureFilterTask : PushTask<Pair<Utf8String, int>, Pair<Utf8String, int>>
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(FeatureFilterTask));
@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public override void ProcessRecord(Pair<Utf8String, int> record, RecordWriter<Pair<Utf8String, int>> output)
         {
             ++_records;
-            if( record.Value >= _minSupport )
+            if (record.Value >= _minSupport)
                 output.WriteRecord(record);
         }
 

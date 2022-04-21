@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
-using System.ComponentModel;
 
 namespace Ookii.Jumbo
 {
@@ -217,14 +217,14 @@ namespace Ookii.Jumbo
         /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
         public static BinarySize Parse(string value, IFormatProvider provider)
         {
-            if( value == null )
+            if (value == null)
                 throw new ArgumentNullException(nameof(value));
-            if( value.Length == 0 )
+            if (value.Length == 0)
                 return new BinarySize();
 
             string suffix = GetAndRemoveSuffix(ref value);
             Decimal size = Decimal.Parse(value, provider);
-            if( suffix != null )
+            if (suffix != null)
                 size *= GetUnitScalingFactor(suffix);
 
             checked
@@ -335,7 +335,7 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if <paramref name="obj"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            if( obj is BinarySize )
+            if (obj is BinarySize)
                 return Equals((BinarySize)obj);
             else
                 return false;
@@ -966,9 +966,9 @@ namespace Ookii.Jumbo
         /// <returns>Less than zero if this instance is less than <paramref name="obj"/>, zero if this instance is equal to <paramref name="obj"/>, or greater than zero if this instance is greater than <paramref name="obj"/> or <paramref name="obj"/> is <see langword="null"/>.</returns>
         public int CompareTo(object obj)
         {
-            if( obj == null )
+            if (obj == null)
                 return 1;
-            else if( obj is BinarySize )
+            else if (obj is BinarySize)
                 return CompareTo((BinarySize)obj);
             else
                 throw new ArgumentException("The specified value is not a ByteSize.", nameof(obj));
@@ -1040,7 +1040,7 @@ namespace Ookii.Jumbo
 
         object IConvertible.ToType(Type conversionType, IFormatProvider provider)
         {
-            if( conversionType == typeof(string) )
+            if (conversionType == typeof(string))
                 return ToString(provider);
             else
                 return Convert.ChangeType(Value, conversionType, provider);
@@ -1065,7 +1065,7 @@ namespace Ookii.Jumbo
 
         internal static long GetUnitScalingFactor(string unit)
         {
-            switch( unit.ToUpperInvariant() )
+            switch (unit.ToUpperInvariant())
             {
             case "B":
                 return 1;
@@ -1097,7 +1097,7 @@ namespace Ookii.Jumbo
         private static string GetAndRemoveSuffix(ref string value)
         {
             int lastNumber = value.LastIndexOfAny(_numbers);
-            if( lastNumber == value.Length - 1 )
+            if (lastNumber == value.Length - 1)
                 return null;
             else
             {

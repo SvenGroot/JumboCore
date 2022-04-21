@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -105,9 +105,9 @@ namespace Ookii.Jumbo
         /// </summary>
         public void Refresh()
         {
-            if( OperatingSystem.IsWindows() )
+            if (OperatingSystem.IsWindows())
                 RefreshWindows();
-            else if( OperatingSystem.IsLinux() )
+            else if (OperatingSystem.IsLinux())
                 RefreshUnix();
         }
 
@@ -117,9 +117,9 @@ namespace Ookii.Jumbo
         /// <returns>A string representation of the current <see cref="MemoryStatus"/>.</returns>
         public override string ToString()
         {
-            if( Environment.OSVersion.Platform == PlatformID.Win32NT )
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available; Page file: {2}M total, {3}M available.", TotalPhysicalMemory / BinarySize.Megabyte, AvailablePhysicalMemory / BinarySize.Megabyte, TotalSwap / BinarySize.Megabyte, AvailableSwap / BinarySize.Megabyte);
-            else if( Environment.OSVersion.Platform == PlatformID.Unix )
+            else if (Environment.OSVersion.Platform == PlatformID.Unix)
                 return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available, {2}M buffered, {3}M cached; Swap: {4}M total, {5}M available.", TotalPhysicalMemory / BinarySize.Megabyte, AvailablePhysicalMemory / BinarySize.Megabyte, BufferedMemory / BinarySize.Megabyte, CachedMemory / BinarySize.Megabyte, TotalSwap / BinarySize.Megabyte, AvailableSwap / BinarySize.Megabyte);
             else
                 return "No memory information.";
@@ -129,18 +129,18 @@ namespace Ookii.Jumbo
         private void RefreshWindows()
         {
             NativeMethods.PERFORMANCE_INFORMATION performanceInfo;
-            if( !NativeMethods.GetPerformanceInfo(out performanceInfo, Marshal.SizeOf(typeof(NativeMethods.PERFORMANCE_INFORMATION))) )
+            if (!NativeMethods.GetPerformanceInfo(out performanceInfo, Marshal.SizeOf(typeof(NativeMethods.PERFORMANCE_INFORMATION))))
                 throw new System.ComponentModel.Win32Exception();
 
             _totalPhysicalMemory = (long)performanceInfo.PhysicalTotal * (long)performanceInfo.PageSize;
             _availablePhysicalMemory = (long)performanceInfo.PhysicalAvailable * (long)performanceInfo.PageSize;
 
             SelectQuery query = new SelectQuery("Win32_PageFileUsage", null, new[] { "CurrentUsage", "AllocatedBaseSize" });
-            using( ManagementObjectSearcher searcher = new ManagementObjectSearcher(query) )
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
             {
                 _totalSwap = 0;
                 _availableSwap = 0;
-                foreach( ManagementBaseObject obj in searcher.Get() )
+                foreach (ManagementBaseObject obj in searcher.Get())
                 {
                     long size = (uint)obj["AllocatedBaseSize"] * BinarySize.Megabyte;
                     long used = (uint)obj["CurrentUsage"] * BinarySize.Megabyte;
@@ -152,9 +152,9 @@ namespace Ookii.Jumbo
 
         private void RefreshUnix()
         {
-            if( _procMemInfoReader == null )
+            if (_procMemInfoReader == null)
             {
-                if( File.Exists("/proc/meminfo") )
+                if (File.Exists("/proc/meminfo"))
                 {
                     _procMemInfoReader = File.OpenText("/proc/meminfo");
                 }
@@ -167,14 +167,14 @@ namespace Ookii.Jumbo
 
             int neededFields = 6;
             string line;
-            while( neededFields > 0 && (line = _procMemInfoReader.ReadLine()) != null )
+            while (neededFields > 0 && (line = _procMemInfoReader.ReadLine()) != null)
             {
-                if( ExtractMemInfoValue(line, "MemTotal:", ref _totalPhysicalMemory) ||
+                if (ExtractMemInfoValue(line, "MemTotal:", ref _totalPhysicalMemory) ||
                     ExtractMemInfoValue(line, "MemFree:", ref _availablePhysicalMemory) ||
                     ExtractMemInfoValue(line, "Buffers:", ref _bufferedMemory) ||
                     ExtractMemInfoValue(line, "Cached:", ref _cachedMemory) ||
                     ExtractMemInfoValue(line, "SwapTotal:", ref _totalSwap) ||
-                    ExtractMemInfoValue(line, "SwapFree:", ref _availableSwap) )
+                    ExtractMemInfoValue(line, "SwapFree:", ref _availableSwap))
                     --neededFields;
             }
 
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo
 
         private static bool ExtractMemInfoValue(string line, string field, ref long value)
         {
-            if( line.StartsWith(field, StringComparison.Ordinal) )
+            if (line.StartsWith(field, StringComparison.Ordinal))
             {
                 // Strip the field, the colon, and the kB
                 string valueString = line.Substring(field.Length + 1, line.Length - field.Length - 3);
@@ -203,7 +203,7 @@ namespace Ookii.Jumbo
         public void Dispose()
         {
 
-            if( _procMemInfoReader != null )
+            if (_procMemInfoReader != null)
                 _procMemInfoReader.Dispose();
         }
 
