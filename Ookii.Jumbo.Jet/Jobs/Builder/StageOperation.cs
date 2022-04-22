@@ -49,10 +49,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private StageOperation(JobBuilder builder, IOperationInput input, int noInputTaskCount, Type taskType)
             : base(builder, MakeGenericTaskType(taskType, input))
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(taskType);
             if (noInputTaskCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(noInputTaskCount));
             if (noInputTaskCount == 0 && input == null)
@@ -92,8 +90,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if (compiler == null)
-                throw new ArgumentNullException(nameof(compiler));
+            ArgumentNullException.ThrowIfNull(compiler);
             if (_dataInput != null)
                 return compiler.CreateStage(StageId, TaskType.TaskType, _dataInput, Output);
             else

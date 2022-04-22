@@ -16,8 +16,7 @@ namespace Ookii.Jumbo.Topology
         /// <param name="address">The address of the node.</param>
         public TopologyNode(ServerAddress address)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address);
 
             _address = address;
         }
@@ -59,8 +58,7 @@ namespace Ookii.Jumbo.Topology
         /// <returns>0 if the two nodes are identical, 1 if they are in the same rack, or 2 if they are in different racks.</returns>
         public int DistanceFrom(TopologyNode node)
         {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
+            ArgumentNullException.ThrowIfNull(node);
 
             return DistanceFrom(node.Address.HostName, node.Rack.RackId);
         }

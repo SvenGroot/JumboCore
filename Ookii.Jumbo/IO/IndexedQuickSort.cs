@@ -17,8 +17,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="comparer">The <see cref="IRawComparer{T}"/> for the records in the buffer.</param>
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer)
         {
-            if (index == null)
-                throw new ArgumentNullException(nameof(index));
+            ArgumentNullException.ThrowIfNull(index);
             Sort(index, buffer, comparer, 0, index.Length);
         }
 
@@ -32,12 +31,9 @@ namespace Ookii.Jumbo.IO
         /// <param name="count">The number of items in <paramref name="index"/> starting at <paramref name="offset"/> to sort.</param>
         public static void Sort<T>(RecordIndexEntry[] index, byte[] buffer, IRawComparer<T> comparer, int offset, int count)
         {
-            if (index == null)
-                throw new ArgumentNullException(nameof(index));
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
+            ArgumentNullException.ThrowIfNull(index);
+            ArgumentNullException.ThrowIfNull(buffer);
+            ArgumentNullException.ThrowIfNull(comparer);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0)

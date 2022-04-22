@@ -19,8 +19,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="metrics">The metrics collected during task execution.</param>
         public TaskStatusChangedJetHeartbeatData(Guid jobId, TaskAttemptId taskAttemptId, TaskAttemptStatus status, TaskProgress progress, TaskMetrics metrics)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
 
             JobId = jobId;
             TaskAttemptId = taskAttemptId;

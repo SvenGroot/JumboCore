@@ -21,8 +21,7 @@ namespace JetWeb
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Required instance method.")]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env == null)
-                throw new ArgumentNullException(nameof(env));
+            ArgumentNullException.ThrowIfNull(env);
 
             if (env.EnvironmentName == Environments.Development)
             {

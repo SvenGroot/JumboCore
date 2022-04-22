@@ -178,8 +178,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public TcpInputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
             : base(taskExecution, inputStage)
         {
-            if (inputStage == null)
-                throw new ArgumentNullException(nameof(inputStage));
+            ArgumentNullException.ThrowIfNull(inputStage);
             _inputReaderType = typeof(TcpChannelRecordReader<>).MakeGenericType(InputRecordType);
             _inputReaders = new ITcpChannelRecordReader[inputStage.Root.TaskCount][];
         }

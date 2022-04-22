@@ -48,8 +48,7 @@ namespace NameServerApplication
         /// <param name="writer">The <see cref="TextWriter"/> </param>
         public void PrintListing(TextWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 
@@ -68,8 +67,7 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="BinaryWriter"/> used to write to the file system image.</param>
         public override void SaveToFileSystemImage(BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             base.SaveToFileSystemImage(writer);
             writer.Write(Children.Count);
             foreach (var entry in Children)
@@ -83,8 +81,7 @@ namespace NameServerApplication
         /// <param name="notifyFileSizeCallback">A function that should be called to notify the caller of the size of deserialized files.</param>
         protected override void LoadFromFileSystemImage(BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             var childCount = reader.ReadInt32();
             _children.Clear();
             _children.Capacity = childCount;

@@ -22,8 +22,7 @@ namespace Ookii.Jumbo.Topology
 
             protected override void InsertItem(int index, TopologyNode item)
             {
-                if (item == null)
-                    throw new ArgumentNullException(nameof(item));
+                ArgumentNullException.ThrowIfNull(item);
                 if (item.Rack != null)
                     throw new ArgumentException("The specified node is already part of another rack.");
                 base.InsertItem(index, item);
@@ -32,8 +31,7 @@ namespace Ookii.Jumbo.Topology
 
             protected override void SetItem(int index, TopologyNode item)
             {
-                if (item == null)
-                    throw new ArgumentNullException(nameof(item));
+                ArgumentNullException.ThrowIfNull(item);
                 if (item.Rack != null)
                     throw new ArgumentException("The specified node is already part of another rack.");
                 this[index].Rack = null;
@@ -65,8 +63,7 @@ namespace Ookii.Jumbo.Topology
         /// <param name="rackId">The unique identifier for the rack.</param>
         public Rack(string rackId)
         {
-            if (rackId == null)
-                throw new ArgumentNullException(nameof(rackId));
+            ArgumentNullException.ThrowIfNull(rackId);
 
             _nodes = new NodeCollection(this);
             RackId = rackId;

@@ -20,10 +20,8 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public FileRecordInput(Type recordReaderType, string fileName, string sourceName, long uncompressedSize, bool deleteFile, bool inputContainsRecordSizes, int segmentCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
-            if (recordReaderType == null)
-                throw new ArgumentNullException(nameof(recordReaderType));
-            if (fileName == null)
-                throw new ArgumentNullException(nameof(fileName));
+            ArgumentNullException.ThrowIfNull(recordReaderType);
+            ArgumentNullException.ThrowIfNull(fileName);
 
             _recordReaderType = recordReaderType;
             _fileName = fileName;

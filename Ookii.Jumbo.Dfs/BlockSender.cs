@@ -104,8 +104,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="packet">The packet.</param>
         public void SendPacket(Packet packet)
         {
-            if (packet == null)
-                throw new ArgumentNullException(nameof(packet));
+            ArgumentNullException.ThrowIfNull(packet);
             ThrowIfErrorOccurred();
 
             if (_hasLastPacket)

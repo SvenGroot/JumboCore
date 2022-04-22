@@ -34,8 +34,7 @@ namespace Ookii.Jumbo.Jet
         public MultiPartitionRecordReader(TaskExecutionUtility taskExecution, MultiInputRecordReader<T> baseReader)
             : base(false)
         {
-            if (baseReader == null)
-                throw new ArgumentNullException(nameof(baseReader));
+            ArgumentNullException.ThrowIfNull(baseReader);
 
             _taskExecution = taskExecution;
             _baseReader = baseReader;

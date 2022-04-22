@@ -22,12 +22,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         internal JobBuilderCompiler(IEnumerable<Assembly> assemblies, FileSystemClient fileSystemClient, JetClient jetClient)
         {
-            if (assemblies == null)
-                throw new ArgumentNullException(nameof(assemblies));
-            if (fileSystemClient == null)
-                throw new ArgumentNullException(nameof(fileSystemClient));
-            if (jetClient == null)
-                throw new ArgumentNullException(nameof(jetClient));
+            ArgumentNullException.ThrowIfNull(assemblies);
+            ArgumentNullException.ThrowIfNull(fileSystemClient);
+            ArgumentNullException.ThrowIfNull(jetClient);
 
             _job = new JobConfiguration(assemblies.ToArray());
             _fileSystemClient = fileSystemClient;
@@ -67,12 +64,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
         public StageConfiguration CreateStage(string stageId, Type taskType, FileInput input, IOperationOutput output)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(stageId);
+            ArgumentNullException.ThrowIfNull(taskType);
+            ArgumentNullException.ThrowIfNull(input);
 
             stageId = CreateUniqueStageId(stageId);
 
@@ -102,10 +96,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo input, IOperationOutput output, bool allowEmptyTaskReplacement, SettingsDictionary channelSettings)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(stageId);
+            ArgumentNullException.ThrowIfNull(taskType);
 
             StageConfiguration stage;
             if (input != null && allowEmptyTaskReplacement && taskCount <= 1 && input.ChannelType == Channels.ChannelType.Pipeline && IsEmptyTask(input.InputStage.TaskType.ReferencedType))
@@ -155,20 +147,15 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi")]
         public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo[] input, IOperationOutput output, SettingsDictionary[] channelSettings, Type stageMultiInputRecordReaderType)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (channelSettings == null)
-                throw new ArgumentNullException(nameof(channelSettings));
+            ArgumentNullException.ThrowIfNull(stageId);
+            ArgumentNullException.ThrowIfNull(taskType);
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(channelSettings);
             if (input.Length == 0)
                 throw new ArgumentException("Empty input list.", nameof(input));
             if (input.Length != channelSettings.Length)
                 throw new ArgumentException("Incorrect number of channel settings entries.");
-            if (stageMultiInputRecordReaderType == null)
-                throw new ArgumentNullException(nameof(stageMultiInputRecordReaderType));
+            ArgumentNullException.ThrowIfNull(stageMultiInputRecordReaderType);
 
             stageId = CreateUniqueStageId(stageId);
             for (var x = 0; x < input.Length; ++x)

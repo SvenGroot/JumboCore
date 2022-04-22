@@ -49,8 +49,7 @@ namespace Ookii.Jumbo
         /// <param name="buffer">An array of bytes.</param>
         public void Update(byte[] buffer)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
 
             Update(buffer, 0, buffer.Length);
         }
@@ -63,8 +62,7 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes from <paramref name="buffer"/> to be used in the checksum calculation.</param>
         public void Update(byte[] buffer, int offset, int count)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0)

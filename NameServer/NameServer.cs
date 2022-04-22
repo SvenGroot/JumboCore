@@ -45,10 +45,8 @@ namespace NameServerApplication
 
         private NameServer(JumboConfiguration jumboConfig, DfsConfiguration dfsConfig)
         {
-            if (jumboConfig == null)
-                throw new ArgumentNullException(nameof(jumboConfig));
-            if (dfsConfig == null)
-                throw new ArgumentNullException(nameof(dfsConfig));
+            ArgumentNullException.ThrowIfNull(jumboConfig);
+            ArgumentNullException.ThrowIfNull(dfsConfig);
 
             Configuration = dfsConfig;
             _localAddress = new ServerAddress(ServerContext.LocalHostName, dfsConfig.FileSystem.Url.Port);
@@ -86,10 +84,8 @@ namespace NameServerApplication
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
         public static void Run(JumboConfiguration jumboConfig, DfsConfiguration dfsConfig)
         {
-            if (jumboConfig == null)
-                throw new ArgumentNullException(nameof(jumboConfig));
-            if (dfsConfig == null)
-                throw new ArgumentNullException(nameof(dfsConfig));
+            ArgumentNullException.ThrowIfNull(jumboConfig);
+            ArgumentNullException.ThrowIfNull(dfsConfig);
 
             _log.Info("---- NameServer is starting ----");
             _log.LogEnvironmentInformation();
@@ -110,8 +106,7 @@ namespace NameServerApplication
 
         public void CheckBlockReplication(IEnumerable<Guid> blocks)
         {
-            if (blocks == null)
-                throw new ArgumentNullException(nameof(blocks));
+            ArgumentNullException.ThrowIfNull(blocks);
 
             // I believe this is what Hadoop does, but is it the right thing to do?
             lock (_underReplicatedBlocks)
@@ -397,10 +392,8 @@ namespace NameServerApplication
         public int GetDataServerBlockCount(ServerAddress dataServer, Guid[] blocks)
         {
             _log.DebugFormat("GetDataServerBlockCount, dataServer = {0}", dataServer);
-            if (dataServer == null)
-                throw new ArgumentNullException(nameof(dataServer));
-            if (blocks == null)
-                throw new ArgumentNullException(nameof(blocks));
+            ArgumentNullException.ThrowIfNull(dataServer);
+            ArgumentNullException.ThrowIfNull(blocks);
             lock (_dataServers)
             {
                 if (!_dataServers.TryGetValue(dataServer, out var server))
@@ -416,8 +409,7 @@ namespace NameServerApplication
         public Guid[] GetDataServerBlocks(ServerAddress dataServer)
         {
             _log.DebugFormat("GetDataServerBlocks, dataServer = {0}", dataServer);
-            if (dataServer == null)
-                throw new ArgumentNullException(nameof(dataServer));
+            ArgumentNullException.ThrowIfNull(dataServer);
 
             lock (_dataServers)
             {
@@ -429,10 +421,8 @@ namespace NameServerApplication
         public Guid[] GetDataServerBlocksFromList(ServerAddress dataServer, Guid[] blocks)
         {
             _log.DebugFormat("GetDataServerBlockCount, dataServer = {0}", dataServer);
-            if (dataServer == null)
-                throw new ArgumentNullException(nameof(dataServer));
-            if (blocks == null)
-                throw new ArgumentNullException(nameof(blocks));
+            ArgumentNullException.ThrowIfNull(dataServer);
+            ArgumentNullException.ThrowIfNull(blocks);
             lock (_dataServers)
             {
                 var server = _dataServers[dataServer];
@@ -447,8 +437,7 @@ namespace NameServerApplication
 
         public void RemoveDataServer(ServerAddress dataServer)
         {
-            if (dataServer == null)
-                throw new ArgumentNullException(nameof(dataServer));
+            ArgumentNullException.ThrowIfNull(dataServer);
 
             lock (_dataServers)
             {
@@ -473,8 +462,7 @@ namespace NameServerApplication
         public HeartbeatResponse[] Heartbeat(ServerAddress address, HeartbeatData[] data)
         {
             //_log.Debug("Data server heartbeat received.");
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address);
 
             List<HeartbeatResponse> responseList = null;
             lock (_dataServers)

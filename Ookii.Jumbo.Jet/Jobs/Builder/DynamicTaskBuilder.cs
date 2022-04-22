@@ -85,12 +85,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public Type CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
         {
-            if (methodToOverride == null)
-                throw new ArgumentNullException(nameof(methodToOverride));
+            ArgumentNullException.ThrowIfNull(methodToOverride);
             if (methodToOverride.DeclaringType.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
                 throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
-            if (taskMethodDelegate == null)
-                throw new ArgumentNullException(nameof(taskMethodDelegate));
+            ArgumentNullException.ThrowIfNull(taskMethodDelegate);
 
             var cacheKey = Tuple.Create(methodToOverride, taskMethodDelegate, skipParameters, recordReuseMode);
             if (_taskTypeCache.TryGetValue(cacheKey, out var cachedTask))
@@ -144,8 +142,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         public static bool CanCallTargetMethodDirectly(Delegate target)
         {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target);
 
             return target.Method.IsPublic && target.Method.IsStatic;
         }
@@ -185,10 +182,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static void SerializeDelegate(SettingsDictionary settings, Delegate taskDelegate)
         {
-            if (settings == null)
-                throw new ArgumentNullException(nameof(settings));
-            if (taskDelegate == null)
-                throw new ArgumentNullException(nameof(taskDelegate));
+            ArgumentNullException.ThrowIfNull(settings);
+            ArgumentNullException.ThrowIfNull(taskDelegate);
 
             settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName);
             settings.Add(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, taskDelegate.Method.DeclaringType.AssemblyQualifiedName);

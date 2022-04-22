@@ -44,8 +44,7 @@ namespace TaskServerApplication
         public FileChannelServer(TaskServer taskServer, IPAddress[] localAddresses, int port, int maxConnections, int maxCacheSize)
             : base(localAddresses, port, maxConnections)
         {
-            if (taskServer == null)
-                throw new ArgumentNullException(nameof(taskServer));
+            ArgumentNullException.ThrowIfNull(taskServer);
             _taskServer = taskServer;
             _indexCache = new PartitionFileIndexCache(maxCacheSize);
             _bufferSize = (int)taskServer.Configuration.FileChannel.ReadBufferSize.Value;

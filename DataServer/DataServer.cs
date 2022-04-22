@@ -37,8 +37,7 @@ namespace DataServerApplication
 
         public DataServer(DfsConfiguration config)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
 
             _config = config;
             _blockStorageDirectory = config.DataServer.BlockStorageDirectory;

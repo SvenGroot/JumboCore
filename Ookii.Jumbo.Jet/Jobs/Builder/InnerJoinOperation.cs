@@ -45,12 +45,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public InnerJoinOperation(JobBuilder builder, IOperationInput outerInput, IOperationInput innerInput, Type innerJoinRecordReaderType, Type outerComparerType, Type innerComparerType)
             : base(builder, GetEmptyTaskTypeForRecord(innerJoinRecordReaderType))
         {
-            if (outerInput == null)
-                throw new ArgumentNullException(nameof(outerInput));
-            if (innerInput == null)
-                throw new ArgumentNullException(nameof(innerInput));
-            if (innerJoinRecordReaderType == null)
-                throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
+            ArgumentNullException.ThrowIfNull(outerInput);
+            ArgumentNullException.ThrowIfNull(innerInput);
+            ArgumentNullException.ThrowIfNull(innerJoinRecordReaderType);
 
             var baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
             var outerRecordType = baseType.GetGenericArguments()[0];
@@ -85,8 +82,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if (compiler == null)
-                throw new ArgumentNullException(nameof(compiler));
+            ArgumentNullException.ThrowIfNull(compiler);
 
             if (_innerInputChannel.TaskCount != _outerInputChannel.TaskCount)
                 throw new InvalidOperationException("Outer and inner input channels for a join operation must use the same number of tasks.");
@@ -98,8 +94,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static Type GetEmptyTaskTypeForRecord(Type innerJoinRecordReaderType)
         {
-            if (innerJoinRecordReaderType == null)
-                throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
+            ArgumentNullException.ThrowIfNull(innerJoinRecordReaderType);
             return typeof(EmptyTask<>).MakeGenericType(RecordReader.GetRecordType(innerJoinRecordReaderType));
         }
 

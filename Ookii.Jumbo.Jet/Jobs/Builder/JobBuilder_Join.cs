@@ -31,12 +31,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public InnerJoinOperation InnerJoin(IOperationInput outerInput, IOperationInput innerInput, Type innerJoinRecordReaderType, Type outerComparerType, Type innerComparerType)
         {
-            if (outerInput == null)
-                throw new ArgumentNullException(nameof(outerInput));
-            if (innerInput == null)
-                throw new ArgumentNullException(nameof(innerInput));
-            if (innerJoinRecordReaderType == null)
-                throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
+            ArgumentNullException.ThrowIfNull(outerInput);
+            ArgumentNullException.ThrowIfNull(innerInput);
+            ArgumentNullException.ThrowIfNull(innerJoinRecordReaderType);
 
             CheckIfInputBelongsToJobBuilder(outerInput);
             CheckIfInputBelongsToJobBuilder(innerInput);

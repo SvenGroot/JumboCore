@@ -29,10 +29,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="taskType">Type of the task.</param>
         protected StageOperationBase(JobBuilder builder, Type taskType)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(taskType);
             if (taskType.IsGenericTypeDefinition)
                 throw new ArgumentException("Task type must be a concrete type.", nameof(taskType));
 
@@ -91,8 +89,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="stage">The stage that this stage depends on.</param>
         public void AddSchedulingDependency(StageOperation stage)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(stage);
             if (stage._builder != _builder)
                 throw new ArgumentException("The specified stage does not belong to the same job.", nameof(stage));
 
@@ -168,8 +165,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         void IJobBuilderOperation.SetOutput(IOperationOutput output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(output);
             if (_output != null)
                 throw new InvalidOperationException("This operation already has an output.");
             _output = output;

@@ -160,8 +160,7 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public override void AddInput(IList<RecordInput> partitions)
         {
-            if (partitions == null)
-                throw new ArgumentNullException(nameof(partitions));
+            ArgumentNullException.ThrowIfNull(partitions);
             CheckDisposed();
             base.AddInput(partitions);
 
@@ -184,8 +183,7 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public override void AssignAdditionalPartitions(IList<int> newPartitions)
         {
-            if (newPartitions == null)
-                throw new ArgumentNullException(nameof(newPartitions));
+            ArgumentNullException.ThrowIfNull(newPartitions);
 
             CheckDisposed();
             // Have to check both because _partitionMergers can be null before NotifyConfigurationChanged is called.

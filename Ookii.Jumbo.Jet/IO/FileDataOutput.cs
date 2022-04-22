@@ -67,12 +67,9 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="recordOptions">The <see cref="RecordStreamOptions" /> for the output.</param>
         public FileDataOutput(DfsConfiguration dfsConfiguration, Type recordWriterType, string outputPath, int blockSize = 0, int replicationFactor = 0, RecordStreamOptions recordOptions = RecordStreamOptions.None)
         {
-            if (dfsConfiguration == null)
-                throw new ArgumentNullException(nameof(dfsConfiguration));
-            if (recordWriterType == null)
-                throw new ArgumentNullException(nameof(recordWriterType));
-            if (outputPath == null)
-                throw new ArgumentNullException(nameof(outputPath));
+            ArgumentNullException.ThrowIfNull(dfsConfiguration);
+            ArgumentNullException.ThrowIfNull(recordWriterType);
+            ArgumentNullException.ThrowIfNull(outputPath);
             if (blockSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize));
             if (replicationFactor < 0)
@@ -128,8 +125,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="stage">The stage configuration of the stage.</param>
         public void NotifyAddedToStage(StageConfiguration stage)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(stage);
             if (_outputPath == null)
                 throw new InvalidOperationException("No data output configuration is stored in this instance.");
 
@@ -168,8 +164,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>The path of the output file for this partition.</returns>
         public static string GetOutputPath(StageConfiguration stage, int partitionNumber)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(stage);
             var outputPathFormat = stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null);
             if (outputPathFormat == null)
                 throw new InvalidOperationException("The stage settings do not contain an output path format.");

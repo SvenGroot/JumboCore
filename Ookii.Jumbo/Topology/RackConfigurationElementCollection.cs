@@ -45,8 +45,7 @@ namespace Ookii.Jumbo.Topology
         /// <returns>The <see cref="RackConfigurationElement.RackId"/> property value.</returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
-            if (element == null)
-                throw new ArgumentNullException(nameof(element));
+            ArgumentNullException.ThrowIfNull(element);
 
             return ((RackConfigurationElement)element).RackId;
         }

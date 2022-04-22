@@ -18,12 +18,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
-            if (recordReaderType == null)
-                throw new ArgumentNullException(nameof(recordReaderType));
-            if (fileName == null)
-                throw new ArgumentNullException(nameof(fileName));
-            if (indexEntries == null)
-                throw new ArgumentNullException(nameof(indexEntries));
+            ArgumentNullException.ThrowIfNull(recordReaderType);
+            ArgumentNullException.ThrowIfNull(fileName);
+            ArgumentNullException.ThrowIfNull(indexEntries);
 
             _recordReaderType = recordReaderType;
             _fileName = fileName;

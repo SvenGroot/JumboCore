@@ -27,8 +27,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="type">The type of the job runner.</param>
         public JobRunnerInfo(Type type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
             if (!type.GetInterfaces().Contains(typeof(IJobRunner)))
                 throw new ArgumentException("Specified type is not a job runner.", nameof(type));
 
@@ -74,8 +73,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An array holding the job runners in the assembly.</returns>
         public static JobRunnerInfo[] GetJobRunners(Assembly assembly)
         {
-            if (assembly == null)
-                throw new ArgumentNullException(nameof(assembly));
+            ArgumentNullException.ThrowIfNull(assembly);
 
             var types = assembly.GetTypes();
             return (from type in types
@@ -92,10 +90,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The <see cref="JobRunnerInfo"/> for the specified job runner, or <see langword="null" /> if it was not found.</returns>
         public static JobRunnerInfo GetJobRunner(Assembly assembly, string name)
         {
-            if (assembly == null)
-                throw new ArgumentNullException(nameof(assembly));
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(assembly);
+            ArgumentNullException.ThrowIfNull(name);
 
             var types = assembly.GetTypes();
             return (from type in types
@@ -113,12 +109,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
         public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index)
         {
-            if (dfsConfiguration == null)
-                throw new ArgumentNullException(nameof(dfsConfiguration));
-            if (jetConfiguration == null)
-                throw new ArgumentNullException(nameof(jetConfiguration));
-            if (args == null)
-                throw new ArgumentNullException(nameof(args));
+            ArgumentNullException.ThrowIfNull(dfsConfiguration);
+            ArgumentNullException.ThrowIfNull(jetConfiguration);
+            ArgumentNullException.ThrowIfNull(args);
 
             IJobRunner jobRunner = null;
             try

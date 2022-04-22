@@ -17,8 +17,7 @@ namespace Ookii.Jumbo.Jet
 
         internal PrepartitionedRecordWriter(RecordWriter<T> baseWriter, bool ownsBaseWriter)
         {
-            if (baseWriter == null)
-                throw new ArgumentNullException(nameof(baseWriter));
+            ArgumentNullException.ThrowIfNull(baseWriter);
 
             _baseWriter = baseWriter;
             // It's possible that the base writer is not a multi record writer if the there are actually no internal partitions.

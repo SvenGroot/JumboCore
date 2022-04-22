@@ -36,8 +36,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The key used for the setting in the settings dictionary.</param>
         public JobSettingAttribute(string key)
         {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
+            ArgumentNullException.ThrowIfNull(key);
             if (key.Length == 0)
                 throw new ArgumentException("The key may not be zero-length.", nameof(key));
 

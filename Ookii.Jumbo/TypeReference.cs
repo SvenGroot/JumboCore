@@ -177,8 +177,7 @@ namespace Ookii.Jumbo
 
         void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             if (reader.IsEmptyElement)
                 reader.ReadStartElement();
             else
@@ -191,8 +190,7 @@ namespace Ookii.Jumbo
 
         void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.WriteString(TypeName);
         }
 

@@ -132,8 +132,7 @@ namespace Ookii.Jumbo
         /// <param name="log">The log to write the information to.</param>
         public static void LogEnvironmentInformation(this log4net.ILog log)
         {
-            if (log == null)
-                throw new ArgumentNullException(nameof(log));
+            ArgumentNullException.ThrowIfNull(log);
 
             if (log.IsInfoEnabled)
             {

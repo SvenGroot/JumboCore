@@ -17,8 +17,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="displayName">The id of the progress counter.</param>
         public AdditionalProgressCounterAttribute(string displayName)
         {
-            if (displayName == null)
-                throw new ArgumentNullException(nameof(displayName));
+            ArgumentNullException.ThrowIfNull(displayName);
 
             _displayName = displayName;
         }

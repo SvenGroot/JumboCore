@@ -173,8 +173,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(System.IO.BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             if (Key == null || Value == null)
                 throw new InvalidOperationException("Key and value may not be null.");
             if (_keyWriter == null)
@@ -194,8 +193,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(System.IO.BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             if (_keyWriter == null)
             {
                 if (Key == null)

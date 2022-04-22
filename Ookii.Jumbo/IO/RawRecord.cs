@@ -80,8 +80,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             if (Buffer == null)
                 WritableUtility.Write7BitEncodedInt32(writer, 0);
             else
@@ -97,8 +96,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             Offset = 0;
             Count = WritableUtility.Read7BitEncodedInt32(reader);
             if (Buffer == null || Buffer.Length < Count)

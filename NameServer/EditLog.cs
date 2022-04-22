@@ -347,58 +347,50 @@ namespace NameServerApplication
 
         public void LogCreateDirectory(string path, DateTime date)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new CreateDirectoryEditLogEntry(date, path));
         }
 
         public void LogCreateFile(string path, DateTime date, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new CreateFileEditLogEntry(date, path, blockSize, replicationFactor, recordOptions));
         }
 
         public void LogAppendBlock(string path, DateTime date, Guid blockId)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new AppendBlockEditLogEntry(date, path, blockId));
         }
 
         public void LogCommitBlock(string path, DateTime date, Guid blockId, int size)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new CommitBlockEditLogEntry(date, path, blockId, size));
         }
 
         public void LogCommitFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new CommitFileEditLogEntry(DateTime.UtcNow, path));
         }
 
         public void LogDelete(string path, bool recursive)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             LogMutation(new DeleteEditLogEntry(DateTime.UtcNow, path, recursive));
         }
 
         public void LogMove(string from, string to)
         {
-            if (from == null)
-                throw new ArgumentNullException(nameof(from));
-            if (to == null)
-                throw new ArgumentNullException(nameof(to));
+            ArgumentNullException.ThrowIfNull(from);
+            ArgumentNullException.ThrowIfNull(to);
 
             LogMutation(new MoveEditLogEntry(DateTime.UtcNow, from, to));
         }

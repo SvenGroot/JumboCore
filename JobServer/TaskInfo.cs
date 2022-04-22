@@ -26,10 +26,8 @@ namespace JobServerApplication
 
         public TaskInfo(JobInfo job, StageInfo stage, IList<StageConfiguration> inputStages, int taskNumber, string[] inputLocations)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
+            ArgumentNullException.ThrowIfNull(stage);
+            ArgumentNullException.ThrowIfNull(job);
             _stage = stage;
             _taskId = new TaskId(stage.StageId, taskNumber);
             _fullTaskId = Ookii.Jumbo.Jet.Job.CreateFullTaskId(job.Job.JobId, _taskId);

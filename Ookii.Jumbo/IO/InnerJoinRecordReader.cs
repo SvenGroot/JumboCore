@@ -164,8 +164,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public override void AddInput(IList<RecordInput> partitions)
         {
-            if (partitions == null)
-                throw new ArgumentNullException(nameof(partitions));
+            ArgumentNullException.ThrowIfNull(partitions);
             var reader = partitions[0].Reader;
             switch (CurrentInputCount)
             {

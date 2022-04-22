@@ -13,10 +13,8 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PipelinePrepartitionedPushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, IPartitioner<TRecord> partitioner)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-            if (partitioner == null)
-                throw new ArgumentNullException(nameof(partitioner));
+            ArgumentNullException.ThrowIfNull(output);
+            ArgumentNullException.ThrowIfNull(partitioner);
 
             _taskExecution = taskExecution;
             _task = (PrepartitionedPushTask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;

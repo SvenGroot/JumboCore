@@ -21,14 +21,10 @@ namespace Ookii.Jumbo.Jet
         /// <param name="dfsJobDirectory">The DFS directory where files related to the job are stored.</param>
         public TaskContext(Guid jobId, JobConfiguration jobConfiguration, TaskAttemptId taskAttemptId, StageConfiguration stageConfiguration, string localJobDirectory, string dfsJobDirectory)
         {
-            if (jobConfiguration == null)
-                throw new ArgumentNullException(nameof(jobConfiguration));
-            if (stageConfiguration == null)
-                throw new ArgumentNullException(nameof(stageConfiguration));
-            if (localJobDirectory == null)
-                throw new ArgumentNullException(nameof(localJobDirectory));
-            if (dfsJobDirectory == null)
-                throw new ArgumentNullException(nameof(dfsJobDirectory));
+            ArgumentNullException.ThrowIfNull(jobConfiguration);
+            ArgumentNullException.ThrowIfNull(stageConfiguration);
+            ArgumentNullException.ThrowIfNull(localJobDirectory);
+            ArgumentNullException.ThrowIfNull(dfsJobDirectory);
 
             JobId = jobId;
             JobConfiguration = jobConfiguration;
@@ -158,8 +154,7 @@ namespace Ookii.Jumbo.Jet
         /// </remarks>
         public string DownloadDfsFile(string dfsPath)
         {
-            if (dfsPath == null)
-                throw new ArgumentNullException(nameof(dfsPath));
+            ArgumentNullException.ThrowIfNull(dfsPath);
 
             if (TaskExecution == null)
                 throw new InvalidOperationException("There's no TaskExecutionUtility associated with this instance.");

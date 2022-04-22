@@ -26,8 +26,7 @@ namespace TaskServerApplication
 
         public TaskRunner(TaskServer taskServer)
         {
-            if (taskServer == null)
-                throw new ArgumentNullException(nameof(taskServer));
+            ArgumentNullException.ThrowIfNull(taskServer);
             _taskServer = taskServer;
             _createProcessDelay = _taskServer.Configuration.TaskServer.ProcessCreationDelay;
             _fileSystemClient = FileSystemClient.Create(taskServer.DfsConfiguration);
@@ -117,8 +116,7 @@ namespace TaskServerApplication
 
         public void ReportProgress(string fullTaskAttemptId, TaskProgress progress)
         {
-            if (fullTaskAttemptId == null)
-                throw new ArgumentNullException(nameof(fullTaskAttemptId));
+            ArgumentNullException.ThrowIfNull(fullTaskAttemptId);
 
             lock (_runningTasks)
             {
@@ -135,8 +133,7 @@ namespace TaskServerApplication
 
         public void ReportCompletion(string fullTaskId, TaskMetrics metrics)
         {
-            if (fullTaskId == null)
-                throw new ArgumentNullException(nameof(fullTaskId));
+            ArgumentNullException.ThrowIfNull(fullTaskId);
 
             lock (_runningTasks)
             {
@@ -153,8 +150,7 @@ namespace TaskServerApplication
 
         public void ReportError(string fullTaskId, string failureReason)
         {
-            if (fullTaskId == null)
-                throw new ArgumentNullException(nameof(fullTaskId));
+            ArgumentNullException.ThrowIfNull(fullTaskId);
 
             lock (_runningTasks)
             {
@@ -193,8 +189,7 @@ namespace TaskServerApplication
 
         public TaskAttemptStatus GetTaskStatus(string fullTaskID)
         {
-            if (fullTaskID == null)
-                throw new ArgumentNullException(nameof(fullTaskID));
+            ArgumentNullException.ThrowIfNull(fullTaskID);
 
             lock (_runningTasks)
             {
@@ -209,8 +204,7 @@ namespace TaskServerApplication
 
         public void RegisterTcpChannelPort(string fullTaskId, int port)
         {
-            if (fullTaskId == null)
-                throw new ArgumentNullException(nameof(fullTaskId));
+            ArgumentNullException.ThrowIfNull(fullTaskId);
 
             lock (_runningTasks)
             {
@@ -221,8 +215,7 @@ namespace TaskServerApplication
 
         public int GetTcpChannelPort(string fullTaskId)
         {
-            if (fullTaskId == null)
-                throw new ArgumentNullException(nameof(fullTaskId));
+            ArgumentNullException.ThrowIfNull(fullTaskId);
 
             lock (_runningTasks)
             {

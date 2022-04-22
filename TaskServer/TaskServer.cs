@@ -33,8 +33,7 @@ namespace TaskServerApplication
 
         private TaskServer(JetConfiguration config, DfsConfiguration dfsConfiguration)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
 
             Configuration = config;
             DfsConfiguration = dfsConfiguration;
@@ -117,8 +116,7 @@ namespace TaskServerApplication
 
         public void ReportCompletion(Guid jobID, TaskAttemptId taskAttemptId, TaskMetrics metrics)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
             var fullTaskID = Job.CreateFullTaskId(jobID, taskAttemptId);
             _log.DebugFormat("ReportCompletion, fullTaskID = \"{0}\"", fullTaskID);
             _taskRunner.ReportCompletion(fullTaskID, metrics);
@@ -131,15 +129,13 @@ namespace TaskServerApplication
 
         public void ReportError(Guid jobId, TaskAttemptId taskAttemptId, string failureReason)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
             _taskRunner.ReportError(Job.CreateFullTaskId(jobId, taskAttemptId), failureReason);
         }
 
         public void RegisterTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId, int port)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
             if (port <= 0)
                 throw new ArgumentOutOfRangeException(nameof(port), "Port must be greater than zero.");
 
@@ -189,8 +185,7 @@ namespace TaskServerApplication
 
         public string GetTaskLogFileContents(Guid jobId, TaskAttemptId taskAttemptId, int maxSize)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
 
             _log.DebugFormat("GetTaskLogFileContents; jobId = {{{0}}}, taskAttemptId = \"{1}\", maxSize = {2}", jobId, taskAttemptId, maxSize);
             var jobDirectory = GetJobDirectory(jobId);
@@ -246,8 +241,7 @@ namespace TaskServerApplication
 
         public string GetTaskProfileOutput(Guid jobId, TaskAttemptId taskAttemptId)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
 
             _log.DebugFormat("GetTaskProfileOutput; jobId = {{{0}}}, taskAttemptId = \"{1}\"", jobId, taskAttemptId);
             var jobDirectory = GetJobDirectory(jobId);
@@ -265,8 +259,7 @@ namespace TaskServerApplication
 
         public int GetTcpChannelPort(Guid jobId, TaskAttemptId taskAttemptId)
         {
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
             _log.DebugFormat("GetTcpChannelPort; jobId = {{{0}}}, taskId = \"{1}\"", jobId, taskAttemptId);
             return _taskRunner.GetTcpChannelPort(Job.CreateFullTaskId(jobId, taskAttemptId));
         }

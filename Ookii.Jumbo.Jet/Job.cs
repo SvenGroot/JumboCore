@@ -32,8 +32,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="path">The path on the distributed file system where files related to the job are stored.</param>
         public Job(Guid jobId, string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             JobId = jobId;
             Path = path;
         }
@@ -53,8 +52,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         public string GetJobConfigurationFilePath(FileSystemClient client)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
+            ArgumentNullException.ThrowIfNull(client);
             return client.Path.Combine(Path, JobConfigFileName);
         }
 

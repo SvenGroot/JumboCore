@@ -24,8 +24,7 @@ namespace DataServerApplication
         public BlockServer(DataServer dataServer, IPAddress[] localAddresses, int port)
             : base(localAddresses, port)
         {
-            if (dataServer == null)
-                throw new ArgumentNullException(nameof(dataServer));
+            ArgumentNullException.ThrowIfNull(dataServer);
             _log.InfoFormat(CultureInfo.InvariantCulture, "Starting block server on {0}", localAddresses);
 
             _dataServer = dataServer;
@@ -286,7 +285,7 @@ namespace DataServerApplication
             _log.InfoFormat("Finished sending block {0}", header.BlockId);
         }
 
-        private void SendLogFile(NetworkStream stream, DataServerClientProtocolGetLogFileContentsHeader header)
+        private static void SendLogFile(NetworkStream stream, DataServerClientProtocolGetLogFileContentsHeader header)
         {
             using (var logStream = LogFileHelper.GetLogFileStream("DataServer", header.Kind, header.MaxSize))
             {

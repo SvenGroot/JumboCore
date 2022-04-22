@@ -48,8 +48,7 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             var startElementName = reader.Name;
             var depth = reader.Depth;
             if (reader.IsEmptyElement)
@@ -70,8 +69,7 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             foreach (var item in this)
             {
                 writer.WriteStartElement("Setting", JobConfiguration.XmlNamespace);
@@ -90,10 +88,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="value">The value of the setting.</param>
         public void AddSetting(string key, object value)
         {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(key);
+            ArgumentNullException.ThrowIfNull(value);
             Add(key, (string)TypeDescriptor.GetConverter(value).ConvertTo(null, System.Globalization.CultureInfo.InvariantCulture, value, typeof(string)));
         }
 
@@ -160,10 +156,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in either the stage or job settings.</returns>
         public static string GetJobOrStageSetting(JobConfiguration job, StageConfiguration stage, string key, string defaultValue)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(job);
+            ArgumentNullException.ThrowIfNull(stage);
 
             var value = stage.GetSetting(key, null);
             if (value == null)
@@ -185,10 +179,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </returns>
         public static T GetJobOrStageSetting<T>(JobConfiguration job, StageConfiguration stage, string key, T defaultValue)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(job);
+            ArgumentNullException.ThrowIfNull(stage);
 
             if (!stage.TryGetSetting(key, out
             T value) && !job.TryGetSetting(key, out value))

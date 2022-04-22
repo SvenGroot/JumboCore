@@ -61,8 +61,7 @@ namespace Ookii.Jumbo.Jet.IO
         public FileDataInput(DfsConfiguration dfsConfiguration, Type recordReaderType, JumboFileSystemEntry fileOrDirectory, int minSplitSize = 1, int maxSplitSize = Int32.MaxValue)
             : this(dfsConfiguration, recordReaderType, EnumerateFiles(fileOrDirectory), minSplitSize, maxSplitSize)
         {
-            if (fileOrDirectory == null)
-                throw new ArgumentNullException(nameof(fileOrDirectory));
+            ArgumentNullException.ThrowIfNull(fileOrDirectory);
             _inputPath = fileOrDirectory.FullPath;
         }
 
@@ -76,12 +75,9 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="maxSplitSize">The maximum split size.</param>
         public FileDataInput(DfsConfiguration dfsConfiguration, Type recordReaderType, IEnumerable<JumboFile> inputFiles, int minSplitSize = 1, int maxSplitSize = Int32.MaxValue)
         {
-            if (dfsConfiguration == null)
-                throw new ArgumentNullException(nameof(dfsConfiguration));
-            if (recordReaderType == null)
-                throw new ArgumentNullException(nameof(recordReaderType));
-            if (inputFiles == null)
-                throw new ArgumentNullException(nameof(inputFiles));
+            ArgumentNullException.ThrowIfNull(dfsConfiguration);
+            ArgumentNullException.ThrowIfNull(recordReaderType);
+            ArgumentNullException.ThrowIfNull(inputFiles);
             if (maxSplitSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxSplitSize));
             if (minSplitSize <= 0)
@@ -149,8 +145,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </returns>
         public IRecordReader CreateRecordReader(ITaskInput input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(input);
 
             var fileInput = (FileTaskInput)input;
             return (IRecordReader)JetActivator.CreateInstance(_recordReaderType, DfsConfiguration, JetConfiguration, TaskContext, FileSystemClient.Create(DfsConfiguration).OpenFile(fileInput.Path), fileInput.Offset, fileInput.Size, TaskContext == null ? false : TaskContext.StageConfiguration.AllowRecordReuse);
@@ -162,8 +157,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="stage">The stage configuration of the stage.</param>
         public void NotifyAddedToStage(Jobs.StageConfiguration stage)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
+            ArgumentNullException.ThrowIfNull(stage);
 
             stage.AddSetting(RecordReaderTypeSettingKey, _recordReaderType.AssemblyQualifiedName);
             // This setting is added for informational purposes only (so someone reading the job config can see what the input path was).
@@ -197,8 +191,7 @@ namespace Ookii.Jumbo.Jet.IO
 
         private static IEnumerable<JumboFile> EnumerateFiles(JumboFileSystemEntry entry)
         {
-            if (entry == null)
-                throw new ArgumentNullException(nameof(entry));
+            ArgumentNullException.ThrowIfNull(entry);
 
             var directory = entry as JumboDirectory;
             if (directory != null)

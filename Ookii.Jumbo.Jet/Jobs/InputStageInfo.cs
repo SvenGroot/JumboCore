@@ -21,8 +21,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="inputStage">The stage configuration of the input stage.</param>
         public InputStageInfo(StageConfiguration inputStage)
         {
-            if (inputStage == null)
-                throw new ArgumentNullException(nameof(inputStage));
+            ArgumentNullException.ThrowIfNull(inputStage);
 
             InputStage = inputStage;
             PartitionsPerTask = 1;

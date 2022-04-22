@@ -58,8 +58,7 @@ namespace Ookii.Jumbo.IO
         public RecordFileReader(Stream stream, long offset, long size, bool allowRecordReuse)
             : base(stream, offset, size, false)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
 
             _reader = new BinaryReader(stream);
             ((IWritable)_header).Read(_reader);

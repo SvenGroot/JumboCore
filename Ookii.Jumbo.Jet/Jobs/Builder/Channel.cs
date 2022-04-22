@@ -26,10 +26,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="receiver">The receiver.</param>
         public Channel(IJobBuilderOperation sender, IJobBuilderOperation receiver)
         {
-            if (sender == null)
-                throw new ArgumentNullException(nameof(sender));
-            if (receiver == null)
-                throw new ArgumentNullException(nameof(receiver));
+            ArgumentNullException.ThrowIfNull(sender);
+            ArgumentNullException.ThrowIfNull(receiver);
             _sender = sender;
             _receiver = receiver;
             _sender.SetOutput(this);

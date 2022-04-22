@@ -37,8 +37,7 @@ namespace NameServerApplication
 
         public void AddResponseForNextHeartbeat(HeartbeatResponse response)
         {
-            if (response == null)
-                throw new ArgumentNullException(nameof(response));
+            ArgumentNullException.ThrowIfNull(response);
 
             lock (_pendingResponses)
                 _pendingResponses.Add(response);

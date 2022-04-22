@@ -21,8 +21,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="configuration">The <see cref="DfsConfiguration"/> for the file system.</param>
         protected FileSystemClient(DfsConfiguration configuration)
         {
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
+            ArgumentNullException.ThrowIfNull(configuration);
             _configuration = configuration;
         }
 
@@ -60,10 +59,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="fileSystemClientType">Type of the file system client.</param>
         public static void RegisterFileSystem(string scheme, Type fileSystemClientType)
         {
-            if (scheme == null)
-                throw new ArgumentNullException(nameof(scheme));
-            if (fileSystemClientType == null)
-                throw new ArgumentNullException(nameof(fileSystemClientType));
+            ArgumentNullException.ThrowIfNull(scheme);
+            ArgumentNullException.ThrowIfNull(fileSystemClientType);
             if (string.IsNullOrWhiteSpace(scheme))
                 throw new ArgumentException("The scheme may not be empty.", nameof(scheme));
             if (scheme.Equals("jdfs", StringComparison.OrdinalIgnoreCase) || scheme.Equals("file", StringComparison.OrdinalIgnoreCase))
@@ -81,8 +78,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>An instance of a class deriving form <see cref="FileSystemClient"/>.</returns>
         public static FileSystemClient Create(DfsConfiguration configuration)
         {
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
+            ArgumentNullException.ThrowIfNull(configuration);
 
             if (configuration.FileSystem.Url.Scheme == "file")
                 return new LocalFileSystemClient(configuration);
@@ -156,10 +152,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadStream(Stream stream, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if (targetPath == null)
-                throw new ArgumentNullException(nameof(targetPath));
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(targetPath);
+            ArgumentNullException.ThrowIfNull(stream);
 
             using (var outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None))
             {
@@ -190,10 +184,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadFile(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if (targetPath == null)
-                throw new ArgumentNullException(nameof(targetPath));
-            if (localSourcePath == null)
-                throw new ArgumentNullException(nameof(localSourcePath));
+            ArgumentNullException.ThrowIfNull(targetPath);
+            ArgumentNullException.ThrowIfNull(localSourcePath);
             var dir = GetDirectoryInfo(targetPath);
             if (dir != null)
             {
@@ -228,10 +220,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void UploadDirectory(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
         {
-            if (localSourcePath == null)
-                throw new ArgumentNullException(nameof(localSourcePath));
-            if (targetPath == null)
-                throw new ArgumentNullException(nameof(targetPath));
+            ArgumentNullException.ThrowIfNull(localSourcePath);
+            ArgumentNullException.ThrowIfNull(targetPath);
 
             var files = System.IO.Directory.GetFiles(localSourcePath);
 
@@ -265,10 +255,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadStream(string sourcePath, Stream stream, ProgressCallback progressCallback)
         {
-            if (sourcePath == null)
-                throw new ArgumentNullException(nameof(sourcePath));
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(sourcePath);
+            ArgumentNullException.ThrowIfNull(stream);
             using (var inputStream = OpenFile(sourcePath))
             {
                 CopyStream(sourcePath, inputStream, stream, progressCallback);
@@ -295,10 +283,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadFile(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
-            if (sourcePath == null)
-                throw new ArgumentNullException(nameof(sourcePath));
-            if (localTargetPath == null)
-                throw new ArgumentNullException(nameof(localTargetPath));
+            ArgumentNullException.ThrowIfNull(sourcePath);
+            ArgumentNullException.ThrowIfNull(localTargetPath);
 
             if (Directory.Exists(localTargetPath))
             {
@@ -337,10 +323,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
         public void DownloadDirectory(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
         {
-            if (sourcePath == null)
-                throw new ArgumentNullException(nameof(sourcePath));
-            if (localTargetPath == null)
-                throw new ArgumentNullException(nameof(localTargetPath));
+            ArgumentNullException.ThrowIfNull(sourcePath);
+            ArgumentNullException.ThrowIfNull(localTargetPath);
 
             var dir = GetDirectoryInfo(sourcePath);
             if (dir == null)

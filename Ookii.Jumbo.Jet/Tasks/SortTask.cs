@@ -67,8 +67,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">The <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public override void Finish(PrepartitionedRecordWriter<T> output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(output);
 
             var parallelSort = TaskContext == null ? true : TaskContext.GetSetting(TaskConstants.SortTaskUseParallelSortSettingKey, true);
 

@@ -296,10 +296,8 @@ namespace Ookii.Jumbo.Jet.Channels
         public FileInputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
             : base(taskExecution, inputStage)
         {
-            if (taskExecution == null)
-                throw new ArgumentNullException(nameof(taskExecution));
-            if (inputStage == null)
-                throw new ArgumentNullException(nameof(inputStage));
+            ArgumentNullException.ThrowIfNull(taskExecution);
+            ArgumentNullException.ThrowIfNull(inputStage);
             _jobDirectory = taskExecution.Context.LocalJobDirectory;
             _jobID = taskExecution.Context.JobId;
             _jobServer = taskExecution.JetClient.JobServer;

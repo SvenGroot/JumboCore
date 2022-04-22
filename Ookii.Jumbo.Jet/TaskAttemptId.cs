@@ -26,8 +26,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="attempt">The attempt number.</param>
         public TaskAttemptId(TaskId taskId, int attempt)
         {
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskId);
             if (attempt <= 0)
                 throw new ArgumentOutOfRangeException(nameof(attempt), "The attempt number must be greater than zero.");
 

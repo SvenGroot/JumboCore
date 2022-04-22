@@ -20,8 +20,7 @@ namespace Ookii.Jumbo.Dfs
         /// <returns><see langword="true"/> if the path is rooted; otherwise, <see langword="false"/>.</returns>
         public static bool IsPathRooted(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             return path.Length > 0 && path[0] == DirectorySeparator;
         }
 
@@ -33,10 +32,8 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>The combined path.</returns>
         public static string Combine(string path1, string path2)
         {
-            if (path1 == null)
-                throw new ArgumentNullException(nameof(path1));
-            if (path2 == null)
-                throw new ArgumentNullException(nameof(path2));
+            ArgumentNullException.ThrowIfNull(path1);
+            ArgumentNullException.ThrowIfNull(path2);
 
             if (path2.Length == 0)
                 return path1;

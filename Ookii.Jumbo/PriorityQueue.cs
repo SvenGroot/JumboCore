@@ -72,8 +72,7 @@ namespace Ookii.Jumbo
         public PriorityQueue(IEnumerable<T> collection, IComparer<T> comparer)
             : this(null, comparer)
         {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
+            ArgumentNullException.ThrowIfNull(collection);
             _heap = new List<T>(collection);
 
             if (_heap.Count > 1)

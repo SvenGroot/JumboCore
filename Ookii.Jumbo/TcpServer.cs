@@ -42,8 +42,7 @@ namespace Ookii.Jumbo
         /// </remarks>
         protected TcpServer(IPAddress[] localAddresses, int port, int maxConnections)
         {
-            if (localAddresses == null)
-                throw new ArgumentNullException(nameof(localAddresses));
+            ArgumentNullException.ThrowIfNull(localAddresses);
             if (localAddresses.Length == 0)
                 throw new ArgumentException("You must specify at least one address to listen on.", nameof(localAddresses));
             if (maxConnections < 0)

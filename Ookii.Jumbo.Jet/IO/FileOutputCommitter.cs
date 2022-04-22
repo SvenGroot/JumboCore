@@ -22,12 +22,9 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="outputFileName">Name of the output file that the temporary file should be renamed to.</param>
         public FileOutputCommitter(IRecordWriter recordWriter, string tempFileName, string outputFileName)
         {
-            if (recordWriter == null)
-                throw new ArgumentNullException(nameof(recordWriter));
-            if (tempFileName == null)
-                throw new ArgumentNullException(nameof(tempFileName));
-            if (outputFileName == null)
-                throw new ArgumentNullException(nameof(outputFileName));
+            ArgumentNullException.ThrowIfNull(recordWriter);
+            ArgumentNullException.ThrowIfNull(tempFileName);
+            ArgumentNullException.ThrowIfNull(outputFileName);
 
             _recordWriter = recordWriter;
             _tempFileName = tempFileName;
@@ -51,8 +48,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="fileSystem">The file system.</param>
         public void Commit(FileSystemClient fileSystem)
         {
-            if (fileSystem == null)
-                throw new ArgumentNullException(nameof(fileSystem));
+            ArgumentNullException.ThrowIfNull(fileSystem);
 
             fileSystem.Move(_tempFileName, _outputFileName);
         }

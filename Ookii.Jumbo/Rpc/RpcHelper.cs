@@ -61,8 +61,7 @@ namespace Ookii.Jumbo.Rpc
         /// <param name="server">The object implementing the service.</param>
         public static void RegisterService(string objectName, object server)
         {
-            if (server == null)
-                throw new ArgumentNullException(nameof(server));
+            ArgumentNullException.ThrowIfNull(server);
 
             RpcRequestHandler.RegisterObject(objectName, server);
         }
@@ -78,12 +77,10 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public static T CreateClient<T>(string hostName, int port, string objectName)
         {
-            if (hostName == null)
-                throw new ArgumentNullException(nameof(hostName));
+            ArgumentNullException.ThrowIfNull(hostName);
             if (port < 0)
                 throw new ArgumentOutOfRangeException(nameof(port));
-            if (objectName == null)
-                throw new ArgumentNullException(nameof(objectName));
+            ArgumentNullException.ThrowIfNull(objectName);
 
             return (T)RpcProxyBuilder.GetProxy(typeof(T), hostName, port, objectName);
         }
@@ -97,8 +94,7 @@ namespace Ookii.Jumbo.Rpc
         public static void TryRemotingCall(Action remotingAction, int retryInterval, int maxRetries)
         {
             // TODO: This should be integrated into the RPC infrastructure.
-            if (remotingAction == null)
-                throw new ArgumentNullException(nameof(remotingAction));
+            ArgumentNullException.ThrowIfNull(remotingAction);
             if (retryInterval <= 0)
                 throw new ArgumentOutOfRangeException(nameof(retryInterval), "The retry interval must be greater than zero.");
 

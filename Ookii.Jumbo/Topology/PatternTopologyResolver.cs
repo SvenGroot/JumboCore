@@ -64,8 +64,7 @@ namespace Ookii.Jumbo.Topology
         /// <returns>The rack ID of the rack that the server belongs to.</returns>
         public string ResolveNode(string hostName)
         {
-            if (hostName == null)
-                throw new ArgumentNullException(nameof(hostName));
+            ArgumentNullException.ThrowIfNull(hostName);
 
             foreach (var rack in _racks)
             {

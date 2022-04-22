@@ -18,10 +18,8 @@ namespace DfsShell.Commands
         public PutCommand([Description("The path of the local file or directory to upload."), ArgumentName("LocalPath")] string localPath,
                               [Description("The path of the DFS file or directory to upload to."), ArgumentName("DfsPath")] string dfsPath)
         {
-            if (localPath == null)
-                throw new ArgumentNullException(nameof(localPath));
-            if (dfsPath == null)
-                throw new ArgumentNullException(nameof(dfsPath));
+            ArgumentNullException.ThrowIfNull(localPath);
+            ArgumentNullException.ThrowIfNull(dfsPath);
 
             _localPath = localPath;
             _dfsPath = dfsPath;

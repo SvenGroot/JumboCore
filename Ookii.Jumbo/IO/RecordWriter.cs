@@ -18,8 +18,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>The record type</returns>
         public static Type GetRecordType(Type recordWriterType)
         {
-            if (recordWriterType == null)
-                throw new ArgumentNullException(nameof(recordWriterType));
+            ArgumentNullException.ThrowIfNull(recordWriterType);
             var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
             return baseType.GetGenericArguments()[0];
         }
@@ -104,8 +103,7 @@ namespace Ookii.Jumbo.IO
             _writeTime.Start();
             try
             {
-                if (record == null)
-                    throw new ArgumentNullException(nameof(record));
+                ArgumentNullException.ThrowIfNull(record);
                 // Skip the type check if the record type is sealed.
                 if (!_recordTypeIsSealed && record.GetType() != typeof(T))
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The record was type {0} rather than {1}.", record.GetType(), typeof(T)), nameof(record));
@@ -134,8 +132,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public void WriteRecords(IEnumerable<T> records)
         {
-            if (records == null)
-                throw new ArgumentNullException(nameof(records));
+            ArgumentNullException.ThrowIfNull(records);
 
             foreach (var record in records)
                 WriteRecord(record);

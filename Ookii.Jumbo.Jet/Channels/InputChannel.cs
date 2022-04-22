@@ -42,10 +42,8 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="inputStage">The input stage that this file channel reads from.</param>
         protected InputChannel(TaskExecutionUtility taskExecution, StageConfiguration inputStage)
         {
-            if (taskExecution == null)
-                throw new ArgumentNullException(nameof(taskExecution));
-            if (inputStage == null)
-                throw new ArgumentNullException(nameof(inputStage));
+            ArgumentNullException.ThrowIfNull(taskExecution);
+            ArgumentNullException.ThrowIfNull(inputStage);
 
             _partitionsReadOnlyWrapper = _partitions.AsReadOnly();
             TaskExecution = taskExecution;
@@ -171,8 +169,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         public virtual void AssignAdditionalPartitions(IList<int> additionalPartitions)
         {
-            if (additionalPartitions == null)
-                throw new ArgumentNullException(nameof(additionalPartitions));
+            ArgumentNullException.ThrowIfNull(additionalPartitions);
             if (additionalPartitions.Count == 0)
                 throw new ArgumentException("The list of partitions is empty.", nameof(additionalPartitions));
 

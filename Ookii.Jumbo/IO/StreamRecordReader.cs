@@ -86,8 +86,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected StreamRecordReader(Stream stream, long offset, long size, bool seekToOffset)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (offset < 0 || (offset > 0 && offset >= stream.Length))
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (size < 0)

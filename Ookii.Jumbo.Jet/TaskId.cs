@@ -46,8 +46,7 @@ namespace Ookii.Jumbo.Jet
         /// only if <paramref name="parentTaskId"/> is <see langword="null"/>.</param>
         public TaskId(TaskId parentTaskId, string taskId)
         {
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskId);
 
             if (parentTaskId != null)
             {
@@ -104,8 +103,7 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1801:Unused parameter", Justification = "Required parameter.")]
         private TaskId(SerializationInfo info, StreamingContext context)
         {
-            if (info == null)
-                throw new ArgumentNullException(nameof(info));
+            ArgumentNullException.ThrowIfNull(info);
 
             _taskId = info.GetString("TaskId");
             var localTaskId = _taskId;
@@ -196,8 +194,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A task ID string.</returns>
         public static string CreateTaskIdString(string stageId, int taskNumber)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(stageId);
             if (taskNumber < 0)
                 throw new ArgumentOutOfRangeException(nameof(taskNumber), "Task number cannot be less than zero.");
             if (stageId.IndexOfAny(_invalidStageIdCharacters) >= 0)
@@ -216,8 +213,7 @@ namespace Ookii.Jumbo.Jet
         /// </exception>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            if (info == null)
-                throw new ArgumentNullException(nameof(info));
+            ArgumentNullException.ThrowIfNull(info);
 
             info.AddValue("TaskId", _taskId);
         }

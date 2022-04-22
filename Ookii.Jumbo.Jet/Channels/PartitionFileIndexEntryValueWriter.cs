@@ -17,8 +17,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="writer">The writer.</param>
         public void Write(PartitionFileIndexEntry value, BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value.Partition);
             writer.Write(value.Offset);
             writer.Write(value.CompressedSize);
@@ -32,8 +31,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <returns>The <see cref="PartitionFileIndexEntry"/> read from the reader.</returns>
         public PartitionFileIndexEntry Read(BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             return new PartitionFileIndexEntry(reader.ReadInt32(), reader.ReadInt64(), reader.ReadInt64(), reader.ReadInt64());
         }
     }

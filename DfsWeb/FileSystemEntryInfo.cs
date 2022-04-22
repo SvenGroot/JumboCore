@@ -17,8 +17,7 @@ public class FileSystemEntryInfo
 
     public FileSystemEntryInfo(JumboFileSystemEntry entry, bool includeChildren)
     {
-        if (entry == null)
-            throw new ArgumentNullException(nameof(entry));
+        ArgumentNullException.ThrowIfNull(entry);
 
         Name = entry.Name;
         DateCreated = entry.DateCreated.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);

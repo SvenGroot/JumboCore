@@ -24,8 +24,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="support">The support of the pattern.</param>
         public MappedFrequentPattern(IEnumerable<int> items, int support)
         {
-            if (items == null)
-                throw new ArgumentNullException("items");
+            ArgumentNullException.ThrowIfNull(items);
             _items = items.ToArray();
             _itemsReadOnlyWrapper = new ReadOnlyCollection<int>(_items);
             Support = support;

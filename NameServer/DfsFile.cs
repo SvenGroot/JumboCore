@@ -111,8 +111,7 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="System.IO.BinaryWriter"/> used to write to the file system image.</param>
         public override void SaveToFileSystemImage(System.IO.BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             base.SaveToFileSystemImage(writer);
             writer.Write(Size);
             writer.Write(IsOpenForWriting);
@@ -160,8 +159,7 @@ namespace NameServerApplication
         /// <param name="writer">The <see cref="System.IO.TextWriter"/> to write the information to.</param>
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
             writer.WriteLine("Block size:       {0:#,0} bytes", BlockSize);
@@ -180,8 +178,7 @@ namespace NameServerApplication
         /// <param name="notifyFileSizeCallback">A function that should be called to notify the caller of the size of deserialized files.</param>
         protected override void LoadFromFileSystemImage(System.IO.BinaryReader reader, Action<long> notifyFileSizeCallback)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             Size = reader.ReadInt64();
             IsOpenForWriting = reader.ReadBoolean();
             BlockSize = reader.ReadInt32();

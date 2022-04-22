@@ -59,16 +59,14 @@ namespace Ookii.Jumbo.Topology
 
             public TextNode(string text)
             {
-                if (text == null)
-                    throw new ArgumentNullException(nameof(text));
+                ArgumentNullException.ThrowIfNull(text);
 
                 _text = text;
             }
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                ArgumentNullException.ThrowIfNull(value);
                 // We want to return -1 if index == length! This is caught by the end > length comparison below.
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
@@ -118,8 +116,7 @@ namespace Ookii.Jumbo.Topology
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                ArgumentNullException.ThrowIfNull(value);
                 // We want to return -1 if index == length. This is caught by the loop and min char count check below.
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
@@ -154,8 +151,7 @@ namespace Ookii.Jumbo.Topology
 
             public void AddChoice(List<BaseNode> choice)
             {
-                if (choice == null)
-                    throw new ArgumentNullException(nameof(choice));
+                ArgumentNullException.ThrowIfNull(choice);
 
                 _choices.Add(choice);
             }
@@ -167,8 +163,7 @@ namespace Ookii.Jumbo.Topology
 
             public override int Match(string value, int index, bool matchCase)
             {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                ArgumentNullException.ThrowIfNull(value);
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
@@ -229,8 +224,7 @@ namespace Ookii.Jumbo.Topology
         /// <exception cref="FormatException"><paramref name="pattern"/> is not a valid range expression.</exception>
         public RangeExpression(string pattern)
         {
-            if (pattern == null)
-                throw new ArgumentNullException(nameof(pattern));
+            ArgumentNullException.ThrowIfNull(pattern);
 
             _nodes = ParsePattern(pattern);
         }
@@ -253,8 +247,7 @@ namespace Ookii.Jumbo.Topology
         /// <returns><see langword="true"/> if <paramref name="value"/> matches the pattern; otherwise, <see langword="false"/>.</returns>
         public bool Match(string value, bool matchCase)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
 
             var index = 0;
             foreach (var node in _nodes)

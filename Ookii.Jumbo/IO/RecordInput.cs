@@ -25,8 +25,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The reader for this input.</param>
         protected RecordInput(IRecordReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             _reader = reader;
         }
 

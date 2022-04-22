@@ -28,8 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public SegmentedChecksumInputStream(Stream baseStream, int segmentCount, CompressionType compressionType, long uncompressedSize)
         {
-            if (baseStream == null)
-                throw new ArgumentNullException(nameof(baseStream));
+            ArgumentNullException.ThrowIfNull(baseStream);
             if (segmentCount < 1)
                 throw new ArgumentOutOfRangeException(nameof(segmentCount));
             _baseStream = baseStream;

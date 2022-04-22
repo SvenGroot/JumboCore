@@ -147,8 +147,7 @@ namespace Ookii.Jumbo.IO
         public LineRecordReader(Stream stream, long offset, long size, bool allowRecordReuse)
             : base(stream, offset, size)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             _reader = new LineReader(stream, _bufferSize);
             _position = offset;
             _end = offset + size;

@@ -178,10 +178,8 @@ namespace Ookii.Jumbo.Jet
         {
             if (diskInputs == null && memoryInputs == null)
                 throw new ArgumentException("diskInputs and memoryInputs cannot both be null.");
-            if (intermediateOutputPath == null)
-                throw new ArgumentNullException(nameof(intermediateOutputPath));
-            if (passFilePrefix == null)
-                throw new ArgumentNullException(nameof(passFilePrefix));
+            ArgumentNullException.ThrowIfNull(intermediateOutputPath);
+            ArgumentNullException.ThrowIfNull(passFilePrefix);
 
             // When the specified comparer is not a raw comparer or some of the inputs don't support raw records, we must use deserialization.
             // When the comparer is a raw comparer uses deserialization, we deserialize in the merger and use regular comparisons rather than raw comparisons, since that's more
@@ -243,8 +241,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public long WriteMerge(Stream stream, IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             IEnumerable<MergeResultRecord<T>> mergeResult = Merge(diskInputs, memoryInputs, maxDiskInputsPerPass, comparer, allowRecordReuse, false, intermediateOutputPath, passFilePrefix, compressionType, bufferSize, enableChecksum);
             return WriteMergePass(mergeResult, stream, IsUsingRawRecords);
         }
@@ -268,8 +265,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public long WriteMerge(string fileName, IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
-            if (fileName == null)
-                throw new ArgumentNullException(nameof(fileName));
+            ArgumentNullException.ThrowIfNull(fileName);
             IEnumerable<MergeResultRecord<T>> mergeResult = Merge(diskInputs, memoryInputs, maxDiskInputsPerPass, comparer, allowRecordReuse, false, intermediateOutputPath, passFilePrefix, compressionType, bufferSize, enableChecksum);
             return WriteMergePass(mergeResult, fileName, bufferSize, compressionType, enableChecksum, IsUsingRawRecords);
         }

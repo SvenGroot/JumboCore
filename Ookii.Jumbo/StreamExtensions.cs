@@ -27,10 +27,8 @@ namespace Ookii.Jumbo
         /// <param name="bufferSize">The size of the buffer to use while copying.</param>
         public static void CopyTo(this Stream source, Stream destination, int bufferSize)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             var buffer = new byte[bufferSize];
             var bytesRead = 0;
             do
@@ -63,10 +61,8 @@ namespace Ookii.Jumbo
         /// <param name="bufferSize">The size of the buffer to use while copying.</param>
         public static void CopySize(this Stream source, Stream destination, long size, int bufferSize)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             var buffer = new byte[bufferSize];
             var bytesLeft = size;
             while (bytesLeft > 0)

@@ -111,8 +111,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>The partition number for the specified value.</returns>
         public int GetPartition(GenSortRecord value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value");
+            ArgumentNullException.ThrowIfNull(value);
             if (_trie == null)
             {
                 ReadPartitionFile();

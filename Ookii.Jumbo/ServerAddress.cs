@@ -30,8 +30,7 @@ namespace Ookii.Jumbo
         /// <param name="port">The port number of the server.</param>
         public ServerAddress(string hostName, int port)
         {
-            if (hostName == null)
-                throw new ArgumentNullException(nameof(hostName));
+            ArgumentNullException.ThrowIfNull(hostName);
             if (port <= 0 || port > 0xFFFF)
                 throw new ArgumentOutOfRangeException(nameof(port));
             _hostName = hostName;
@@ -44,8 +43,7 @@ namespace Ookii.Jumbo
         /// <param name="address">A string representation of the server address, in the form hostname:port, e.g. "my_server:9000".</param>
         public ServerAddress(string address)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address);
             var parts = address.Split(':');
             if (parts.Length != 2)
                 throw new ArgumentException("Invalid server address string.", nameof(address));

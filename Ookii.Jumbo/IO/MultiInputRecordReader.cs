@@ -20,8 +20,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A list of accepted types.</returns>
         public static IEnumerable<Type> GetAcceptedInputTypes(Type type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
             var baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
 
             return GetAcceptedInputTypesCore(type, baseType);
@@ -210,8 +209,7 @@ namespace Ookii.Jumbo.IO
         protected MultiInputRecordReader(IEnumerable<int> partitions, int totalInputCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
             : base(false)
         {
-            if (partitions == null)
-                throw new ArgumentNullException(nameof(partitions));
+            ArgumentNullException.ThrowIfNull(partitions);
             if (totalInputCount < 1)
                 throw new ArgumentOutOfRangeException(nameof(totalInputCount), "Multi input record reader must have at least one input.");
             if (bufferSize <= 0)
@@ -440,8 +438,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public virtual void AddInput(IList<RecordInput> partitions)
         {
-            if (partitions == null)
-                throw new ArgumentNullException(nameof(partitions));
+            ArgumentNullException.ThrowIfNull(partitions);
 
             lock (_partitions)
             {
@@ -471,8 +468,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public virtual void AssignAdditionalPartitions(IList<int> newPartitions)
         {
-            if (newPartitions == null)
-                throw new ArgumentNullException(nameof(newPartitions));
+            ArgumentNullException.ThrowIfNull(newPartitions);
             if (newPartitions.Count == 0)
                 throw new ArgumentException("The list of new partitions is empty.", nameof(newPartitions));
 

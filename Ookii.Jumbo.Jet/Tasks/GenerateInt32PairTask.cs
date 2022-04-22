@@ -27,10 +27,8 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public void Run(RecordReader<T> input, RecordWriter<Pair<T, int>> output)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(output);
             if (TaskContext != null && TaskContext.StageConfiguration.AllowOutputRecordReuse)
             {
                 // Record reuse allowed

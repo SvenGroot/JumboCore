@@ -23,8 +23,7 @@ namespace Ookii.Jumbo.IO
         /// <exception cref="NotSupportedException">The type has no value writer and does not implement <see cref="IWritable"/>.</exception>
         public static object GetWriter(Type type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
             if (type.GetInterfaces().Contains(typeof(IWritable)))
                 return null;
             var attribute = (ValueWriterAttribute)Attribute.GetCustomAttribute(type, typeof(ValueWriterAttribute));

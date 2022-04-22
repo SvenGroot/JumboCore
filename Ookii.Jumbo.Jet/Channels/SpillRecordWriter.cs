@@ -175,10 +175,8 @@ namespace Ookii.Jumbo.Jet.Channels
 
             private static int CopyCircular(byte[] source, int sourceIndex, byte[] destination, int destinationIndex, int count)
             {
-                if (source == null)
-                    throw new ArgumentNullException(nameof(source));
-                if (destination == null)
-                    throw new ArgumentNullException(nameof(destination));
+                ArgumentNullException.ThrowIfNull(source);
+                ArgumentNullException.ThrowIfNull(destination);
                 if (sourceIndex < 0)
                     throw new ArgumentOutOfRangeException(nameof(sourceIndex));
                 if (destinationIndex < 0)
@@ -259,8 +257,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="options">A combination of <see cref="SpillRecordWriterOptions"/> values.</param>
         protected SpillRecordWriter(IPartitioner<T> partitioner, int bufferSize, int limit, SpillRecordWriterOptions options)
         {
-            if (partitioner == null)
-                throw new ArgumentNullException(nameof(partitioner));
+            ArgumentNullException.ThrowIfNull(partitioner);
             if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
             if (limit < 1 || limit > bufferSize)
@@ -508,8 +505,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="outputStream">The output stream to write the partition to.</param>
         protected void WritePartition(int partition, Stream outputStream)
         {
-            if (outputStream == null)
-                throw new ArgumentNullException(nameof(outputStream));
+            ArgumentNullException.ThrowIfNull(outputStream);
             var index = _spillIndices[partition];
             if (index != null)
             {
@@ -535,8 +531,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="output">The raw record writer to write the partition to.</param>
         protected void WritePartition(int partition, RecordWriter<RawRecord> output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(output);
             if (_record == null)
                 _record = new RawRecord();
 

@@ -80,8 +80,7 @@ namespace Ookii.Jumbo.Dfs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static DfsConfiguration GetConfiguration(Configuration configuration)
         {
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
+            ArgumentNullException.ThrowIfNull(configuration);
             var config = (DfsConfiguration)configuration.GetSection("ookii.jumbo.dfs");
             return config ?? new DfsConfiguration();
         }

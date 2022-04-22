@@ -140,12 +140,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public PipelinePullTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, TaskId taskId)
         {
-            if (taskExecution == null)
-                throw new ArgumentNullException(nameof(taskExecution));
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskExecution);
+            ArgumentNullException.ThrowIfNull(output);
+            ArgumentNullException.ThrowIfNull(taskId);
 
             _taskExecution = taskExecution;
             _task = (ITask<TRecord, TPipelinedTaskOutput>)taskExecution.Task; // just to ensure the task instance gets added to additional progress sources up front.

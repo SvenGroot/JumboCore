@@ -84,8 +84,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// communicating with the name server via RPC.</returns>
         public static INameServerClientProtocol CreateNameServerClient(DfsConfiguration config)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
 
             return CreateNameServerClientInternal<INameServerClientProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
         }
@@ -109,8 +108,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// communicating with the name server via RPC.</returns>
         public static INameServerHeartbeatProtocol CreateNameServerHeartbeatClient(DfsConfiguration config)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
 
             return CreateNameServerClientInternal<INameServerHeartbeatProtocol>(config.FileSystem.Url.Host, config.FileSystem.Url.Port);
         }
@@ -124,8 +122,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The contents of the log file.</returns>
         public static string GetDataServerLogFileContents(ServerAddress address, LogFileKind kind, int maxSize)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address);
 
             return GetDataServerLogFileContents(address.HostName, address.Port, kind, maxSize);
         }
@@ -140,8 +137,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The contents of the log file.</returns>
         public static string GetDataServerLogFileContents(string hostName, int port, LogFileKind kind, int maxSize)
         {
-            if (hostName == null)
-                throw new ArgumentNullException(nameof(hostName));
+            ArgumentNullException.ThrowIfNull(hostName);
 
             using (var client = new TcpClient(hostName, port))
             using (var stream = client.GetStream())
@@ -289,8 +285,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public IEnumerable<string> GetLocationsForOffset(JumboFile file, long offset)
         {
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
+            ArgumentNullException.ThrowIfNull(file);
             if (offset < 0 || offset >= file.Size)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 

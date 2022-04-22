@@ -20,8 +20,7 @@ namespace Ookii.Jumbo.Dfs
         public DataServerClientProtocolWriteHeader(IEnumerable<ServerAddress> dataServers)
             : base(DataServerCommand.WriteBlock)
         {
-            if (dataServers == null)
-                throw new ArgumentNullException(nameof(dataServers));
+            ArgumentNullException.ThrowIfNull(dataServers);
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();
         }
 

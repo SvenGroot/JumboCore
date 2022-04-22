@@ -77,10 +77,8 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="recordOptions">The record options for the file.</param>
         public DfsOutputStream(INameServerClientProtocol nameServer, string path, int blockSize, int replicationFactor, bool useLocalReplica, RecordStreamOptions recordOptions)
         {
-            if (nameServer == null)
-                throw new ArgumentNullException(nameof(nameServer));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(nameServer);
+            ArgumentNullException.ThrowIfNull(path);
             if (blockSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be zero or greater.");
             if (blockSize % Packet.PacketSize != 0)
@@ -261,8 +259,7 @@ namespace Ookii.Jumbo.Dfs
         {
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0)

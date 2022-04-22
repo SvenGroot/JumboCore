@@ -428,8 +428,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The <see cref="StageConfiguration"/> for the child stage, or <see langword="null"/> if no stage with the specified name exists.</returns>
         public StageConfiguration GetNamedChildStage(string childStageId)
         {
-            if (childStageId == null)
-                throw new ArgumentNullException(nameof(childStageId));
+            ArgumentNullException.ThrowIfNull(childStageId);
 
             if (ChildStage != null && ChildStage.StageId == childStageId)
             {
@@ -528,8 +527,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <exception cref="NotSupportedException">One of the record types used is not supported by <see cref="ValueWriter{T}"/>.</exception>
         public void Validate(JobConfiguration job)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
+            ArgumentNullException.ThrowIfNull(job);
             // Some of the things checked here are also checked by the AddStage etc. methods of JobConfiguration, but almost all our properties are read/write (needed for XML serialization)
             // so it's possible to get the stage in an invalid state by modifying it after it has been added.
             if (string.IsNullOrWhiteSpace(StageId))

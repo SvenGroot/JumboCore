@@ -95,8 +95,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>A <see cref="FileInput"/> instance representing this input.</returns>
         public FileInput Read(string path, Type recordReaderType)
         {
-            if (recordReaderType == null)
-                throw new ArgumentNullException(nameof(recordReaderType));
+            ArgumentNullException.ThrowIfNull(recordReaderType);
             var input = new FileInput(path, recordReaderType);
             AddAssembly(recordReaderType.Assembly);
             return input;
@@ -135,12 +134,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public FileOutput Write(IJobBuilderOperation operation, string path, Type recordWriterType)
         {
-            if (operation == null)
-                throw new ArgumentNullException(nameof(operation));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-            if (recordWriterType == null)
-                throw new ArgumentNullException(nameof(recordWriterType));
+            ArgumentNullException.ThrowIfNull(operation);
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(recordWriterType);
 
             if (recordWriterType.IsGenericTypeDefinition)
                 recordWriterType = recordWriterType.MakeGenericType(operation.RecordType);
@@ -161,8 +157,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>A <see cref="StageOperation"/> instance that can be used to further customize the operation.</returns>
         public StageOperation Process(IOperationInput input, Type taskType)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(input);
             CheckIfInputBelongsToJobBuilder(input);
             return new StageOperation(this, input, taskType);
         }
@@ -264,8 +259,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public void AddOperation(IJobBuilderOperation operation)
         {
-            if (operation == null)
-                throw new ArgumentNullException(nameof(operation));
+            ArgumentNullException.ThrowIfNull(operation);
             if (operation.JobBuilder != this)
                 throw new ArgumentException("The specified operation doesn't belong to this job builder.", nameof(operation));
             _operations.Add(operation);
@@ -285,8 +279,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public void AddAssembly(Assembly assembly)
         {
-            if (assembly == null)
-                throw new ArgumentNullException(nameof(assembly));
+            ArgumentNullException.ThrowIfNull(assembly);
 
             if (!_dependencyAssemblies.Contains(assembly.FullName) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)))
@@ -314,10 +307,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private StageOperation ProcessCore<TInput, TOutput>(IOperationInput input, Delegate processor, RecordReuseMode recordReuse)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (processor == null)
-                throw new ArgumentNullException(nameof(processor));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(processor);
             CheckIfInputBelongsToJobBuilder(input);
             var taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
             var result = new StageOperation(this, input, taskType);

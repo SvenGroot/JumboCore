@@ -35,8 +35,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="record">The record to write.</param>
         protected override void WriteRecordInternal(T record)
         {
-            if (record == null)
-                throw new ArgumentNullException(nameof(record));
+            ArgumentNullException.ThrowIfNull(record);
             CheckDisposed();
 
             ValueWriter<T>.WriteValue(record, _writer);

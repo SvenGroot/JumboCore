@@ -71,8 +71,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
         /// <param name="token">The cancellation token to observe.</param>
         public void ScheduleTasks(IEnumerable<IJobInfo> jobs, CancellationToken token)
         {
-            if (jobs == null)
-                throw new ArgumentNullException(nameof(jobs));
+            ArgumentNullException.ThrowIfNull(jobs);
             // Schedule with increasing data distance or until we run out of capacity or tasks
             // If the cluster has only one rack, distance 1 is the same as distance 2, and the cluster must run out of either tasks or capacity
             // for distance 1 so there's no need to check and short-circuit the loop.

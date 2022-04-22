@@ -19,8 +19,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public static int Compare<T>(this IRawComparer<T> self, RawRecord record1, RawRecord record2)
         {
-            if (self == null)
-                throw new ArgumentNullException(nameof(self));
+            ArgumentNullException.ThrowIfNull(self);
             if (record1 == null)
             {
                 if (record2 == null)

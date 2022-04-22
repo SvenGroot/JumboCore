@@ -45,10 +45,8 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="path">The path of the file to read.</param>
         public DfsInputStream(INameServerClientProtocol nameServer, string path)
         {
-            if (nameServer == null)
-                throw new ArgumentNullException(nameof(nameServer));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(nameServer);
+            ArgumentNullException.ThrowIfNull(path);
 
             _nameServer = nameServer;
             _log.DebugFormat("Opening file {0} from the DFS.", path);
@@ -256,8 +254,7 @@ namespace Ookii.Jumbo.Dfs
             if (_disposed)
                 throw new ObjectDisposedException(typeof(DfsInputStream).FullName);
             // These exceptions match the contract given in the Stream class documentation.
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0)

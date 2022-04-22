@@ -17,10 +17,8 @@ namespace NameServerApplication
 
         public ReplicaPlacement(DfsConfiguration configuration, NetworkTopology topology)
         {
-            if (configuration == null)
-                throw new ArgumentNullException(nameof(configuration));
-            if (topology == null)
-                throw new ArgumentNullException(nameof(topology));
+            ArgumentNullException.ThrowIfNull(configuration);
+            ArgumentNullException.ThrowIfNull(topology);
 
             _configuration = configuration;
             _topology = topology;

@@ -21,10 +21,8 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">The output for the task.</param>
         public void Run(RecordReader<T> input, RecordWriter<T> output)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(output);
             foreach (var record in input.EnumerateRecords())
             {
                 output.WriteRecord(record);

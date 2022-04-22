@@ -131,14 +131,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </remarks>
         public StageConfiguration AddDataInputStage(string stageId, IDataInput input, Type taskType)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(stageId);
             if (stageId.Length == 0)
                 throw new ArgumentException("Stage ID cannot be empty.", nameof(stageId));
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(taskType);
 
             var stage = CreateStage(stageId, taskType, 0, input);
             Stages.Add(stage);
@@ -175,10 +172,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3")]
         public StageConfiguration AddStage(string stageId, Type taskType, int taskCount, IEnumerable<InputStageInfo> inputStages, Type stageMultiInputRecordReaderType)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(stageId);
+            ArgumentNullException.ThrowIfNull(taskType);
             if (taskCount <= 0)
                 throw new ArgumentOutOfRangeException(nameof(taskCount), "A stage must have at least one task.");
 
@@ -325,8 +320,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// of the compound stage ID could not be found.</returns>
         public IList<StageConfiguration> GetPipelinedStages(string compoundStageId)
         {
-            if (compoundStageId == null)
-                throw new ArgumentNullException(nameof(compoundStageId));
+            ArgumentNullException.ThrowIfNull(compoundStageId);
 
             var stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             var stages = new List<StageConfiguration>(stageIds.Length);
@@ -351,8 +345,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The <see cref="StageConfiguration"/> for the stage, or <see langword="null"/> if no stage with that ID exists.</returns>
         public StageConfiguration GetStageWithCompoundId(string compoundStageId)
         {
-            if (compoundStageId == null)
-                throw new ArgumentNullException(nameof(compoundStageId));
+            ArgumentNullException.ThrowIfNull(compoundStageId);
 
             var stageIds = compoundStageId.Split(TaskId.ChildStageSeparator);
             var current = GetStage(stageIds[0]);
@@ -386,8 +379,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The number of tasks that will be created for the pipelined stages, which is the product of the number of tasks in each stage in the compound ID.</returns>
         public static int GetTotalTaskCount(IList<StageConfiguration> stages, int start)
         {
-            if (stages == null)
-                throw new ArgumentNullException(nameof(stages));
+            ArgumentNullException.ThrowIfNull(stages);
 
             var result = 1;
             for (var x = start; x < stages.Count; ++x)
@@ -403,8 +395,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="stream">The stream to save to.</param>
         public void SaveXml(System.IO.Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             var settings = new XmlWriterSettings()
             {
                 Indent = true,
@@ -425,8 +416,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>A list of stages whose <see cref="OutputChannel"/> is connected to the stage with the specified <paramref name="stageId"/>, or an empty list if the specified stage does not have an input channel or does not exist.</returns>
         public IEnumerable<StageConfiguration> GetInputStagesForStage(string stageId)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(stageId);
 
             return from stage in Stages
                    let leaf = stage.Leaf
@@ -441,8 +431,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>A list of root stages that have the specified <paramref name="stageId"/> listed in their <see cref="StageConfiguration.Leaf"/> child stage's <see cref="StageConfiguration.DependentStages"/> collection.</returns>
         public IEnumerable<StageConfiguration> GetExplicitDependenciesForStage(string stageId)
         {
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(stageId);
 
             return from stage in Stages
                    let leaf = stage.Leaf
@@ -457,10 +446,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="newName">The new name of the stage.</param>
         public void RenameStage(StageConfiguration stage, string newName)
         {
-            if (stage == null)
-                throw new ArgumentNullException(nameof(stage));
-            if (newName == null)
-                throw new ArgumentNullException(nameof(newName));
+            ArgumentNullException.ThrowIfNull(stage);
+            ArgumentNullException.ThrowIfNull(newName);
 
             if (stage.Parent == null)
             {
@@ -552,8 +539,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5369:Use XmlReader For Deserialize", Justification = "It's actually safe.")]
         public static JobConfiguration LoadXml(System.IO.Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
 
             return (JobConfiguration)_serializer.Deserialize(stream);
         }
@@ -565,8 +551,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>An instance of the <see cref="JobConfiguration"/> class created from the XML.</returns>
         public static JobConfiguration LoadXml(string file)
         {
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
+            ArgumentNullException.ThrowIfNull(file);
             using (var stream = System.IO.File.OpenRead(file))
             {
                 return LoadXml(stream);
@@ -581,8 +566,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// define an additional progress counter.</returns>
         public bool AddAdditionalProgressCounter(Type type)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
             if (type.GetInterfaces().Contains(typeof(IHasAdditionalProgress)))
             {
                 var counter = new AdditionalProgressCounter() { TypeName = type.FullName };

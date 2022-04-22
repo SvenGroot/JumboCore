@@ -70,8 +70,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string rootPath, bool includeChildren)
         {
-            if (directory == null)
-                throw new ArgumentNullException(nameof(directory));
+            ArgumentNullException.ThrowIfNull(directory);
             if (!directory.Exists)
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, "The directory '{0}' does not exist.", directory.FullName));
 
@@ -89,8 +88,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>The <see cref="JumboFileSystemEntry"/> for the child, or <see langword="null"/> if it doesn't exist.</returns>
         public JumboFileSystemEntry GetChild(string name)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
             return _children.Where(child => child.Name == name).SingleOrDefault();
         }
 
@@ -109,8 +107,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="writer">The <see cref="TextWriter"/> </param>
         public void PrintListing(TextWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 

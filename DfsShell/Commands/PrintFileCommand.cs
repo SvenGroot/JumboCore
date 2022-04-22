@@ -119,8 +119,7 @@ namespace DfsShell.Commands
 
         public PrintFileCommand([Description("The path of the text file on the DFS."), ArgumentName("Path")] string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             _path = path;
         }

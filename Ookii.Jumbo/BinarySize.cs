@@ -214,8 +214,7 @@ namespace Ookii.Jumbo
         /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
         public static BinarySize Parse(string value, IFormatProvider provider)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
             if (value.Length == 0)
                 return new BinarySize();
 

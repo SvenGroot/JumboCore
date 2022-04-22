@@ -18,10 +18,8 @@ namespace Ookii.Jumbo
         /// <param name="collection">The collection containing the elements to add.</param>
         public static void AddRange<T>(this Collection<T> target, IEnumerable<T> collection)
         {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
+            ArgumentNullException.ThrowIfNull(target);
+            ArgumentNullException.ThrowIfNull(collection);
 
             var extendedCollection = target as ExtendedCollection<T>;
             if (extendedCollection != null)

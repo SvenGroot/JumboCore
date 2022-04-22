@@ -32,8 +32,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="bufferSize">The size of the buffer, in bytes.</param>
         public WriteBufferedStream(Stream stream, int bufferSize)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
             if (!stream.CanWrite)
@@ -173,8 +172,7 @@ namespace Ookii.Jumbo.IO
         {
             CheckDisposed();
             // These exceptions match the contract given in the Stream class documentation.
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (count < 0)

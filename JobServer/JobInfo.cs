@@ -43,12 +43,9 @@ namespace JobServerApplication
 
         public JobInfo(Job job, JobConfiguration config, FileSystemClient fileSystem)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
-            if (fileSystem == null)
-                throw new ArgumentNullException(nameof(fileSystem));
+            ArgumentNullException.ThrowIfNull(job);
+            ArgumentNullException.ThrowIfNull(config);
+            ArgumentNullException.ThrowIfNull(fileSystem);
             _job = job;
             _config = config;
 

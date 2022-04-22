@@ -26,8 +26,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="taskExecution">The task execution utility for the task that this channel is for.</param>
         protected OutputChannel(TaskExecutionUtility taskExecution)
         {
-            if (taskExecution == null)
-                throw new ArgumentNullException(nameof(taskExecution));
+            ArgumentNullException.ThrowIfNull(taskExecution);
 
             TaskExecution = taskExecution;
 

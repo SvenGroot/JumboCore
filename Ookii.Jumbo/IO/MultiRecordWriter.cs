@@ -22,10 +22,8 @@ namespace Ookii.Jumbo.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
         {
-            if (writers == null)
-                throw new ArgumentNullException(nameof(writers));
-            if (partitioner == null)
-                throw new ArgumentNullException(nameof(partitioner));
+            ArgumentNullException.ThrowIfNull(writers);
+            ArgumentNullException.ThrowIfNull(partitioner);
             _writers = writers.ToArray();
             if (_writers.Length == 0)
                 throw new ArgumentException("You must provide at least one record writer.");

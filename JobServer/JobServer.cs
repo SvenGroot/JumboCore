@@ -48,12 +48,9 @@ namespace JobServerApplication
 
         private JobServer(JumboConfiguration jumboConfiguration, JetConfiguration jetConfiguration, DfsConfiguration dfsConfiguration)
         {
-            if (jumboConfiguration == null)
-                throw new ArgumentNullException(nameof(jumboConfiguration));
-            if (jetConfiguration == null)
-                throw new ArgumentNullException(nameof(jetConfiguration));
-            if (dfsConfiguration == null)
-                throw new ArgumentNullException(nameof(dfsConfiguration));
+            ArgumentNullException.ThrowIfNull(jumboConfiguration);
+            ArgumentNullException.ThrowIfNull(jetConfiguration);
+            ArgumentNullException.ThrowIfNull(dfsConfiguration);
 
             Configuration = jetConfiguration;
             _topology = new NetworkTopology(jumboConfiguration);
@@ -101,8 +98,7 @@ namespace JobServerApplication
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void Run(JumboConfiguration jumboConfiguration, JetConfiguration jetConfiguration, DfsConfiguration dfsConfiguration)
         {
-            if (jetConfiguration == null)
-                throw new ArgumentNullException(nameof(jetConfiguration));
+            ArgumentNullException.ThrowIfNull(jetConfiguration);
 
             _log.Info("-----Job server is starting-----");
             _log.LogEnvironmentInformation();
@@ -225,8 +221,7 @@ namespace JobServerApplication
         public ServerAddress GetTaskServerForTask(Guid jobID, string taskID)
         {
             _log.DebugFormat("GetTaskServerForTask, jobID = {{{0}}}, taskID = \"{1}\"", jobID, taskID);
-            if (taskID == null)
-                throw new ArgumentNullException(nameof(taskID));
+            ArgumentNullException.ThrowIfNull(taskID);
             var job = _jobs[jobID];
             var task = job.GetTask(taskID);
             var server = task.Server; // For thread-safety, we should do only one read of the property.
@@ -235,8 +230,7 @@ namespace JobServerApplication
 
         public CompletedTask[] CheckTaskCompletion(Guid jobId, string[] taskIds)
         {
-            if (taskIds == null)
-                throw new ArgumentNullException(nameof(taskIds));
+            ArgumentNullException.ThrowIfNull(taskIds);
             if (taskIds.Length == 0)
                 throw new ArgumentException("You must specify at least one task.", nameof(taskIds));
 
@@ -389,8 +383,7 @@ namespace JobServerApplication
 
         public int[] GetPartitionsForTask(Guid jobId, TaskId taskId)
         {
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskId);
 
             if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
@@ -400,8 +393,7 @@ namespace JobServerApplication
 
         public bool NotifyStartPartitionProcessing(Guid jobId, TaskId taskId, int partitionNumber)
         {
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskId);
 
             if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
@@ -414,8 +406,7 @@ namespace JobServerApplication
 
         public int[] GetAdditionalPartitions(Guid jobId, TaskId taskId)
         {
-            if (taskId == null)
-                throw new ArgumentNullException(nameof(taskId));
+            ArgumentNullException.ThrowIfNull(taskId);
 
             if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
@@ -436,8 +427,7 @@ namespace JobServerApplication
 
         public JetHeartbeatResponse[] Heartbeat(Ookii.Jumbo.ServerAddress address, JetHeartbeatData[] data)
         {
-            if (address == null)
-                throw new ArgumentNullException(nameof(address));
+            ArgumentNullException.ThrowIfNull(address);
 
             var server = _taskServers.GetOrAdd(address, key => new TaskServerInfo(key));
 

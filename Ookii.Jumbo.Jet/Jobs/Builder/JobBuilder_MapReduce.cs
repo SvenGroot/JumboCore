@@ -170,10 +170,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private StageOperation MapCore<TInput, TOutput>(IOperationInput input, Delegate mapper, RecordReuseMode recordReuse)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (mapper == null)
-                throw new ArgumentNullException(nameof(mapper));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(mapper);
             CheckIfInputBelongsToJobBuilder(input);
 
             var taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord"), mapper, 0, recordReuse);
@@ -186,10 +184,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private StageOperation ReduceCore<TKey, TValue, TOutput>(IOperationInput input, Delegate reducer, RecordReuseMode recordReuse)
             where TKey : IComparable<TKey>
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (reducer == null)
-                throw new ArgumentNullException(nameof(reducer));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(reducer);
             CheckIfInputBelongsToJobBuilder(input);
 
             var taskType = CreateReduceTask<TKey, TValue, TOutput>(reducer, recordReuse);

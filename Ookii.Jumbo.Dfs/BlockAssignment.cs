@@ -20,8 +20,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="dataServers">The list of data servers that have this block.</param>
         public BlockAssignment(Guid blockId, IEnumerable<ServerAddress> dataServers)
         {
-            if (dataServers == null)
-                throw new ArgumentNullException(nameof(dataServers));
+            ArgumentNullException.ThrowIfNull(dataServers);
 
             BlockId = blockId;
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();

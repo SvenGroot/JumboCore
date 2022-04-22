@@ -80,10 +80,8 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes to copy.</param>
         public static void Copy(byte[] source, int sourceIndex, UnmanagedBuffer destination, int destinationIndex, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if (destinationIndex < 0)
@@ -111,10 +109,8 @@ namespace Ookii.Jumbo
         /// <returns>The next index position after writing the data.</returns>
         public static long CopyCircular(byte[] source, int sourceIndex, UnmanagedBuffer destination, long destinationIndex, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if (destinationIndex < 0)
@@ -157,10 +153,8 @@ namespace Ookii.Jumbo
         /// <param name="count">The number of bytes to copy.</param>
         public static void Copy(UnmanagedBuffer source, int sourceIndex, byte[] destination, int destinationIndex, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if (destinationIndex < 0)
@@ -188,10 +182,8 @@ namespace Ookii.Jumbo
         /// <returns>The next index position after writing the data.</returns>
         public static long CopyCircular(UnmanagedBuffer source, long sourceIndex, byte[] destination, int destinationIndex, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
             if (sourceIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex));
             if (destinationIndex < 0)

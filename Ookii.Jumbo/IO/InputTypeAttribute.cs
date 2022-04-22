@@ -20,8 +20,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="acceptedType">The type accepted as input.</param>
         public InputTypeAttribute(Type acceptedType)
         {
-            if (acceptedType == null)
-                throw new ArgumentNullException(nameof(acceptedType));
+            ArgumentNullException.ThrowIfNull(acceptedType);
 
             _acceptedType = acceptedType;
         }

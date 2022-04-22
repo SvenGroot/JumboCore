@@ -451,8 +451,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="value">The 32-bit integer to be written.</param>
         public static void Write7BitEncodedInt32(BinaryWriter writer, int value)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             var uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
             while (uintValue >= 0x80)
             {
@@ -469,8 +468,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>A 32-bit integer in compressed format. </returns>
         public static int Read7BitEncodedInt32(BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             byte currentByte;
             var result = 0;
             var bits = 0;

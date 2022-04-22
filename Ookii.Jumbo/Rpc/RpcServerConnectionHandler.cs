@@ -18,8 +18,7 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcServerConnectionHandler(Socket serverSocket)
         {
-            if (serverSocket == null)
-                throw new ArgumentNullException(nameof(serverSocket));
+            ArgumentNullException.ThrowIfNull(serverSocket);
 
             _serverSocket = serverSocket;
             _stream = new RpcStream(_serverSocket);

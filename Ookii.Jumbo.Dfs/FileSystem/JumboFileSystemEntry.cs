@@ -32,10 +32,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="dateCreated">The date the entry was created.</param>
         protected JumboFileSystemEntry(string fullPath, string name, DateTime dateCreated)
         {
-            if (fullPath == null)
-                throw new ArgumentNullException(nameof(fullPath));
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(fullPath);
+            ArgumentNullException.ThrowIfNull(name);
 
             _fullPath = fullPath;
             _name = name;
@@ -99,8 +97,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboFileSystemEntry FromFileSystemInfo(FileSystemInfo info, string rootPath, bool includeChildren)
         {
-            if (info == null)
-                throw new ArgumentNullException(nameof(info));
+            ArgumentNullException.ThrowIfNull(info);
 
             var file = info as FileInfo;
             if (file != null)

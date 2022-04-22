@@ -19,8 +19,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="stream">The stream to which to write the records.</param>
         protected StreamRecordWriter(Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             Stream = stream;
             _startPosition = stream.Position;
             _recordOutputStream = stream as IRecordOutputStream;

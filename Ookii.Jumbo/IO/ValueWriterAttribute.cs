@@ -32,8 +32,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="valueWriterTypeName">The type that implements <see cref="IValueWriter{T}"/>.</param>
         public ValueWriterAttribute(Type valueWriterTypeName)
         {
-            if (valueWriterTypeName == null)
-                throw new ArgumentNullException(nameof(valueWriterTypeName));
+            ArgumentNullException.ThrowIfNull(valueWriterTypeName);
             _valueWriterTypeName = valueWriterTypeName.AssemblyQualifiedName;
         }
 

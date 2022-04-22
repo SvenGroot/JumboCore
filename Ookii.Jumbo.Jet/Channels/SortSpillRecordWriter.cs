@@ -162,14 +162,12 @@ namespace Ookii.Jumbo.Jet.Channels
         public SortSpillRecordWriter(string outputPath, IPartitioner<T> partitioner, int bufferSize, int limit, int writeBufferSize, bool enableChecksum, CompressionType compressionType, int maxDiskInputsPerMergePass, IComparer<T> comparer = null, ITask<T, T> combiner = null, int minSpillsForCombineDuringMerge = 0)
             : base(partitioner, bufferSize, limit, SpillRecordWriterOptions.None)
         {
-            if (outputPath == null)
-                throw new ArgumentNullException(nameof(outputPath));
+            ArgumentNullException.ThrowIfNull(outputPath);
             if (writeBufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(writeBufferSize));
             if (minSpillsForCombineDuringMerge < 0)
                 throw new ArgumentOutOfRangeException(nameof(minSpillsForCombineDuringMerge));
-            if (partitioner == null)
-                throw new ArgumentNullException(nameof(partitioner));
+            ArgumentNullException.ThrowIfNull(partitioner);
             _outputPath = outputPath;
             _partitions = partitioner.Partitions;
             _outputPathBase = Path.Combine(Path.GetDirectoryName(_outputPath), Path.GetFileNameWithoutExtension(_outputPath));

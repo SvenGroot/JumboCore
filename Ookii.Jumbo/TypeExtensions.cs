@@ -29,10 +29,8 @@ namespace Ookii.Jumbo
         /// <returns>The instantiated generic interface type.</returns>
         public static Type FindGenericInterfaceType(this Type type, Type interfaceType, bool throwOnNotFound)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (interfaceType == null)
-                throw new ArgumentNullException(nameof(interfaceType));
+            ArgumentNullException.ThrowIfNull(type);
+            ArgumentNullException.ThrowIfNull(interfaceType);
             // This is necessary because while in .Net you can use type.GetInterface with a generic interface type,
             // in Mono that only works if you specify the type arguments which is precisely what we don't want.
 
@@ -62,8 +60,7 @@ namespace Ookii.Jumbo
         /// <returns>The instantiated generic base type.</returns>
         public static Type FindGenericBaseType(this Type type, Type baseType, bool throwOnNotFound)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
             var current = type.BaseType;
             while (current != null)
             {

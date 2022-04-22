@@ -26,8 +26,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="rawComparerTypeName">The type that implements <see cref="IRawComparer{T}"/>.</param>
         public RawComparerAttribute(Type rawComparerTypeName)
         {
-            if (rawComparerTypeName == null)
-                throw new ArgumentNullException(nameof(rawComparerTypeName));
+            ArgumentNullException.ThrowIfNull(rawComparerTypeName);
             _rawComparerTypeName = rawComparerTypeName.AssemblyQualifiedName;
         }
 

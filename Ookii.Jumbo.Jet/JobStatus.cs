@@ -260,8 +260,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A new instance of the <see cref="JobStatus"/> class with the information from the XML document.</returns>
         public static JobStatus FromXml(XElement job)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
+            ArgumentNullException.ThrowIfNull(job);
             if (job.Name != "Job")
                 throw new ArgumentException("Invalid job element.", nameof(job));
 

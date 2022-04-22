@@ -37,8 +37,7 @@ namespace Ookii.Jumbo.Rpc
         // Called inside _proxies lock for thread safety.
         private static Type CreateProxy(Type interfaceType)
         {
-            if (interfaceType == null)
-                throw new ArgumentNullException(nameof(interfaceType));
+            ArgumentNullException.ThrowIfNull(interfaceType);
             if (!interfaceType.IsInterface)
                 throw new ArgumentException("Type is not an interface.", nameof(interfaceType));
             if (interfaceType.IsGenericType || interfaceType.IsGenericTypeDefinition)

@@ -26,8 +26,7 @@ namespace Ookii.Jumbo.Jet.Channels
         public FileOutputChannel(TaskExecutionUtility taskExecution)
             : base(taskExecution)
         {
-            if (taskExecution == null)
-                throw new ArgumentNullException(nameof(taskExecution));
+            ArgumentNullException.ThrowIfNull(taskExecution);
             var root = taskExecution.RootTask;
 
             // We don't include child task IDs in the output file name because internal partitioning can happen only once

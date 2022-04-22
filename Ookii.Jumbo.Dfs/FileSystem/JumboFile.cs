@@ -135,8 +135,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public static JumboFile FromFileInfo(FileInfo file, string rootPath)
         {
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
+            ArgumentNullException.ThrowIfNull(file);
             if (!file.Exists)
                 throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, "The file '{0}' does not exist.", file.FullName), file.FullName);
 
@@ -158,8 +157,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="writer">The <see cref="System.IO.TextWriter"/> to write the information to.</param>
         public void PrintFileInfo(System.IO.TextWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.WriteLine("Path:             {0}", FullPath);
             writer.WriteLine("Size:             {0:#,0} bytes", Size);
             writer.WriteLine("Block size:       {0:#,0} bytes", BlockSize);

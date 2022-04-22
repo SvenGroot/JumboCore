@@ -86,10 +86,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static SortOperation CreateMemorySortOperation(JobBuilder builder, IOperationInput input, Type comparerType)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(input);
 
             return new SortOperation(builder, input, comparerType, null, false);
         }
@@ -109,10 +107,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </remarks>
         public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type comparerType, Type combinerType)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(input);
 
             return new SortOperation(builder, input, comparerType, combinerType, true);
         }
@@ -126,8 +122,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
         {
-            if (compiler == null)
-                throw new ArgumentNullException(nameof(compiler));
+            ArgumentNullException.ThrowIfNull(compiler);
             if (_useSpillSort)
             {
                 if (InputChannel.ChannelType == null)

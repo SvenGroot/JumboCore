@@ -20,14 +20,10 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="inputs">The inputs to write.</param>
         public static void WriteTaskInputs(FileSystemClient fileSystem, string path, string stageId, IEnumerable<ITaskInput> inputs)
         {
-            if (fileSystem == null)
-                throw new ArgumentNullException(nameof(fileSystem));
-            if (inputs == null)
-                throw new ArgumentNullException(nameof(inputs));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(fileSystem);
+            ArgumentNullException.ThrowIfNull(inputs);
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(stageId);
 
             var splitsFile = GetSplitsFileName(fileSystem, path, stageId);
             var splitsIndexFile = GetSplitsIndexFileName(splitsFile);
@@ -71,12 +67,9 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>A list of input locations for each task.</returns>
         public static IList<string[]> ReadTaskInputLocations(FileSystemClient fileSystem, string path, string stageId)
         {
-            if (fileSystem == null)
-                throw new ArgumentNullException(nameof(fileSystem));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(fileSystem);
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(stageId);
 
             var locationsFile = GetLocationsFileName(fileSystem, path, stageId);
 
@@ -106,12 +99,9 @@ namespace Ookii.Jumbo.Jet.IO
         /// <returns>The task input.</returns>
         public static ITaskInput ReadTaskInput(FileSystemClient fileSystem, string path, string stageId, int splitIndex)
         {
-            if (fileSystem == null)
-                throw new ArgumentNullException(nameof(fileSystem));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-            if (stageId == null)
-                throw new ArgumentNullException(nameof(stageId));
+            ArgumentNullException.ThrowIfNull(fileSystem);
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(stageId);
             if (splitIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(splitIndex));
 

@@ -18,10 +18,8 @@ namespace DfsShell.Commands
         public GetCommand([Description("The path of the DFS file or directory to retrieve."), ArgumentName("DfsPath")] string dfsPath,
                           [Optional, DefaultParameterValue("."), Description("The local path where the file should be stored. The default value is the current directory."), ArgumentName("LocalPath")] string localPath)
         {
-            if (dfsPath == null)
-                throw new ArgumentNullException(nameof(dfsPath));
-            if (localPath == null)
-                throw new ArgumentNullException(nameof(localPath));
+            ArgumentNullException.ThrowIfNull(dfsPath);
+            ArgumentNullException.ThrowIfNull(localPath);
 
             _dfsPath = dfsPath;
             _localPath = localPath;

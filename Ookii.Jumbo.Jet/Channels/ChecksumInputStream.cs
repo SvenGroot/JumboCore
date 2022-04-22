@@ -28,8 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public ChecksumInputStream(Stream baseStream, bool ownsBaseStream, long? length = null)
         {
-            if (baseStream == null)
-                throw new ArgumentNullException(nameof(baseStream));
+            ArgumentNullException.ThrowIfNull(baseStream);
 
             _baseStream = baseStream;
             _ownsBaseStream = ownsBaseStream;

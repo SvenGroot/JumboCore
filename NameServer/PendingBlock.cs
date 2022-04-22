@@ -10,8 +10,7 @@ namespace NameServerApplication
 
         public PendingBlock(BlockInfo block)
         {
-            if (block == null)
-                throw new ArgumentNullException(nameof(block));
+            ArgumentNullException.ThrowIfNull(block);
             Block = block;
         }
 

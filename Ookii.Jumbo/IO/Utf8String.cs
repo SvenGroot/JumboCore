@@ -141,8 +141,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="value">A byte array containing a utf-8 encoded string.</param>
         public void Set(byte[] value)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
             Set(value, 0, value.Length);
         }
 
@@ -154,8 +153,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
         public void Set(byte[] value, int index, int count)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
             var capacityNeeded = GetCapacityNeeded(count);
             if (_utf8Bytes == null || _utf8Bytes.Length < capacityNeeded)
                 _utf8Bytes = new byte[capacityNeeded];
@@ -169,8 +167,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="value">The <see cref="Utf8String"/> to copy.</param>
         public void Set(Utf8String value)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
             Set(value._utf8Bytes, 0, value._byteLength);
         }
 
@@ -180,8 +177,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="value">The <see cref="Utf8String"/> to append.</param>
         public void Append(Utf8String value)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
             Append(value._utf8Bytes, 0, value.ByteLength);
         }
 
@@ -193,8 +189,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
         public void Append(byte[] value, int index, int count)
         {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value);
 
             if (Capacity == 0)
             {
@@ -234,8 +229,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public void Write(Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
 
             stream.Write(_utf8Bytes, 0, _byteLength);
         }
@@ -281,8 +275,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>The length of the entire Utf8String object, including the length header.</returns>
         public static int GetLength(byte[] buffer, int index)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer));
+            ArgumentNullException.ThrowIfNull(buffer);
             if (index < 0 || index >= buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
@@ -421,8 +414,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The <see cref="System.IO.BinaryReader"/> to deserialize the object from.</param>
         public void Read(System.IO.BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             var length = WritableUtility.Read7BitEncodedInt32(reader);
             if (length <= Capacity)
             {
@@ -446,8 +438,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="writer">The <see cref="System.IO.BinaryWriter"/> to serialize the object to.</param>
         public void Write(System.IO.BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             WritableUtility.Write7BitEncodedInt32(writer, _byteLength);
             writer.Write(_utf8Bytes, 0, _byteLength);
         }

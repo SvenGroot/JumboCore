@@ -19,8 +19,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="blocks">The list of blocks that this data server has.</param>
         public BlockReportHeartbeatData(IEnumerable<Guid> blocks)
         {
-            if (blocks == null)
-                throw new ArgumentNullException(nameof(blocks));
+            ArgumentNullException.ThrowIfNull(blocks);
             _blocks = new List<Guid>(blocks).AsReadOnly();
         }
 

@@ -21,8 +21,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="locations">The names of the nodes on which this split is local. May be <see langword="null"/>.</param>
         public FileTaskInput(string path, long offset, long size, IEnumerable<string> locations)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (size < 1)
@@ -76,8 +75,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="writer">The <see cref="BinaryWriter"/> to serialize the object to.</param>
         public void Write(BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             // Don't serialize _locations
             writer.Write(Path);
             writer.Write(Offset);
@@ -90,8 +88,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(BinaryReader reader)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             Path = reader.ReadString();
             Offset = reader.ReadInt64();
             Size = reader.ReadInt64();

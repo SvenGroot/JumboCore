@@ -18,8 +18,7 @@ namespace Ookii.Jumbo.Dfs
         public ReplicateBlockHeartbeatResponse(Guid fileSystemId, BlockAssignment blockAssignment)
             : base(fileSystemId, DataServerHeartbeatCommand.ReplicateBlock)
         {
-            if (blockAssignment == null)
-                throw new ArgumentNullException(nameof(blockAssignment));
+            ArgumentNullException.ThrowIfNull(blockAssignment);
 
             BlockAssignment = blockAssignment;
         }

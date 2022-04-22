@@ -25,8 +25,7 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         public EnumerableRecordReader(IEnumerable<T> source, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             _enumerator = source.GetEnumerator();

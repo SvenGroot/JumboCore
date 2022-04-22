@@ -19,10 +19,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive.")]
         public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type keyComparerType = null)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (accumulatorTaskType == null)
-                throw new ArgumentNullException(nameof(accumulatorTaskType));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(accumulatorTaskType);
 
             if (accumulatorTaskType.IsGenericTypeDefinition)
             {
@@ -134,10 +132,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private TwoStepOperation GroupAggregateCore<TKey, TValue>(IOperationInput input, Delegate accumulator, Type keyComparerType, RecordReuseMode recordReuse)
             where TKey : IComparable<TKey> // Needed to satisfy requirement on AccumulatorTask
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-            if (accumulator == null)
-                throw new ArgumentNullException(nameof(accumulator));
+            ArgumentNullException.ThrowIfNull(input);
+            ArgumentNullException.ThrowIfNull(accumulator);
             CheckIfInputBelongsToJobBuilder(input);
 
             var taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), accumulator, 0, recordReuse);

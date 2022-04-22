@@ -19,8 +19,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="taskType">Type of the task.</param>
         public TaskTypeInfo(Type taskType)
         {
-            if (taskType == null)
-                throw new ArgumentNullException(nameof(taskType));
+            ArgumentNullException.ThrowIfNull(taskType);
             if (taskType.ContainsGenericParameters)
                 throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
 

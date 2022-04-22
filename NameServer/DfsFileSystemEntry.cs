@@ -33,8 +33,7 @@ namespace NameServerApplication
         /// <exception cref="ArgumentException"><paramref name="name"/> contains the / character.</exception>
         protected DfsFileSystemEntry(DfsDirectory parent, string name, DateTime dateCreated)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
             if (name.Contains(DfsPath.DirectorySeparator, StringComparison.Ordinal))
                 throw new ArgumentException("File or directory name cannot contain directory separator.", nameof(name));
 
@@ -88,8 +87,7 @@ namespace NameServerApplication
         /// <param name="newName">The new name of the entry. Can be <see langword="null"/>.</param>
         public void MoveTo(DfsDirectory newParent, string newName)
         {
-            if (newParent == null)
-                throw new ArgumentNullException(nameof(newParent));
+            ArgumentNullException.ThrowIfNull(newParent);
 
             if (Parent == null)
                 throw new InvalidOperationException("You cannot move an entry without an existing parent.");
@@ -118,8 +116,7 @@ namespace NameServerApplication
         /// <param name="writer">A <see cref="BinaryWriter"/> used to write to the file system image.</param>
         public virtual void SaveToFileSystemImage(BinaryWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
+            ArgumentNullException.ThrowIfNull(writer);
             writer.Write(GetType().FullName);
             writer.Write(Name);
             writer.Write(DateCreated.Ticks);
@@ -134,8 +131,7 @@ namespace NameServerApplication
         /// <returns>An instance of <see cref="DfsFile"/> or <see cref="DfsDirectory"/> representing the file system entry.</returns>
         public static DfsFileSystemEntry LoadFromFileSystemImage(BinaryReader reader, DfsDirectory parent, Action<long> notifyFileSizeCallback)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            ArgumentNullException.ThrowIfNull(reader);
             var className = reader.ReadString();
             var name = reader.ReadString();
             var dateCreated = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);

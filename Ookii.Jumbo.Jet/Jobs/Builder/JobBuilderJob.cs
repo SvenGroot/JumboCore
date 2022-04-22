@@ -98,8 +98,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         protected FileOutput WriteOutput(IJobBuilderOperation operation, string outputPath, Type recordWriterType)
         {
-            if (operation == null)
-                throw new ArgumentNullException(nameof(operation));
+            ArgumentNullException.ThrowIfNull(operation);
             var output = operation.JobBuilder.Write(operation, outputPath, recordWriterType);
             output.BlockSize = (int)BlockSize;
             output.ReplicationFactor = ReplicationFactor;

@@ -29,11 +29,9 @@ namespace Ookii.Jumbo
         /// <param name="random">The randomizer to use.</param>
         public static void Randomize<T>(this IList<T> list, Random random)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
+            ArgumentNullException.ThrowIfNull(list);
 
-            if (random == null)
-                throw new ArgumentNullException(nameof(random));
+            ArgumentNullException.ThrowIfNull(random);
             var n = list.Count;        // The number of items left to shuffle (loop invariant).
             while (n > 1)
             {
@@ -54,10 +52,8 @@ namespace Ookii.Jumbo
         /// <returns>A string containing the delimited list.</returns>
         public static string ToDelimitedString<T>(this IEnumerable<T> list, string delimiter)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
-            if (delimiter == null)
-                throw new ArgumentNullException(nameof(delimiter));
+            ArgumentNullException.ThrowIfNull(list);
+            ArgumentNullException.ThrowIfNull(delimiter);
 
             var result = new StringBuilder();
             var first = true;
@@ -92,8 +88,7 @@ namespace Ookii.Jumbo
         /// <returns>A hash code for the entire sequence.</returns>
         public static int GetSequenceHashCode<T>(this IEnumerable<T> list)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
+            ArgumentNullException.ThrowIfNull(list);
             var hash = 0x218A9B2C;
             foreach (var item in list)
             {
@@ -113,8 +108,7 @@ namespace Ookii.Jumbo
         /// <param name="index2">The second index.</param>
         public static void Swap<T>(this IList<T> list, int index1, int index2)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
+            ArgumentNullException.ThrowIfNull(list);
             if (index1 != index2)
             {
                 var temp = list[index1];

@@ -21,8 +21,7 @@ namespace Ookii.Jumbo
         /// or <see langword="null"/> if the log file doesn't exist.</returns>
         public static Stream GetLogFileStream(string serverName, LogFileKind kind, int maxSize)
         {
-            if (serverName == null)
-                throw new ArgumentNullException(nameof(serverName));
+            ArgumentNullException.ThrowIfNull(serverName);
             if (maxSize < 0)
                 throw new ArgumentException("maxSize must be zero or higher positive.", nameof(maxSize));
 

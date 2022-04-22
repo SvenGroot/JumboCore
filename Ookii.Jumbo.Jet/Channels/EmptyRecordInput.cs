@@ -28,8 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public EmptyRecordInput(Type recordType, string sourceName)
         {
-            if (recordType == null)
-                throw new ArgumentNullException(nameof(recordType));
+            ArgumentNullException.ThrowIfNull(recordType);
             _recordReaderType = typeof(EmptyRecordReader<>).MakeGenericType(recordType);
             _sourceName = sourceName;
         }

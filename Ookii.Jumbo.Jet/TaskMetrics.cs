@@ -105,8 +105,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="other">A <see cref="TaskMetrics"/> instance.</param>
         public void Add(TaskMetrics other)
         {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
+            ArgumentNullException.ThrowIfNull(other);
 
             DfsBytesRead += other.DfsBytesRead;
             DfsBytesWritten += other.DfsBytesWritten;

@@ -34,8 +34,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public LocalFileSystemClient(string rootPath)
             : base(CreateLocalConfiguration(rootPath))
         {
-            if (rootPath == null)
-                throw new ArgumentNullException(nameof(rootPath));
+            ArgumentNullException.ThrowIfNull(rootPath);
             if (!Directory.Exists(rootPath))
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.InvariantCulture, "The root directory '{0}' does not exist.", rootPath));
 
@@ -92,8 +91,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override JumboDirectory GetDirectoryInfo(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             var directory = new DirectoryInfo(AdjustPath(path));
             return directory.Exists ? JumboDirectory.FromDirectoryInfo(directory, RootPath) : null;
@@ -108,8 +106,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override JumboFile GetFileInfo(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             var file = new FileInfo(AdjustPath(path));
             return file.Exists ? JumboFile.FromFileInfo(file, RootPath) : null;
@@ -124,8 +121,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override JumboFileSystemEntry GetFileSystemEntryInfo(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             path = AdjustPath(path);
             var file = new FileInfo(path);
@@ -145,8 +141,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="path">The path of the directory to create.</param>
         public override void CreateDirectory(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             path = AdjustPath(path);
             Directory.CreateDirectory(path);
@@ -161,8 +156,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override Stream OpenFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             path = AdjustPath(path);
             return File.OpenRead(path);
@@ -181,8 +175,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override Stream CreateFile(string path, int blockSize, int replicationFactor, bool useLocalReplica, IO.RecordStreamOptions recordOptions)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             path = AdjustPath(path);
             return File.Create(path);
@@ -198,8 +191,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </returns>
         public override bool Delete(string path, bool recursive)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             path = AdjustPath(path);
             if (File.Exists(path))
@@ -223,17 +215,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="destination">The path to move the entry to.</param>
         public override void Move(string source, string destination)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             source = AdjustPath(source);
             destination = AdjustPath(destination);
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
 
             // This is the way the DFS behaves, so we need to mimic that.
             if (Directory.Exists(destination))

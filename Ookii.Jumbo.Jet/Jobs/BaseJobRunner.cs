@@ -170,8 +170,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="outputPath">The directory where the job's output will be stored.</param>
         protected void CheckAndCreateOutputPath(string outputPath)
         {
-            if (outputPath == null)
-                throw new ArgumentNullException(nameof(outputPath));
+            ArgumentNullException.ThrowIfNull(outputPath);
 
             if (OverwriteOutput)
             {
@@ -207,8 +206,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="jobConfiguration">The job configuration.</param>
         protected void ApplyJobPropertiesAndSettings(JobConfiguration jobConfiguration)
         {
-            if (jobConfiguration == null)
-                throw new ArgumentNullException(nameof(jobConfiguration));
+            ArgumentNullException.ThrowIfNull(jobConfiguration);
 
             ApplySettingProperties(jobConfiguration);
 

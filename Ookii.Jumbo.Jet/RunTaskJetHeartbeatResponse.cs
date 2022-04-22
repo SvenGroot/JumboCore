@@ -17,10 +17,8 @@ namespace Ookii.Jumbo.Jet
         public RunTaskJetHeartbeatResponse(Job job, TaskAttemptId taskAttemptId)
             : base(TaskServerHeartbeatCommand.RunTask)
         {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job));
-            if (taskAttemptId == null)
-                throw new ArgumentNullException(nameof(taskAttemptId));
+            ArgumentNullException.ThrowIfNull(job);
+            ArgumentNullException.ThrowIfNull(taskAttemptId);
 
             Job = job;
             TaskAttemptId = taskAttemptId;

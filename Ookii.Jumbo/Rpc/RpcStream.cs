@@ -16,16 +16,14 @@ namespace Ookii.Jumbo.Rpc
 
         public RpcStream(Socket socket)
         {
-            if (socket == null)
-                throw new ArgumentNullException(nameof(socket));
+            ArgumentNullException.ThrowIfNull(socket);
 
             _baseStream = new NetworkStream(socket);
         }
 
         public RpcStream(TcpClient client)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
+            ArgumentNullException.ThrowIfNull(client);
 
             _baseStream = client.GetStream();
         }

@@ -18,8 +18,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public Reservation(FileChannelMemoryStorageManager manager, long size, bool waited)
             {
-                if (manager == null)
-                    throw new ArgumentNullException(nameof(manager));
+                ArgumentNullException.ThrowIfNull(manager);
                 _manager = manager;
                 _waited = waited;
                 Size = size;
