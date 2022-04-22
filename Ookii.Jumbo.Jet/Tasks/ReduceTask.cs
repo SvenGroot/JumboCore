@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Tasks
@@ -59,7 +57,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             {
                 do
                 {
-                    TKey key = _cloneKey ? (TKey)((ICloneable)input.CurrentRecord.Key).Clone() : input.CurrentRecord.Key;
+                    var key = _cloneKey ? (TKey)((ICloneable)input.CurrentRecord.Key).Clone() : input.CurrentRecord.Key;
                     Reduce(key, EnumerateGroupRecords(key, input), output);
                 } while (!input.HasFinished);
             }
@@ -73,7 +71,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         {
             if (TaskContext != null)
             {
-                string comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.ReduceTaskKeyComparerSettingKey, null);
+                var comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.ReduceTaskKeyComparerSettingKey, null);
                 if (!string.IsNullOrEmpty(comparerTypeName))
                     _keyComparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
             }

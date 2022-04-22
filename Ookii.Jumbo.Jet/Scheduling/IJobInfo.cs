@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Jet.Jobs;
 
 namespace Ookii.Jumbo.Jet.Scheduling

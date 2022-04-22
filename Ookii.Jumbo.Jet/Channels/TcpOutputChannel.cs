@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
@@ -55,17 +50,17 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_writer != null)
                 throw new InvalidOperationException("Channel record writer was already created.");
 
-            bool reuseConnections = TaskExecution.Context.GetSetting(ReuseConnectionsSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.ReuseConnections);
-            BinarySize spillBufferSize = TaskExecution.Context.GetSetting(SpillBufferSizeSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.SpillBufferSize);
-            float spillBufferLimit = TaskExecution.Context.GetSetting(SpillBufferLimitSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.SpillBufferLimit);
+            var reuseConnections = TaskExecution.Context.GetSetting(ReuseConnectionsSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.ReuseConnections);
+            var spillBufferSize = TaskExecution.Context.GetSetting(SpillBufferSizeSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.SpillBufferSize);
+            var spillBufferLimit = TaskExecution.Context.GetSetting(SpillBufferLimitSettingKey, TaskExecution.JetClient.Configuration.TcpChannel.SpillBufferLimit);
             if (spillBufferSize.Value < 0 || spillBufferSize.Value > Int32.MaxValue)
                 throw new ConfigurationErrorsException("Invalid output buffer size: " + spillBufferSize.Value);
             if (spillBufferLimit < 0.1f || spillBufferLimit > 1.0f)
                 throw new ConfigurationErrorsException("Invalid output buffer limit: " + spillBufferLimit);
 
-            IPartitioner<T> partitioner = CreatePartitioner<T>();
+            var partitioner = CreatePartitioner<T>();
             partitioner.Partitions = OutputPartitionIds.Count;
-            TcpChannelRecordWriter<T> writer = new TcpChannelRecordWriter<T>(TaskExecution, reuseConnections, partitioner, (int)spillBufferSize.Value, (int)(spillBufferSize.Value * spillBufferLimit));
+            var writer = new TcpChannelRecordWriter<T>(TaskExecution, reuseConnections, partitioner, (int)spillBufferSize.Value, (int)(spillBufferSize.Value * spillBufferLimit));
             _writer = writer;
 
             return writer;

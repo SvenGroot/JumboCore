@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -56,21 +54,21 @@ namespace Ookii.Jumbo.IO
                         WaitForInputs(_previousInputsAvailable + 1, Timeout.Infinite);
                 }
 
-                int inputsAvailable = CurrentInputCount;
+                var inputsAvailable = CurrentInputCount;
                 if (inputsAvailable > _previousInputsAvailable)
                 {
-                    for (int x = _previousInputsAvailable; x < inputsAvailable; ++x)
+                    for (var x = _previousInputsAvailable; x < inputsAvailable; ++x)
                         _readers.Add((RecordReader<T>)GetInputReader(x));
                     _previousInputsAvailable = inputsAvailable;
                     if (_currentReader == -1)
                         _currentReader = _readers.Count - 1;
                 }
 
-                int nextReader = (_currentReader + 1) % _readers.Count;
+                var nextReader = (_currentReader + 1) % _readers.Count;
 
                 while (nextReader != _currentReader)
                 {
-                    RecordReader<T> reader = _readers[nextReader];
+                    var reader = _readers[nextReader];
                     if (reader.HasRecords)
                     {
                         if (ReadRecordFromReader(nextReader, reader))
@@ -87,7 +85,7 @@ namespace Ookii.Jumbo.IO
                 nextReader = (_currentReader + 1) % _readers.Count;
                 while (_readers.Count > 0)
                 {
-                    RecordReader<T> reader = _readers[nextReader];
+                    var reader = _readers[nextReader];
                     if (ReadRecordFromReader(nextReader, reader))
                         return true;
                     else

@@ -1,10 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Ookii.CommandLine;
 
 namespace DfsShell.Commands

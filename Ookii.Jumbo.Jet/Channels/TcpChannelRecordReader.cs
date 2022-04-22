@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly bool _allowRecordReuse;
         private bool _disposed;
         private BinaryReader _currentSegment;
-        private T _record;
+        private readonly T _record;
         private int _lastSegmentNumber = 0;
 
         public TcpChannelRecordReader(bool allowRecordReuse)
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Channels
             // TODO: Maybe we should use async I/O for this
             if (size > 0)
             {
-                UnmanagedBufferMemoryStream memoryStream = new UnmanagedBufferMemoryStream(size);
+                var memoryStream = new UnmanagedBufferMemoryStream(size);
                 stream.CopySize(memoryStream, size);
                 memoryStream.Position = 0;
                 _segments.Add(memoryStream);
@@ -65,8 +65,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if (_currentSegment == null)
             {
-                UnmanagedBufferMemoryStream memoryStream;
-                if (!_segments.TryTake(out memoryStream, Timeout.Infinite))
+                if (!_segments.TryTake(out var memoryStream, Timeout.Infinite))
                 {
                     CurrentRecord = default(T);
                     return false;
@@ -108,7 +107,7 @@ namespace Ookii.Jumbo.Jet.Channels
                     if (_currentSegment != null)
                         _currentSegment.Dispose();
                     _segments.CompleteAdding();
-                    foreach (UnmanagedBufferMemoryStream stream in _segments)
+                    foreach (var stream in _segments)
                         stream.Dispose();
                     _segments.Dispose();
                 }

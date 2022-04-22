@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet;
 
@@ -38,8 +36,7 @@ namespace JobServerApplication
 
         public TaskServerJobInfo GetTaskServer(ServerAddress address)
         {
-            TaskServerJobInfo server;
-            if (_taskServers.TryGetValue(address, out server))
+            if (_taskServers.TryGetValue(address, out var server))
                 return server;
             else
                 return null;
@@ -58,8 +55,7 @@ namespace JobServerApplication
 
         public List<TaskInfo> GetRackTasks(string rackId)
         {
-            List<TaskInfo> tasks;
-            if (_rackTasks.TryGetValue(rackId, out tasks))
+            if (_rackTasks.TryGetValue(rackId, out var tasks))
                 return tasks;
             else
                 return null;
@@ -86,8 +82,7 @@ namespace JobServerApplication
 
         public JumboFile GetFileInfo(DfsClient dfsClient, string path)
         {
-            JumboFile file;
-            if (!_files.TryGetValue(path, out file))
+            if (!_files.TryGetValue(path, out var file))
             {
                 file = dfsClient.NameServer.GetFileInfo(path);
                 if (file == null)
@@ -99,7 +94,7 @@ namespace JobServerApplication
 
         public void AbortTasks()
         {
-            foreach (TaskInfo jobTask in _job.Stages.SelectMany(stage => stage.Tasks))
+            foreach (var jobTask in _job.Stages.SelectMany(stage => stage.Tasks))
             {
                 if (jobTask.State <= TaskState.Running)
                     jobTask.SchedulerInfo.State = TaskState.Aborted;

@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
@@ -116,12 +113,12 @@ namespace Ookii.Jumbo.Jet.IO
             if (TaskContext == null || DfsConfiguration == null || JetConfiguration == null)
                 throw new InvalidOperationException("No task configuration stored in this instance.");
 
-            FileSystemClient fileSystem = FileSystemClient.Create(DfsConfiguration);
+            var fileSystem = FileSystemClient.Create(DfsConfiguration);
             // Must use TaskAttemptId for temp file name, there could be other attempts of this task writing the same data (only one will commit, of course).
-            string tempFileName = fileSystem.Path.Combine(fileSystem.Path.Combine(TaskContext.DfsJobDirectory, "temp"), string.Format(CultureInfo.InvariantCulture, "{0}_partition{1}", TaskContext.TaskAttemptId, partitionNumber));
-            string outputFileName = GetOutputPath(TaskContext.StageConfiguration, partitionNumber);
-            Stream outputStream = fileSystem.CreateFile(tempFileName, _blockSize, _replicationFactor, _recordOptions);
-            IRecordWriter writer = (IRecordWriter)JetActivator.CreateInstance(_recordWriterType, DfsConfiguration, JetConfiguration, TaskContext, outputStream);
+            var tempFileName = fileSystem.Path.Combine(fileSystem.Path.Combine(TaskContext.DfsJobDirectory, "temp"), string.Format(CultureInfo.InvariantCulture, "{0}_partition{1}", TaskContext.TaskAttemptId, partitionNumber));
+            var outputFileName = GetOutputPath(TaskContext.StageConfiguration, partitionNumber);
+            var outputStream = fileSystem.CreateFile(tempFileName, _blockSize, _replicationFactor, _recordOptions);
+            var writer = (IRecordWriter)JetActivator.CreateInstance(_recordWriterType, DfsConfiguration, JetConfiguration, TaskContext, outputStream);
             return new FileOutputCommitter(writer, tempFileName, outputFileName);
         }
 
@@ -137,7 +134,7 @@ namespace Ookii.Jumbo.Jet.IO
                 throw new InvalidOperationException("No data output configuration is stored in this instance.");
 
             stage.AddSetting(RecordWriterTypeSettingKey, _recordWriterType.AssemblyQualifiedName);
-            string outputPathFormat = FileSystemClient.Create(DfsConfiguration).Path.Combine(_outputPath, stage.StageId + "-{0:00000}");
+            var outputPathFormat = FileSystemClient.Create(DfsConfiguration).Path.Combine(_outputPath, stage.StageId + "-{0:00000}");
             stage.AddSetting(OutputPathFormatSettingKey, outputPathFormat);
             if (_blockSize != 0)
                 stage.AddSetting(BlockSizeSettingKey, _blockSize);
@@ -173,7 +170,7 @@ namespace Ookii.Jumbo.Jet.IO
         {
             if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
-            string outputPathFormat = stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null);
+            var outputPathFormat = stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null);
             if (outputPathFormat == null)
                 throw new InvalidOperationException("The stage settings do not contain an output path format.");
             return string.Format(CultureInfo.InvariantCulture, outputPathFormat, partitionNumber);

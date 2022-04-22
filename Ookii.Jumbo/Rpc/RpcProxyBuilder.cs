@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -46,11 +44,11 @@ namespace Ookii.Jumbo.Rpc
             if (interfaceType.IsGenericType || interfaceType.IsGenericTypeDefinition)
                 throw new ArgumentException("Generic types are not supported.");
 
-            TypeBuilder proxyType = _proxyModule.DefineType("Ookii.Jumbo.Rpc.DynamicProxy." + interfaceType.FullName.Replace('.', '_').Replace('+', '_'), TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(RpcProxyBase), new[] { interfaceType });
+            var proxyType = _proxyModule.DefineType("Ookii.Jumbo.Rpc.DynamicProxy." + interfaceType.FullName.Replace('.', '_').Replace('+', '_'), TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(RpcProxyBase), new[] { interfaceType });
 
             CreateConstructor(proxyType, interfaceType);
 
-            foreach (MemberInfo member in interfaceType.GetMembers())
+            foreach (var member in interfaceType.GetMembers())
             {
                 switch (member.MemberType)
                 {
@@ -73,20 +71,20 @@ namespace Ookii.Jumbo.Rpc
             if (interfaceMethod.IsGenericMethod || interfaceMethod.IsGenericMethodDefinition)
                 throw new NotSupportedException("Generic methods are not supported.");
 
-            ParameterInfo[] parameters = interfaceMethod.GetParameters();
-            Type[] parameterTypes = new Type[parameters.Length];
-            for (int x = 0; x < parameters.Length; ++x)
+            var parameters = interfaceMethod.GetParameters();
+            var parameterTypes = new Type[parameters.Length];
+            for (var x = 0; x < parameters.Length; ++x)
                 parameterTypes[x] = parameters[x].ParameterType;
-            MethodAttributes attributes = interfaceMethod.Attributes & ~(MethodAttributes.Abstract) | MethodAttributes.Virtual | MethodAttributes.Final;
-            MethodBuilder proxyMethod = proxyType.DefineMethod(interfaceMethod.Name, attributes, interfaceMethod.CallingConvention, interfaceMethod.ReturnType, parameterTypes);
-            foreach (ParameterInfo param in parameters)
+            var attributes = interfaceMethod.Attributes & ~(MethodAttributes.Abstract) | MethodAttributes.Virtual | MethodAttributes.Final;
+            var proxyMethod = proxyType.DefineMethod(interfaceMethod.Name, attributes, interfaceMethod.CallingConvention, interfaceMethod.ReturnType, parameterTypes);
+            foreach (var param in parameters)
             {
                 if (param.ParameterType.IsByRef)
                     throw new NotSupportedException("Interface methods with reference parameters are not supported.");
                 proxyMethod.DefineParameter(param.Position + 1, param.Attributes, param.Name);
             }
 
-            ILGenerator generator = proxyMethod.GetILGenerator();
+            var generator = proxyMethod.GetILGenerator();
             generator.DeclareLocal(typeof(object[]));
             generator.Emit(OpCodes.Ldarg_0); // Load "this" (for the SendRequest call later)
             generator.Emit(OpCodes.Ldstr, interfaceMethod.Name); // Load the method name
@@ -97,7 +95,7 @@ namespace Ookii.Jumbo.Rpc
                 generator.Emit(OpCodes.Ldc_I4, parameters.Length); // Load the number of parameters
                 generator.Emit(OpCodes.Newarr, typeof(object)); // Create a new array
                 generator.Emit(OpCodes.Stloc_0); // Store the array
-                for (int x = 0; x < parameters.Length; ++x)
+                for (var x = 0; x < parameters.Length; ++x)
                 {
                     generator.Emit(OpCodes.Ldloc_0); // Load the array
                     generator.Emit(OpCodes.Ldc_I4, x); // Load the index
@@ -109,7 +107,7 @@ namespace Ookii.Jumbo.Rpc
 
                 generator.Emit(OpCodes.Ldloc_0); // Load the array
             }
-            MethodInfo sendRequestMethod = typeof(RpcProxyBase).GetMethod("SendRequest", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sendRequestMethod = typeof(RpcProxyBase).GetMethod("SendRequest", BindingFlags.NonPublic | BindingFlags.Instance);
             generator.Emit(OpCodes.Call, sendRequestMethod); // Call the SendRequest method
 
             if (interfaceMethod.ReturnType == typeof(void))
@@ -126,33 +124,33 @@ namespace Ookii.Jumbo.Rpc
 
         private static void CreateProperty(TypeBuilder proxyType, PropertyInfo interfaceProperty)
         {
-            ParameterInfo[] indexParameters = interfaceProperty.GetIndexParameters();
-            Type[] parameterTypes = new Type[indexParameters.Length];
-            for (int x = 0; x < indexParameters.Length; ++x)
+            var indexParameters = interfaceProperty.GetIndexParameters();
+            var parameterTypes = new Type[indexParameters.Length];
+            for (var x = 0; x < indexParameters.Length; ++x)
                 parameterTypes[x] = indexParameters[x].ParameterType;
-            PropertyBuilder proxyProperty = proxyType.DefineProperty(interfaceProperty.Name, interfaceProperty.Attributes, interfaceProperty.PropertyType, parameterTypes);
+            var proxyProperty = proxyType.DefineProperty(interfaceProperty.Name, interfaceProperty.Attributes, interfaceProperty.PropertyType, parameterTypes);
 
             if (interfaceProperty.CanRead)
             {
-                MethodBuilder getMethod = CreateMethod(proxyType, interfaceProperty.GetGetMethod());
+                var getMethod = CreateMethod(proxyType, interfaceProperty.GetGetMethod());
                 proxyProperty.SetGetMethod(getMethod);
             }
 
             if (interfaceProperty.CanWrite)
             {
-                MethodBuilder setMethod = CreateMethod(proxyType, interfaceProperty.GetSetMethod());
+                var setMethod = CreateMethod(proxyType, interfaceProperty.GetSetMethod());
                 proxyProperty.SetSetMethod(setMethod);
             }
         }
 
         private static void CreateConstructor(TypeBuilder proxyType, Type interfaceType)
         {
-            ConstructorBuilder ctor = proxyType.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new[] { typeof(string), typeof(int), typeof(string) });
+            var ctor = proxyType.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new[] { typeof(string), typeof(int), typeof(string) });
             ctor.DefineParameter(1, ParameterAttributes.In, "hostName");
             ctor.DefineParameter(2, ParameterAttributes.In, "port");
             ctor.DefineParameter(3, ParameterAttributes.In, "objectName");
 
-            ILGenerator generator = ctor.GetILGenerator();
+            var generator = ctor.GetILGenerator();
             generator.Emit(OpCodes.Ldarg_0); // Load "this"
             generator.Emit(OpCodes.Ldarg_1); // Load hostName argument
             generator.Emit(OpCodes.Ldarg_2); // Load port argument

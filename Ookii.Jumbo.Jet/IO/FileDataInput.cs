@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
@@ -92,14 +91,14 @@ namespace Ookii.Jumbo.Jet.IO
             if (recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false) == null)
                 throw new ArgumentException("The type is not a record reader.", nameof(recordReaderType));
 
-            FileSystemClient fileSystem = FileSystemClient.Create(dfsConfiguration);
-            IFileSystemWithLocality localityFileSystem = fileSystem as IFileSystemWithLocality;
-            List<FileTaskInput> taskInputs = new List<FileTaskInput>();
-            foreach (JumboFile file in inputFiles)
+            var fileSystem = FileSystemClient.Create(dfsConfiguration);
+            var localityFileSystem = fileSystem as IFileSystemWithLocality;
+            var taskInputs = new List<FileTaskInput>();
+            foreach (var file in inputFiles)
             {
                 if (file.Size > 0) // Don't create splits for zero-length files
                 {
-                    int splitSize = Math.Max(minSplitSize, (int)Math.Min(maxSplitSize, file.BlockSize));
+                    var splitSize = Math.Max(minSplitSize, (int)Math.Min(maxSplitSize, file.BlockSize));
 
                     long offset;
                     for (offset = 0; offset + (splitSize * _splitSlack) < file.Size; offset += splitSize)
@@ -153,7 +152,7 @@ namespace Ookii.Jumbo.Jet.IO
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            FileTaskInput fileInput = (FileTaskInput)input;
+            var fileInput = (FileTaskInput)input;
             return (IRecordReader)JetActivator.CreateInstance(_recordReaderType, DfsConfiguration, JetConfiguration, TaskContext, FileSystemClient.Create(DfsConfiguration).OpenFile(fileInput.Path), fileInput.Offset, fileInput.Size, TaskContext == null ? false : TaskContext.StageConfiguration.AllowRecordReuse);
         }
 
@@ -201,7 +200,7 @@ namespace Ookii.Jumbo.Jet.IO
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
-            JumboDirectory directory = entry as JumboDirectory;
+            var directory = entry as JumboDirectory;
             if (directory != null)
             {
                 return from child in directory.Children

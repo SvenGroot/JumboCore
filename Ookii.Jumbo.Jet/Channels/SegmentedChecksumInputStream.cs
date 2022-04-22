@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -89,10 +86,10 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_currentSegment == null) // Can only happen if the stream was empty
                 return 0;
 
-            int totalBytesRead = 0;
+            var totalBytesRead = 0;
             while (count > 0)
             {
-                int bytesRead = _currentSegment.Read(buffer, offset, count);
+                var bytesRead = _currentSegment.Read(buffer, offset, count);
                 if (bytesRead == 0 && !NextSegment())
                     break;
                 count -= bytesRead;
@@ -165,8 +162,8 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if (_position < _length)
             {
-                long segmentLength = ReadInt64();
-                long uncompressedLength = ReadInt64();
+                var segmentLength = ReadInt64();
+                var uncompressedLength = ReadInt64();
                 _currentSegment = new ChecksumInputStream(_baseStream, false, segmentLength).CreateDecompressor(_compressionType, uncompressedLength);
                 return true;
             }
@@ -176,7 +173,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private long ReadInt64()
         {
-            int bytesRead = _baseStream.Read(_sizeBuffer, 0, _sizeBuffer.Length);
+            var bytesRead = _baseStream.Read(_sizeBuffer, 0, _sizeBuffer.Length);
             if (bytesRead < _sizeBuffer.Length)
                 throw new IOException("Invalid segmented stream.");
 

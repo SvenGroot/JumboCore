@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Tasks
@@ -65,8 +63,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             if (_acculumatedValues == null)
                 _acculumatedValues = new Dictionary<TKey, ValueContainer>();
 
-            ValueContainer value;
-            if (_acculumatedValues.TryGetValue(record.Key, out value))
+            if (_acculumatedValues.TryGetValue(record.Key, out var value))
                 value.Value = Accumulate(record.Key, value.Value, record.Value);
             else
             {
@@ -97,11 +94,11 @@ namespace Ookii.Jumbo.Jet.Tasks
         {
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            bool allowRecordReuse = TaskContext.StageConfiguration.AllowOutputRecordReuse;
+            var allowRecordReuse = TaskContext.StageConfiguration.AllowOutputRecordReuse;
             Pair<TKey, TValue> record = null;
             if (allowRecordReuse)
                 record = new Pair<TKey, TValue>();
-            foreach (KeyValuePair<TKey, ValueContainer> item in _acculumatedValues)
+            foreach (var item in _acculumatedValues)
             {
                 if (!allowRecordReuse)
                     record = new Pair<TKey, TValue>();
@@ -139,11 +136,11 @@ namespace Ookii.Jumbo.Jet.Tasks
                 if (_acculumatedValues != null && _acculumatedValues.Count > 0)
                     throw new InvalidOperationException("Cannot change configuration after accumulation has started.");
 
-                string comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.AccumulatorTaskKeyComparerSettingKey, null);
+                var comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.AccumulatorTaskKeyComparerSettingKey, null);
                 IEqualityComparer<TKey> comparer = null;
                 if (comparerTypeName != null)
                 {
-                    Type comparerType = Type.GetType(comparerTypeName, true);
+                    var comparerType = Type.GetType(comparerTypeName, true);
                     comparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(comparerType, DfsConfiguration, JetConfiguration, TaskContext);
                 }
                 _acculumatedValues = new Dictionary<TKey, ValueContainer>(comparer);

@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 namespace Ookii.Jumbo.Jet
@@ -131,7 +128,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>A string representation of the <see cref="TaskMetrics"/> object.</returns>
         public override string ToString()
         {
-            using (StringWriter result = new StringWriter(CultureInfo.CurrentCulture))
+            using (var result = new StringWriter(CultureInfo.CurrentCulture))
             {
                 result.WriteLine("Input records: {0}", InputRecords);
                 result.WriteLine("Output records: {0}", OutputRecords);

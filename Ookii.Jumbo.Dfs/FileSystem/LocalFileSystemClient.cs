@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -98,7 +95,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            DirectoryInfo directory = new DirectoryInfo(AdjustPath(path));
+            var directory = new DirectoryInfo(AdjustPath(path));
             return directory.Exists ? JumboDirectory.FromDirectoryInfo(directory, RootPath) : null;
         }
 
@@ -114,7 +111,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            FileInfo file = new FileInfo(AdjustPath(path));
+            var file = new FileInfo(AdjustPath(path));
             return file.Exists ? JumboFile.FromFileInfo(file, RootPath) : null;
         }
 
@@ -131,11 +128,11 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 throw new ArgumentNullException(nameof(path));
 
             path = AdjustPath(path);
-            FileInfo file = new FileInfo(path);
+            var file = new FileInfo(path);
             if (file.Exists)
                 return JumboFile.FromFileInfo(file, RootPath);
 
-            DirectoryInfo directory = new DirectoryInfo(path);
+            var directory = new DirectoryInfo(path);
             if (directory.Exists)
                 return JumboDirectory.FromDirectoryInfo(directory, RootPath);
 
@@ -250,7 +247,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
         private static DfsConfiguration CreateLocalConfiguration(string rootPath)
         {
-            DfsConfiguration config = new DfsConfiguration();
+            var config = new DfsConfiguration();
             config.FileSystem.Url = rootPath == null ? new Uri("file:///") : new Uri(new Uri("file:///"), rootPath);
             return config;
         }
@@ -263,7 +260,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             {
                 if (System.IO.Path.IsPathRooted(path))
                 {
-                    int rootLength = System.IO.Path.GetPathRoot(path).Length;
+                    var rootLength = System.IO.Path.GetPathRoot(path).Length;
                     path = path.Substring(rootLength);
                 }
                 return System.IO.Path.Combine(_rootPath, path);

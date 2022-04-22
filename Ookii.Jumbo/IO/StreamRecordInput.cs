@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -68,7 +65,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         protected override IRecordReader CreateReader()
         {
-            IRecordReader reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, _stream, 0, _stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, _stream, 0, _stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
             reader.SourceName = _sourceName;
             return reader;
         }

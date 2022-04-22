@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using JetWeb.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo.Jet;
 
@@ -25,7 +21,7 @@ namespace JetWeb.Pages
         {
             try
             {
-                JetClient client = new JetClient();
+                var client = new JetClient();
                 Metrics = client.JobServer.GetMetrics();
                 ViewData["Title"] = Metrics.JobServer.ToString();
 

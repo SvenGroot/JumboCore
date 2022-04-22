@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using Ookii.CommandLine;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
@@ -25,7 +20,7 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            JumboFile file = Client.GetFileInfo(_path);
+            var file = Client.GetFileInfo(_path);
             if (file == null)
                 Console.WriteLine("File not found.");
             else

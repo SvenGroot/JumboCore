@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Management;
 using System.Runtime.Versioning;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -34,7 +32,7 @@ namespace Ookii.Jumbo
         private ProcessorStatusData[] _previousProcessorData;
         private StreamReader _procStatReader;
         private readonly List<IndividualProcessorStatus> _processors;
-        private ReadOnlyCollection<IndividualProcessorStatus> _processorsReadOnlyWrapper;
+        private readonly ReadOnlyCollection<IndividualProcessorStatus> _processorsReadOnlyWrapper;
         private readonly int _total;
         private readonly char[] _procStatFieldSeparator = new char[] { ' ' };
 
@@ -46,7 +44,7 @@ namespace Ookii.Jumbo
             _processorData = new ProcessorStatusData[Environment.ProcessorCount + 1];
             Total = new IndividualProcessorStatus(-1);
             _processors = new List<IndividualProcessorStatus>(Environment.ProcessorCount);
-            for (int x = 0; x < Environment.ProcessorCount; ++x)
+            for (var x = 0; x < Environment.ProcessorCount; ++x)
             {
                 _processors.Add(new IndividualProcessorStatus(x));
             }
@@ -98,14 +96,14 @@ namespace Ookii.Jumbo
         [SupportedOSPlatform("windows")]
         private void RefreshWindows()
         {
-            SelectQuery query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", null, new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            var query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", null, new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });
+            using (var searcher = new ManagementObjectSearcher(query))
             {
 
-                foreach (ManagementBaseObject obj in searcher.Get())
+                foreach (var obj in searcher.Get())
                 {
                     int index;
-                    string name = (string)obj.GetPropertyValue("Name");
+                    var name = (string)obj.GetPropertyValue("Name");
                     if (name == "_Total")
                     {
                         index = _total;
@@ -136,7 +134,7 @@ namespace Ookii.Jumbo
             }
 
             ProcessProcStatLine(_total); // First line is total for all CPUs.
-            for (int x = 0; x < Environment.ProcessorCount; ++x)
+            for (var x = 0; x < Environment.ProcessorCount; ++x)
             {
                 ProcessProcStatLine(x);
             }
@@ -144,11 +142,11 @@ namespace Ookii.Jumbo
 
         private void ProcessProcStatLine(int cpuIndex)
         {
-            string line = _procStatReader.ReadLine();
+            var line = _procStatReader.ReadLine();
             if (!line.StartsWith("cpu", StringComparison.Ordinal))
                 throw new FormatException("Unexpected /proc/stat format.");
 
-            string[] items = line.Split(_procStatFieldSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var items = line.Split(_procStatFieldSeparator, StringSplitOptions.RemoveEmptyEntries);
             _processorData[cpuIndex].User = Convert.ToUInt64(items[1], CultureInfo.InvariantCulture) + Convert.ToUInt64(items[2], CultureInfo.InvariantCulture); // user + nice
             _processorData[cpuIndex].System = Convert.ToUInt64(items[3], CultureInfo.InvariantCulture); // system
             _processorData[cpuIndex].Idle = Convert.ToUInt64(items[4], CultureInfo.InvariantCulture); // idle
@@ -157,7 +155,7 @@ namespace Ookii.Jumbo
             _processorData[cpuIndex].Total = _processorData[cpuIndex].User + _processorData[cpuIndex].System + _processorData[cpuIndex].Idle + _processorData[cpuIndex].IOWait + _processorData[cpuIndex].Irq;
 
             // Some later kernel versions have extra fields for virtualized environments, which we want to include in the total.
-            for (int x = 8; x < items.Length; ++x)
+            for (var x = 8; x < items.Length; ++x)
             {
                 _processorData[cpuIndex].Total += Convert.ToUInt64(items[x], CultureInfo.InvariantCulture);
             }
@@ -167,17 +165,17 @@ namespace Ookii.Jumbo
         {
             if (_previousProcessorData != null)
             {
-                for (int x = 0; x < _processorData.Length; ++x)
+                for (var x = 0; x < _processorData.Length; ++x)
                 {
-                    ulong userDelta = _processorData[x].User - _previousProcessorData[x].User;
-                    ulong systemDelta = _processorData[x].System - _previousProcessorData[x].System;
-                    ulong idleDelta = _processorData[x].Idle - _previousProcessorData[x].Idle;
-                    ulong irqDelta = _processorData[x].Irq - _previousProcessorData[x].Irq;
-                    ulong ioWaitDelta = _processorData[x].IOWait - _previousProcessorData[x].IOWait;
-                    ulong totalDelta = _processorData[x].Total - _previousProcessorData[x].Total;
-                    float factor = 100.0f / totalDelta;
+                    var userDelta = _processorData[x].User - _previousProcessorData[x].User;
+                    var systemDelta = _processorData[x].System - _previousProcessorData[x].System;
+                    var idleDelta = _processorData[x].Idle - _previousProcessorData[x].Idle;
+                    var irqDelta = _processorData[x].Irq - _previousProcessorData[x].Irq;
+                    var ioWaitDelta = _processorData[x].IOWait - _previousProcessorData[x].IOWait;
+                    var totalDelta = _processorData[x].Total - _previousProcessorData[x].Total;
+                    var factor = 100.0f / totalDelta;
 
-                    IndividualProcessorStatus processor = (x == Environment.ProcessorCount) ? Total : _processors[x];
+                    var processor = (x == Environment.ProcessorCount) ? Total : _processors[x];
                     processor.PercentUserTime = factor * userDelta;
                     processor.PercentSystemTime = factor * systemDelta;
                     processor.PercentIdleTime = factor * idleDelta;

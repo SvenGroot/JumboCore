@@ -2,13 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 
@@ -26,7 +23,7 @@ namespace Ookii.Jumbo.Dfs
         private readonly JumboFile _file;
         private long _position;
         private bool _disposed;
-        private Packet _currentPacket = new Packet();
+        private readonly Packet _currentPacket = new Packet();
         private int _currentPacketOffset = 0;
         private long _endOffset;
         private int _lastBlockToDownload;
@@ -271,7 +268,7 @@ namespace Ookii.Jumbo.Dfs
             if (_position + count > _endOffset)
                 count = (int)(_endOffset - _position);
 
-            int sizeRemaining = count;
+            var sizeRemaining = count;
             if (count > 0)
             {
                 while (_position < _endOffset && sizeRemaining > 0)
@@ -284,9 +281,9 @@ namespace Ookii.Jumbo.Dfs
                             break;
                     }
 
-                    int packetCount = Math.Min(_currentPacket.Size - _currentPacketOffset, sizeRemaining);
+                    var packetCount = Math.Min(_currentPacket.Size - _currentPacketOffset, sizeRemaining);
 
-                    int copied = _currentPacket.CopyTo(_currentPacketOffset, buffer, offset, packetCount);
+                    var copied = _currentPacket.CopyTo(_currentPacketOffset, buffer, offset, packetCount);
                     Debug.Assert(copied == packetCount);
                     offset += copied;
                     sizeRemaining -= copied;
@@ -295,7 +292,7 @@ namespace Ookii.Jumbo.Dfs
 
                     if (_currentPacket.IsLastPacket && _position < Length && _currentPacketOffset == _currentPacket.Size && _currentPacket.Size < Packet.PacketSize)
                     {
-                        int padding = Packet.PacketSize - _currentPacket.Size;
+                        var padding = Packet.PacketSize - _currentPacket.Size;
                         _position += padding;
                         _paddingSkipped += padding;
                     }
@@ -412,7 +409,7 @@ namespace Ookii.Jumbo.Dfs
 
         private bool ReadPacket()
         {
-            bool success = false;
+            var success = false;
             do
             {
                 try
@@ -423,7 +420,7 @@ namespace Ookii.Jumbo.Dfs
                             return false;
                     }
 
-                    DataServerClientProtocolResult status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
+                    var status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
                     if (status != DataServerClientProtocolResult.Ok)
                     {
                         throw new DfsException("The data server reported an error.");
@@ -454,37 +451,37 @@ namespace Ookii.Jumbo.Dfs
             if (_position == _file.Size)
                 return false;
 
-            bool success = false;
+            var success = false;
             ++BlocksRead;
             do
             {
                 CloseDataServerConnection();
-                int blockIndex = (int)(_position / _file.BlockSize);
+                var blockIndex = (int)(_position / _file.BlockSize);
                 if (_lastBlockToDownload > 0 && blockIndex > _lastBlockToDownload)
                     return false;
-                int blockOffset = (int)(_position % _file.BlockSize);
-                Guid blockId = _file.Blocks[blockIndex];
+                var blockOffset = (int)(_position % _file.BlockSize);
+                var blockId = _file.Blocks[blockIndex];
                 _currentBlockId = blockId;
                 _dataServers = _nameServer.GetDataServersForBlock(blockId).ToList();
-                ServerAddress server = _dataServers[_currentServerIndex];
+                var server = _dataServers[_currentServerIndex];
                 _serverClient = new TcpClient(server.HostName, server.Port);
                 _serverStream = _serverClient.GetStream();
                 _serverReader = new BinaryReader(_serverStream);
-                DataServerClientProtocolReadHeader header = new DataServerClientProtocolReadHeader()
+                var header = new DataServerClientProtocolReadHeader()
                 {
                     BlockId = blockId,
                     Offset = blockOffset,
                     Size = -1
                 };
 
-                BinaryFormatter formatter = new BinaryFormatter();
+                var formatter = new BinaryFormatter();
                 formatter.Serialize(_serverStream, header);
                 _serverStream.Flush();
 
-                DataServerClientProtocolResult status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
+                var status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
                 if (status == DataServerClientProtocolResult.OutOfRange && blockOffset > 0 && blockIndex < _file.Blocks.Count - 1 && _file.RecordOptions == IO.RecordStreamOptions.DoNotCrossBoundary)
                 {
-                    long oldPosition = _position;
+                    var oldPosition = _position;
                     _position = (blockIndex + 1) * _file.BlockSize;
                     _paddingSkipped += _position - oldPosition;
                 }

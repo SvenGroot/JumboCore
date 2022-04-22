@@ -1,16 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class PartitionFileStream : Stream
     {
-        private Stream _baseStream;
+        private readonly Stream _baseStream;
         private readonly string _fileName;
         private readonly IEnumerator<PartitionFileIndexEntry> _indexEntries;
         private PartitionFileIndexEntry _current;
@@ -25,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             _fileName = fileName;
             _bufferSize = bufferSize;
-            int segmentCount = indexEntries.Count();
+            var segmentCount = indexEntries.Count();
             _length = indexEntries.Sum(e => e.UncompressedSize);
             _indexEntries = indexEntries.GetEnumerator();
             _baseStream = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize);
@@ -83,10 +81,10 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_currentSegment == null)
                 return 0;
 
-            int totalBytesRead = 0;
+            var totalBytesRead = 0;
             while (count > 0)
             {
-                int bytesRead = _currentSegment.Read(buffer, offset, count);
+                var bytesRead = _currentSegment.Read(buffer, offset, count);
                 if (bytesRead == 0 && !NextSegment())
                     break;
                 totalBytesRead += bytesRead;

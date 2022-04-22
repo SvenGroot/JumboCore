@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
@@ -25,11 +20,11 @@ namespace DataServerApplication
         private readonly DfsConfiguration _config;
         private Guid _fileSystemId;
 
-        private INameServerHeartbeatProtocol _nameServer;
-        private List<HeartbeatData> _pendingHeartbeatData = new List<HeartbeatData>();
+        private readonly INameServerHeartbeatProtocol _nameServer;
+        private readonly List<HeartbeatData> _pendingHeartbeatData = new List<HeartbeatData>();
 
-        private List<Guid> _blocks = new List<Guid>();
-        private List<Guid> _pendingBlocks = new List<Guid>();
+        private readonly List<Guid> _blocks = new List<Guid>();
+        private readonly List<Guid> _pendingBlocks = new List<Guid>();
         private BlockServer _blockServer; // listens for TCP connections.
         private volatile bool _running;
         private readonly Queue<ReplicateBlockHeartbeatResponse> _blocksToReplicate = new Queue<ReplicateBlockHeartbeatResponse>();
@@ -70,7 +65,7 @@ namespace DataServerApplication
 
             if (_running)
             {
-                IPAddress[] addresses = TcpServer.GetDefaultListenerAddresses(_config.DataServer.ListenIPv4AndIPv6);
+                var addresses = TcpServer.GetDefaultListenerAddresses(_config.DataServer.ListenIPv4AndIPv6);
                 _blockServer = new BlockServer(this, addresses, _config.DataServer.Port);
                 _blockServer.Start();
 
@@ -80,9 +75,9 @@ namespace DataServerApplication
 
                 while (_running)
                 {
-                    int start = Environment.TickCount;
+                    var start = Environment.TickCount;
                     SendHeartbeat();
-                    int end = Environment.TickCount;
+                    var end = Environment.TickCount;
                     if (end - start > 500)
                         _log.WarnFormat("Long heartbeat time: {0}", end - start);
                     Thread.Sleep(_heartbeatInterval);
@@ -154,7 +149,7 @@ namespace DataServerApplication
                     System.IO.File.Move(Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString()), GetBlockFileName(blockID));
                     _blocks.Add(blockID);
                 }
-            NewBlockHeartbeatData data = new NewBlockHeartbeatData() { BlockId = blockID, Size = size };
+            var data = new NewBlockHeartbeatData() { BlockId = blockID, Size = size };
             GetDiskUsage(data);
             AddDataForNextHeartbeat(data);
             // We send the heartbeat immediately so the client knows that when the server comes back to him, the name server
@@ -169,7 +164,7 @@ namespace DataServerApplication
                 if (_pendingBlocks.Contains(blockID))
                 {
                     _pendingBlocks.Remove(blockID);
-                    string blockFile = Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString());
+                    var blockFile = Path.Combine(_temporaryBlockStorageDirectory, blockID.ToString());
                     if (System.IO.File.Exists(blockFile))
                         System.IO.File.Delete(blockFile);
                 }
@@ -259,22 +254,22 @@ namespace DataServerApplication
             // It doesn't hurt though.
             lock (_blocks)
             {
-                string[] files = System.IO.Directory.GetFiles(_blockStorageDirectory);
-                string fsIdFile = Path.Combine(_blockStorageDirectory, "fsid");
+                var files = System.IO.Directory.GetFiles(_blockStorageDirectory);
+                var fsIdFile = Path.Combine(_blockStorageDirectory, "fsid");
                 if (File.Exists(fsIdFile))
                 {
                     _fileSystemId = new Guid(File.ReadAllBytes(fsIdFile));
                     _log.InfoFormat("File system ID: {0:B}.", _fileSystemId);
                     _log.Info("Loading block list...");
 
-                    foreach (string file in files)
+                    foreach (var file in files)
                     {
-                        string fileName = Path.GetFileName(file);
+                        var fileName = Path.GetFileName(file);
                         if (fileName != "fsid")
                         {
                             try
                             {
-                                Guid blockID = new Guid(fileName);
+                                var blockID = new Guid(fileName);
                                 _log.DebugFormat("- Block ID: {0}", blockID);
                                 _blocks.Add(blockID);
                             }
@@ -316,21 +311,21 @@ namespace DataServerApplication
                     _log.Error(FormattableString.Invariant($"Failed to delete block {block}."), ex);
                 }
             }
-            StatusHeartbeatData statusData = new StatusHeartbeatData();
+            var statusData = new StatusHeartbeatData();
             GetDiskUsage(statusData);
             AddDataForNextHeartbeat(statusData);
         }
 
         private void GetDiskUsage(StatusHeartbeatData data)
         {
-            DriveInfo info = new DriveInfo(_blockStorageDirectory);
+            var info = new DriveInfo(_blockStorageDirectory);
             data.DiskSpaceFree = info.AvailableFreeSpace;
             data.DiskSpaceTotal = info.TotalSize;
             lock (_blocks)
             {
                 foreach (var blockID in _blocks)
                 {
-                    string blockFile = GetBlockFileName(blockID);
+                    var blockFile = GetBlockFileName(blockID);
                     data.DiskSpaceUsed += new FileInfo(blockFile).Length;
                 }
             }
@@ -367,10 +362,10 @@ namespace DataServerApplication
                         }
                     }
                     _log.InfoFormat("Replicating block {0} to {1} data servers; first is {2}.", response.BlockAssignment.BlockId, response.BlockAssignment.DataServers.Count, response.BlockAssignment.DataServers[0]);
-                    Packet packet = new Packet();
-                    using (BlockSender sender = new BlockSender(response.BlockAssignment))
-                    using (FileStream file = System.IO.File.OpenRead(GetBlockFileName(response.BlockAssignment.BlockId)))
-                    using (BinaryReader reader = new BinaryReader(file))
+                    var packet = new Packet();
+                    using (var sender = new BlockSender(response.BlockAssignment))
+                    using (var file = System.IO.File.OpenRead(GetBlockFileName(response.BlockAssignment.BlockId)))
+                    using (var reader = new BinaryReader(file))
                     {
                         do
                         {

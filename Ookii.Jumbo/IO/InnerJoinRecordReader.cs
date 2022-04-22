@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -30,7 +28,7 @@ namespace Ookii.Jumbo.IO
         private readonly List<TInner> _tempInnerList = new List<TInner>();
         private int _tempInnerListIndex;
         private bool _started;
-        private bool _needOuterClone;
+        private readonly bool _needOuterClone;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InnerJoinRecordReader{TOuter, TInner, TResult}"/> class.
@@ -76,9 +74,9 @@ namespace Ookii.Jumbo.IO
                 }
 
                 outer = _outer.CurrentRecord;
-                TInner inner = _inner.CurrentRecord;
+                var inner = _inner.CurrentRecord;
 
-                int compareResult = Compare(outer, inner);
+                var compareResult = Compare(outer, inner);
                 if (compareResult < 0)
                     _outer.ReadRecord();
                 else if (compareResult > 0)
@@ -92,7 +90,7 @@ namespace Ookii.Jumbo.IO
                         _tempOuterObject = outer;
                     if (_outer.ReadRecord())
                     {
-                        TOuter nextOuter = _outer.CurrentRecord;
+                        var nextOuter = _outer.CurrentRecord;
                         if (Compare(nextOuter, inner) == 0)
                         {
                             // There's more than one record in outer that matches inner, which means we need to store the inner records matching this key
@@ -168,7 +166,7 @@ namespace Ookii.Jumbo.IO
         {
             if (partitions == null)
                 throw new ArgumentNullException(nameof(partitions));
-            IRecordReader reader = partitions[0].Reader;
+            var reader = partitions[0].Reader;
             switch (CurrentInputCount)
             {
             case 0:

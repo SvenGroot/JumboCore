@@ -51,8 +51,8 @@ namespace Ookii.Jumbo.Jet.Channels
             TaskExecution = taskExecution;
             InputStage = inputStage;
             // Match the compression type of the input stage.
-            CompressionType type;
-            if (inputStage.TryGetSetting(FileOutputChannel.CompressionTypeSetting, out type))
+            if (inputStage.TryGetSetting(FileOutputChannel.CompressionTypeSetting, out             // Match the compression type of the input stage.
+            CompressionType type))
                 CompressionType = type;
             else
                 CompressionType = taskExecution.Context.JobConfiguration.GetSetting(FileOutputChannel.CompressionTypeSetting, taskExecution.JetClient.Configuration.FileChannel.CompressionType);
@@ -187,14 +187,14 @@ namespace Ookii.Jumbo.Jet.Channels
         /// g <see cref="IMultiInputRecordReader"/>.</returns>
         protected IMultiInputRecordReader CreateChannelRecordReader()
         {
-            Type multiInputRecordReaderType = InputStage.OutputChannel.MultiInputRecordReaderType.ReferencedType;
+            var multiInputRecordReaderType = InputStage.OutputChannel.MultiInputRecordReaderType.ReferencedType;
             _log.InfoFormat(System.Globalization.CultureInfo.CurrentCulture, "Creating MultiRecordReader of type {3} for {0} inputs, allow record reuse = {1}, buffer size = {2}.", InputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize, multiInputRecordReaderType);
-            int bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)TaskExecution.JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize;
+            var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)TaskExecution.JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize;
             // We're not using JetActivator to create the object because we need to delay calling NotifyConfigurationChanged until after InputStage was set.
-            int[] partitions = TaskExecution.GetPartitions();
+            var partitions = TaskExecution.GetPartitions();
             _partitions.AddRange(partitions);
-            IMultiInputRecordReader reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType);
-            IChannelMultiInputRecordReader channelReader = reader as IChannelMultiInputRecordReader;
+            var reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType);
+            var channelReader = reader as IChannelMultiInputRecordReader;
             if (channelReader != null)
                 channelReader.Channel = this;
             JetActivator.ApplyConfiguration(reader, TaskExecution.FileSystemClient.Configuration, TaskExecution.JetClient.Configuration, TaskExecution.Context);
@@ -207,7 +207,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected virtual void OnMemoryStorageFull(MemoryStorageFullEventArgs e)
         {
-            EventHandler<MemoryStorageFullEventArgs> handler = MemoryStorageFull;
+            var handler = MemoryStorageFull;
             if (handler != null)
                 handler(this, e);
         }
@@ -215,10 +215,10 @@ namespace Ookii.Jumbo.Jet.Channels
         private void GetInputTaskIdsFull()
         {
             // We add only the root task IDs, we ignore child tasks.
-            StageConfiguration stage = InputStage.Root;
-            for (int x = 1; x <= stage.TaskCount; ++x)
+            var stage = InputStage.Root;
+            for (var x = 1; x <= stage.TaskCount; ++x)
             {
-                TaskId taskId = new TaskId(stage.StageId, x);
+                var taskId = new TaskId(stage.StageId, x);
                 _inputTaskIds.Add(taskId.ToString());
             }
         }

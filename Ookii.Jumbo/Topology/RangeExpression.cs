@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 
 namespace Ookii.Jumbo.Topology
@@ -74,11 +73,11 @@ namespace Ookii.Jumbo.Topology
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                int end = index + _text.Length;
+                var end = index + _text.Length;
                 if (end > value.Length)
                     return -1;
 
-                for (int matchIndex = 0; index < end; ++index, ++matchIndex)
+                for (var matchIndex = 0; index < end; ++index, ++matchIndex)
                 {
                     if (matchCase ? value[index] != _text[matchIndex] : char.ToUpperInvariant(value[index]) != char.ToUpperInvariant(_text[matchIndex]))
                         return -1;
@@ -125,17 +124,16 @@ namespace Ookii.Jumbo.Topology
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                int start = index;
+                var start = index;
                 while (index < value.Length && char.IsNumber(value, index))
                 {
                     ++index;
                 }
 
-                int count = index - start;
+                var count = index - start;
                 if (count >= _minCharCount && count <= _maxCharCount)
                 {
-                    int number;
-                    if (int.TryParse(value.Substring(start, index - start), out number))
+                    if (int.TryParse(value.Substring(start, index - start), out var number))
                     {
                         if (number >= _minInclusive && number <= _maxInclusive)
                             return index;
@@ -174,11 +172,11 @@ namespace Ookii.Jumbo.Topology
                 if (index < 0 || index > value.Length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                foreach (List<BaseNode> choice in _choices)
+                foreach (var choice in _choices)
                 {
-                    int current = index;
+                    var current = index;
 
-                    foreach (BaseNode node in choice)
+                    foreach (var node in choice)
                     {
                         current = node.Match(value, current, matchCase);
                         if (current < 0)
@@ -193,16 +191,16 @@ namespace Ookii.Jumbo.Topology
 
             public override string ToString()
             {
-                StringBuilder result = new StringBuilder();
-                bool first = true;
-                foreach (List<BaseNode> choice in _choices)
+                var result = new StringBuilder();
+                var first = true;
+                foreach (var choice in _choices)
                 {
                     if (first)
                         first = false;
                     else
                         result.Append('|');
 
-                    foreach (BaseNode node in choice)
+                    foreach (var node in choice)
                     {
                         if (node is ChoiceNode && choice.Count > 1)
                         {
@@ -258,8 +256,8 @@ namespace Ookii.Jumbo.Topology
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            int index = 0;
-            foreach (BaseNode node in _nodes)
+            var index = 0;
+            foreach (var node in _nodes)
             {
                 index = node.Match(value, index, matchCase);
                 if (index < 0)
@@ -272,16 +270,16 @@ namespace Ookii.Jumbo.Topology
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static List<BaseNode> ParsePattern(string pattern)
         {
-            List<BaseNode> current = new List<BaseNode>();
-            List<BaseNode> currentGroup = current;
+            var current = new List<BaseNode>();
+            var currentGroup = current;
             Stack<Tuple<List<BaseNode>, ChoiceNode>> groups = null;
             ChoiceNode choice = null;
-            StringBuilder temp = new StringBuilder(pattern.Length);
-            ParseState state = ParseState.Text;
-            int minInclusive = 0;
-            int minCharCount = 0;
+            var temp = new StringBuilder(pattern.Length);
+            var state = ParseState.Text;
+            var minInclusive = 0;
+            var minCharCount = 0;
 
-            foreach (char c in pattern)
+            foreach (var c in pattern)
             {
                 switch (state)
                 {
@@ -310,7 +308,7 @@ namespace Ookii.Jumbo.Topology
                         if (groups == null || groups.Count == 0)
                             throw new FormatException("Invalid range expression.");
                         var parent = groups.Pop();
-                        List<BaseNode> group = currentGroup;
+                        var group = currentGroup;
                         currentGroup = parent.Item1;
                         choice = parent.Item2;
                         if (choice == null)
@@ -391,8 +389,8 @@ namespace Ookii.Jumbo.Topology
         /// </returns>
         public override string ToString()
         {
-            StringBuilder result = new StringBuilder();
-            foreach (BaseNode node in _nodes)
+            var result = new StringBuilder();
+            foreach (var node in _nodes)
             {
                 if (node is ChoiceNode && _nodes.Count > 1)
                 {

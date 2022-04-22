@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -212,7 +209,7 @@ namespace Ookii.Jumbo.IO
                 _disposed = true;
                 if (_reader != null)
                 {
-                    ((IDisposable)_reader).Dispose();
+                    _reader.Dispose();
                 }
                 if (_rawReader != null)
                 {

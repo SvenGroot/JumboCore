@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet.Scheduling;
 
 namespace JobServerApplication
@@ -136,7 +133,7 @@ namespace JobServerApplication
         {
             if (task == null)
                 throw new ArgumentNullException(nameof(task));
-            TaskInfo taskInfo = (TaskInfo)task;
+            var taskInfo = (TaskInfo)task;
             TaskServer.SchedulerInfo.AssignTask(_job, taskInfo);
 
             if (dataDistance != null)

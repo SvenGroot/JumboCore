@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet;
 
 namespace JetWeb.Pages
@@ -63,15 +57,15 @@ namespace JetWeb.Pages
                 break;
             }
 
-            int maxSize = Int32.MaxValue;
+            var maxSize = Int32.MaxValue;
             if (MaxSize != null)
                 maxSize = (int)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
 
             string log;
             if (TaskServer == null)
             {
-                JetClient client = new JetClient();
-                JetMetrics metrics = client.JobServer.GetMetrics();
+                var client = new JetClient();
+                var metrics = client.JobServer.GetMetrics();
                 ViewData["Title"] = $"Job server {metrics.JobServer} log file";
                 log = client.JobServer.GetLogFileContents(logKind, maxSize);
             }
@@ -103,8 +97,8 @@ namespace JetWeb.Pages
 
         private static HtmlString FormatLogFile(string log)
         {
-            StringBuilder result = new StringBuilder(log.Length);
-            using (StringReader reader = new StringReader(log))
+            var result = new StringBuilder(log.Length);
+            using (var reader = new StringReader(log))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)

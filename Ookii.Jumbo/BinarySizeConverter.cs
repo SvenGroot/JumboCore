@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -53,7 +50,7 @@ namespace Ookii.Jumbo
         /// <returns>The converted object.</returns>
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
         {
-            string stringValue = value as string;
+            var stringValue = value as string;
             if (stringValue != null)
                 return BinarySize.Parse(stringValue, culture);
             else if (value is byte)
@@ -95,7 +92,7 @@ namespace Ookii.Jumbo
             if (!(value is BinarySize))
                 throw new ArgumentException("Cannot convert argument: incorrect type.", nameof(value));
 
-            BinarySize realValue = (BinarySize)value;
+            var realValue = (BinarySize)value;
             if (destinationType == typeof(string))
                 return realValue.ToString(culture);
             else if (destinationType == typeof(byte))

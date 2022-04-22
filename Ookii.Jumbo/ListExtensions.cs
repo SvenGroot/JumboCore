@@ -34,12 +34,12 @@ namespace Ookii.Jumbo
 
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
-            int n = list.Count;        // The number of items left to shuffle (loop invariant).
+            var n = list.Count;        // The number of items left to shuffle (loop invariant).
             while (n > 1)
             {
-                int k = random.Next(n);  // 0 <= k < n.
+                var k = random.Next(n);  // 0 <= k < n.
                 n--;                     // n is now the last pertinent index;
-                T temp = list[n];     // swap array[n] with array[k] (does nothing if k == n).
+                var temp = list[n];     // swap array[n] with array[k] (does nothing if k == n).
                 list[n] = list[k];
                 list[k] = temp;
             }
@@ -59,9 +59,9 @@ namespace Ookii.Jumbo
             if (delimiter == null)
                 throw new ArgumentNullException(nameof(delimiter));
 
-            StringBuilder result = new StringBuilder();
-            bool first = true;
-            foreach (T item in list)
+            var result = new StringBuilder();
+            var first = true;
+            foreach (var item in list)
             {
                 if (first)
                     first = false;
@@ -94,10 +94,10 @@ namespace Ookii.Jumbo
         {
             if (list == null)
                 throw new ArgumentNullException(nameof(list));
-            int hash = 0x218A9B2C;
+            var hash = 0x218A9B2C;
             foreach (var item in list)
             {
-                int itemHash = item.GetHashCode();
+                var itemHash = item.GetHashCode();
                 //mix up the bits. 
                 hash = itemHash ^ ((hash << 5) + hash);
             }
@@ -117,7 +117,7 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(list));
             if (index1 != index2)
             {
-                T temp = list[index1];
+                var temp = list[index1];
                 list[index1] = list[index2];
                 list[index2] = temp;
             }

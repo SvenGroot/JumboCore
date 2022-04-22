@@ -30,44 +30,44 @@ namespace JetWeb.Api
         [HttpGet]
         public async Task<IActionResult> Get(Guid id, bool archived, CancellationToken token)
         {
-            JetClient client = new JetClient();
-            FileSystemClient fileSystemClient = FileSystemClient.Create();
+            var client = new JetClient();
+            var fileSystemClient = FileSystemClient.Create();
             JobStatus job;
             if (archived)
                 job = client.JobServer.GetArchivedJobStatus(id);
             else
                 job = client.JobServer.GetJobStatus(id);
 
-            string fileName = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} ({1}).zip", job.JobName, job.JobId);
-            MemoryStream memoryStream = new MemoryStream();
-            ZipOutputStream stream = new ZipOutputStream(memoryStream);
+            var fileName = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} ({1}).zip", job.JobName, job.JobId);
+            var memoryStream = new MemoryStream();
+            var stream = new ZipOutputStream(memoryStream);
             stream.SetLevel(9);
 
             stream.PutNextEntry(new ZipEntry("config.xml"));
             if (archived)
             {
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(client.JobServer.GetJobConfigurationFile(id, true));
+                var buffer = System.Text.Encoding.UTF8.GetBytes(client.JobServer.GetJobConfigurationFile(id, true));
                 await stream.WriteAsync(buffer, 0, buffer.Length, token);
             }
             else
             {
-                string configFilePath = fileSystemClient.Path.Combine(fileSystemClient.Path.Combine(client.Configuration.JobServer.JetDfsPath, "job_" + job.JobId.ToString("B")), Job.JobConfigFileName);
-                using (Stream configStream = fileSystemClient.OpenFile(configFilePath))
+                var configFilePath = fileSystemClient.Path.Combine(fileSystemClient.Path.Combine(client.Configuration.JobServer.JetDfsPath, "job_" + job.JobId.ToString("B")), Job.JobConfigFileName);
+                using (var configStream = fileSystemClient.OpenFile(configFilePath))
                 {
                     await configStream.CopyToAsync(stream, token);
                 }
             }
 
             stream.PutNextEntry(new ZipEntry("config.xslt"));
-            using (FileStream configXsltStream = System.IO.File.OpenRead(Path.Combine(_basePath, "Api", "config.xslt")))
+            using (var configXsltStream = System.IO.File.OpenRead(Path.Combine(_basePath, "Api", "config.xslt")))
             {
                 await configXsltStream.CopyToAsync(stream, token);
             }
 
             stream.PutNextEntry(new ZipEntry("summary.xml"));
-            using (MemoryStream xmlStream = new MemoryStream())
+            using (var xmlStream = new MemoryStream())
             {
-                using (XmlWriter writer = XmlWriter.Create(xmlStream, new XmlWriterSettings() { Async = true }))
+                using (var writer = XmlWriter.Create(xmlStream, new XmlWriterSettings() { Async = true }))
                 {
                     await job.ToXml().SaveAsync(writer, token);
                 }
@@ -76,7 +76,7 @@ namespace JetWeb.Api
             }
 
             stream.PutNextEntry(new ZipEntry("summary.xslt"));
-            using (FileStream configXsltStream = System.IO.File.OpenRead(Path.Combine(_basePath, "Api", "summary.xslt")))
+            using (var configXsltStream = System.IO.File.OpenRead(Path.Combine(_basePath, "Api", "summary.xslt")))
             {
                 await configXsltStream.CopyToAsync(stream, token);
             }
@@ -97,8 +97,8 @@ namespace JetWeb.Api
 
         private async Task DownloadLogFiles(SemaphoreSlim semaphore, ServerAddress server, ZipOutputStream zipStream, Guid jobId, CancellationToken token)
         {
-            ITaskServerClientProtocol taskServer = JetClient.CreateTaskServerClient(server);
-            byte[] logBytes = taskServer.GetCompressedTaskLogFiles(jobId);
+            var taskServer = JetClient.CreateTaskServerClient(server);
+            var logBytes = taskServer.GetCompressedTaskLogFiles(jobId);
             await semaphore.WaitAsync(token);
             try
             {

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo.IO;
 
@@ -114,7 +113,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public override void Write(byte[] buffer, int offset, int count)
             {
-                int newBufferUsed = Interlocked.Add(ref _bufferUsed, count);
+                var newBufferUsed = Interlocked.Add(ref _bufferUsed, count);
                 while (newBufferUsed > _buffer.Length)
                 {
                     _log.InfoFormat("Waiting for buffer space, current buffer pos {0}, buffer used {1}", _bufferPos, newBufferUsed);
@@ -139,7 +138,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public void FreeBuffer(int size)
             {
-                int newSize = Interlocked.Add(ref _bufferUsed, -size);
+                var newSize = Interlocked.Add(ref _bufferUsed, -size);
                 Debug.Assert(newSize >= 0);
                 _freeBufferEvent.Set();
             }
@@ -153,19 +152,19 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 // Thread safety note: only one thread is writing into this buffer, to _bufferUsed can only ever becomes less (because of the spill thread).
                 // If that happens, we'll take an overly cautious approach but it's basically fine.
-                int extraBytes = _buffer.Length - _bufferMark;
+                var extraBytes = _buffer.Length - _bufferMark;
                 if (_bufferUsed + extraBytes < _buffer.Length)
                 {
                     System.Buffer.BlockCopy(_buffer, 0, _buffer, extraBytes, _bufferPos); // Move bytes at start of buffer forward
                     System.Buffer.BlockCopy(_buffer, _bufferMark, _buffer, 0, extraBytes); // Move bytes at the end of buffer to the start
                     _bufferPos += extraBytes;
-                    int newBufferUsed = Interlocked.Add(ref _bufferUsed, extraBytes);
+                    var newBufferUsed = Interlocked.Add(ref _bufferUsed, extraBytes);
                     Debug.Assert(newBufferUsed < _buffer.Length);
                 }
                 else
                 {
                     // Not enough space, so we'll use write to take care of the waiting.
-                    byte[] temp = new byte[_bufferPos];
+                    var temp = new byte[_bufferPos];
                     System.Buffer.BlockCopy(_buffer, 0, temp, 0, _bufferPos);
                     FreeBuffer(_bufferPos);
                     _bufferPos = 0;
@@ -188,7 +187,7 @@ namespace Ookii.Jumbo.Jet.Channels
                     throw new ArgumentOutOfRangeException(nameof(count));
                 if (sourceIndex + count > source.Length)
                     throw new ArgumentException("sourceIndex + count is larger than the source array.");
-                int end = destinationIndex + count;
+                var end = destinationIndex + count;
                 if (end > destination.Length)
                 {
                     end %= destination.Length;
@@ -203,7 +202,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 }
                 else
                 {
-                    int firstCount = destination.Length - destinationIndex;
+                    var firstCount = destination.Length - destinationIndex;
                     Array.Copy(source, sourceIndex, destination, destinationIndex, firstCount);
                     Array.Copy(source, sourceIndex + firstCount, destination, 0, end);
                 }
@@ -240,9 +239,9 @@ namespace Ookii.Jumbo.Jet.Channels
         private int _spillEnd;
         private int _spillSize;
         private volatile bool _spillInProgress;
-        private AutoResetEvent _spillWaitingEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _spillWaitingEvent = new AutoResetEvent(false);
         private Thread _spillThread;
-        private ManualResetEvent _cancelEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent _cancelEvent = new ManualResetEvent(false);
         private int _spillCount;
         private Exception _spillException;
         private bool _spillExceptionThrown;
@@ -410,8 +409,8 @@ namespace Ookii.Jumbo.Jet.Channels
             // TODO: Make sure the entire record fits in the buffer.
             ValueWriter<T>.WriteValue(record, _bufferWriter);
 
-            int recordStart = _buffer.BufferMark;
-            int recordEnd = _buffer.BufferPos;
+            var recordStart = _buffer.BufferMark;
+            var recordEnd = _buffer.BufferPos;
             _lastRecordEnd = recordEnd;
 
             int recordLength;
@@ -427,14 +426,14 @@ namespace Ookii.Jumbo.Jet.Channels
                 recordLength = _buffer.BufferPos;
             }
 
-            int partition = _partitioner.GetPartition(record);
+            var partition = _partitioner.GetPartition(record);
 
-            List<RecordIndexEntry> index = _indices[partition];
+            var index = _indices[partition];
             if (_flags.HasFlag(SpillRecordWriterOptions.AllowMultiRecordIndexEntries) && partition == _lastPartition)
             {
                 // If the new record was the same partition as the last record, we just update that one.
-                int lastEntry = index.Count - 1;
-                RecordIndexEntry entry = index[lastEntry];
+                var lastEntry = index.Count - 1;
+                var entry = index[lastEntry];
                 index[lastEntry] = new RecordIndexEntry(entry.Offset, entry.Count + recordLength);
             }
             else
@@ -511,15 +510,15 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
-            RecordIndexEntry[] index = _spillIndices[partition];
+            var index = _spillIndices[partition];
             if (index != null)
             {
                 PreparePartition(partition, index, _buffer.Buffer);
-                for (int x = 0; x < index.Length; ++x)
+                for (var x = 0; x < index.Length; ++x)
                 {
                     if (index[x].Offset + index[x].Count > _buffer.Size)
                     {
-                        int firstCount = _buffer.Size - index[x].Offset;
+                        var firstCount = _buffer.Size - index[x].Offset;
                         outputStream.Write(_buffer.Buffer, index[x].Offset, firstCount);
                         outputStream.Write(_buffer.Buffer, 0, index[x].Count - firstCount);
                     }
@@ -541,12 +540,12 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_record == null)
                 _record = new RawRecord();
 
-            RawRecord record = _record;
-            RecordIndexEntry[] index = _spillIndices[partition];
+            var record = _record;
+            var index = _spillIndices[partition];
             if (index != null)
             {
                 PreparePartition(partition, index, _buffer.Buffer);
-                for (int x = 0; x < index.Length; ++x)
+                for (var x = 0; x < index.Length; ++x)
                 {
                     record.Reset(_buffer.Buffer, index[x].Offset, index[x].Count);
                     output.WriteRecord(record);
@@ -622,10 +621,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void PrepareForSpill(bool allowEmptySpill)
         {
-            bool hasRecords = false;
-            for (int x = 0; x < _indices.Length; ++x)
+            var hasRecords = false;
+            for (var x = 0; x < _indices.Length; ++x)
             {
-                List<RecordIndexEntry> index = _indices[x];
+                var index = _indices[x];
                 if (index != null && index.Count > 0)
                 {
                     hasRecords = true;
@@ -653,7 +652,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                WaitHandle[] handles = new WaitHandle[] { _spillWaitingEvent, _cancelEvent };
+                var handles = new WaitHandle[] { _spillWaitingEvent, _cancelEvent };
 
                 while (WaitHandle.WaitAny(handles) != 1)
                 {

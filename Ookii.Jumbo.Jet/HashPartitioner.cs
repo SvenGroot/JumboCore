@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet
@@ -34,7 +32,7 @@ namespace Ookii.Jumbo.Jet
             _comparer = null;
             if (TaskContext != null)
             {
-                string comparerTypeName = TaskContext.StageConfiguration.GetSetting(PartitionerConstants.EqualityComparerSetting, null);
+                var comparerTypeName = TaskContext.StageConfiguration.GetSetting(PartitionerConstants.EqualityComparerSetting, null);
                 if (!string.IsNullOrEmpty(comparerTypeName))
                     _comparer = (IEqualityComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
             }

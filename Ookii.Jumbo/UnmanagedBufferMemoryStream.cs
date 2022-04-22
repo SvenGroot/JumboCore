@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -60,7 +57,7 @@ namespace Ookii.Jumbo
         /// <param name="e">The data for the event.</param>
         private void OnDisposed(EventArgs e)
         {
-            EventHandler handler = Disposed;
+            var handler = Disposed;
             if (handler != null)
                 handler(this, e);
         }

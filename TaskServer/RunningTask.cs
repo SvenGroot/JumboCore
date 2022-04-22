@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using Ookii.Jumbo;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Jobs;
 
@@ -17,7 +16,7 @@ namespace TaskServerApplication
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RunningTask));
 
         private Process _process;
-        private TaskServer _taskServer;
+        private readonly TaskServer _taskServer;
         private const int _processLaunchRetryCount = 10;
         private bool _disposed;
 
@@ -63,13 +62,13 @@ namespace TaskServerApplication
         public void Run(int createProcessDelay)
         {
             _log.DebugFormat("Launching new process for task {0}.", FullTaskAttemptId);
-            int retriesLeft = _processLaunchRetryCount;
-            bool success = false;
+            var retriesLeft = _processLaunchRetryCount;
+            var success = false;
             do
             {
                 try
                 {
-                    ProcessStartInfo startInfo = new ProcessStartInfo("dotnet", string.Format(CultureInfo.InvariantCulture, "TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
+                    var startInfo = new ProcessStartInfo("dotnet", string.Format(CultureInfo.InvariantCulture, "TaskHost.dll \"{0}\" \"{1}\" \"{2}\" \"{3}\" {4}", JobId, JobDirectory, TaskAttemptId.TaskId, DfsJobDirectory, TaskAttemptId.Attempt));
                     startInfo.UseShellExecute = false;
                     startInfo.CreateNoWindow = true;
                     //string profileOutputFile = null;
@@ -124,7 +123,7 @@ namespace TaskServerApplication
 
         private void OnProcessExited(EventArgs e)
         {
-            EventHandler handler = ProcessExited;
+            var handler = ProcessExited;
             if (handler != null)
                 handler(this, e);
         }

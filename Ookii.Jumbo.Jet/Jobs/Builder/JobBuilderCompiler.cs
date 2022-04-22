@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Tasks;
@@ -78,7 +76,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             stageId = CreateUniqueStageId(stageId);
 
-            StageConfiguration stage = _job.AddDataInputStage(stageId, input.CreateStageInput(_fileSystemClient), taskType);
+            var stage = _job.AddDataInputStage(stageId, input.CreateStageInput(_fileSystemClient), taskType);
             if (output != null)
                 output.ApplyOutput(_fileSystemClient, stage);
             return stage;
@@ -173,13 +171,13 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException(nameof(stageMultiInputRecordReaderType));
 
             stageId = CreateUniqueStageId(stageId);
-            for (int x = 0; x < input.Length; ++x)
+            for (var x = 0; x < input.Length; ++x)
             {
                 if (channelSettings[x] != null)
                     input[x].InputStage.AddSettings(channelSettings[x]);
             }
 
-            StageConfiguration stage = _job.AddStage(stageId, taskType, taskCount == 0 ? DefaultChannelInputTaskCount : taskCount, input, stageMultiInputRecordReaderType);
+            var stage = _job.AddStage(stageId, taskType, taskCount == 0 ? DefaultChannelInputTaskCount : taskCount, input, stageMultiInputRecordReaderType);
 
             if (output != null)
                 output.ApplyOutput(_fileSystemClient, stage);
@@ -194,8 +192,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private string CreateUniqueStageId(string stageId)
         {
-            string result = stageId;
-            int number = 2;
+            var result = stageId;
+            var number = 2;
             while (_stageIds.Contains(result))
             {
                 result = string.Format(CultureInfo.InvariantCulture, "{0}_{1}", stageId, number);

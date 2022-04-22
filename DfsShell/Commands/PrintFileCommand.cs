@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.CommandLine;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
@@ -147,19 +143,19 @@ namespace DfsShell.Commands
                 PrintRecordReader();
             else
             {
-                Encoding encoding = System.Text.Encoding.GetEncoding(Encoding);
+                var encoding = System.Text.Encoding.GetEncoding(Encoding);
 
-                using (Stream stream = Client.OpenFile(_path))
+                using (var stream = Client.OpenFile(_path))
                 {
                     if (Tail)
                     {
-                        long newPosition = stream.Length - (long)Size;
+                        var newPosition = stream.Length - (long)Size;
                         if (newPosition > 0)
                             stream.Position = newPosition;
                     }
-                    using (SizeLimitedStream limitedStream = new SizeLimitedStream(stream, Tail ? long.MaxValue : (long)Size))
-                    using (StreamReader reader = new StreamReader(limitedStream, encoding))
-                    using (LineWrappingTextWriter writer = LineWrappingTextWriter.ForConsoleOut())
+                    using (var limitedStream = new SizeLimitedStream(stream, Tail ? long.MaxValue : (long)Size))
+                    using (var reader = new StreamReader(limitedStream, encoding))
+                    using (var writer = LineWrappingTextWriter.ForConsoleOut())
                     {
                         string line;
                         while ((line = reader.ReadLine()) != null)
@@ -171,21 +167,21 @@ namespace DfsShell.Commands
 
         private void PrintRecordReader()
         {
-            Type recordReaderType = Type.GetType(RecordReaderType);
+            var recordReaderType = Type.GetType(RecordReaderType);
             if (recordReaderType == null)
             {
                 Console.Error.WriteLine("Could not load the record reader type.");
                 return;
             }
 
-            Type recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false);
+            var recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false);
             if (recordReaderBaseType == null)
             {
                 Console.Error.WriteLine("The specified type is not a record reader.");
                 return;
             }
 
-            using (Stream stream = Client.OpenFile(_path))
+            using (var stream = Client.OpenFile(_path))
             {
                 IRecordReader reader = null;
                 if (Size < stream.Length)
@@ -196,7 +192,7 @@ namespace DfsShell.Commands
                         return;
                     }
 
-                    long offset = Tail ? 0 : stream.Length - (long)Size;
+                    var offset = Tail ? 0 : stream.Length - (long)Size;
                     if (offset < 0)
                         offset = 0;
                     reader = (IRecordReader)Activator.CreateInstance(recordReaderType, stream, offset, Size, true);

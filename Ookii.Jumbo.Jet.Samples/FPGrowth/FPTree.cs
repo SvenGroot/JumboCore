@@ -3,11 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using Ookii.Jumbo;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {

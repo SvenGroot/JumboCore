@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -76,8 +73,8 @@ namespace Ookii.Jumbo.IO
 
                 i = left;
                 j = right;
-                int ll = left;
-                int rr = right;
+                var ll = left;
+                var rr = right;
                 int cr;
                 while (true)
                 {
@@ -130,7 +127,7 @@ namespace Ookii.Jumbo.IO
 
         private static void Swap(RecordIndexEntry[] s, int p, int r)
         {
-            RecordIndexEntry temp = s[p];
+            var temp = s[p];
             s[p] = s[r];
             s[r] = temp;
         }

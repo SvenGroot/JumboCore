@@ -62,14 +62,14 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 try
                 {
-                    int bytesRead = _stream.EndRead(ar);
+                    var bytesRead = _stream.EndRead(ar);
                     if (bytesRead != HeaderSize)
                         throw new ChannelException("Bad TCP channel header format.");
                     else
                     {
-                        TcpChannelConnectionFlags flags = (TcpChannelConnectionFlags)_header[0];
-                        int sendingTaskNumber = ReadInt32(1);
-                        int segmentNumber = ReadInt32(5);
+                        var flags = (TcpChannelConnectionFlags)_header[0];
+                        var sendingTaskNumber = ReadInt32(1);
+                        var segmentNumber = ReadInt32(5);
 
                         if (sendingTaskNumber < 1 || sendingTaskNumber > _channel.InputStage.Root.TaskCount)
                             throw new ChannelException("Invalid sending task number.");
@@ -99,10 +99,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public void ReadPartitionHeader(out int partition, out int partitionSize)
             {
-                int totalBytesRead = 0;
+                var totalBytesRead = 0;
                 do
                 {
-                    int bytesRead = _stream.Read(_header, totalBytesRead, PartitionHeaderSize - totalBytesRead);
+                    var bytesRead = _stream.Read(_header, totalBytesRead, PartitionHeaderSize - totalBytesRead);
                     if (bytesRead == 0)
                         throw new ChannelException("Invalid segment format.");
                     totalBytesRead += bytesRead;
@@ -134,10 +134,10 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 if (ex != null)
                 {
-                    using (MemoryStream contentStream = new MemoryStream())
+                    using (var contentStream = new MemoryStream())
                     {
                         contentStream.WriteByte(0);
-                        BinaryFormatter formatter = new BinaryFormatter();
+                        var formatter = new BinaryFormatter();
                         formatter.Serialize(contentStream, ex);
                         contentStream.WriteTo(_stream);
                     }
@@ -168,7 +168,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly Type _inputReaderType;
         private TcpListener[] _listeners;
         private readonly ITcpChannelRecordReader[][] _inputReaders;
-        private volatile bool _running = true;
+        private readonly bool _running = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TcpInputChannel"/> class.
@@ -221,14 +221,14 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             _reader = CreateChannelRecordReader();
 
-            IPAddress[] addresses = TcpServer.GetDefaultListenerAddresses(TaskExecution.JetClient.Configuration.TaskServer.ListenIPv4AndIPv6);
+            var addresses = TcpServer.GetDefaultListenerAddresses(TaskExecution.JetClient.Configuration.TaskServer.ListenIPv4AndIPv6);
 
             _listeners = new TcpListener[addresses.Length];
 
-            int port = 0;
-            for (int x = 0; x < addresses.Length; ++x)
+            var port = 0;
+            for (var x = 0; x < addresses.Length; ++x)
             {
-                TcpListener listener = new TcpListener(addresses[x], port);
+                var listener = new TcpListener(addresses[x], port);
                 _listeners[x] = listener;
                 listener.Start();
                 if (port == 0)
@@ -257,7 +257,7 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void BeginAcceptCallback(IAsyncResult ar)
         {
-            TcpListener listener = (TcpListener)ar.AsyncState;
+            var listener = (TcpListener)ar.AsyncState;
             if (_running)
                 listener.BeginAcceptSocket(BeginAcceptCallback, listener);
 
@@ -288,11 +288,11 @@ namespace Ookii.Jumbo.Jet.Channels
                 readers = _inputReaders[taskNumber - 1];
                 if (readers == null)
                 {
-                    RecordInput[] inputs = new RecordInput[ActivePartitions.Count];
+                    var inputs = new RecordInput[ActivePartitions.Count];
                     readers = new ITcpChannelRecordReader[ActivePartitions.Count];
-                    for (int x = 0; x < readers.Length; ++x)
+                    for (var x = 0; x < readers.Length; ++x)
                     {
-                        ITcpChannelRecordReader reader = (ITcpChannelRecordReader)JetActivator.CreateInstance(_inputReaderType, TaskExecution, TaskExecution.Context.StageConfiguration.AllowRecordReuse);
+                        var reader = (ITcpChannelRecordReader)JetActivator.CreateInstance(_inputReaderType, TaskExecution, TaskExecution.Context.StageConfiguration.AllowRecordReuse);
                         readers[x] = reader;
                         inputs[x] = new ReaderRecordInput((IRecordReader)reader, true);
                     }
@@ -303,12 +303,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
             lock (readers)
             {
-                for (int x = 0; x < readers.Length; ++x)
+                for (var x = 0; x < readers.Length; ++x)
                 {
-                    ITcpChannelRecordReader reader = readers[x];
-                    int partition;
-                    int partitionSize;
-                    handler.ReadPartitionHeader(out partition, out partitionSize);
+                    var reader = readers[x];
+                    handler.ReadPartitionHeader(out var partition, out var partitionSize);
                     if (partition != ActivePartitions[x])
                         throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Received partition {0}, excepted {1}.", partition, ActivePartitions[x]));
                     reader.AddSegment(partitionSize, segmentNumber, handler.Stream);

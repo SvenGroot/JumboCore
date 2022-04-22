@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -187,7 +184,7 @@ namespace Ookii.Jumbo.IO
 
             while (count > 0)
             {
-                int length = Math.Min(_buffer.Length - _bufferPos, count);
+                var length = Math.Min(_buffer.Length - _bufferPos, count);
                 Array.Copy(buffer, offset, _buffer, _bufferPos, length);
                 _bufferPos += length;
                 count -= length;

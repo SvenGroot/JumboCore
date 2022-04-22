@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -18,8 +16,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                SByte value1 = (SByte)buffer1[offset1];
-                SByte value2 = (SByte)buffer2[offset2];
+                var value1 = (SByte)buffer1[offset1];
+                var value2 = (SByte)buffer2[offset2];
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -33,8 +31,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Byte value1 = (Byte)buffer1[offset1];
-                Byte value2 = (Byte)buffer2[offset2];
+                var value1 = buffer1[offset1];
+                var value2 = buffer2[offset2];
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -48,8 +46,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Int16 value1 = LittleEndianBitConverter.ToInt16(buffer1, offset1);
-                Int16 value2 = LittleEndianBitConverter.ToInt16(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToInt16(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToInt16(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -63,8 +61,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                UInt16 value1 = LittleEndianBitConverter.ToUInt16(buffer1, offset1);
-                UInt16 value2 = LittleEndianBitConverter.ToUInt16(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToUInt16(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToUInt16(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -78,8 +76,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Int32 value1 = LittleEndianBitConverter.ToInt32(buffer1, offset1);
-                Int32 value2 = LittleEndianBitConverter.ToInt32(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToInt32(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToInt32(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -93,8 +91,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                UInt32 value1 = LittleEndianBitConverter.ToUInt32(buffer1, offset1);
-                UInt32 value2 = LittleEndianBitConverter.ToUInt32(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToUInt32(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToUInt32(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -108,8 +106,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Int64 value1 = LittleEndianBitConverter.ToInt64(buffer1, offset1);
-                Int64 value2 = LittleEndianBitConverter.ToInt64(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToInt64(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToInt64(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -123,8 +121,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                UInt64 value1 = LittleEndianBitConverter.ToUInt64(buffer1, offset1);
-                UInt64 value2 = LittleEndianBitConverter.ToUInt64(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToUInt64(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToUInt64(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -138,8 +136,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Decimal value1 = LittleEndianBitConverter.ToDecimal(buffer1, offset1);
-                Decimal value2 = LittleEndianBitConverter.ToDecimal(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToDecimal(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToDecimal(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -153,8 +151,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Single value1 = LittleEndianBitConverter.ToSingle(buffer1, offset1);
-                Single value2 = LittleEndianBitConverter.ToSingle(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToSingle(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToSingle(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -168,8 +166,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                Double value1 = LittleEndianBitConverter.ToDouble(buffer1, offset1);
-                Double value2 = LittleEndianBitConverter.ToDouble(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToDouble(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToDouble(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 
@@ -183,8 +181,8 @@ namespace Ookii.Jumbo.IO
         {
             public int Compare(byte[] buffer1, int offset1, int count1, byte[] buffer2, int offset2, int count2)
             {
-                DateTime value1 = LittleEndianBitConverter.ToDateTime(buffer1, offset1);
-                DateTime value2 = LittleEndianBitConverter.ToDateTime(buffer2, offset2);
+                var value1 = LittleEndianBitConverter.ToDateTime(buffer1, offset1);
+                var value2 = LittleEndianBitConverter.ToDateTime(buffer2, offset2);
                 return value1 < value2 ? -1 : (value1 == value2 ? 0 : 1);
             }
 

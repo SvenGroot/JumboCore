@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -21,14 +18,14 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public static void HandleRequest(ServerContext context, string objectName, string interfaceName, string operationName, RpcServerConnectionHandler handler)
         {
-            ServerObject server = GetRegisteredObject(objectName);
+            var server = GetRegisteredObject(objectName);
             if (server == null)
                 handler.SendError(new RpcException("Unknown server object."));
 
             try
             {
-                Type serverType = FindInterface(server, interfaceName);
-                MethodInfo method = serverType.GetMethod(operationName, BindingFlags.Public | BindingFlags.Instance);
+                var serverType = FindInterface(server, interfaceName);
+                var method = serverType.GetMethod(operationName, BindingFlags.Public | BindingFlags.Instance);
                 if (method == null)
                     handler.SendError(new RpcException("Unknown operation."));
                 object[] parameters = null;
@@ -36,7 +33,7 @@ namespace Ookii.Jumbo.Rpc
                     parameters = handler.ReadParameters();
                 ServerContext.Current = context; // Set the server context for the current thread.
                 log4net.ThreadContext.Properties["ClientHostName"] = context.ClientHostName;
-                object result = method.Invoke(server.Server, parameters);
+                var result = method.Invoke(server.Server, parameters);
                 ServerContext.Current = null;
                 handler.SendResult(result);
             }
@@ -70,8 +67,8 @@ namespace Ookii.Jumbo.Rpc
 
         private static Type FindInterface(ServerObject server, string assemblyQualifiedName)
         {
-            Type[] interfaces = server.Interfaces;
-            foreach (Type interfaceType in interfaces)
+            var interfaces = server.Interfaces;
+            foreach (var interfaceType in interfaces)
             {
                 if (interfaceType.AssemblyQualifiedName == assemblyQualifiedName)
                     return interfaceType;

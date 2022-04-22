@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Topology;
@@ -49,10 +48,10 @@ namespace NameServerApplication
         {
             lock (_pendingResponses)
             {
-                DeleteBlocksHeartbeatResponse response = (from r in _pendingResponses
-                                                          let dr = r as DeleteBlocksHeartbeatResponse
-                                                          where dr != null
-                                                          select dr).SingleOrDefault();
+                var response = (from r in _pendingResponses
+                                let dr = r as DeleteBlocksHeartbeatResponse
+                                where dr != null
+                                select dr).SingleOrDefault();
                 if (response == null)
                 {
                     _pendingResponses.Add(new DeleteBlocksHeartbeatResponse(_fileSystemId, new[] { blockID }));
@@ -68,7 +67,7 @@ namespace NameServerApplication
         {
             lock (_pendingResponses)
             {
-                HeartbeatResponse[] result = _pendingResponses.ToArray();
+                var result = _pendingResponses.ToArray();
                 _pendingResponses.Clear();
                 return result;
             }

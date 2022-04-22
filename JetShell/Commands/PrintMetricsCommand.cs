@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using Ookii.CommandLine;
 using Ookii.Jumbo.Jet;
 
@@ -14,10 +11,10 @@ namespace JetShell.Commands
     {
         public override void Run()
         {
-            JetMetrics metrics = JetClient.JobServer.GetMetrics();
+            var metrics = JetClient.JobServer.GetMetrics();
             if (RunningJobs)
             {
-                foreach (Guid jobId in metrics.RunningJobs)
+                foreach (var jobId in metrics.RunningJobs)
                     Console.WriteLine(jobId);
             }
             else

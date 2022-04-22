@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -38,29 +36,29 @@ namespace Ookii.Jumbo.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IWritable"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public static Action<T, BinaryWriter> CreateSerializer<T>()
         {
-            Type type = typeof(T);
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var type = typeof(T);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            DynamicMethod serializer = new DynamicMethod("Write", null, new[] { type, typeof(BinaryWriter) }, type);
-            ILGenerator generator = serializer.GetILGenerator();
+            var serializer = new DynamicMethod("Write", null, new[] { type, typeof(BinaryWriter) }, type);
+            var generator = serializer.GetILGenerator();
 
             WriteArgNullCheck(generator, OpCodes.Ldarg_0, "obj");
             WriteArgNullCheck(generator, OpCodes.Ldarg_1, "writer");
 
-            MethodInfo writeBooleanMethod = typeof(BinaryWriter).GetMethod("Write", new[] { typeof(bool) });
+            var writeBooleanMethod = typeof(BinaryWriter).GetMethod("Write", new[] { typeof(bool) });
 
             Dictionary<Type, LocalBuilder> valueWriterLocals = null;
 
-            foreach (PropertyInfo property in properties)
+            foreach (var property in properties)
             {
                 if (property.CanRead && property.CanWrite && !property.IsSpecialName && !Attribute.IsDefined(property, typeof(WritableIgnoreAttribute)))
                 {
-                    MethodInfo getMethod = property.GetGetMethod();
+                    var getMethod = property.GetGetMethod();
                     if (property.PropertyType.GetInterface(typeof(IWritable).FullName) != null)
                     {
                         generator.Emit(OpCodes.Ldarg_0); // Load the object.
                         generator.Emit(OpCodes.Callvirt, getMethod); // Get the property value.
-                        Label? endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, false, null);
+                        var endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, false, null);
                         generator.Emit(OpCodes.Ldarg_1); // load the writer.
                         generator.Emit(OpCodes.Callvirt, typeof(IWritable).GetMethod("Write", new[] { typeof(BinaryWriter) }));
                         if (endLabel != null)
@@ -70,12 +68,11 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (Attribute.IsDefined(property.PropertyType, typeof(ValueWriterAttribute)))
                     {
-                        Type valueWriterType = typeof(IValueWriter<>).MakeGenericType(property.PropertyType);
-                        LocalBuilder valueWriterLocal = null;
+                        var valueWriterType = typeof(IValueWriter<>).MakeGenericType(property.PropertyType);
                         if (valueWriterLocals == null)
                             valueWriterLocals = new Dictionary<Type, LocalBuilder>();
 
-                        if (!valueWriterLocals.TryGetValue(property.PropertyType, out valueWriterLocal))
+                        if (!valueWriterLocals.TryGetValue(property.PropertyType, out var valueWriterLocal))
                         {
                             // First time using this value writer
                             valueWriterLocal = generator.DeclareLocal(valueWriterType);
@@ -92,7 +89,7 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (property.PropertyType.IsEnum)
                     {
-                        MethodInfo writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { Enum.GetUnderlyingType(property.PropertyType) });
+                        var writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { Enum.GetUnderlyingType(property.PropertyType) });
                         if (writeMethod == null)
                             throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Cannot generate an IWritable.Write implementation for type {0} because property {1} has enum type {2} with unsupported underlying type {3}.", typeof(T), property.Name, property.PropertyType, Enum.GetUnderlyingType(property.PropertyType)));
 
@@ -104,7 +101,7 @@ namespace Ookii.Jumbo.IO
                     else if (property.PropertyType == typeof(DateTime))
                     {
                         // For DateTimes we need to write the DateTimeKind and the ticks.
-                        LocalBuilder dateLocal = generator.DeclareLocal(typeof(DateTime));
+                        var dateLocal = generator.DeclareLocal(typeof(DateTime));
                         generator.Emit(OpCodes.Ldarg_0); // put the object on the stack.
                         generator.Emit(OpCodes.Callvirt, property.GetGetMethod()); // Get the property value
                         generator.Emit(OpCodes.Stloc_S, dateLocal); // Store the date in a local
@@ -122,13 +119,13 @@ namespace Ookii.Jumbo.IO
                     {
                         // Special case for byte[] because there's a BinaryWriter.Write(byte[]) method.
                         // We need to store the size and the data of the byte array.
-                        LocalBuilder byteArrayLocal = generator.DeclareLocal(typeof(byte[]));
+                        var byteArrayLocal = generator.DeclareLocal(typeof(byte[]));
                         generator.Emit(OpCodes.Ldarg_1); // put the writer on the stack.
                         generator.Emit(OpCodes.Ldarg_0); // put the object on the stack
                         generator.Emit(OpCodes.Callvirt, property.GetGetMethod()); // Get the property value.
                         generator.Emit(OpCodes.Stloc_S, byteArrayLocal); // store it in a local.
                         generator.Emit(OpCodes.Ldloc_S, byteArrayLocal); // load the property value
-                        Label? endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, byteArrayLocal);
+                        var endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, byteArrayLocal);
                         generator.Emit(OpCodes.Ldlen);
                         generator.Emit(OpCodes.Conv_I4);
                         generator.Emit(OpCodes.Call, typeof(WritableUtility).GetMethod("Write7BitEncodedInt32", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(BinaryWriter), typeof(int) }, null)); // Write length as compressed int.
@@ -142,28 +139,26 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (property.PropertyType.IsArray)
                     {
-                        Type elementType = property.PropertyType.GetElementType();
-                        MethodInfo writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { elementType });
+                        var elementType = property.PropertyType.GetElementType();
+                        var writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { elementType });
                         if (writeMethod != null)
                         {
                             // We need to store the size and the data of the byte array.
-                            LocalBuilder byteArrayLocal = generator.DeclareLocal(property.PropertyType);
-                            LocalBuilder lengthLocal = generator.DeclareLocal(typeof(int));
-                            LocalBuilder indexLocal = generator.DeclareLocal(typeof(int));
+                            var byteArrayLocal = generator.DeclareLocal(property.PropertyType);
+                            var lengthLocal = generator.DeclareLocal(typeof(int));
+                            var indexLocal = generator.DeclareLocal(typeof(int));
                             generator.Emit(OpCodes.Ldarg_1); // put the writer on the stack.
                             generator.Emit(OpCodes.Ldarg_0); // put the object on the stack
                             generator.Emit(OpCodes.Callvirt, property.GetGetMethod()); // Get the property value.
                             generator.Emit(OpCodes.Stloc_S, byteArrayLocal); // store it in a local.
                             generator.Emit(OpCodes.Ldloc_S, byteArrayLocal); // load the property value
-                            Label? endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, byteArrayLocal);
+                            var endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, byteArrayLocal);
                             generator.Emit(OpCodes.Ldlen); // Get the array length
                             generator.Emit(OpCodes.Conv_I4); // Convert it to Int32.
                             generator.Emit(OpCodes.Stloc_S, lengthLocal); // Store in local
                             generator.Emit(OpCodes.Ldloc, lengthLocal); // Load local
                             generator.Emit(OpCodes.Call, typeof(WritableUtility).GetMethod("Write7BitEncodedInt32", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(BinaryWriter), typeof(int) }, null)); // Write length as compressed int.
-                            Label forLoopStartLabel;
-                            Label forLoopEndLabel;
-                            EmitForLoopStart(generator, indexLocal, out forLoopStartLabel, out forLoopEndLabel);
+                            EmitForLoopStart(generator, indexLocal, out var forLoopStartLabel, out var forLoopEndLabel);
 
                             // for loop body
                             generator.Emit(OpCodes.Ldarg_1); // put the writer on the stack.
@@ -185,13 +180,13 @@ namespace Ookii.Jumbo.IO
                     }
                     else
                     {
-                        MethodInfo writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { property.PropertyType });
+                        var writeMethod = typeof(BinaryWriter).GetMethod("Write", new[] { property.PropertyType });
                         if (writeMethod != null)
                         {
                             generator.Emit(OpCodes.Ldarg_1);
                             generator.Emit(OpCodes.Ldarg_0);
                             generator.Emit(OpCodes.Callvirt, getMethod);
-                            Label? endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, null);
+                            var endLabel = WriteCheckForNullIfReferenceType(generator, writeBooleanMethod, property, true, null);
                             generator.Emit(OpCodes.Callvirt, writeMethod);
                             if (endLabel != null)
                             {
@@ -228,20 +223,20 @@ namespace Ookii.Jumbo.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public static Action<T, BinaryReader> CreateDeserializer<T>()
         {
-            Type type = typeof(T);
+            var type = typeof(T);
 
-            DynamicMethod deserializer = new DynamicMethod("Read", null, new[] { type, typeof(BinaryReader) }, type);
-            ILGenerator generator = deserializer.GetILGenerator();
+            var deserializer = new DynamicMethod("Read", null, new[] { type, typeof(BinaryReader) }, type);
+            var generator = deserializer.GetILGenerator();
 
             WriteArgNullCheck(generator, OpCodes.Ldarg_0, "obj");
             WriteArgNullCheck(generator, OpCodes.Ldarg_1, "reader");
 
-            MethodInfo readBooleanMethod = typeof(BinaryReader).GetMethod("ReadBoolean");
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var readBooleanMethod = typeof(BinaryReader).GetMethod("ReadBoolean");
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             Dictionary<Type, LocalBuilder> valueWriterLocals = null;
 
-            foreach (PropertyInfo property in properties)
+            foreach (var property in properties)
             {
                 if (property.CanWrite && property.CanRead && !property.IsSpecialName && !Attribute.IsDefined(property, typeof(WritableIgnoreAttribute)))
                 {
@@ -251,7 +246,7 @@ namespace Ookii.Jumbo.IO
                         // Read a boolean to see if the property is null.
                         generator.Emit(OpCodes.Ldarg_1); // load the reader.
                         generator.Emit(OpCodes.Callvirt, readBooleanMethod);
-                        Label nonNullLabel = generator.DefineLabel();
+                        var nonNullLabel = generator.DefineLabel();
                         endLabel = generator.DefineLabel();
                         generator.Emit(OpCodes.Brtrue_S, nonNullLabel);
                         // False means that the value is true and was not written.
@@ -264,12 +259,12 @@ namespace Ookii.Jumbo.IO
 
                     if (property.PropertyType.GetInterface(typeof(IWritable).FullName) != null)
                     {
-                        LocalBuilder local = generator.DeclareLocal(property.PropertyType);
+                        var local = generator.DeclareLocal(property.PropertyType);
                         generator.Emit(OpCodes.Ldarg_0);// load the object.
                         generator.Emit(OpCodes.Callvirt, property.GetGetMethod()); // get the current property value.
                         generator.Emit(OpCodes.Stloc, local); // store it
                         generator.Emit(OpCodes.Ldloc, local); // load it.
-                        Label nonNullLabel = generator.DefineLabel();
+                        var nonNullLabel = generator.DefineLabel();
                         generator.Emit(OpCodes.Brtrue_S, nonNullLabel);
                         // Create a new instance if the object is null.
                         generator.Emit(OpCodes.Newobj, property.PropertyType.GetConstructor(Type.EmptyTypes));
@@ -284,12 +279,11 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (Attribute.IsDefined(property.PropertyType, typeof(ValueWriterAttribute)))
                     {
-                        Type valueWriterType = typeof(IValueWriter<>).MakeGenericType(property.PropertyType);
-                        LocalBuilder valueWriterLocal = null;
+                        var valueWriterType = typeof(IValueWriter<>).MakeGenericType(property.PropertyType);
                         if (valueWriterLocals == null)
                             valueWriterLocals = new Dictionary<Type, LocalBuilder>();
 
-                        if (!valueWriterLocals.TryGetValue(property.PropertyType, out valueWriterLocal))
+                        if (!valueWriterLocals.TryGetValue(property.PropertyType, out var valueWriterLocal))
                         {
                             // First time using this value writer
                             valueWriterLocal = generator.DeclareLocal(valueWriterType);
@@ -306,7 +300,7 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (property.PropertyType == typeof(DateTime))
                     {
-                        LocalBuilder kindLocal = generator.DeclareLocal(typeof(DateTimeKind));
+                        var kindLocal = generator.DeclareLocal(typeof(DateTimeKind));
                         generator.Emit(OpCodes.Ldarg_0); // put the object ont the stack.
                         generator.Emit(OpCodes.Ldarg_1); // put the reader on the stack.
                         generator.Emit(OpCodes.Callvirt, typeof(BinaryReader).GetMethod("ReadByte")); // read the DateTimeKind
@@ -329,19 +323,18 @@ namespace Ookii.Jumbo.IO
                     }
                     else if (property.PropertyType.IsArray)
                     {
-                        Type elementType = property.PropertyType.GetElementType();
-                        MethodInfo readMethod = _readMethods[elementType];
-                        LocalBuilder lengthLocal = generator.DeclareLocal(typeof(int));
-                        LocalBuilder arrayLocal = generator.DeclareLocal(property.PropertyType);
-                        LocalBuilder indexLocal = generator.DeclareLocal(typeof(int));
+                        var elementType = property.PropertyType.GetElementType();
+                        var readMethod = _readMethods[elementType];
+                        var lengthLocal = generator.DeclareLocal(typeof(int));
+                        var arrayLocal = generator.DeclareLocal(property.PropertyType);
+                        var indexLocal = generator.DeclareLocal(typeof(int));
                         generator.Emit(OpCodes.Ldarg_1); // put the reader on the stack.
                         generator.Emit(OpCodes.Call, typeof(WritableUtility).GetMethod("Read7BitEncodedInt32", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(BinaryReader) }, null)); // read the length
                         generator.Emit(OpCodes.Stloc_S, lengthLocal); // Store the length
                         generator.Emit(OpCodes.Ldloc_S, lengthLocal); // Load the length
                         generator.Emit(OpCodes.Newarr, elementType); // Create a new array
                         generator.Emit(OpCodes.Stloc_S, arrayLocal); // Store the array.
-                        Label forLoopStartLabel, forLoopEndLabel;
-                        EmitForLoopStart(generator, indexLocal, out forLoopStartLabel, out forLoopEndLabel);
+                        EmitForLoopStart(generator, indexLocal, out var forLoopStartLabel, out var forLoopEndLabel);
 
                         // for loop body
                         generator.Emit(OpCodes.Ldloc_S, arrayLocal); // Load the array
@@ -357,7 +350,7 @@ namespace Ookii.Jumbo.IO
                     }
                     else
                     {
-                        MethodInfo readMethod = property.PropertyType.IsEnum ? _readMethods[Enum.GetUnderlyingType(property.PropertyType)] : _readMethods[property.PropertyType];
+                        var readMethod = property.PropertyType.IsEnum ? _readMethods[Enum.GetUnderlyingType(property.PropertyType)] : _readMethods[property.PropertyType];
                         generator.Emit(OpCodes.Ldarg_0); // load the object.
                         generator.Emit(OpCodes.Ldarg_1); // load the reader.
                         generator.Emit(OpCodes.Callvirt, readMethod);
@@ -382,7 +375,7 @@ namespace Ookii.Jumbo.IO
 
         private static void WriteArgNullCheck(ILGenerator generator, OpCode ldArgOpCode, string argName)
         {
-            Label label = generator.DefineLabel();
+            var label = generator.DefineLabel();
             generator.Emit(ldArgOpCode);
             generator.Emit(OpCodes.Brtrue_S, label);
             generator.Emit(OpCodes.Ldstr, argName);
@@ -402,7 +395,7 @@ namespace Ookii.Jumbo.IO
                     generator.Emit(OpCodes.Stloc_S, local);
                     generator.Emit(OpCodes.Ldloc_S, local);
                 }
-                Label notNullLabel = generator.DefineLabel();
+                var notNullLabel = generator.DefineLabel();
                 generator.Emit(OpCodes.Brtrue_S, notNullLabel); // branch if not null
 
                 // Check if null values are allowed.
@@ -439,9 +432,9 @@ namespace Ookii.Jumbo.IO
 
         private static Dictionary<Type, MethodInfo> CreateBinaryReaderMethodTable()
         {
-            Dictionary<Type, MethodInfo> result = new Dictionary<Type, MethodInfo>();
-            MethodInfo[] methods = typeof(BinaryReader).GetMethods(BindingFlags.Instance | BindingFlags.Public);
-            foreach (MethodInfo method in methods)
+            var result = new Dictionary<Type, MethodInfo>();
+            var methods = typeof(BinaryReader).GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var method in methods)
             {
                 if (method.Name.StartsWith("Read", StringComparison.Ordinal) && method.Name.Length > 4 && method.GetParameters().Length == 0 && !method.Name.StartsWith("Read7Bit", StringComparison.Ordinal))
                 {
@@ -460,7 +453,7 @@ namespace Ookii.Jumbo.IO
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
-            uint uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
+            var uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
             while (uintValue >= 0x80)
             {
                 writer.Write((byte)(uintValue | 0x80));
@@ -479,8 +472,8 @@ namespace Ookii.Jumbo.IO
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
             byte currentByte;
-            int result = 0;
-            int bits = 0;
+            var result = 0;
+            var bits = 0;
             do
             {
                 if (bits == 35)

@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
@@ -38,7 +37,7 @@ namespace Ookii.Jumbo.Jet.Channels
             private readonly BinaryReader _reader;
             private readonly long _totalBytes;
             private readonly bool _allowRecordReuse;
-            private T _record;
+            private readonly T _record;
             private long _bytesRead;
             private int _indexPosition;
 
@@ -60,7 +59,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public override float Progress
             {
-                get { return (float)_bytesRead / (float)_totalBytes; }
+                get { return _bytesRead / (float)_totalBytes; }
             }
 
             protected override bool ReadRecordInternal()
@@ -189,12 +188,12 @@ namespace Ookii.Jumbo.Jet.Channels
                 else
                     _comparer = RawComparer<T>.CreateComparer();
             }
-            for (int x = 0; x < _spillPartitionIndices.Length; ++x)
+            for (var x = 0; x < _spillPartitionIndices.Length; ++x)
                 _spillPartitionIndices[x] = new List<PartitionFileIndexEntry>();
 
             if (combiner != null)
             {
-                AllowRecordReuseAttribute attribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(combiner.GetType(), typeof(AllowRecordReuseAttribute));
+                var attribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(combiner.GetType(), typeof(AllowRecordReuseAttribute));
                 _combinerAllowsRecordReuse = (attribute != null); // PassThrough doesn't matter, since the combiner's output always allows record reuse.
             }
         }
@@ -241,29 +240,29 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
         protected override void SpillOutput(bool finalSpill)
         {
-            string spillFile = string.Format(CultureInfo.InvariantCulture, "{0}_spill{1}.tmp", _outputPathBase, SpillCount);
-            using (FileStream fileStream = File.Create(spillFile, _writeBufferSize))
+            var spillFile = string.Format(CultureInfo.InvariantCulture, "{0}_spill{1}.tmp", _outputPathBase, SpillCount);
+            using (var fileStream = File.Create(spillFile, _writeBufferSize))
             {
-                for (int partition = 0; partition < _partitions; ++partition)
+                for (var partition = 0; partition < _partitions; ++partition)
                 {
                     if (HasDataForPartition(partition))
                     {
-                        long startOffset = fileStream.Position;
+                        var startOffset = fileStream.Position;
                         long uncompressedSize;
-                        using (Stream stream = new ChecksumOutputStream(fileStream, false, _enableChecksum).CreateCompressor(_compressionType))
-                        using (BinaryRecordWriter<RawRecord> writer = new BinaryRecordWriter<RawRecord>(stream))
+                        using (var stream = new ChecksumOutputStream(fileStream, false, _enableChecksum).CreateCompressor(_compressionType))
+                        using (var writer = new BinaryRecordWriter<RawRecord>(stream))
                         {
                             if (_combiner == null)
                                 WritePartition(partition, writer);
                             else
                                 CombinePartition(partition, writer);
-                            ICompressor compressor = stream as ICompressor;
+                            var compressor = stream as ICompressor;
                             uncompressedSize = compressor == null ? stream.Length : compressor.UncompressedBytesWritten;
                         }
-                        long compressedSize = fileStream.Position - startOffset;
+                        var compressedSize = fileStream.Position - startOffset;
                         Debug.Assert(uncompressedSize > 0);
 
-                        PartitionFileIndexEntry indexEntry = new PartitionFileIndexEntry(partition, startOffset, compressedSize, uncompressedSize);
+                        var indexEntry = new PartitionFileIndexEntry(partition, startOffset, compressedSize, uncompressedSize);
                         _spillPartitionIndices[partition].Add(indexEntry);
                     }
                     else
@@ -300,13 +299,13 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void CombinePartition(int partition, BinaryRecordWriter<RawRecord> output)
         {
-            RecordIndexEntry[] index = GetSpillIndex(partition);
+            var index = GetSpillIndex(partition);
             if (index != null)
             {
-                byte[] buffer = SpillBuffer;
+                var buffer = SpillBuffer;
                 PreparePartition(partition, index, buffer);
-                using (IndexedRecordReader input = new IndexedRecordReader(buffer, index, _combinerAllowsRecordReuse))
-                using (CombineRecordWriter combineOutput = new CombineRecordWriter(output))
+                using (var input = new IndexedRecordReader(buffer, index, _combinerAllowsRecordReuse))
+                using (var combineOutput = new CombineRecordWriter(output))
                 {
                     _combiner.Run(input, combineOutput);
                 }
@@ -327,17 +326,17 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void MergeMultipleSpills()
         {
-            string intermediateOutputPath = Path.GetDirectoryName(_outputPath);
-            List<RecordInput> diskInputs = new List<RecordInput>(_spillFiles.Count);
-            MergeHelper<T> merger = new MergeHelper<T>();
-            using (FileStream fileStream = File.Create(_outputPath, _writeBufferSize))
-            using (FileStream indexStream = File.Create(_outputPath + ".index", _writeBufferSize))
-            using (BinaryRecordWriter<PartitionFileIndexEntry> indexWriter = new BinaryRecordWriter<PartitionFileIndexEntry>(indexStream))
+            var intermediateOutputPath = Path.GetDirectoryName(_outputPath);
+            var diskInputs = new List<RecordInput>(_spillFiles.Count);
+            var merger = new MergeHelper<T>();
+            using (var fileStream = File.Create(_outputPath, _writeBufferSize))
+            using (var indexStream = File.Create(_outputPath + ".index", _writeBufferSize))
+            using (var indexWriter = new BinaryRecordWriter<PartitionFileIndexEntry>(indexStream))
             {
                 // Write a faux first entry indicating the number of partitions.
                 indexWriter.WriteRecord(new PartitionFileIndexEntry(_partitions, 0L, 0L, 0L));
 
-                for (int partition = 0; partition < _partitions; ++partition)
+                for (var partition = 0; partition < _partitions; ++partition)
                 {
                     MergePartition(intermediateOutputPath, diskInputs, merger, fileStream, indexWriter, partition);
                 }
@@ -354,41 +353,41 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_spillPartitionIndices[partition].Any(i => i.UncompressedSize > 0))
             {
                 _log.InfoFormat("Merging partition {0}", partition);
-                long startOffset = fileStream.Position;
+                var startOffset = fileStream.Position;
                 long uncompressedSize;
-                using (Stream stream = new ChecksumOutputStream(fileStream, false, _enableChecksum).CreateCompressor(_compressionType))
-                using (BinaryRecordWriter<RawRecord> writer = new BinaryRecordWriter<RawRecord>(stream))
+                using (var stream = new ChecksumOutputStream(fileStream, false, _enableChecksum).CreateCompressor(_compressionType))
+                using (var writer = new BinaryRecordWriter<RawRecord>(stream))
                 {
                     diskInputs.Clear();
-                    for (int x = 0; x < _spillFiles.Count; ++x)
+                    for (var x = 0; x < _spillFiles.Count; ++x)
                     {
                         if (_spillPartitionIndices[partition][x].UncompressedSize > 0)
                             diskInputs.Add(new PartitionFileRecordInput(typeof(BinaryRecordReader<T>), _spillFiles[x], new[] { _spillPartitionIndices[partition][x] }, null, true, true, _writeBufferSize, _compressionType));
                     }
 
-                    bool runCombiner = !(_combiner == null || _minSpillsForCombineDuringMerge == 0 || SpillCount < _minSpillsForCombineDuringMerge);
-                    bool allowRecordReuse = !runCombiner || _combinerAllowsRecordReuse;
-                    MergeResult<T> mergeResult = merger.Merge(diskInputs, null, _maxDiskInputsPerMergePass, _comparer, allowRecordReuse, runCombiner, intermediateOutputPath, "", CompressionType.None, _writeBufferSize, _enableChecksum);
+                    var runCombiner = !(_combiner == null || _minSpillsForCombineDuringMerge == 0 || SpillCount < _minSpillsForCombineDuringMerge);
+                    var allowRecordReuse = !runCombiner || _combinerAllowsRecordReuse;
+                    var mergeResult = merger.Merge(diskInputs, null, _maxDiskInputsPerMergePass, _comparer, allowRecordReuse, runCombiner, intermediateOutputPath, "", CompressionType.None, _writeBufferSize, _enableChecksum);
                     if (runCombiner)
                     {
-                        using (EnumerableRecordReader<T> combineInput = new EnumerableRecordReader<T>(mergeResult.Select(r => r.GetValue()), 0))
-                        using (CombineRecordWriter combineOutput = new CombineRecordWriter(writer))
+                        using (var combineInput = new EnumerableRecordReader<T>(mergeResult.Select(r => r.GetValue()), 0))
+                        using (var combineOutput = new CombineRecordWriter(writer))
                         {
                             _combiner.Run(combineInput, combineOutput);
                         }
                     }
                     else
                     {
-                        foreach (MergeResultRecord<T> record in mergeResult)
+                        foreach (var record in mergeResult)
                         {
                             record.WriteRawRecord(writer);
                         }
                     }
 
-                    ICompressor compressor = stream as ICompressor;
+                    var compressor = stream as ICompressor;
                     uncompressedSize = compressor == null ? stream.Length : compressor.UncompressedBytesWritten;
                 }
-                PartitionFileIndexEntry indexEntry = new PartitionFileIndexEntry(partition, startOffset, fileStream.Position - startOffset, uncompressedSize);
+                var indexEntry = new PartitionFileIndexEntry(partition, startOffset, fileStream.Position - startOffset, uncompressedSize);
                 Debug.Assert(indexEntry.UncompressedSize > 0);
                 indexWriter.WriteRecord(indexEntry);
             }
@@ -397,13 +396,13 @@ namespace Ookii.Jumbo.Jet.Channels
         private void UseSingleSpillAsOutput()
         {
             File.Move(_spillFiles[0], _outputPath);
-            using (FileStream indexStream = File.Create(_outputPath + ".index", _writeBufferSize))
-            using (BinaryRecordWriter<PartitionFileIndexEntry> indexWriter = new BinaryRecordWriter<PartitionFileIndexEntry>(indexStream))
+            using (var indexStream = File.Create(_outputPath + ".index", _writeBufferSize))
+            using (var indexWriter = new BinaryRecordWriter<PartitionFileIndexEntry>(indexStream))
             {
                 // Write a faux first entry indicating the number of partitions.
                 indexWriter.WriteRecord(new PartitionFileIndexEntry(_partitions, 0L, 0L, 0L));
 
-                for (int partition = 0; partition < _partitions; ++partition)
+                for (var partition = 0; partition < _partitions; ++partition)
                 {
                     if (_spillPartitionIndices[partition][0].UncompressedSize > 0)
                         indexWriter.WriteRecord(_spillPartitionIndices[partition][0]);
@@ -415,7 +414,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void DeleteTempFiles()
         {
-            foreach (string fileName in _spillFiles)
+            foreach (var fileName in _spillFiles)
             {
                 if (File.Exists(fileName))
                     File.Delete(fileName);

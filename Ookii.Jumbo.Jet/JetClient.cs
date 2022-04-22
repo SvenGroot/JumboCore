@@ -174,7 +174,7 @@ namespace Ookii.Jumbo.Jet
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
-            Job job = JobServer.CreateJob();
+            var job = JobServer.CreateJob();
             _log.InfoFormat("Created job {{{0}}}", job.JobId);
             RunJob(job, config, files);
             return job;
@@ -194,7 +194,7 @@ namespace Ookii.Jumbo.Jet
             {
                 Thread.Sleep(pollIntervalMilliseconds);
                 status = JobServer.GetJobStatus(jobId);
-                string statusString = status.ToString(CultureInfo.CurrentCulture);
+                var statusString = status.ToString(CultureInfo.CurrentCulture);
                 if (statusString != previousStatus)
                 {
                     Console.WriteLine(statusString);
@@ -209,7 +209,7 @@ namespace Ookii.Jumbo.Jet
                 Console.WriteLine("Job failed.");
             Console.WriteLine("Start time: {0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff}", status.StartTime.ToLocalTime());
             Console.WriteLine("End time:   {0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'fff}", status.EndTime.ToLocalTime());
-            TimeSpan duration = status.EndTime - status.StartTime;
+            var duration = status.EndTime - status.StartTime;
             Console.WriteLine("Duration:   {0} ({1}s)", duration, duration.TotalSeconds);
 
             return status.IsSuccessful;
@@ -244,7 +244,7 @@ namespace Ookii.Jumbo.Jet
             if (fileSystemClient == null)
                 throw new ArgumentNullException(nameof(fileSystemClient));
 
-            Job job = JobServer.CreateJob();
+            var job = JobServer.CreateJob();
             _log.InfoFormat("Created job {{{0}}}", job.JobId);
             RunJob(job, config, fileSystemClient, files);
             return job;
@@ -272,15 +272,15 @@ namespace Ookii.Jumbo.Jet
             {
                 config.Validate();
 
-                string configFilePath = job.GetJobConfigurationFilePath(fileSystemClient);
+                var configFilePath = job.GetJobConfigurationFilePath(fileSystemClient);
                 _log.InfoFormat("Saving job configuration to DFS file {0}.", configFilePath);
-                using (Stream stream = fileSystemClient.CreateFile(configFilePath))
+                using (var stream = fileSystemClient.CreateFile(configFilePath))
                 {
                     config.SaveXml(stream);
                 }
 
                 // Save split files for all stages with input.
-                foreach (StageConfiguration stage in config.Stages)
+                foreach (var stage in config.Stages)
                 {
                     if (stage.DataInput != null)
                     {
@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Jet
                 // Upload additional files
                 if (files != null)
                 {
-                    foreach (string file in files)
+                    foreach (var file in files)
                     {
                         _log.InfoFormat("Uploading local file {0} to DFS directory {1}.", file, job.Path);
                         fileSystemClient.UploadFile(file, job.Path);
@@ -334,9 +334,9 @@ namespace Ookii.Jumbo.Jet
         /// <returns><see langword="true"/> if the job finished, or <see langword="null"/> if the timeout expired.</returns>
         public bool WaitForJobCompletion(Guid jobId, int millisecondsTimeout, int millisecondsInterval)
         {
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
-            JobStatus status = JobServer.GetJobStatus(jobId);
+            var status = JobServer.GetJobStatus(jobId);
             if (status == null)
                 throw new ArgumentException("Unknown job ID.", nameof(jobId));
 

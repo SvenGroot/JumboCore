@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo.Jet
@@ -98,8 +96,8 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                TaskProgress result = new TaskProgress();
-                foreach (TaskStatus task in Tasks)
+                var result = new TaskProgress();
+                foreach (var task in Tasks)
                 {
                     if (task.TaskProgress != null)
                     {
@@ -108,18 +106,18 @@ namespace Ookii.Jumbo.Jet
                         {
                             if (result.AdditionalProgressValues == null)
                             {
-                                foreach (AdditionalProgressValue value in task.TaskProgress.AdditionalProgressValues)
+                                foreach (var value in task.TaskProgress.AdditionalProgressValues)
                                     result.AddAdditionalProgressValue(value.SourceName, value.Progress);
                             }
                             else
                             {
-                                for (int x = 0; x < result.AdditionalProgressValues.Count; ++x)
+                                for (var x = 0; x < result.AdditionalProgressValues.Count; ++x)
                                     result.AdditionalProgressValues[x].Progress += task.TaskProgress.AdditionalProgressValues[x].Progress;
                             }
                         }
                         else if (result.AdditionalProgressValues != null && task.TaskProgress.OverallProgress >= 1.0f)
                         {
-                            foreach (AdditionalProgressValue value in result.AdditionalProgressValues)
+                            foreach (var value in result.AdditionalProgressValues)
                                 value.Progress += 1.0f;
                         }
                     }
@@ -128,7 +126,7 @@ namespace Ookii.Jumbo.Jet
                 result.Progress /= Tasks.Count;
                 if (result.AdditionalProgressValues != null)
                 {
-                    foreach (AdditionalProgressValue value in result.AdditionalProgressValues)
+                    foreach (var value in result.AdditionalProgressValues)
                         value.Progress /= Tasks.Count;
                 }
 
@@ -149,10 +147,10 @@ namespace Ookii.Jumbo.Jet
                 if (_stageMetrics != null)
                     return _stageMetrics;
 
-                TaskMetrics result = new TaskMetrics();
-                foreach (TaskStatus task in Tasks)
+                var result = new TaskMetrics();
+                foreach (var task in Tasks)
                 {
-                    TaskMetrics metrics = task.Metrics;
+                    var metrics = task.Metrics;
                     if (metrics != null)
                     {
                         result.Add(metrics);

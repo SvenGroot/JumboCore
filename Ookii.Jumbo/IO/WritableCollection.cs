@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -189,7 +188,7 @@ namespace Ookii.Jumbo.IO
         public void Write(BinaryWriter writer)
         {
             WritableUtility.Write7BitEncodedInt32(writer, _items.Count);
-            foreach (T item in _items)
+            foreach (var item in _items)
                 item.Write(writer);
         }
 
@@ -199,16 +198,16 @@ namespace Ookii.Jumbo.IO
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(System.IO.BinaryReader reader)
         {
-            int count = WritableUtility.Read7BitEncodedInt32(reader);
+            var count = WritableUtility.Read7BitEncodedInt32(reader);
 
             if (_items == null)
                 _items = new List<T>(count);
             else
                 _items.Clear();
 
-            for (int x = 0; x < count; ++x)
+            for (var x = 0; x < count; ++x)
             {
-                T item = (T)FormatterServices.GetUninitializedObject(typeof(T));
+                var item = (T)FormatterServices.GetUninitializedObject(typeof(T));
                 item.Read(reader);
                 _items.Add(item);
             }
@@ -257,7 +256,7 @@ namespace Ookii.Jumbo.IO
             if (obj == this)
                 return true;
 
-            WritableCollection<T> other = obj as WritableCollection<T>;
+            var other = obj as WritableCollection<T>;
             if (other == null)
                 return false;
             else

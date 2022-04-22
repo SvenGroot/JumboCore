@@ -3,10 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -24,7 +20,7 @@ namespace Ookii.Jumbo.IO
         {
             if (recordWriterType == null)
                 throw new ArgumentNullException(nameof(recordWriterType));
-            Type baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
+            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
             return baseType.GetGenericArguments()[0];
         }
     }
@@ -141,7 +137,7 @@ namespace Ookii.Jumbo.IO
             if (records == null)
                 throw new ArgumentNullException(nameof(records));
 
-            foreach (T record in records)
+            foreach (var record in records)
                 WriteRecord(record);
         }
 

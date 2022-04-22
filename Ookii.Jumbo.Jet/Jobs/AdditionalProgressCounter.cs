@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Globalization;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo.Jet.Jobs
@@ -36,7 +35,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </exception>
         public override bool Equals(object obj)
         {
-            AdditionalProgressCounter counter = obj as AdditionalProgressCounter;
+            var counter = obj as AdditionalProgressCounter;
             if (counter == null)
                 return base.Equals(obj);
             else

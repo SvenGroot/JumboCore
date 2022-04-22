@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
@@ -22,7 +19,7 @@ namespace DataServerApplication
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(BlockServer));
 
-        private DataServer _dataServer;
+        private readonly DataServer _dataServer;
 
         public BlockServer(DataServer dataServer, IPAddress[] localAddresses, int port)
             : base(localAddresses, port)
@@ -39,32 +36,32 @@ namespace DataServerApplication
         {
             try
             {
-                using (NetworkStream stream = client.GetStream())
+                using (var stream = client.GetStream())
                 {
                     // TODO: Return error codes on invalid header etc.
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    DataServerClientProtocolHeader header = (DataServerClientProtocolHeader)formatter.Deserialize(stream);
+                    var formatter = new BinaryFormatter();
+                    var header = (DataServerClientProtocolHeader)formatter.Deserialize(stream);
 
                     switch (header.Command)
                     {
                     case DataServerCommand.WriteBlock:
                         client.LingerState = new LingerOption(true, 10);
                         client.NoDelay = true;
-                        DataServerClientProtocolWriteHeader writeHeader = header as DataServerClientProtocolWriteHeader;
+                        var writeHeader = header as DataServerClientProtocolWriteHeader;
                         if (writeHeader != null)
                         {
                             ReceiveBlock(stream, writeHeader);
                         }
                         break;
                     case DataServerCommand.ReadBlock:
-                        DataServerClientProtocolReadHeader readHeader = header as DataServerClientProtocolReadHeader;
+                        var readHeader = header as DataServerClientProtocolReadHeader;
                         if (readHeader != null)
                         {
                             SendBlock(stream, readHeader);
                         }
                         break;
                     case DataServerCommand.GetLogFileContents:
-                        DataServerClientProtocolGetLogFileContentsHeader logHeader = header as DataServerClientProtocolGetLogFileContentsHeader;
+                        var logHeader = header as DataServerClientProtocolGetLogFileContentsHeader;
                         if (logHeader != null)
                             SendLogFile(stream, logHeader);
                         break;
@@ -80,12 +77,12 @@ namespace DataServerApplication
         private void ReceiveBlock(NetworkStream stream, DataServerClientProtocolWriteHeader header)
         {
             _log.InfoFormat("Block write command received for block {0}", header.BlockId);
-            int blockSize = 0;
+            var blockSize = 0;
             //DataServerClientProtocolResult forwardResult;
 
-            bool acceptedHeader = false;
-            using (BinaryReader clientReader = new BinaryReader(stream))
-            using (BinaryWriter clientWriter = new BinaryWriter(stream))
+            var acceptedHeader = false;
+            using (var clientReader = new BinaryReader(stream))
+            using (var clientWriter = new BinaryWriter(stream))
             {
                 try
                 {
@@ -95,9 +92,9 @@ namespace DataServerApplication
                         clientWriter.WriteResult(DataServerClientProtocolResult.Error);
                         return;
                     }
-                    using (FileStream blockFile = _dataServer.AddNewBlock(header.BlockId))
-                    using (BinaryWriter fileWriter = new BinaryWriter(blockFile))
-                    using (BlockSender forwarder = new BlockSender(header.BlockId, header.DataServers.Skip(1), clientWriter))
+                    using (var blockFile = _dataServer.AddNewBlock(header.BlockId))
+                    using (var fileWriter = new BinaryWriter(blockFile))
+                    using (var forwarder = new BlockSender(header.BlockId, header.DataServers.Skip(1), clientWriter))
                     {
                         // Accept the header
                         clientWriter.WriteResult(DataServerClientProtocolResult.Ok);
@@ -148,7 +145,7 @@ namespace DataServerApplication
 
         private static bool ReceivePackets(DataServerClientProtocolWriteHeader header, ref int blockSize, BinaryWriter clientWriter, BinaryReader clientReader, BlockSender forwarder, BinaryWriter fileWriter)
         {
-            Packet packet = new Packet();
+            var packet = new Packet();
             do
             {
                 try
@@ -196,21 +193,21 @@ namespace DataServerApplication
         private void SendBlock(NetworkStream clientStream, DataServerClientProtocolReadHeader header)
         {
             _log.InfoFormat("Block read command received: block {0}, offset {1}, size {2}.", header.BlockId, header.Offset, header.Size);
-            int packetOffset = header.Offset / Packet.PacketSize;
-            int offset = packetOffset * Packet.PacketSize; // Round down to the nearest packet.
+            var packetOffset = header.Offset / Packet.PacketSize;
+            var offset = packetOffset * Packet.PacketSize; // Round down to the nearest packet.
             // File offset has to take CRCs into account.
-            int fileOffset = packetOffset * (Packet.PacketSize + sizeof(uint));
+            var fileOffset = packetOffset * (Packet.PacketSize + sizeof(uint));
 
-            int endPacketOffset = 0;
-            int endOffset = 0;
-            int endFileOffset = 0;
+            var endPacketOffset = 0;
+            var endOffset = 0;
+            var endFileOffset = 0;
 
             try
             {
-                using (FileStream blockFile = _dataServer.OpenBlock(header.BlockId))
-                using (BinaryReader blockReader = new BinaryReader(blockFile))
-                using (Ookii.Jumbo.IO.WriteBufferedStream bufferedStream = new Ookii.Jumbo.IO.WriteBufferedStream(clientStream))
-                using (BinaryWriter clientWriter = new BinaryWriter(bufferedStream))
+                using (var blockFile = _dataServer.OpenBlock(header.BlockId))
+                using (var blockReader = new BinaryReader(blockFile))
+                using (var bufferedStream = new Ookii.Jumbo.IO.WriteBufferedStream(clientStream))
+                using (var clientWriter = new BinaryWriter(bufferedStream))
                 {
                     // Check if the requested offset is in range. To do this, we take the computed offset of the 
                     // first packet to send (fileOffset) and add the offset into that first packet (header.Offset - offset) to it.
@@ -243,8 +240,8 @@ namespace DataServerApplication
                     }
 
                     blockFile.Seek(fileOffset, SeekOrigin.Begin);
-                    int sizeRemaining = endOffset - offset;
-                    Packet packet = new Packet();
+                    var sizeRemaining = endOffset - offset;
+                    var packet = new Packet();
                     clientWriter.WriteResult(DataServerClientProtocolResult.Ok);
                     clientWriter.Write(offset);
                     try
@@ -275,7 +272,7 @@ namespace DataServerApplication
             {
                 if (ex.InnerException is SocketException)
                 {
-                    SocketException socketEx = (SocketException)ex.InnerException;
+                    var socketEx = (SocketException)ex.InnerException;
                     if (socketEx.ErrorCode == (int)SocketError.ConnectionAborted || socketEx.ErrorCode == (int)SocketError.ConnectionReset)
                     {
                         _log.Info("The connection was closed by the remote host.");
@@ -291,7 +288,7 @@ namespace DataServerApplication
 
         private void SendLogFile(NetworkStream stream, DataServerClientProtocolGetLogFileContentsHeader header)
         {
-            using (Stream logStream = LogFileHelper.GetLogFileStream("DataServer", header.Kind, header.MaxSize))
+            using (var logStream = LogFileHelper.GetLogFileStream("DataServer", header.Kind, header.MaxSize))
             {
                 if (logStream != null)
                     logStream.CopyTo(stream);

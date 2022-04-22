@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -105,7 +101,7 @@ namespace Ookii.Jumbo.IO
             Offset = offset;
             FirstRecordOffset = offset;
             Size = size;
-            IRecordInputStream recordInputStream = Stream as IRecordInputStream;
+            var recordInputStream = Stream as IRecordInputStream;
             if (recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary && recordInputStream.OffsetFromBoundary(offset + size) == 0)
                 recordInputStream.StopReadingAtPosition = offset + size;
             RecordInputStream = recordInputStream;
@@ -156,12 +152,12 @@ namespace Ookii.Jumbo.IO
             {
                 // This property doesn't need to be thread-safe, so it doesn't need the try/catch of UncompressedBytesRead,
                 // but it might still be called after the reader is disposed (because BinaryRecordReader disposes itself when the last byte is read).
-                Stream s = Stream;
+                var s = Stream;
                 if (s == null)
                     return _bytesRead - (FirstRecordOffset - Offset) - _paddingBytesSkipped;
                 else
                 {
-                    long result = s.Position - FirstRecordOffset;
+                    var result = s.Position - FirstRecordOffset;
                     if (RecordInputStream != null)
                         result -= RecordInputStream.PaddingBytesSkipped;
                     return result;
@@ -179,7 +175,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                ICompressor compressor = Stream as ICompressor;
+                var compressor = Stream as ICompressor;
                 if (compressor == null)
                     return UncompressedBytesRead;
                 else
@@ -204,7 +200,7 @@ namespace Ookii.Jumbo.IO
             {
                 // Progress needs to be thread safe, so this must be as well. But we don't want to lock each usage of Stream.
                 // It still might not be entirely safe because Stream isn't thread safe, but it'll have to do for now.
-                Stream s = Stream;
+                var s = Stream;
                 if (s == null)
                     return _bytesRead;
                 else
@@ -238,7 +234,7 @@ namespace Ookii.Jumbo.IO
                         _bytesRead = UncompressedBytesRead; // Store so that property can be used after the object is disposed.
                         if (RecordInputStream != null)
                             _paddingBytesSkipped = RecordInputStream.PaddingBytesSkipped;
-                        Stream s = Stream;
+                        var s = Stream;
                         Stream = null;
                         s.Dispose();
                     }

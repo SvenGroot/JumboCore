@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Tasks
@@ -37,7 +34,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             if (TaskContext != null && TaskContext.StageConfiguration.AllowOutputRecordReuse)
             {
                 // Record reuse allowed
-                Pair<T, int> result = new Pair<T, int>(default(T), _value);
+                var result = new Pair<T, int>(default(T), _value);
                 while (input.ReadRecord())
                 {
                     result.Key = input.CurrentRecord;

@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -119,11 +116,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException(nameof(generator));
 
             // Record reuse is irrelevant for a task with no input.
-            Type taskType = useProgressContext
+            var taskType = useProgressContext
                                 ? _taskBuilder.CreateDynamicTask(typeof(GeneratorTask<T>).GetMethod("Generate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), generator, 0, RecordReuseMode.Default)
                                 : _taskBuilder.CreateDynamicTask(typeof(ITask<int, T>).GetMethod("Run"), generator, 1, RecordReuseMode.Default);
 
-            StageOperation result = new StageOperation(this, taskCount, taskType);
+            var result = new StageOperation(this, taskCount, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(generator, result);
             return result;
         }

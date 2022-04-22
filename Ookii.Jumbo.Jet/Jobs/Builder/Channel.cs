@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
@@ -106,7 +103,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     if (value.IsGenericTypeDefinition)
                         value = value.MakeGenericType(RecordType);
 
-                    Type partitionerInterfaceType = value.FindGenericInterfaceType(typeof(IPartitioner<>), true);
+                    var partitionerInterfaceType = value.FindGenericInterfaceType(typeof(IPartitioner<>), true);
                     if (RecordType != partitionerInterfaceType.GetGenericArguments()[0])
                         throw new ArgumentException("The partitioner's record type doesn't match the channel's record type.");
                 }
@@ -135,7 +132,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     if (value.IsGenericTypeDefinition)
                         value = value.MakeGenericType(RecordType);
 
-                    Type baseType = value.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
+                    var baseType = value.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
                     if (RecordType != baseType.GetGenericArguments()[0])
                         throw new ArgumentException("The multi-input record reader's record type doesn't match the channel's record type.");
                 }
@@ -233,7 +230,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </returns>
         public InputStageInfo CreateInput(StageConfiguration overrideSender = null)
         {
-            StageConfiguration sender = overrideSender;
+            var sender = overrideSender;
             if (sender == null)
             {
                 if (Sender.Stage == null)

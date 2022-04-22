@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
@@ -123,7 +120,7 @@ namespace NameServerApplication
             writer.Write(ReplicationFactor);
             writer.Write((int)RecordOptions);
             writer.Write(Blocks.Count);
-            foreach (Guid block in Blocks)
+            foreach (var block in Blocks)
                 writer.Write(block.ToByteArray());
         }
 
@@ -172,7 +169,7 @@ namespace NameServerApplication
             writer.WriteLine("Record options:   {0}", RecordOptions);
             writer.WriteLine("Open for writing: {0}", IsOpenForWriting);
             writer.WriteLine("Blocks:           {0}", Blocks.Count);
-            foreach (Guid block in Blocks)
+            foreach (var block in Blocks)
                 writer.WriteLine("{{{0}}}", block);
         }
 
@@ -190,10 +187,10 @@ namespace NameServerApplication
             BlockSize = reader.ReadInt32();
             ReplicationFactor = reader.ReadInt32();
             RecordOptions = (RecordStreamOptions)reader.ReadInt32();
-            int blockCount = reader.ReadInt32();
+            var blockCount = reader.ReadInt32();
             _blocks.Clear();
             _blocks.Capacity = blockCount;
-            for (int x = 0; x < blockCount; ++x)
+            for (var x = 0; x < blockCount; ++x)
             {
                 _blocks.Add(new Guid(reader.ReadBytes(16)));
             }

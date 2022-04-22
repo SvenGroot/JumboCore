@@ -3,11 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
@@ -16,11 +13,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     /// </summary>
     public sealed partial class JobBuilder
     {
-        private static HashSet<string> _dependencyAssemblies = GetDependencies();
+        private static readonly HashSet<string> _dependencyAssemblies = GetDependencies();
 
         private static HashSet<string> GetDependencies()
         {
-            HashSet<string> result = new HashSet<string>();
+            var result = new HashSet<string>();
             GetDependencies(result, Assembly.GetExecutingAssembly());
             return result;
         }
@@ -100,7 +97,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
-            FileInput input = new FileInput(path, recordReaderType);
+            var input = new FileInput(path, recordReaderType);
             AddAssembly(recordReaderType.Assembly);
             return input;
         }
@@ -148,7 +145,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (recordWriterType.IsGenericTypeDefinition)
                 recordWriterType = recordWriterType.MakeGenericType(operation.RecordType);
 
-            FileOutput output = new FileOutput(path, recordWriterType);
+            var output = new FileOutput(path, recordWriterType);
             operation.SetOutput(output);
 
             AddAssembly(recordWriterType.Assembly);
@@ -244,7 +241,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>The job configuration.</returns>
         public JobConfiguration CreateJob()
         {
-            JobBuilderCompiler compiler = new JobBuilderCompiler(_assemblies, _fileSystemClient, _jetClient);
+            var compiler = new JobBuilderCompiler(_assemblies, _fileSystemClient, _jetClient);
             foreach (var operation in _operations)
                 operation.CreateConfiguration(compiler);
             compiler.Job.JobName = JobName;
@@ -294,7 +291,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (!_dependencyAssemblies.Contains(assembly.FullName) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)))
             {
-                foreach (AssemblyName reference in assembly.GetReferencedAssemblies())
+                foreach (var reference in assembly.GetReferencedAssemblies())
                 {
                     AddAssembly(Assembly.Load(reference));
                 }
@@ -310,7 +307,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </exception>
         public void CheckIfInputBelongsToJobBuilder(IOperationInput input)
         {
-            IJobBuilderOperation operation = input as IJobBuilderOperation;
+            var operation = input as IJobBuilderOperation;
             if (!(operation == null || operation.JobBuilder == this))
                 throw new ArgumentException("The specified input doesn't belong to this job builder.", nameof(input));
         }
@@ -322,8 +319,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor));
             CheckIfInputBelongsToJobBuilder(input);
-            Type taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
-            StageOperation result = new StageOperation(this, input, taskType);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
+            var result = new StageOperation(this, input, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(processor, result);
             return result;
         }

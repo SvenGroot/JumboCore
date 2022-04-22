@@ -1,8 +1,4 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet
@@ -54,7 +50,7 @@ namespace Ookii.Jumbo.Jet
         {
             if (input != null)
             {
-                foreach (TInput record in input.EnumerateRecords())
+                foreach (var record in input.EnumerateRecords())
                 {
                     ProcessRecord(record, output);
                 }

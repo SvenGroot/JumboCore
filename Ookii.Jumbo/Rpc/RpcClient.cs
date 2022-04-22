@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
@@ -31,8 +26,8 @@ namespace Ookii.Jumbo.Rpc
         public static object SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, object[] parameters)
         {
             // This method is public only because the dynamic assemblies must be able to access it.
-            RpcClientConnectionHandler handler = GetConnection(new ServerAddress(hostName, port));
-            object result = handler.SendRequest(objectName, interfaceName, operationName, parameters);
+            var handler = GetConnection(new ServerAddress(hostName, port));
+            var result = handler.SendRequest(objectName, interfaceName, operationName, parameters);
             handler.ReturnToCache();
             return result;
         }
@@ -46,7 +41,7 @@ namespace Ookii.Jumbo.Rpc
 
         private static RpcClientConnectionHandler GetConnection(ServerAddress address)
         {
-            ServerConnectionCache cache = (ServerConnectionCache)_connectionCache[address];
+            var cache = (ServerConnectionCache)_connectionCache[address];
             if (cache == null)
             {
                 cache = new ServerConnectionCache(_connectionTimeout);
@@ -56,7 +51,7 @@ namespace Ookii.Jumbo.Rpc
                 }
             }
 
-            RpcClientConnectionHandler handler = cache.GetConnection();
+            var handler = cache.GetConnection();
             if (handler == null)
                 return new RpcClientConnectionHandler(address.HostName, address.Port, cache); // Will be added to the cache when the client is done with it.
             else
@@ -65,7 +60,7 @@ namespace Ookii.Jumbo.Rpc
 
         private static void TimeoutConnections(object state, bool wasSignalled)
         {
-            DateTime now = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             lock (_connectionCache)
             {
                 foreach (DictionaryEntry connection in _connectionCache)

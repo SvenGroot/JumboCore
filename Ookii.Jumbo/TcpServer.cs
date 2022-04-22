@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo
@@ -17,7 +14,7 @@ namespace Ookii.Jumbo
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TcpServer));
 
-        private TcpListener[] _listeners;
+        private readonly TcpListener[] _listeners;
         private volatile bool _running;
         private Thread[] _listenerThreads;
         private readonly int _maxConnections;
@@ -53,7 +50,7 @@ namespace Ookii.Jumbo
                 throw new ArgumentOutOfRangeException(nameof(maxConnections), "The maximum number of connections must be zero or more.");
 
             _listeners = new TcpListener[localAddresses.Length];
-            for (int x = 0; x < localAddresses.Length; ++x)
+            for (var x = 0; x < localAddresses.Length; ++x)
                 _listeners[x] = new TcpListener(localAddresses[x], port);
             _maxConnections = maxConnections;
         }
@@ -101,9 +98,9 @@ namespace Ookii.Jumbo
             if (_listenerThreads == null)
             {
                 _listenerThreads = new Thread[_listeners.Length];
-                for (int x = 0; x < _listeners.Length; ++x)
+                for (var x = 0; x < _listeners.Length; ++x)
                 {
-                    Thread listenerThread = new Thread(Run) { Name = "TcpServer_" + _listeners[x].LocalEndpoint.ToString(), IsBackground = true };
+                    var listenerThread = new Thread(Run) { Name = "TcpServer_" + _listeners[x].LocalEndpoint.ToString(), IsBackground = true };
                     _listenerThreads[x] = listenerThread;
                     listenerThread.Start(_listeners[x]);
                 }
@@ -119,7 +116,7 @@ namespace Ookii.Jumbo
             if (_listenerThreads != null)
             {
                 _running = false;
-                foreach (TcpListener listener in _listeners)
+                foreach (var listener in _listeners)
                 {
                     // On Linux, the synchronous accept won't cancel if Stop is called without calling
                     // shutdown first. On Windows, calling Shutdown throws.
@@ -144,7 +141,7 @@ namespace Ookii.Jumbo
 
         private void Run(object parameter)
         {
-            TcpListener listener = (TcpListener)parameter;
+            var listener = (TcpListener)parameter;
 
             _running = true;
             listener.Start(Int32.MaxValue);
@@ -163,7 +160,7 @@ namespace Ookii.Jumbo
                 // I discovered that using BeginAcceptTcpClient would call the callback immediately on the current thread
                 // if there was already a connection in the queue, thus blocking the server until that connection was
                 // handled. So I switch to manually creating threads.
-                TcpClient client = listener.AcceptTcpClient();
+                var client = listener.AcceptTcpClient();
                 if (_maxConnections != 0)
                 {
                     int currentValue;
@@ -181,7 +178,7 @@ namespace Ookii.Jumbo
                     // If _maxConnections > 0, we need to send a value to indicate we accepted the connection.
                     client.Client.Send(_connectionAccepted);
                 }
-                Thread handlerThread = new Thread(ConnectionHandlerThread);
+                var handlerThread = new Thread(ConnectionHandlerThread);
                 handlerThread.IsBackground = true;
                 handlerThread.Start(client);
             }
@@ -203,7 +200,7 @@ namespace Ookii.Jumbo
         {
             try
             {
-                using (TcpClient client = (TcpClient)parameter)
+                using (var client = (TcpClient)parameter)
                 {
                     //_log.InfoFormat("Connection accepted from {0}.", client.Client.RemoteEndPoint);
                     HandleConnection(client);

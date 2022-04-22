@@ -15,8 +15,8 @@ namespace Ookii.Jumbo.IO
         // accurately tell if we've passed beyond the end of the split.
         private class LineReader
         {
-            private Stream _stream;
-            private byte[] _buffer;
+            private readonly Stream _stream;
+            private readonly byte[] _buffer;
             private int _bufferPos;
             private int _bufferLength;
             private readonly Utf8String _line = new Utf8String();
@@ -69,10 +69,10 @@ namespace Ookii.Jumbo.IO
                             break;
                         }
                     }
-                    int start = _bufferPos;
+                    var start = _bufferPos;
                     for (; _bufferPos < _bufferLength; ++_bufferPos)
                     {
-                        byte b = _buffer[_bufferPos];
+                        var b = _buffer[_bufferPos];
                         switch (b)
                         {
                         case (byte)'\r':
@@ -104,10 +104,10 @@ namespace Ookii.Jumbo.IO
         #endregion
 
         private const int _bufferSize = 4096;
-        private LineReader _reader;
+        private readonly LineReader _reader;
         private long _position;
-        private long _end;
-        private bool _allowRecordReuse;
+        private readonly long _end;
+        private readonly bool _allowRecordReuse;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LineRecordReader"/> class that reads from the specified stream.
@@ -202,8 +202,7 @@ namespace Ookii.Jumbo.IO
                 CurrentRecord = null;
                 return false;
             }
-            int bytesProcessed;
-            _reader.ReadLine(out bytesProcessed);
+            _reader.ReadLine(out var bytesProcessed);
 
             // If the stream uses RecordStreamOptions.DoNotCrossBoundary, we can run out of data before _position > _end, so check that here.
             if (_reader.Line.ByteLength == 0 && bytesProcessed == 0)

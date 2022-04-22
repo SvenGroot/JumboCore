@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Topology;
 
@@ -29,9 +28,9 @@ namespace NameServerApplication
 
         public BlockAssignment AssignBlockToDataServers(IEnumerable<DataServerInfo> dataServers, BlockInfo block, string writerHostName, bool useLocalReplica)
         {
-            long freeSpaceThreshold = (long)_configuration.NameServer.DataServerFreeSpaceThreshold;
-            Guid blockId = block.BlockId;
-            bool forceDifferentRack = false;
+            var freeSpaceThreshold = (long)_configuration.NameServer.DataServerFreeSpaceThreshold;
+            var blockId = block.BlockId;
+            var forceDifferentRack = false;
             var currentDataServers = (from server in dataServers
                                       where server.Blocks.Contains(blockId)
                                       select server).ToList();
@@ -39,10 +38,10 @@ namespace NameServerApplication
                                    where server.HasReportedBlocks && !server.Blocks.Contains(blockId) && server.DiskSpaceFree >= freeSpaceThreshold
                                    select server).ToList();
 
-            int serversNeeded = block.File.ReplicationFactor - currentDataServers.Count;
-            int serversUsed = currentDataServers.Count;
+            var serversNeeded = block.File.ReplicationFactor - currentDataServers.Count;
+            var serversUsed = currentDataServers.Count;
 
-            List<DataServerInfo> newDataServers = new List<DataServerInfo>(serversNeeded);
+            var newDataServers = new List<DataServerInfo>(serversNeeded);
 
             string writerRackId = null;
             if (currentDataServers.Count > 1 && _topology.Racks.Count > 1)
@@ -52,7 +51,7 @@ namespace NameServerApplication
                 forceDifferentRack = (from server in currentDataServers select server.Rack.RackId).Distinct().Count() == 1;
             }
 
-            string originalWriterHostName = writerHostName;
+            var originalWriterHostName = writerHostName;
             if (writerHostName != null)
             {
                 if (currentDataServers.Count > 0)
@@ -121,15 +120,15 @@ namespace NameServerApplication
                 ++serversUsed;
             }
 
-            for (int i = 0; i < newDataServers.Count - 1; ++i)
+            for (var i = 0; i < newDataServers.Count - 1; ++i)
             {
-                int closestNodeIndex = i + 1;
-                int distance = newDataServers[i].DistanceFrom(newDataServers[closestNodeIndex]);
+                var closestNodeIndex = i + 1;
+                var distance = newDataServers[i].DistanceFrom(newDataServers[closestNodeIndex]);
                 // This uses the fact that the distance if never greater than 2, and that a distance 0 won't happen outside of test scenarios.
                 // If the next node in line is in the same rack, there's no point looking for a closer node.
                 if (distance > 1)
                 {
-                    for (int j = closestNodeIndex + 1; j < newDataServers.Count; ++j)
+                    for (var j = closestNodeIndex + 1; j < newDataServers.Count; ++j)
                     {
                         if (newDataServers[i].DistanceFrom(newDataServers[j]) < 2)
                         {
@@ -138,7 +137,7 @@ namespace NameServerApplication
                         }
                     }
                     // Swap the closest one with the next one.
-                    DataServerInfo temp = newDataServers[i + 1];
+                    var temp = newDataServers[i + 1];
                     newDataServers[i + 1] = newDataServers[closestNodeIndex];
                     newDataServers[closestNodeIndex] = temp;
                 }
@@ -146,7 +145,7 @@ namespace NameServerApplication
 
             if (_log.IsInfoEnabled)
             {
-                foreach (DataServerInfo server in newDataServers)
+                foreach (var server in newDataServers)
                     _log.InfoFormat("Assigned data server for block {0}: {1}", blockId, server.Address);
             }
 
@@ -157,10 +156,10 @@ namespace NameServerApplication
         {
             lock (_random)
             {
-                DataServerInfo result = (from server in eligibleServers
-                                         let serverDistance = server.DistanceFrom(writerHostName, writerRackId)
-                                         where serverDistance >= minimumDistance
-                                         select new { Server = server, Distance = serverDistance }).OrderBy(s => s.Distance).ThenBy(s => s.Server.PendingBlocks.Count).ThenBy(s => _random.Next()).First().Server;
+                var result = (from server in eligibleServers
+                              let serverDistance = server.DistanceFrom(writerHostName, writerRackId)
+                              where serverDistance >= minimumDistance
+                              select new { Server = server, Distance = serverDistance }).OrderBy(s => s.Distance).ThenBy(s => s.Server.PendingBlocks.Count).ThenBy(s => _random.Next()).First().Server;
                 return result;
             }
         }

@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -49,7 +46,7 @@ namespace Ookii.Jumbo.Dfs
             if (IsPathRooted(path2))
                 return path2;
 
-            string result = path1;
+            var result = path1;
             if (path1[path1.Length - 1] != DirectorySeparator)
                 result += DirectorySeparator;
             result += path2;
@@ -65,11 +62,11 @@ namespace Ookii.Jumbo.Dfs
         {
             if (path != null)
             {
-                int length = path.Length;
-                int current = length;
+                var length = path.Length;
+                var current = length;
                 while (--current >= 0)
                 {
-                    char ch = path[current];
+                    var ch = path[current];
                     if (ch == DirectorySeparator)
                     {
                         return path.Substring(current + 1, (length - current) - 1);
@@ -91,7 +88,7 @@ namespace Ookii.Jumbo.Dfs
             {
                 if (path == "/")
                     return null;
-                int index = path.LastIndexOf(DirectorySeparator);
+                var index = path.LastIndexOf(DirectorySeparator);
                 if (index == 0)
                     return "/";
                 else if (index > 0)

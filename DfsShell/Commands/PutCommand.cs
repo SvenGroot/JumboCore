@@ -1,15 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Ookii.CommandLine;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
@@ -58,18 +53,16 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            Type recordReaderType;
-            Type recordWriterType;
             if (!File.Exists(_localPath) && !Directory.Exists(_localPath))
                 Console.Error.WriteLine("Local path {0} does not exist.", _localPath);
             else if (BlockSize.Value < 0 || BlockSize.Value >= Int32.MaxValue)
                 Console.Error.WriteLine("Invalid block size.");
-            else if (CheckRecordOptions(out recordReaderType, out recordWriterType))
+            else if (CheckRecordOptions(out var recordReaderType, out var recordWriterType))
             {
-                ProgressCallback progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
+                var progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
                 try
                 {
-                    bool isDirectory = Directory.Exists(_localPath);
+                    var isDirectory = Directory.Exists(_localPath);
                     if (isDirectory)
                     {
                         if (!Quiet)
@@ -81,11 +74,11 @@ namespace DfsShell.Commands
                     }
                     else
                     {
-                        JumboDirectory dir = Client.GetDirectoryInfo(_dfsPath);
-                        string dfsPath = _dfsPath;
+                        var dir = Client.GetDirectoryInfo(_dfsPath);
+                        var dfsPath = _dfsPath;
                         if (dir != null)
                         {
-                            string fileName = Path.GetFileName(_localPath);
+                            var fileName = Path.GetFileName(_localPath);
                             dfsPath = Client.Path.Combine(dfsPath, fileName);
                         }
                         if (!Quiet)
@@ -113,18 +106,18 @@ namespace DfsShell.Commands
 
         private void UploadFileRecords(string localPath, string dfsPath, Type recordReaderType, Type recordWriterType)
         {
-            int previousPercentage = -1;
-            using (FileStream inputStream = File.OpenRead(localPath))
-            using (IRecordReader reader = (IRecordReader)Activator.CreateInstance(recordReaderType, inputStream))
-            using (Stream outputStream = Client.CreateFile(dfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, RecordOptions))
-            using (IRecordWriter writer = (IRecordWriter)Activator.CreateInstance(recordWriterType, outputStream))
+            var previousPercentage = -1;
+            using (var inputStream = File.OpenRead(localPath))
+            using (var reader = (IRecordReader)Activator.CreateInstance(recordReaderType, inputStream))
+            using (var outputStream = Client.CreateFile(dfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, RecordOptions))
+            using (var writer = (IRecordWriter)Activator.CreateInstance(recordWriterType, outputStream))
             {
                 while (reader.ReadRecord())
                 {
                     writer.WriteRecord(reader.CurrentRecord);
                     if (!Quiet)
                     {
-                        int percentage = (int)(reader.Progress * 100);
+                        var percentage = (int)(reader.Progress * 100);
                         if (percentage != previousPercentage)
                         {
                             previousPercentage = percentage;
@@ -137,16 +130,16 @@ namespace DfsShell.Commands
 
         private void UploadDirectoryRecords(string localPath, string dfsPath, Type recordReaderType, Type recordWriterType)
         {
-            string[] files = System.IO.Directory.GetFiles(localPath);
+            var files = System.IO.Directory.GetFiles(localPath);
 
-            JumboDirectory directory = Client.GetDirectoryInfo(dfsPath);
+            var directory = Client.GetDirectoryInfo(dfsPath);
             if (directory != null)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the DFS.", dfsPath), nameof(dfsPath));
             Client.CreateDirectory(dfsPath);
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
-                string targetFile = Client.Path.Combine(dfsPath, System.IO.Path.GetFileName(file));
+                var targetFile = Client.Path.Combine(dfsPath, System.IO.Path.GetFileName(file));
                 UploadFileRecords(file, targetFile, recordReaderType, recordWriterType);
             }
         }
@@ -176,8 +169,8 @@ namespace DfsShell.Commands
                 recordReaderType = Type.GetType(RecordReaderType, true);
                 recordWriterType = Type.GetType(RecordWriterType, true);
 
-                Type recordReaderRecordType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true).GetGenericArguments()[0];
-                Type recordWriterRecordType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true).GetGenericArguments()[0];
+                var recordReaderRecordType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true).GetGenericArguments()[0];
+                var recordWriterRecordType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true).GetGenericArguments()[0];
                 if (recordReaderRecordType != recordWriterRecordType)
                 {
                     Console.Error.WriteLine("The record reader and writer must have the same record types.");

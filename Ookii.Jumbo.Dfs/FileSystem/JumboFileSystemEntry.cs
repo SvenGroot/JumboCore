@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -105,7 +102,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
 
-            FileInfo file = info as FileInfo;
+            var file = info as FileInfo;
             if (file != null)
                 return JumboFile.FromFileInfo(file, rootPath);
             else
@@ -120,7 +117,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (!fullPath.StartsWith(rootPath, StringComparison.Ordinal))
                 throw new ArgumentException("Invalid path.");
 
-            int length = rootPath.Length;
+            var length = rootPath.Length;
             if (rootPath[rootPath.Length - 1] == Path.DirectorySeparatorChar || rootPath[rootPath.Length - 1] == Path.AltDirectorySeparatorChar)
                 length -= 1;
             if (fullPath.Length == length)

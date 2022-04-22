@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -128,22 +125,21 @@ namespace Ookii.Jumbo
         [SupportedOSPlatform("windows")]
         private void RefreshWindows()
         {
-            NativeMethods.PERFORMANCE_INFORMATION performanceInfo;
-            if (!NativeMethods.GetPerformanceInfo(out performanceInfo, Marshal.SizeOf(typeof(NativeMethods.PERFORMANCE_INFORMATION))))
+            if (!NativeMethods.GetPerformanceInfo(out var performanceInfo, Marshal.SizeOf(typeof(NativeMethods.PERFORMANCE_INFORMATION))))
                 throw new System.ComponentModel.Win32Exception();
 
             _totalPhysicalMemory = (long)performanceInfo.PhysicalTotal * (long)performanceInfo.PageSize;
             _availablePhysicalMemory = (long)performanceInfo.PhysicalAvailable * (long)performanceInfo.PageSize;
 
-            SelectQuery query = new SelectQuery("Win32_PageFileUsage", null, new[] { "CurrentUsage", "AllocatedBaseSize" });
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            var query = new SelectQuery("Win32_PageFileUsage", null, new[] { "CurrentUsage", "AllocatedBaseSize" });
+            using (var searcher = new ManagementObjectSearcher(query))
             {
                 _totalSwap = 0;
                 _availableSwap = 0;
-                foreach (ManagementBaseObject obj in searcher.Get())
+                foreach (var obj in searcher.Get())
                 {
-                    long size = (uint)obj["AllocatedBaseSize"] * BinarySize.Megabyte;
-                    long used = (uint)obj["CurrentUsage"] * BinarySize.Megabyte;
+                    var size = (uint)obj["AllocatedBaseSize"] * BinarySize.Megabyte;
+                    var used = (uint)obj["CurrentUsage"] * BinarySize.Megabyte;
                     _totalSwap += size;
                     _availableSwap += (size - used);
                 }
@@ -165,7 +161,7 @@ namespace Ookii.Jumbo
                 _procMemInfoReader.BaseStream.Position = 0;
             }
 
-            int neededFields = 6;
+            var neededFields = 6;
             string line;
             while (neededFields > 0 && (line = _procMemInfoReader.ReadLine()) != null)
             {
@@ -187,7 +183,7 @@ namespace Ookii.Jumbo
             if (line.StartsWith(field, StringComparison.Ordinal))
             {
                 // Strip the field, the colon, and the kB
-                string valueString = line.Substring(field.Length + 1, line.Length - field.Length - 3);
+                var valueString = line.Substring(field.Length + 1, line.Length - field.Length - 3);
                 value = long.Parse(valueString, System.Globalization.CultureInfo.InvariantCulture) * BinarySize.Kilobyte;
                 return true;
             }

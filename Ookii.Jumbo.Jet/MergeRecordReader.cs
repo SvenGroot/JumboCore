@@ -165,7 +165,7 @@ namespace Ookii.Jumbo.Jet
             CheckDisposed();
             base.AddInput(partitions);
 
-            for (int x = 0; x < partitions.Count; ++x)
+            for (var x = 0; x < partitions.Count; ++x)
             {
                 _partitionMergers[x].AddInput(partitions[x]);
             }
@@ -249,7 +249,7 @@ namespace Ookii.Jumbo.Jet
                 }
             }
 
-            bool result = _currentPartitionFinalPass.MoveNext();
+            var result = _currentPartitionFinalPass.MoveNext();
             if (result)
                 CurrentRecord = _currentPartitionFinalPass.Current.GetValue();
             else
@@ -303,11 +303,11 @@ namespace Ookii.Jumbo.Jet
 
         private void StartMergeThread(IList<int> partitionNumbers)
         {
-            IComparer<T> comparer = GetComparer();
+            var comparer = GetComparer();
 
             Debug.Assert(_partitionMergers == null);
             _partitionMergers = new PartitionMerger<T>[partitionNumbers.Count];
-            for (int x = 0; x < _partitionMergers.Length; ++x)
+            for (var x = 0; x < _partitionMergers.Length; ++x)
             {
                 _partitionMergers[x] = new PartitionMerger<T>(this, partitionNumbers[x], comparer);
             }
@@ -324,18 +324,18 @@ namespace Ookii.Jumbo.Jet
         {
             _log.InfoFormat("Background merge thread started with trigger level {1} and max {2} disk inputs per pass.", TotalInputCount, _memoryStorageTriggerLevel, _maxDiskInputsPerMergePass);
 
-            WaitHandle[] events = new WaitHandle[] { _inputAddedEvent, _cancelEvent };
+            var events = new WaitHandle[] { _inputAddedEvent, _cancelEvent };
 
             while (CurrentInputCount < TotalInputCount)
             {
                 if (Channel != null && Channel.UsesMemoryStorage && (_memoryStorageFull || Channel.MemoryStorageLevel >= _memoryStorageTriggerLevel))
                 {
-                    foreach (PartitionMerger<T> merger in _partitionMergers)
+                    foreach (var merger in _partitionMergers)
                         merger.RunMemoryPurgePass(_mergeHelper);
                     _memoryStorageFull = false;
                 }
 
-                foreach (PartitionMerger<T> merger in _partitionMergers)
+                foreach (var merger in _partitionMergers)
                     merger.RunDiskMergePassIfNeeded(_mergeHelper);
 
                 if (WaitHandle.WaitAny(events) == 1)
@@ -348,20 +348,20 @@ namespace Ookii.Jumbo.Jet
             {
                 if (_purgeMemoryBeforeFinalPass)
                 {
-                    foreach (PartitionMerger<T> merger in _partitionMergers)
+                    foreach (var merger in _partitionMergers)
                         merger.RunMemoryPurgePass(_mergeHelper);
                 }
 
                 _log.Info("Preparing final merge");
 
-                foreach (PartitionMerger<T> merger in _partitionMergers)
+                foreach (var merger in _partitionMergers)
                     merger.PrepareFinalPass(_mergeHelper);
 
                 _log.Info("All partitions are ready for the final pass.");
 
                 lock (_finalPassLock)
                 {
-                    foreach (PartitionMerger<T> merger in _partitionMergers)
+                    foreach (var merger in _partitionMergers)
                         _finalPassMergers.Add(merger.PartitionNumber, merger);
 
                     // If it's already set, this is an additional set of partitions we're working on and the previous set hasn't finished processing yet.
@@ -380,7 +380,7 @@ namespace Ookii.Jumbo.Jet
 
         private IComparer<T> GetComparer()
         {
-            string comparerTypeName = TaskContext.StageConfiguration.GetSetting(MergeRecordReaderConstants.ComparerSetting, null);
+            var comparerTypeName = TaskContext.StageConfiguration.GetSetting(MergeRecordReaderConstants.ComparerSetting, null);
             if (comparerTypeName == null && !(Channel == null || Channel.InputStage == null))
             {
                 if (Ookii.Jumbo.Jet.Jobs.SettingsDictionary.GetJobOrStageSetting(TaskContext.JobConfiguration, Channel.InputStage, JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.Spill) == FileChannelOutputType.SortSpill)
@@ -403,8 +403,7 @@ namespace Ookii.Jumbo.Jet
 
         private IEnumerator<MergeResultRecord<T>> GetCurrentPartitionFinalPass()
         {
-            PartitionMerger<T> finalPassMerger;
-            if (_finalPassMergers != null && _finalPassMergers.TryGetValue(CurrentPartition, out finalPassMerger))
+            if (_finalPassMergers != null && _finalPassMergers.TryGetValue(CurrentPartition, out var finalPassMerger))
             {
                 return finalPassMerger.FinalPassResult.GetEnumerator();
             }

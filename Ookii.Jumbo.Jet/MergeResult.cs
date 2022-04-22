@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet
@@ -37,7 +36,7 @@ namespace Ookii.Jumbo.Jet
         {
             if (_mergeResult == null)
                 throw new InvalidOperationException("Merge pass can be enumerated only once.");
-            IEnumerator<MergeResultRecord<T>> result = _mergeResult;
+            var result = _mergeResult;
             _mergeResult = null;
             return result;
         }

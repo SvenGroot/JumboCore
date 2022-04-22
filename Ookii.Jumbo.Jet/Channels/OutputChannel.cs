@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Jobs;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -33,16 +31,16 @@ namespace Ookii.Jumbo.Jet.Channels
 
             TaskExecution = taskExecution;
 
-            ChannelConfiguration channelConfig = taskExecution.Context.StageConfiguration.OutputChannel;
+            var channelConfig = taskExecution.Context.StageConfiguration.OutputChannel;
             if (channelConfig.OutputStage != null)
             {
-                StageConfiguration outputStage = taskExecution.Context.JobConfiguration.GetStage(channelConfig.OutputStage);
+                var outputStage = taskExecution.Context.JobConfiguration.GetStage(channelConfig.OutputStage);
                 if (taskExecution.Context.StageConfiguration.InternalPartitionCount == 1 || taskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 {
                     // If this task is not a child of a compound task, or there is no partitioning done inside the compound,
                     // or the parent task uses prepartitioned output, full connectivity means we partition the output into as many pieces as there are output tasks.
-                    int partitionCount = outputStage.TaskCount * channelConfig.PartitionsPerTask;
-                    for (int x = 1; x <= partitionCount; ++x)
+                    var partitionCount = outputStage.TaskCount * channelConfig.PartitionsPerTask;
+                    for (var x = 1; x <= partitionCount; ++x)
                     {
                         _outputPartitionIds.Add(TaskId.CreateTaskIdString(channelConfig.OutputStage, x));
                     }

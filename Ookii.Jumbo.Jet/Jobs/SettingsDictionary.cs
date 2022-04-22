@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -52,8 +50,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
-            string startElementName = reader.Name;
-            int depth = reader.Depth;
+            var startElementName = reader.Name;
+            var depth = reader.Depth;
             if (reader.IsEmptyElement)
             {
                 reader.ReadStartElement();
@@ -108,8 +106,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
         public T GetSetting<T>(string key, T defaultValue)
         {
-            string value;
-            if (TryGetValue(key, out value))
+            if (TryGetValue(key, out var value))
             {
                 return (T)TypeDescriptor.GetConverter(defaultValue).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, value);
             }
@@ -126,8 +123,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns><see langword="true"/> if the settings dictionary contained the specified setting; otherwise, <see langword="false"/>.</returns>
         public bool TryGetSetting<T>(string key, out T value)
         {
-            string stringValue;
-            if (TryGetValue(key, out stringValue))
+            if (TryGetValue(key, out var stringValue))
             {
                 value = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, stringValue);
                 return true;
@@ -148,8 +144,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
         public string GetSetting(string key, string defaultValue)
         {
-            string value;
-            if (TryGetValue(key, out value))
+            if (TryGetValue(key, out var value))
                 return value;
             else
                 return defaultValue;
@@ -170,7 +165,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
 
-            string value = stage.GetSetting(key, null);
+            var value = stage.GetSetting(key, null);
             if (value == null)
                 value = job.GetSetting(key, defaultValue);
 
@@ -195,8 +190,8 @@ namespace Ookii.Jumbo.Jet.Jobs
             if (stage == null)
                 throw new ArgumentNullException(nameof(stage));
 
-            T value;
-            if (!stage.TryGetSetting(key, out value) && !job.TryGetSetting(key, out value))
+            if (!stage.TryGetSetting(key, out
+            T value) && !job.TryGetSetting(key, out value))
                 return defaultValue;
             else
                 return value;

@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Jobs
 {
@@ -28,11 +25,11 @@ namespace Ookii.Jumbo.Jet.Jobs
                 throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
 
             _taskType = taskType;
-            Type interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>));
-            Type[] arguments = interfaceType.GetGenericArguments();
+            var interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>));
+            var arguments = interfaceType.GetGenericArguments();
             _inputRecordType = arguments[0];
             _outputRecordType = arguments[1];
-            AllowRecordReuseAttribute recordReuseAttribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
+            var recordReuseAttribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
             if (recordReuseAttribute != null)
                 _recordReuse = recordReuseAttribute.PassThrough ? TaskRecordReuse.PassThrough : TaskRecordReuse.Allowed;
         }

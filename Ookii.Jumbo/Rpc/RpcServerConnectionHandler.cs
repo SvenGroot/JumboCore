@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -35,7 +31,7 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public void BeginReadRequest()
         {
-            bool hasData = false;
+            var hasData = false;
             try
             {
                 if (!_stream.HasData)
@@ -57,7 +53,7 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void BeginReadRequestCallback(IAsyncResult ar)
         {
-            bool hasData = false;
+            var hasData = false;
             try
             {
                 _stream.EndBuffering(ar);
@@ -87,9 +83,9 @@ namespace Ookii.Jumbo.Rpc
                     _context.ClientHostName = _stream.ReadString();
                     _hostNameReceived = true;
                 }
-                string objectName = _stream.ReadString();
-                string interfaceName = _stream.ReadString();
-                string operationName = _stream.ReadString();
+                var objectName = _stream.ReadString();
+                var interfaceName = _stream.ReadString();
+                var operationName = _stream.ReadString();
 
                 RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, this);
             }
@@ -130,9 +126,9 @@ namespace Ookii.Jumbo.Rpc
 
         private void SendResponse(bool success, object response)
         {
-            using (MemoryStream contentStream = new MemoryStream())
+            using (var contentStream = new MemoryStream())
             {
-                RpcResponseStatus status = success ? (response == null ? RpcResponseStatus.SuccessNoValue : RpcResponseStatus.Success) : RpcResponseStatus.Error;
+                var status = success ? (response == null ? RpcResponseStatus.SuccessNoValue : RpcResponseStatus.Success) : RpcResponseStatus.Error;
                 contentStream.WriteByte((byte)status);
                 if (response != null)
                     _formatter.Serialize(contentStream, response);

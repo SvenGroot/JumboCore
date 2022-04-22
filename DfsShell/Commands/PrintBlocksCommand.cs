@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Ookii.CommandLine;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
@@ -27,13 +23,13 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            DfsClient dfsClient = Client as DfsClient;
+            var dfsClient = Client as DfsClient;
             if (dfsClient == null)
                 Console.WriteLine("The configured file system doesn't support blocks.");
             else
             {
-                Guid[] blocks = dfsClient.NameServer.GetBlocks(_kind);
-                foreach (Guid blockId in blocks)
+                var blocks = dfsClient.NameServer.GetBlocks(_kind);
+                foreach (var blockId in blocks)
                 {
                     if (ShowFiles)
                         Console.WriteLine("{0:B}: {1}", blockId, dfsClient.NameServer.GetFileForBlock(blockId));

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -44,8 +41,8 @@ namespace Ookii.Jumbo.IO
                 _stream1.Reset(x, xOffset, xCount);
                 _stream2.Reset(y, yOffset, yCount);
                 // TODO: Record reuse
-                T value1 = ValueWriter<T>.ReadValue(_reader1);
-                T value2 = ValueWriter<T>.ReadValue(_reader2);
+                var value1 = ValueWriter<T>.ReadValue(_reader1);
+                var value2 = ValueWriter<T>.ReadValue(_reader2);
                 return _comparer.Compare(value1, value2);
             }
 

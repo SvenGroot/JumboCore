@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Tasks
@@ -28,7 +25,7 @@ namespace Ookii.Jumbo.Jet.Tasks
                 throw new ArgumentNullException(nameof(input));
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            foreach (T record in input.EnumerateRecords())
+            foreach (var record in input.EnumerateRecords())
             {
                 output.WriteRecord(record);
             }

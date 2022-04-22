@@ -70,7 +70,7 @@ namespace Ookii.Jumbo
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>
         public PriorityQueue(IEnumerable<T> collection, IComparer<T> comparer)
-            : this((List<T>)null, comparer)
+            : this(null, comparer)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -81,7 +81,7 @@ namespace Ookii.Jumbo
                 // Starting at the parent of the last element (which is the last non-leaf node in the tree), perform the
                 // down-heap operation to establish the heap property. This provides O(n) initialization, faster than calling
                 // Enqueue for each item which would be O(n log n)
-                for (int index = (_heap.Count - 1) >> 1; index >= 0; --index)
+                for (var index = (_heap.Count - 1) >> 1; index >= 0; --index)
                 {
                     DownHeap(index);
                 }
@@ -267,8 +267,8 @@ namespace Ookii.Jumbo
         {
             if (_heap.Count == 0)
                 throw new InvalidOperationException("The priority queue is empty.");
-            T result = _heap[0];
-            int lastIndex = _heap.Count - 1;
+            var result = _heap[0];
+            var lastIndex = _heap.Count - 1;
             _heap[0] = _heap[lastIndex];
             _heap.RemoveAt(lastIndex);
             if (_heap.Count > 0)
@@ -412,11 +412,11 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if the item was removed; <see langword="false"/> if it was not found.</returns>
         public bool Remove(T item)
         {
-            int index = _heap.IndexOf(item);
+            var index = _heap.IndexOf(item);
             if (index < 0)
                 return false;
 
-            int lastIndex = _heap.Count - 1;
+            var lastIndex = _heap.Count - 1;
             if (index == lastIndex)
                 _heap.RemoveAt(lastIndex);
             else
@@ -436,10 +436,10 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if the heap is valid; otherwise, <see langword="false" />.</returns>
         public bool CheckHeap()
         {
-            for (int x = 0; x < _heap.Count; ++x)
+            for (var x = 0; x < _heap.Count; ++x)
             {
-                int firstChild = (x << 1) + 1;
-                int secondChild = firstChild + 1;
+                var firstChild = (x << 1) + 1;
+                var secondChild = firstChild + 1;
                 if (!((firstChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[firstChild]) <= 0) &&
                       (secondChild >= _heap.Count || Comparer.Compare(_heap[x], _heap[secondChild]) <= 0)))
                     return false;
@@ -465,7 +465,7 @@ namespace Ookii.Jumbo
         /// </remarks>
         public T[] ToArray()
         {
-            T[] result = _heap.ToArray();
+            var result = _heap.ToArray();
             // We want to return the elements in the same order in which they are enumerated, which is sorted order, so we simply sort.
             Array.Sort(result, Comparer);
             return result;
@@ -500,8 +500,8 @@ namespace Ookii.Jumbo
 
         private void UpHeap(int index)
         {
-            T item = _heap[index];
-            int parentIndex = (index - 1) >> 1;
+            var item = _heap[index];
+            var parentIndex = (index - 1) >> 1;
             // Because we can't easily tell when parentIndex goes beyond 0, we check index instead; if that was already zero, then we're at the top
             while (index > 0 && Comparer.Compare(item, _heap[parentIndex]) < 0)
             {
@@ -514,11 +514,11 @@ namespace Ookii.Jumbo
 
         private void DownHeap(int index)
         {
-            T item = _heap[index];
-            int count = _heap.Count;
-            int firstChild = (index << 1) + 1;
-            int secondChild = firstChild + 1;
-            int smallestChild = (secondChild < count && Comparer.Compare(_heap[secondChild], _heap[firstChild]) < 0) ? secondChild : firstChild;
+            var item = _heap[index];
+            var count = _heap.Count;
+            var firstChild = (index << 1) + 1;
+            var secondChild = firstChild + 1;
+            var smallestChild = (secondChild < count && Comparer.Compare(_heap[secondChild], _heap[firstChild]) < 0) ? secondChild : firstChild;
             while (smallestChild < count && Comparer.Compare(_heap[smallestChild], item) < 0)
             {
                 _heap[index] = _heap[smallestChild];
@@ -554,7 +554,7 @@ namespace Ookii.Jumbo
             // We want to enumerate in the order you would get if calling Dequeue until the queue is empty.
             // A simple way to achieve that is to simple sort the heap, and to return an iterator over
             // the sorted copy.
-            List<T> heapCopy = new List<T>(_heap);
+            var heapCopy = new List<T>(_heap);
             heapCopy.Sort(Comparer);
             return heapCopy.GetEnumerator();
         }

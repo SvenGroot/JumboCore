@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -26,8 +23,8 @@ namespace Ookii.Jumbo.IO
     public abstract class Writable<T> : IWritable
         where T : Writable<T>
     {
-        private static Action<T, BinaryWriter> _writeMethod = WritableUtility.CreateSerializer<T>();
-        private static Action<T, BinaryReader> _readMethod = WritableUtility.CreateDeserializer<T>();
+        private static readonly Action<T, BinaryWriter> _writeMethod = WritableUtility.CreateSerializer<T>();
+        private static readonly Action<T, BinaryReader> _readMethod = WritableUtility.CreateDeserializer<T>();
 
         #region IWritable Members
 

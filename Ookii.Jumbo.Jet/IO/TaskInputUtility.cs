@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 
@@ -31,16 +29,16 @@ namespace Ookii.Jumbo.Jet.IO
             if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
-            string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
-            string splitsIndexFile = GetSplitsIndexFileName(splitsFile);
-            string locationsFile = GetLocationsFileName(fileSystem, path, stageId);
+            var splitsFile = GetSplitsFileName(fileSystem, path, stageId);
+            var splitsIndexFile = GetSplitsIndexFileName(splitsFile);
+            var locationsFile = GetLocationsFileName(fileSystem, path, stageId);
 
-            using (BinaryWriter writer = new BinaryWriter(fileSystem.CreateFile(splitsFile)))
-            using (BinaryWriter indexWriter = new BinaryWriter(fileSystem.CreateFile(splitsIndexFile)))
-            using (BinaryWriter locationsWriter = new BinaryWriter(fileSystem.CreateFile(locationsFile)))
+            using (var writer = new BinaryWriter(fileSystem.CreateFile(splitsFile)))
+            using (var indexWriter = new BinaryWriter(fileSystem.CreateFile(splitsIndexFile)))
+            using (var locationsWriter = new BinaryWriter(fileSystem.CreateFile(locationsFile)))
             {
-                bool first = true;
-                foreach (ITaskInput input in inputs)
+                var first = true;
+                foreach (var input in inputs)
                 {
                     if (first)
                     {
@@ -55,7 +53,7 @@ namespace Ookii.Jumbo.Jet.IO
                     else
                     {
                         WritableUtility.Write7BitEncodedInt32(locationsWriter, input.Locations.Count);
-                        foreach (string location in input.Locations)
+                        foreach (var location in input.Locations)
                         {
                             locationsWriter.Write(location);
                         }
@@ -80,16 +78,16 @@ namespace Ookii.Jumbo.Jet.IO
             if (stageId == null)
                 throw new ArgumentNullException(nameof(stageId));
 
-            string locationsFile = GetLocationsFileName(fileSystem, path, stageId);
+            var locationsFile = GetLocationsFileName(fileSystem, path, stageId);
 
-            List<string[]> result = new List<string[]>();
-            using (BinaryReader reader = new BinaryReader(fileSystem.OpenFile(locationsFile)))
+            var result = new List<string[]>();
+            using (var reader = new BinaryReader(fileSystem.OpenFile(locationsFile)))
             {
                 while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    int locationsCount = WritableUtility.Read7BitEncodedInt32(reader);
-                    string[] locations = new string[locationsCount];
-                    for (int x = 0; x < locationsCount; ++x)
+                    var locationsCount = WritableUtility.Read7BitEncodedInt32(reader);
+                    var locations = new string[locationsCount];
+                    for (var x = 0; x < locationsCount; ++x)
                         locations[x] = reader.ReadString();
                     result.Add(locations);
                 }
@@ -117,17 +115,17 @@ namespace Ookii.Jumbo.Jet.IO
             if (splitIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(splitIndex));
 
-            string splitsFile = GetSplitsFileName(fileSystem, path, stageId);
-            string splitsIndexFile = GetSplitsIndexFileName(splitsFile);
+            var splitsFile = GetSplitsFileName(fileSystem, path, stageId);
+            var splitsIndexFile = GetSplitsIndexFileName(splitsFile);
 
-            using (BinaryReader reader = new BinaryReader(fileSystem.OpenFile(splitsFile)))
-            using (BinaryReader indexReader = new BinaryReader(fileSystem.OpenFile(splitsIndexFile)))
+            using (var reader = new BinaryReader(fileSystem.OpenFile(splitsFile)))
+            using (var indexReader = new BinaryReader(fileSystem.OpenFile(splitsIndexFile)))
             {
-                string typeName = reader.ReadString();
+                var typeName = reader.ReadString();
                 indexReader.BaseStream.Position = splitIndex * sizeof(long);
-                long offset = indexReader.ReadInt64();
+                var offset = indexReader.ReadInt64();
                 reader.BaseStream.Position = offset;
-                ITaskInput result = (ITaskInput)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(Type.GetType(typeName, true));
+                var result = (ITaskInput)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(Type.GetType(typeName, true));
                 result.Read(reader);
 
                 return result;

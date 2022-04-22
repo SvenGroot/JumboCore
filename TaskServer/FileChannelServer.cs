@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Channels;
 
 namespace TaskServerApplication
@@ -59,27 +56,27 @@ namespace TaskServerApplication
         {
             try
             {
-                using NetworkStream stream = client.GetStream();
-                using BinaryReader reader = new BinaryReader(stream);
-                using BinaryWriter writer = new BinaryWriter(stream);
+                using var stream = client.GetStream();
+                using var reader = new BinaryReader(stream);
+                using var writer = new BinaryWriter(stream);
                 try
                 {
-                    byte[] guidBytes = reader.ReadBytes(16);
-                    Guid jobId = new Guid(guidBytes);
+                    var guidBytes = reader.ReadBytes(16);
+                    var jobId = new Guid(guidBytes);
 
-                    int partitionCount = reader.ReadInt32();
-                    int[] partitions = new int[partitionCount];
-                    for (int x = 0; x < partitionCount; ++x)
+                    var partitionCount = reader.ReadInt32();
+                    var partitions = new int[partitionCount];
+                    for (var x = 0; x < partitionCount; ++x)
                         partitions[x] = reader.ReadInt32();
 
-                    int taskCount = reader.ReadInt32();
-                    string[] tasks = new string[taskCount];
-                    for (int x = 0; x < taskCount; ++x)
+                    var taskCount = reader.ReadInt32();
+                    var tasks = new string[taskCount];
+                    for (var x = 0; x < taskCount; ++x)
                     {
                         tasks[x] = reader.ReadString();
                     }
 
-                    Stopwatch sw = _log.IsDebugEnabled ? Stopwatch.StartNew() : null;
+                    var sw = _log.IsDebugEnabled ? Stopwatch.StartNew() : null;
                     SendSingleFileOutput(writer, jobId, partitions, tasks);
                     if (_log.IsDebugEnabled)
                     {
@@ -109,31 +106,31 @@ namespace TaskServerApplication
 
         private void SendSingleFileOutput(BinaryWriter writer, Guid jobId, int[] partitions, string[] tasks)
         {
-            string dir = _taskServer.GetJobDirectory(jobId);
-            foreach (string task in tasks)
+            var dir = _taskServer.GetJobDirectory(jobId);
+            foreach (var task in tasks)
             {
-                string outputFile = FileOutputChannel.CreateChannelFileName(task);
-                string path = Path.Combine(dir, outputFile);
-                PartitionFileIndex index = _indexCache.GetIndex(path);
-                long totalSize = partitions.Sum(p => index.GetPartitionSize(p, true));
+                var outputFile = FileOutputChannel.CreateChannelFileName(task);
+                var path = Path.Combine(dir, outputFile);
+                var index = _indexCache.GetIndex(path);
+                var totalSize = partitions.Sum(p => index.GetPartitionSize(p, true));
                 writer.Write(totalSize);
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize))
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferSize))
                 {
-                    foreach (int partition in partitions)
+                    foreach (var partition in partitions)
                     {
-                        IEnumerable<PartitionFileIndexEntry> entries = index.GetEntriesForPartition(partition);
+                        var entries = index.GetEntriesForPartition(partition);
                         if (entries == null)
                             writer.Write(0L);
                         else
                         {
-                            int segmentCount = entries.Count();
-                            long partitionSize = entries.Sum(e => e.CompressedSize) + sizeof(long) * segmentCount * 2;
-                            long uncompressedPartitionSize = entries.Sum(e => e.UncompressedSize);
+                            var segmentCount = entries.Count();
+                            var partitionSize = entries.Sum(e => e.CompressedSize) + sizeof(long) * segmentCount * 2;
+                            var uncompressedPartitionSize = entries.Sum(e => e.UncompressedSize);
                             writer.Write(partitionSize);
                             writer.Write(uncompressedPartitionSize);
                             writer.Write(segmentCount);
                             // No need for compressed size because compression is not supported for partition files currently.
-                            foreach (PartitionFileIndexEntry entry in entries)
+                            foreach (var entry in entries)
                             {
                                 writer.Write(entry.CompressedSize);
                                 writer.Write(entry.UncompressedSize);

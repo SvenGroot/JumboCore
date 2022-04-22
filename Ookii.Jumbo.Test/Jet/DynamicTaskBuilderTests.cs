@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using NUnit.Framework;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;

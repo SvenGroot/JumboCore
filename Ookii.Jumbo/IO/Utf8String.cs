@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -100,8 +98,8 @@ namespace Ookii.Jumbo.IO
             {
                 if (value < _byteLength)
                     throw new ArgumentOutOfRangeException(nameof(value), "New capacity is too small");
-                int capacity = GetCapacityNeeded(value);
-                byte[] newArray = new byte[capacity];
+                var capacity = GetCapacityNeeded(value);
+                var newArray = new byte[capacity];
                 Array.Copy(_utf8Bytes, newArray, _byteLength);
                 _utf8Bytes = newArray;
             }
@@ -158,7 +156,7 @@ namespace Ookii.Jumbo.IO
         {
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
-            int capacityNeeded = GetCapacityNeeded(count);
+            var capacityNeeded = GetCapacityNeeded(count);
             if (_utf8Bytes == null || _utf8Bytes.Length < capacityNeeded)
                 _utf8Bytes = new byte[capacityNeeded];
             Array.Copy(value, index, _utf8Bytes, 0, count);
@@ -204,8 +202,8 @@ namespace Ookii.Jumbo.IO
             }
             else
             {
-                int newCapacity = Capacity;
-                int newSize = _byteLength + count;
+                var newCapacity = Capacity;
+                var newSize = _byteLength + count;
                 while (newSize > newCapacity)
                 {
                     newCapacity <<= 2;
@@ -248,7 +246,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>The utf-8 encoded string.</returns>
         public byte[] GetBytes()
         {
-            byte[] result = new byte[_byteLength];
+            var result = new byte[_byteLength];
             Buffer.BlockCopy(_utf8Bytes, 0, result, 0, _byteLength);
             return result;
         }
@@ -259,9 +257,9 @@ namespace Ookii.Jumbo.IO
         /// <returns>A 32-bit hash code for this <see cref="Utf8String"/>.</returns>
         public override int GetHashCode()
         {
-            int hash = 1;
-            for (int i = 0; i < _byteLength; i++)
-                hash = (31 * hash) + (int)_utf8Bytes[i];
+            var hash = 1;
+            for (var i = 0; i < _byteLength; i++)
+                hash = (31 * hash) + _utf8Bytes[i];
             return hash;
         }
 
@@ -288,8 +286,8 @@ namespace Ookii.Jumbo.IO
             if (index < 0 || index >= buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            int offset = index;
-            int length = LittleEndianBitConverter.ToInt32From7BitEncoding(buffer, ref offset);
+            var offset = index;
+            var length = LittleEndianBitConverter.ToInt32From7BitEncoding(buffer, ref offset);
             return length + (offset - index);
         }
 
@@ -368,7 +366,7 @@ namespace Ookii.Jumbo.IO
         /// <returns><see langword="true"/> if this instance is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(Utf8String other)
         {
-            if ((object)other == (object)this)
+            if (other == (object)this)
                 return true;
             if ((object)other == null || other._byteLength != _byteLength)
                 return false;
@@ -391,7 +389,7 @@ namespace Ookii.Jumbo.IO
         {
             if ((object)other == null)
                 return 1;
-            if ((object)other == (object)this)
+            if (other == (object)this)
                 return 0;
 
             return UnsafeCompare(_utf8Bytes, _byteLength, other._utf8Bytes, other._byteLength);
@@ -425,13 +423,13 @@ namespace Ookii.Jumbo.IO
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
-            int length = WritableUtility.Read7BitEncodedInt32(reader);
+            var length = WritableUtility.Read7BitEncodedInt32(reader);
             if (length <= Capacity)
             {
-                int totalRead = 0;
+                var totalRead = 0;
                 do
                 {
-                    int bytesRead = reader.Read(_utf8Bytes, totalRead, length - totalRead);
+                    var bytesRead = reader.Read(_utf8Bytes, totalRead, length - totalRead);
                     if (bytesRead == 0)
                         throw new FormatException("Invalid Utf8StringWritable detected in stream.");
                     totalRead += bytesRead;
@@ -482,9 +480,9 @@ namespace Ookii.Jumbo.IO
         {
             fixed (byte* str1ptr = str1, str2ptr = str2)
             {
-                byte* left = str1ptr;
-                byte* end = left + Math.Min(length1, length2);
-                byte* right = str2ptr;
+                var left = str1ptr;
+                var end = left + Math.Min(length1, length2);
+                var right = str2ptr;
                 while (left < end)
                 {
                     if (*left != *right)

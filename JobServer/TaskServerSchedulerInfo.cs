@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Jet;
 
 namespace JobServerApplication
@@ -52,7 +49,7 @@ namespace JobServerApplication
         public void UnassignAllTasks()
         {
             // This is used if a task server is restarted.
-            foreach (TaskInfo task in AssignedTasks)
+            foreach (var task in AssignedTasks)
             {
                 task.SchedulerInfo.Server = null;
                 task.SchedulerInfo.BadServers.Add(_taskServer);

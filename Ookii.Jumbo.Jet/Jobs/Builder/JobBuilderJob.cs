@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Ookii.CommandLine;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
@@ -29,19 +26,19 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// Starts the job.
         /// </summary>
         /// <returns>The job ID of the newly created job.</returns>
-        public override sealed Guid RunJob()
+        public sealed override Guid RunJob()
         {
             PromptIfInteractive(true);
 
-            FileSystemClient fileSystemClient = FileSystemClient.Create(DfsConfiguration);
-            JetClient jetClient = new JetClient(JetConfiguration);
+            var fileSystemClient = FileSystemClient.Create(DfsConfiguration);
+            var jetClient = new JetClient(JetConfiguration);
 
-            JobBuilder builder = new JobBuilder(fileSystemClient, jetClient);
+            var builder = new JobBuilder(fileSystemClient, jetClient);
             try
             {
                 BuildJob(builder);
 
-                JobConfiguration config = builder.CreateJob();
+                var config = builder.CreateJob();
 
                 if (config.JobName == null)
                     config.JobName = GetType().Name; // Use the class name as the job's friendly name, if it hasn't been set explicitly.
@@ -58,7 +55,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 }
                 else
                 {
-                    Job job = jetClient.JobServer.CreateJob();
+                    var job = jetClient.JobServer.CreateJob();
 
                     OnJobCreated(job, config);
                     jetClient.RunJob(job, config, fileSystemClient, builder.AssemblyLocations.ToArray());
@@ -103,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             if (operation == null)
                 throw new ArgumentNullException(nameof(operation));
-            FileOutput output = operation.JobBuilder.Write(operation, outputPath, recordWriterType);
+            var output = operation.JobBuilder.Write(operation, outputPath, recordWriterType);
             output.BlockSize = (int)BlockSize;
             output.ReplicationFactor = ReplicationFactor;
             CheckAndCreateOutputPath(outputPath);

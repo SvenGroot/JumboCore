@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -178,9 +176,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException(nameof(mapper));
             CheckIfInputBelongsToJobBuilder(input);
 
-            Type taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord"), mapper, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord"), mapper, 0, recordReuse);
 
-            StageOperation result = new StageOperation(this, input, taskType);
+            var result = new StageOperation(this, input, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(mapper, result);
             return result;
         }
@@ -194,16 +192,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException(nameof(reducer));
             CheckIfInputBelongsToJobBuilder(input);
 
-            Type taskType = CreateReduceTask<TKey, TValue, TOutput>(reducer, recordReuse);
+            var taskType = CreateReduceTask<TKey, TValue, TOutput>(reducer, recordReuse);
 
-            StageOperation result = new StageOperation(this, input, taskType);
+            var result = new StageOperation(this, input, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(reducer, result);
             return result;
         }
 
         private Type CreateReduceTask<TKey, TValue, TOutput>(Delegate reducer, RecordReuseMode recordReuse) where TKey : IComparable<TKey>
         {
-            Type taskType = _taskBuilder.CreateDynamicTask(typeof(ReduceTask<TKey, TValue, TOutput>).GetMethod("Reduce", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), reducer, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(ReduceTask<TKey, TValue, TOutput>).GetMethod("Reduce", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), reducer, 0, recordReuse);
             return taskType;
         }
     }

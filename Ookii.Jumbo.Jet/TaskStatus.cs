@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -123,7 +120,7 @@ namespace Ookii.Jumbo.Jet
             if (task.Name != "Task")
                 throw new ArgumentException("Invalid task element.", nameof(task));
 
-            TaskStatus status = new TaskStatus()
+            var status = new TaskStatus()
             {
                 TaskId = task.Attribute("id").Value,
                 State = (TaskState)Enum.Parse(typeof(TaskState), task.Attribute("state").Value),

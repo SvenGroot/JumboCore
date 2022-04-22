@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo;
@@ -32,7 +30,7 @@ namespace DfsWeb.Pages
         public void OnGet()
         {
             // DFS web only applicable when file system is a DFS.
-            DfsClient client = (DfsClient)FileSystemClient.Create();
+            var client = (DfsClient)FileSystemClient.Create();
             Guid[] blocks;
             if (DataServer == null)
             {
@@ -42,7 +40,7 @@ namespace DfsWeb.Pages
             }
             else
             {
-                ServerAddress address = new ServerAddress(DataServer, Port);
+                var address = new ServerAddress(DataServer, Port);
                 ViewData["Title"] = $"Block list for {address}";
                 blocks = client.NameServer.GetDataServerBlocks(address);
                 NewQueryString = FormattableString.Invariant($"dataServer={DataServer}&port={Port}");
@@ -50,7 +48,7 @@ namespace DfsWeb.Pages
 
             if (blocks != null)
             {
-                foreach (Guid blockId in blocks)
+                foreach (var blockId in blocks)
                 {
                     if (IncludeFiles)
                         Blocks.Add($"{blockId:B}: {client.NameServer.GetFileForBlock(blockId)}");

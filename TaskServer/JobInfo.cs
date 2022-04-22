@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace TaskServerApplication
@@ -34,14 +31,14 @@ namespace TaskServerApplication
                     return localPath;
             }
 
-            string localJobDirectory = TaskServer.Instance.GetJobDirectory(_jobId);
-            string downloadDirectory = Path.Combine(localJobDirectory, "dfs");
+            var localJobDirectory = TaskServer.Instance.GetJobDirectory(_jobId);
+            var downloadDirectory = Path.Combine(localJobDirectory, "dfs");
             Directory.CreateDirectory(downloadDirectory);
 
             localPath = Path.Combine(downloadDirectory, "file" + _downloadedFiles.Count.ToString(CultureInfo.InvariantCulture));
 
             _log.DebugFormat("Downloading DFS file '{0}' to local file '{1}'.", dfsPath, localPath);
-            FileSystemClient client = FileSystemClient.Create(TaskServer.Instance.DfsConfiguration);
+            var client = FileSystemClient.Create(TaskServer.Instance.DfsConfiguration);
             client.DownloadFile(dfsPath, localPath);
 
             _downloadedFiles.Add(dfsPath, localPath);

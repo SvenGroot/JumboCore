@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 
@@ -38,9 +35,9 @@ namespace NameServerApplication
 
             public static EditLogEntry ReadEntry(BinaryReader reader)
             {
-                int mutation = reader.ReadInt32();
+                var mutation = reader.ReadInt32();
 
-                EditLogEntry result = _entryTypeMap[mutation]();
+                var result = _entryTypeMap[mutation]();
                 result.Read(reader);
                 return result;
             }
@@ -317,13 +314,13 @@ namespace NameServerApplication
                 throw new DfsException("The file system edit log file is missing.");
             _log.Info("Replaying log file.");
 
-            long oldCrc = ChecksumOutputStream.CheckCrc(_logFilePath);
+            var oldCrc = ChecksumOutputStream.CheckCrc(_logFilePath);
 
             ReplayLog(fileSystem);
             // A read only file system is used to create a checkpoint, and doesn't need to read the new log file.
             if (!readOnly)
             {
-                string newLogFilePath = Path.Combine(_logFileDirectory, _newLogFileName);
+                var newLogFilePath = Path.Combine(_logFileDirectory, _newLogFileName);
                 // We don't need to check for this if _logFilePath doesn't exist; if _logFilePath doesn't exist and newLogFilePath does,
                 // it means that there's also a temp image file which the name server will catch while restarting.
                 if (File.Exists(newLogFilePath))
@@ -344,7 +341,7 @@ namespace NameServerApplication
 
         public void CreateLog(bool readOnly, FileSystem fileSystem)
         {
-            long crc = CreateLogFile(_logFilePath);
+            var crc = CreateLogFile(_logFilePath);
             LoadFileSystemFromLog(readOnly, fileSystem);
         }
 
@@ -410,14 +407,14 @@ namespace NameServerApplication
         {
             lock (_logFileLock)
             {
-                string newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
+                var newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
                 if (_logFilePath == newLogFileName)
                     _log.Warn("The edit log was already using the new log file.");
                 else
                 {
                     _log.Info("Switching to new edit log file.");
                     CloseLogFile();
-                    long crc = CreateLogFile(newLogFileName);
+                    var crc = CreateLogFile(newLogFileName);
                     _logFilePath = newLogFileName;
                     OpenExistingLogFile(crc);
                 }
@@ -428,14 +425,14 @@ namespace NameServerApplication
         {
             lock (_logFileLock)
             {
-                string newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
-                string logFileName = Path.Combine(_logFileDirectory, _logFileName);
+                var newLogFileName = Path.Combine(_logFileDirectory, _newLogFileName);
+                var logFileName = Path.Combine(_logFileDirectory, _logFileName);
                 if (_logFilePath != newLogFileName)
                     _log.Warn("No old edit log file to discard; no action taken.");
                 else
                 {
                     _log.Info("Discarding old edit log file, and renaming new log file.");
-                    long crc = _logFileStream.Crc;
+                    var crc = _logFileStream.Crc;
                     CloseLogFile();
 
                     File.Delete(logFileName);
@@ -462,8 +459,8 @@ namespace NameServerApplication
         {
             _log.InfoFormat("Initializing new edit log file at '{0}'.", logFilePath);
             using (Stream stream = File.Open(logFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-            using (ChecksumOutputStream logFileStream = new ChecksumOutputStream(stream, logFilePath + ".crc", 0L))
-            using (BinaryWriter logFileWriter = new BinaryWriter(logFileStream))
+            using (var logFileStream = new ChecksumOutputStream(stream, logFilePath + ".crc", 0L))
+            using (var logFileWriter = new BinaryWriter(logFileStream))
             {
                 logFileWriter.Write(FileSystem.FileSystemFormatVersion);
                 logFileWriter.Flush();
@@ -476,17 +473,17 @@ namespace NameServerApplication
             try
             {
                 _loggingEnabled = false;
-                using (FileStream stream = File.OpenRead(_logFilePath))
-                using (BinaryReader reader = new BinaryReader(stream))
+                using (var stream = File.OpenRead(_logFilePath))
+                using (var reader = new BinaryReader(stream))
                 {
-                    int version = reader.ReadInt32();
+                    var version = reader.ReadInt32();
                     if (version != FileSystem.FileSystemFormatVersion)
                         throw new NotSupportedException("The log file uses an unsupported file system version.");
 
-                    long length = stream.Length;
+                    var length = stream.Length;
                     while (stream.Position < length)
                     {
-                        EditLogEntry entry = EditLogEntry.ReadEntry(reader);
+                        var entry = EditLogEntry.ReadEntry(reader);
                         entry.Replay(fileSystem);
                     }
                 }
@@ -542,7 +539,7 @@ namespace NameServerApplication
 
         private static Func<EditLogEntry>[] CreateEntryTypeMap()
         {
-            Func<EditLogEntry>[] result = new Func<EditLogEntry>[(int)FileSystemMutation.MaxValue + 1];
+            var result = new Func<EditLogEntry>[(int)FileSystemMutation.MaxValue + 1];
 
             result[(int)FileSystemMutation.CreateDirectory] = () => new CreateDirectoryEditLogEntry();
             result[(int)FileSystemMutation.CreateFile] = () => new CreateFileEditLogEntry();

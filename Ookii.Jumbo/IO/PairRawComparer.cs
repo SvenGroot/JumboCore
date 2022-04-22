@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -88,7 +85,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                IDeserializingRawComparer keyComparer = _comparer as IDeserializingRawComparer;
+                var keyComparer = _comparer as IDeserializingRawComparer;
                 return keyComparer != null && keyComparer.UsesDeserialization;
             }
         }

@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -25,12 +23,12 @@ namespace Ookii.Jumbo
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
 
-            ExtendedCollection<T> extendedCollection = target as ExtendedCollection<T>;
+            var extendedCollection = target as ExtendedCollection<T>;
             if (extendedCollection != null)
                 extendedCollection.AddRange(collection);
             else
             {
-                foreach (T item in collection)
+                foreach (var item in collection)
                     target.Add(item);
             }
         }

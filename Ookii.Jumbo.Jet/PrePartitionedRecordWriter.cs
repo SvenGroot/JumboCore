@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet
@@ -25,7 +22,7 @@ namespace Ookii.Jumbo.Jet
 
             _baseWriter = baseWriter;
             // It's possible that the base writer is not a multi record writer if the there are actually no internal partitions.
-            IMultiRecordWriter<T> multiWriter = baseWriter as IMultiRecordWriter<T>;
+            var multiWriter = baseWriter as IMultiRecordWriter<T>;
             if (multiWriter != null)
                 _partitioner = multiWriter.Partitioner as PrepartitionedPartitioner<T>;
 

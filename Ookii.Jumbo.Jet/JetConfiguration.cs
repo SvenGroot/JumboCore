@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Xml;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -68,7 +64,7 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static JetConfiguration GetConfiguration()
         {
-            JetConfiguration config = (JetConfiguration)ConfigurationManager.GetSection("ookii.jumbo.jet");
+            var config = (JetConfiguration)ConfigurationManager.GetSection("ookii.jumbo.jet");
             return config ?? new JetConfiguration();
         }
 
@@ -84,7 +80,7 @@ namespace Ookii.Jumbo.Jet
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
-            JetConfiguration config = (JetConfiguration)configuration.GetSection("ookii.jumbo.jet");
+            var config = (JetConfiguration)configuration.GetSection("ookii.jumbo.jet");
             return config ?? new JetConfiguration();
         }
     }

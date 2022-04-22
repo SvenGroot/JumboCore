@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -14,7 +11,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private readonly Stream _baseStream;
         private readonly bool _ownsBaseStream;
-        private Crc32Checksum _checksum;
+        private readonly Crc32Checksum _checksum;
         private readonly long _length;
         private readonly string _fileName;
         private readonly bool _deleteFile;
@@ -40,7 +37,7 @@ namespace Ookii.Jumbo.Jet.Channels
             if ((length ?? _baseStream.Length) > 0)
             {
                 _length = (length ?? _baseStream.Length) - 1;
-                bool enableChecksum = baseStream.ReadByte() == 1;
+                var enableChecksum = baseStream.ReadByte() == 1;
                 if (enableChecksum)
                 {
                     _checksum = new Crc32Checksum();
@@ -103,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 return 0;
             else
             {
-                int bytesRead = _baseStream.Read(buffer, offset, count);
+                var bytesRead = _baseStream.Read(buffer, offset, count);
                 _position += bytesRead;
 
                 if (_checksum != null)
@@ -111,8 +108,8 @@ namespace Ookii.Jumbo.Jet.Channels
                     _checksum.Update(buffer, offset, bytesRead);
                     if (_position == _length)
                     {
-                        byte[] sum = new byte[sizeof(uint)];
-                        int sumBytesRead = _baseStream.Read(sum, 0, sum.Length);
+                        var sum = new byte[sizeof(uint)];
+                        var sumBytesRead = _baseStream.Read(sum, 0, sum.Length);
                         if (sumBytesRead != sum.Length || _checksum.ValueUInt32 != BitConverter.ToUInt32(sum, 0))
                             throw new IOException("Invalid checksum on input stream."); // TODO: More specific exception
                     }
@@ -146,7 +143,7 @@ namespace Ookii.Jumbo.Jet.Channels
                     if (_position < _length && _checksum != null)
                     {
                         // Need to read to the end to verify the checksum
-                        byte[] buffer = new byte[4096];
+                        var buffer = new byte[4096];
                         while (Read(buffer, 0, buffer.Length) > 0)
                         {
                         }

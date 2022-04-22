@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using Ookii.CommandLine;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
@@ -35,15 +32,15 @@ namespace DfsShell.Commands
 
         public override void Run()
         {
-            JumboFileSystemEntry entry = Client.GetFileSystemEntryInfo(_dfsPath);
+            var entry = Client.GetFileSystemEntryInfo(_dfsPath);
             if (entry == null)
             {
                 Console.Error.WriteLine("Path {0} does not exist on the DFS.", _dfsPath);
                 return;
             }
 
-            string localPath = _localPath == "." ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _localPath);
-            ProgressCallback progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
+            var localPath = _localPath == "." ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _localPath);
+            var progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
 
             try
             {

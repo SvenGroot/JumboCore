@@ -55,23 +55,23 @@ namespace JobServerApplication
             _jobName = config.JobName;
             _maxTaskFailures = JobServer.Instance.Configuration.JobServer.MaxTaskFailures;
 
-            List<StageInfo> stages = new List<StageInfo>();
+            var stages = new List<StageInfo>();
             _stages = stages.AsReadOnly();
-            foreach (StageConfiguration stage in config.GetDependencyOrderedStages())
+            foreach (var stage in config.GetDependencyOrderedStages())
             {
                 if (stage.TaskCount < 1)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has no tasks.", stage.StageId), nameof(config));
                 // Don't allow failures for a job with a TCP channel.
                 if (stage.Leaf.OutputChannel != null && stage.Leaf.OutputChannel.ChannelType == Ookii.Jumbo.Jet.Channels.ChannelType.Tcp)
                     _maxTaskFailures = 1;
-                bool nonDataInputStage = !stage.HasDataInput;
+                var nonDataInputStage = !stage.HasDataInput;
                 // Don't do the work trying to find the input stages if the stage has data inputs.
-                StageConfiguration[] inputStages = nonDataInputStage ? config.GetInputStagesForStage(stage.StageId).ToArray() : null;
-                StageInfo stageInfo = new StageInfo(this, stage);
-                IList<string[]> inputLocations = nonDataInputStage ? null : TaskInputUtility.ReadTaskInputLocations(fileSystem, job.Path, stage.StageId);
+                var inputStages = nonDataInputStage ? config.GetInputStagesForStage(stage.StageId).ToArray() : null;
+                var stageInfo = new StageInfo(this, stage);
+                var inputLocations = nonDataInputStage ? null : TaskInputUtility.ReadTaskInputLocations(fileSystem, job.Path, stage.StageId);
                 if (inputLocations != null && inputLocations.Count != stage.TaskCount)
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "The number of input splits for stage {0} doesn't match the stage's task count.", stage.StageId));
-                for (int x = 1; x <= stage.TaskCount; ++x)
+                for (var x = 1; x <= stage.TaskCount; ++x)
                 {
                     TaskInfo taskInfo;
 
@@ -85,7 +85,7 @@ namespace JobServerApplication
 
             // This must be done afterwards because stages using TCP channels can appear in the depenency ordered list in reverse order
             // and we must be sure both are already in the list before soft dependencies can be set up.
-            foreach (StageInfo stage in stages)
+            foreach (var stage in stages)
                 stage.SetupSoftDependencies(this);
 
             if (stages.Count == 0)
@@ -203,7 +203,7 @@ namespace JobServerApplication
         /// <param name="server"></param>
         public void CleanupServer(TaskServerInfo server)
         {
-            foreach (TaskInfo task in _schedulingTasksById.Values)
+            foreach (var task in _schedulingTasksById.Values)
             {
                 // No need to use the scheduler lock for a job in _jobsNeedingCleanup
                 server.SchedulerInfo.AssignedTasks.Remove(task);
@@ -232,7 +232,7 @@ namespace JobServerApplication
 
         public JobStatus ToJobStatus()
         {
-            JobStatus result = new JobStatus()
+            var result = new JobStatus()
             {
                 JobId = Job.JobId,
                 JobName = JobName,

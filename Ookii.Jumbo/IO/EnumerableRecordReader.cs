@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -12,8 +10,8 @@ namespace Ookii.Jumbo.IO
     /// <typeparam name="T">The type of record.</typeparam>
     public class EnumerableRecordReader<T> : RecordReader<T>
     {
-        private IEnumerator<T> _enumerator;
-        private int _count;
+        private readonly IEnumerator<T> _enumerator;
+        private readonly int _count;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EnumerableRecordReader{T}"/> class.
@@ -55,7 +53,7 @@ namespace Ookii.Jumbo.IO
                 if (_count == 0)
                     return HasFinished ? 1.0f : 0.0f;
                 else
-                    return (float)RecordsRead / (float)_count;
+                    return RecordsRead / (float)_count;
             }
         }
 

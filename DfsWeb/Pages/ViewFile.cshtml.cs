@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo;
@@ -135,17 +132,17 @@ namespace DfsWeb.Pages
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public void OnGet()
         {
-            long maxSize = MaxSize == null ? 100 * BinarySize.Kilobyte : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
+            var maxSize = MaxSize == null ? 100 * BinarySize.Kilobyte : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
             HeaderText = string.Format(CultureInfo.InvariantCulture, "File '{0}' contents ({1} {2})", Path, Tail ? "last" : "first", new BinarySize(maxSize));
             try
             {
-                FileSystemClient client = FileSystemClient.Create();
-                using (Stream stream = client.OpenFile(Path))
+                var client = FileSystemClient.Create();
+                using (var stream = client.OpenFile(Path))
                 {
                     if (Tail)
                         stream.Position = Math.Max(0, stream.Length - maxSize);
-                    using (SizeLimitedStream sizeStream = new SizeLimitedStream(stream, Tail ? stream.Length : maxSize))
-                    using (StreamReader reader = new StreamReader(sizeStream))
+                    using (var sizeStream = new SizeLimitedStream(stream, Tail ? stream.Length : maxSize))
+                    using (var reader = new StreamReader(sizeStream))
                     {
                         FileContents = reader.ReadToEnd();
                     }

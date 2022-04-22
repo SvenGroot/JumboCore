@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -122,7 +120,7 @@ namespace Ookii.Jumbo.Jet
             if (other == this)
                 return 0;
 
-            int result = _taskId.CompareTo(other._taskId);
+            var result = _taskId.CompareTo(other._taskId);
             if (result == 0)
             {
                 result = _attempt > other._attempt ? 1 :
@@ -141,7 +139,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public int CompareTo(object obj)
         {
-            TaskAttemptId other = obj as TaskAttemptId;
+            var other = obj as TaskAttemptId;
             if (other == null)
                 throw new ArgumentException("obj is not a TaskAttemptId.", nameof(obj));
             return CompareTo(other);

@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
@@ -30,7 +26,7 @@ namespace Ookii.Jumbo.Rpc
 
         public object SendRequest(string objectName, string interfaceName, string operationName, object[] parameters)
         {
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 if (!_hostNameSent)
                 {
@@ -45,7 +41,7 @@ namespace Ookii.Jumbo.Rpc
                 stream.WriteTo(_stream);
             }
 
-            RpcResponseStatus status = (RpcResponseStatus)_stream.ReadByte();
+            var status = (RpcResponseStatus)_stream.ReadByte();
             object result = null;
             if (status != RpcResponseStatus.SuccessNoValue)
                 result = _formatter.Deserialize(_stream);
@@ -71,7 +67,7 @@ namespace Ookii.Jumbo.Rpc
 
         private static void WriteString(string value, Stream stream)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(value);
+            var buffer = Encoding.UTF8.GetBytes(value);
             if (buffer.Length > byte.MaxValue)
                 throw new ArgumentException("String is too long.");
             stream.WriteByte((byte)buffer.Length);

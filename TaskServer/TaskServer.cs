@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
@@ -21,11 +18,11 @@ namespace TaskServerApplication
         private readonly int _heartbeatInterval = 3000;
         private readonly AutoResetEvent _heartbeatEvent = new AutoResetEvent(false);
         private readonly ManualResetEvent _shutdownEvent = new ManualResetEvent(false);
-        private IJobServerHeartbeatProtocol _jobServer;
+        private readonly IJobServerHeartbeatProtocol _jobServer;
         private readonly List<JetHeartbeatData> _pendingHeartbeatData = new List<JetHeartbeatData>();
-        private TaskRunner _taskRunner;
-        private static object _startupLock = new object();
-        private FileChannelServer _fileServer;
+        private readonly TaskRunner _taskRunner;
+        private static readonly object _startupLock = new object();
+        private readonly FileChannelServer _fileServer;
         private readonly Dictionary<Guid, JobInfo> _jobs = new Dictionary<Guid, JobInfo>();
         private readonly bool _immediateCompletedTaskNotification;
 
@@ -56,7 +53,7 @@ namespace TaskServerApplication
 
             LocalAddress = new ServerAddress(Dns.GetHostName(), Configuration.TaskServer.Port);
 
-            IPAddress[] addresses = TcpServer.GetDefaultListenerAddresses(Configuration.TaskServer.ListenIPv4AndIPv6);
+            var addresses = TcpServer.GetDefaultListenerAddresses(Configuration.TaskServer.ListenIPv4AndIPv6);
 
             _fileServer = new FileChannelServer(this, addresses, Configuration.TaskServer.FileServerPort, Configuration.TaskServer.FileServerMaxConnections, Configuration.TaskServer.FileServerMaxIndexCacheSize);
             _fileServer.Start();
@@ -122,7 +119,7 @@ namespace TaskServerApplication
         {
             if (taskAttemptId == null)
                 throw new ArgumentNullException(nameof(taskAttemptId));
-            string fullTaskID = Job.CreateFullTaskId(jobID, taskAttemptId);
+            var fullTaskID = Job.CreateFullTaskId(jobID, taskAttemptId);
             _log.DebugFormat("ReportCompletion, fullTaskID = \"{0}\"", fullTaskID);
             _taskRunner.ReportCompletion(fullTaskID, metrics);
         }
@@ -146,14 +143,14 @@ namespace TaskServerApplication
             if (port <= 0)
                 throw new ArgumentOutOfRangeException(nameof(port), "Port must be greater than zero.");
 
-            string fullTaskId = Job.CreateFullTaskId(jobId, taskAttemptId);
+            var fullTaskId = Job.CreateFullTaskId(jobId, taskAttemptId);
             _log.InfoFormat("Task {0} has is registering TCP channel port {1}.", fullTaskId, port);
             _taskRunner.RegisterTcpChannelPort(fullTaskId, port);
         }
 
         public string DownloadDfsFile(Guid jobId, string dfsPath)
         {
-            JobInfo job = GetJobInfo(jobId, true);
+            var job = GetJobInfo(jobId, true);
 
             lock (job)
             {
@@ -172,9 +169,9 @@ namespace TaskServerApplication
 
         public TaskAttemptStatus GetTaskStatus(Guid jobId, TaskAttemptId taskAttemptId)
         {
-            string fullTaskID = Job.CreateFullTaskId(jobId, taskAttemptId);
+            var fullTaskID = Job.CreateFullTaskId(jobId, taskAttemptId);
             _log.DebugFormat("GetTaskStatus, fullTaskID = \"{0}\"", fullTaskID);
-            TaskAttemptStatus status = _taskRunner.GetTaskStatus(fullTaskID);
+            var status = _taskRunner.GetTaskStatus(fullTaskID);
             _log.DebugFormat("Task {0} status is {1}.", fullTaskID, status);
             return status;
         }
@@ -196,12 +193,12 @@ namespace TaskServerApplication
                 throw new ArgumentNullException(nameof(taskAttemptId));
 
             _log.DebugFormat("GetTaskLogFileContents; jobId = {{{0}}}, taskAttemptId = \"{1}\", maxSize = {2}", jobId, taskAttemptId, maxSize);
-            string jobDirectory = GetJobDirectory(jobId);
-            string logFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + ".log");
+            var jobDirectory = GetJobDirectory(jobId);
+            var logFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + ".log");
             if (System.IO.File.Exists(logFileName))
             {
-                using (System.IO.FileStream stream = System.IO.File.Open(logFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
+                using (var stream = System.IO.File.Open(logFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                using (var reader = new System.IO.StreamReader(stream))
                 {
                     if (stream.Length > maxSize)
                     {
@@ -217,21 +214,21 @@ namespace TaskServerApplication
         public byte[] GetCompressedTaskLogFiles(Guid jobId)
         {
             _log.DebugFormat("GetCompressedTaskLogFiles; jobId = {{{0}}}", jobId);
-            string jobDirectory = GetJobDirectory(jobId);
+            var jobDirectory = GetJobDirectory(jobId);
             if (System.IO.Directory.Exists(jobDirectory))
             {
-                string[] logFiles = System.IO.Directory.GetFiles(jobDirectory, "*.log");
+                var logFiles = System.IO.Directory.GetFiles(jobDirectory, "*.log");
                 if (logFiles.Length > 0)
                 {
-                    using (MemoryStream outputStream = new MemoryStream())
-                    using (ICSharpCode.SharpZipLib.Zip.ZipOutputStream zipStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(outputStream))
+                    using (var outputStream = new MemoryStream())
+                    using (var zipStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(outputStream))
                     {
                         zipStream.SetLevel(9);
 
-                        foreach (string logFile in logFiles)
+                        foreach (var logFile in logFiles)
                         {
                             zipStream.PutNextEntry(new ICSharpCode.SharpZipLib.Zip.ZipEntry(System.IO.Path.GetFileName(logFile)));
-                            using (System.IO.FileStream stream = System.IO.File.Open(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                            using (var stream = System.IO.File.Open(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
                             {
                                 stream.CopyTo(zipStream);
                             }
@@ -253,12 +250,12 @@ namespace TaskServerApplication
                 throw new ArgumentNullException(nameof(taskAttemptId));
 
             _log.DebugFormat("GetTaskProfileOutput; jobId = {{{0}}}, taskAttemptId = \"{1}\"", jobId, taskAttemptId);
-            string jobDirectory = GetJobDirectory(jobId);
-            string profileOutputFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + "_profile.txt");
+            var jobDirectory = GetJobDirectory(jobId);
+            var profileOutputFileName = System.IO.Path.Combine(jobDirectory, taskAttemptId.ToString() + "_profile.txt");
             if (System.IO.File.Exists(profileOutputFileName))
             {
-                using (System.IO.FileStream stream = System.IO.File.Open(profileOutputFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
+                using (var stream = System.IO.File.Open(profileOutputFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+                using (var reader = new System.IO.StreamReader(stream))
                 {
                     return reader.ReadToEnd();
                 }
@@ -279,7 +276,7 @@ namespace TaskServerApplication
         private void RunInternal()
         {
             AddDataForNextHeartbeat(new InitialStatusJetHeartbeatData() { TaskSlots = Configuration.TaskServer.TaskSlots, FileServerPort = Configuration.TaskServer.FileServerPort });
-            WaitHandle[] handles = new WaitHandle[] { _heartbeatEvent, _shutdownEvent };
+            var handles = new WaitHandle[] { _heartbeatEvent, _shutdownEvent };
 
             do
             {
@@ -332,17 +329,17 @@ namespace TaskServerApplication
                     AddDataForNextHeartbeat(new InitialStatusJetHeartbeatData() { TaskSlots = Configuration.TaskServer.TaskSlots, FileServerPort = Configuration.TaskServer.FileServerPort });
                     break;
                 case TaskServerHeartbeatCommand.RunTask:
-                    RunTaskJetHeartbeatResponse runResponse = (RunTaskJetHeartbeatResponse)response;
+                    var runResponse = (RunTaskJetHeartbeatResponse)response;
                     _log.InfoFormat("Received run task command for task {{{0}}}_{1}.", runResponse.Job.JobId, runResponse.TaskAttemptId);
                     _taskRunner.AddTask(runResponse);
                     break;
                 case TaskServerHeartbeatCommand.KillTask:
-                    KillTaskJetHeartbeatResponse killResponse = (KillTaskJetHeartbeatResponse)response;
+                    var killResponse = (KillTaskJetHeartbeatResponse)response;
                     _log.InfoFormat("Received kill task command for task {{{0}}}_{1}.", killResponse.JobId, killResponse.TaskAttemptId);
                     _taskRunner.KillTask(killResponse);
                     break;
                 case TaskServerHeartbeatCommand.CleanupJob:
-                    CleanupJobJetHeartbeatResponse cleanupResponse = (CleanupJobJetHeartbeatResponse)response;
+                    var cleanupResponse = (CleanupJobJetHeartbeatResponse)response;
                     _log.InfoFormat("Received cleanup job command for job {{{0}}}.", cleanupResponse.JobId);
                     _taskRunner.CleanupJobTasks(cleanupResponse.JobId);
                     // Do file clean up asynchronously since it could take a long time.
@@ -360,7 +357,7 @@ namespace TaskServerApplication
 
         private void CleanupJobFiles(Guid jobId, string directory)
         {
-            foreach (string file in System.IO.Directory.GetFiles(directory))
+            foreach (var file in System.IO.Directory.GetFiles(directory))
             {
                 if (file.EndsWith(".output", StringComparison.Ordinal) || file.EndsWith(".input", StringComparison.Ordinal))
                 {
@@ -368,7 +365,7 @@ namespace TaskServerApplication
                     System.IO.File.Delete(file);
                 }
             }
-            foreach (string subDirectory in Directory.GetDirectories(directory))
+            foreach (var subDirectory in Directory.GetDirectories(directory))
                 CleanupJobFiles(jobId, subDirectory);
         }
 
@@ -383,10 +380,10 @@ namespace TaskServerApplication
             {
                 if (Configuration.FileChannel.DeleteIntermediateFiles)
                 {
-                    string jobDirectory = GetJobDirectory(jobId);
+                    var jobDirectory = GetJobDirectory(jobId);
                     CleanupJobFiles(jobId, jobDirectory);
 
-                    string downloadDirectory = Path.Combine(jobDirectory, "dfs");
+                    var downloadDirectory = Path.Combine(jobDirectory, "dfs");
                     if (Directory.Exists(downloadDirectory))
                         Directory.Delete(downloadDirectory, true);
                 }

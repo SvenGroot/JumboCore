@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo.IO;
 
@@ -45,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Channels
             public bool Write(TRecord item)
             {
                 _buffer[_writePos] = item;
-                int newPos = (_writePos + 1) % _bufferSize;
+                var newPos = (_writePos + 1) % _bufferSize;
                 while (!_cancelled && newPos == _readPos)
                     WaitHandle.WaitAny(_writeWaitHandles);
 
@@ -57,7 +54,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             public bool Read(out TRecord item)
             {
-                int newPos = (_readPos + 1) % _bufferSize;
+                var newPos = (_readPos + 1) % _bufferSize;
                 _readPos = newPos;
                 if (_readPos % _chunkSize == 0)
                     _readPosChanged.Set();
@@ -95,9 +92,9 @@ namespace Ookii.Jumbo.Jet.Channels
                 if (!_disposed)
                 {
                     _disposed = true;
-                    ((IDisposable)_cancelEvent).Dispose();
-                    ((IDisposable)_readPosChanged).Dispose();
-                    ((IDisposable)_writePosChanged).Dispose();
+                    _cancelEvent.Dispose();
+                    _readPosChanged.Dispose();
+                    _writePosChanged.Dispose();
                 }
                 GC.SuppressFinalize(this);
             }
@@ -120,8 +117,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             protected override bool ReadRecordInternal()
             {
-                TRecord record;
-                if (_buffer.Read(out record))
+                if (_buffer.Read(out var record))
                 {
                     CurrentRecord = record;
                     return true;
@@ -181,7 +177,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private void TaskThread()
         {
             _task = (ITask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
-            using (BufferRecordReader reader = new BufferRecordReader(_buffer))
+            using (var reader = new BufferRecordReader(_buffer))
             {
                 _task.Run(reader, _output);
             }

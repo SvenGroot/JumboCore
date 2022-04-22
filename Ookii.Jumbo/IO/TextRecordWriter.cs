@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -58,14 +55,14 @@ namespace Ookii.Jumbo.IO
             }
             else
             {
-                string recordString = record.ToString();
-                int charsLeft = recordString.Length;
-                int index = 0;
+                var recordString = record.ToString();
+                var charsLeft = recordString.Length;
+                var index = 0;
                 while (charsLeft > 0)
                 {
-                    int copySize = Math.Min(charsLeft, _charBuffer.Length);
+                    var copySize = Math.Min(charsLeft, _charBuffer.Length);
                     recordString.CopyTo(index, _charBuffer, 0, copySize);
-                    int byteCount = _encoder.GetBytes(_charBuffer, 0, copySize, _byteBuffer, 0, charsLeft == copySize);
+                    var byteCount = _encoder.GetBytes(_charBuffer, 0, copySize, _byteBuffer, 0, charsLeft == copySize);
                     Stream.Write(_byteBuffer, 0, byteCount);
                     charsLeft -= copySize;
                     index += copySize;

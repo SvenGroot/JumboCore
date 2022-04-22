@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -103,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             if (_checksum != null && _bytesWritten > 0)
             {
-                byte[] sum = BitConverter.GetBytes(_checksum.ValueUInt32);
+                var sum = BitConverter.GetBytes(_checksum.ValueUInt32);
                 _baseStream.Write(sum, 0, sum.Length);
             }
         }

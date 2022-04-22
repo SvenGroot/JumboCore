@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Management;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -102,7 +97,7 @@ namespace Ookii.Jumbo
         {
             get
             {
-                AssemblyFileVersionAttribute config = (AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute));
+                var config = (AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute));
                 if (config != null)
                     return new Version(config.Version);
                 else
@@ -123,7 +118,7 @@ namespace Ookii.Jumbo
         {
             get
             {
-                AssemblyConfigurationAttribute config = (AssemblyConfigurationAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyConfigurationAttribute));
+                var config = (AssemblyConfigurationAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyConfigurationAttribute));
                 if (config != null)
                     return config.Configuration;
                 else
@@ -143,13 +138,13 @@ namespace Ookii.Jumbo
             if (log.IsInfoEnabled)
             {
                 log.InfoFormat("Jumbo Version: {0} ({1})", JumboVersion, JumboConfiguration);
-                Assembly entry = Assembly.GetEntryAssembly();
+                var entry = Assembly.GetEntryAssembly();
                 if (entry != null) // entry is null when running under nunit.
                     log.InfoFormat("{0} Version: {1}", entry.GetName().Name, entry.GetName().Version);
                 log.InfoFormat("   OS Version: {0}", OperatingSystemDescription);
                 log.InfoFormat("  CLR Version: {0} ({1} bit runtime)", Description, IntPtr.Size * 8);
                 log.InfoFormat("          CPU: {0} CPUs ({1})", Environment.ProcessorCount, ProcessorName);
-                using (MemoryStatus status = new MemoryStatus())
+                using (var status = new MemoryStatus())
                 {
                     log.InfoFormat("       Memory: {0}", status);
                 }
@@ -160,11 +155,11 @@ namespace Ookii.Jumbo
         private static string GetOSDescriptionWindows()
         {
             // Use WMI to get the OS name.
-            SelectQuery query = new SelectQuery("Win32_OperatingSystem", null, new[] { "Caption" });
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            var query = new SelectQuery("Win32_OperatingSystem", null, new[] { "Caption" });
+            using (var searcher = new ManagementObjectSearcher(query))
             {
 
-                foreach (ManagementBaseObject obj in searcher.Get())
+                foreach (var obj in searcher.Get())
                 {
                     return (string)obj["Caption"];
                 }
@@ -203,12 +198,12 @@ namespace Ookii.Jumbo
         [SupportedOSPlatform("windows")]
         private static string GetProcessorNameWindows()
         {
-            SelectQuery query = new SelectQuery("Win32_Processor", null, new[] { "Name" });
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            var query = new SelectQuery("Win32_Processor", null, new[] { "Name" });
+            using (var searcher = new ManagementObjectSearcher(query))
             {
 
                 // We assume all CPUs are identical, which should be true in an SMP system.
-                foreach (ManagementBaseObject obj in searcher.Get())
+                foreach (var obj in searcher.Get())
                 {
                     return (string)obj["Name"];
                 }
@@ -220,7 +215,7 @@ namespace Ookii.Jumbo
         {
             if (File.Exists("/proc/cpuinfo"))
             {
-                using (StreamReader reader = File.OpenText("/proc/cpuinfo"))
+                using (var reader = File.OpenText("/proc/cpuinfo"))
                 {
                     string line;
                     while ((line = reader.ReadLine()) != null)

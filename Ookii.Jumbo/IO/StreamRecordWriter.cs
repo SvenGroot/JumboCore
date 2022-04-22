@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -56,7 +52,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                ICompressor compressionStream = Stream as ICompressor;
+                var compressionStream = Stream as ICompressor;
                 if (compressionStream == null)
                     return Stream.Position - _startPosition;
                 else

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -21,7 +18,7 @@ namespace Ookii.Jumbo
     ///   may not apply to the sgen garbage collector, but this has not been tested.
     /// </para>
     /// </remarks>
-    public unsafe sealed class UnmanagedBuffer : IDisposable
+    public sealed unsafe class UnmanagedBuffer : IDisposable
     {
         private byte* _buffer;
 
@@ -126,7 +123,7 @@ namespace Ookii.Jumbo
                 throw new ArgumentOutOfRangeException(nameof(count));
             if (sourceIndex + count > source.Length)
                 throw new ArgumentException("sourceIndex + count is larger than the source array.");
-            long end = destinationIndex + count;
+            var end = destinationIndex + count;
             if (end > destination.Size)
             {
                 end %= destination.Size;
@@ -143,7 +140,7 @@ namespace Ookii.Jumbo
             else
             {
                 // Because count is an int, if this condition is true the two casts here will never overflow
-                int firstCount = (int)(destination.Size - destinationIndex);
+                var firstCount = (int)(destination.Size - destinationIndex);
                 Marshal.Copy(source, sourceIndex, new IntPtr(destination._buffer + destinationIndex), firstCount);
                 Marshal.Copy(source, sourceIndex + firstCount, new IntPtr(destination._buffer), (int)end);
             }
@@ -204,7 +201,7 @@ namespace Ookii.Jumbo
             if (destinationIndex + count > destination.Length)
                 throw new ArgumentException("destinationIndex + count is larger than the destination array.");
 
-            long end = sourceIndex + count;
+            var end = sourceIndex + count;
             if (end > source.Size)
             {
                 end %= source.Size;
@@ -220,7 +217,7 @@ namespace Ookii.Jumbo
             }
             else
             {
-                int firstCount = (int)(source.Size - sourceIndex);
+                var firstCount = (int)(source.Size - sourceIndex);
                 Marshal.Copy(new IntPtr(source._buffer + sourceIndex), destination, destinationIndex, firstCount);
                 Marshal.Copy(new IntPtr(source._buffer), destination, destinationIndex + firstCount, (int)end);
             }

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Tasks;
@@ -53,10 +52,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (innerJoinRecordReaderType == null)
                 throw new ArgumentNullException(nameof(innerJoinRecordReaderType));
 
-            Type baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
-            Type outerRecordType = baseType.GetGenericArguments()[0];
-            Type innerRecordType = baseType.GetGenericArguments()[1];
-            InputTypeAttribute[] inputTypeAttributes = (InputTypeAttribute[])Attribute.GetCustomAttributes(innerJoinRecordReaderType, typeof(InputTypeAttribute));
+            var baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
+            var outerRecordType = baseType.GetGenericArguments()[0];
+            var innerRecordType = baseType.GetGenericArguments()[1];
+            var inputTypeAttributes = (InputTypeAttribute[])Attribute.GetCustomAttributes(innerJoinRecordReaderType, typeof(InputTypeAttribute));
             if (!(inputTypeAttributes.Any(a => a.AcceptedType == outerRecordType) && inputTypeAttributes.Any(a => a.AcceptedType == innerRecordType)))
                 throw new ArgumentException("The inner join record reader type does not declare the required InputType attributes.", nameof(innerJoinRecordReaderType));
             if (outerInput.RecordType != outerRecordType)
@@ -64,8 +63,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (innerInput.RecordType != innerRecordType)
                 throw new ArgumentException("The record type of the inner input does not match the join's inner type.");
 
-            IJobBuilderOperation outer = CreateExtraStepForDataInput(builder, outerInput, "OuterReadStage");
-            IJobBuilderOperation inner = CreateExtraStepForDataInput(builder, innerInput, "InnerReadStage");
+            var outer = CreateExtraStepForDataInput(builder, outerInput, "OuterReadStage");
+            var inner = CreateExtraStepForDataInput(builder, innerInput, "InnerReadStage");
 
             _outerInputChannel = CreateChannel(builder, outer, outerComparerType);
             _innerInputChannel = CreateChannel(builder, inner, innerComparerType);
@@ -106,7 +105,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static IJobBuilderOperation CreateExtraStepForDataInput(JobBuilder builder, IOperationInput input, string stageId)
         {
-            IJobBuilderOperation operation = input as IJobBuilderOperation;
+            var operation = input as IJobBuilderOperation;
             if (operation == null)
                 return new StageOperation(builder, input, typeof(EmptyTask<>)) { StageId = stageId };
 
@@ -119,7 +118,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             {
                 if (comparerType.IsGenericTypeDefinition)
                     comparerType = comparerType.MakeGenericType(recordType);
-                Type interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>), true);
+                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>), true);
                 if (interfaceType.GetGenericArguments()[0] != recordType)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Comparer {0} is not valid for type {1}.", comparerType, recordType));
             }
@@ -129,7 +128,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private Channel CreateChannel(JobBuilder builder, IJobBuilderOperation input, Type comparerType)
         {
-            Channel channel = new Channel(input, this);
+            var channel = new Channel(input, this);
             channel.ChannelType = ChannelType.File;
             channel.MultiInputRecordReaderType = typeof(MergeRecordReader<>);
             channel.Settings.AddSetting(JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill);

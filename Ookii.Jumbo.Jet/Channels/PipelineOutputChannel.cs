@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Jobs;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -18,7 +17,7 @@ namespace Ookii.Jumbo.Jet.Channels
     /// </remarks>
     public sealed class PipelineOutputChannel : IOutputChannel
     {
-        private TaskExecutionUtility _taskExecution;
+        private readonly TaskExecutionUtility _taskExecution;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PipelineOutputChannel"/> class.
@@ -42,9 +41,9 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public RecordWriter<T> CreateRecordWriter<T>()
         {
-            StageConfiguration childStage = _taskExecution.Context.StageConfiguration.ChildStage;
+            var childStage = _taskExecution.Context.StageConfiguration.ChildStage;
             IPartitioner<T> partitioner;
-            int taskCount = childStage.TaskCount;
+            var taskCount = childStage.TaskCount;
 
             if (_taskExecution.Context.StageConfiguration.IsOutputPrepartitioned && _taskExecution.Context.StageConfiguration.InternalPartitionCount != 1)
             {
@@ -62,12 +61,12 @@ namespace Ookii.Jumbo.Jet.Channels
                 return (RecordWriter<T>)_taskExecution.CreateAssociatedTask(childStage, 1).CreatePipelineRecordWriter(null);
             else
             {
-                List<RecordWriter<T>> writers = new List<RecordWriter<T>>();
+                var writers = new List<RecordWriter<T>>();
                 partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.ReferencedType, _taskExecution);
 
-                for (int x = 1; x <= taskCount; ++x)
+                for (var x = 1; x <= taskCount; ++x)
                 {
-                    TaskExecutionUtility childTaskExecution = _taskExecution.CreateAssociatedTask(childStage, x);
+                    var childTaskExecution = _taskExecution.CreateAssociatedTask(childStage, x);
                     writers.Add((RecordWriter<T>)childTaskExecution.CreatePipelineRecordWriter(null));
                 }
                 return new MultiRecordWriter<T>(writers, partitioner);

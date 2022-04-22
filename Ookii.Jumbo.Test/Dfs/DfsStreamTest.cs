@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;

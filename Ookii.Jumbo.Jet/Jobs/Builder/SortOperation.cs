@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -26,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 if (comparerType.ContainsGenericParameters)
                     throw new ArgumentException("The comparer type must be a closed constructed generic type.", nameof(comparerType));
 
-                Type interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>));
+                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>));
                 if (input.RecordType.IsSubclassOf(interfaceType.GetGenericArguments()[0]))
                     throw new ArgumentException("The specified comparer cannot compare the record type.");
                 builder.AddAssembly(comparerType.Assembly);
@@ -39,7 +37,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
                 if (combinerType.IsGenericTypeDefinition)
                     combinerType = combinerType.MakeGenericType(input.RecordType);
-                TaskTypeInfo info = new TaskTypeInfo(combinerType);
+                var info = new TaskTypeInfo(combinerType);
                 if (!(info.InputRecordType == input.RecordType && info.OutputRecordType == input.RecordType))
                     throw new ArgumentException("The combiner's input or output record type doesn't match the sort operation's input record type.");
 
@@ -135,7 +133,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 if (InputChannel.ChannelType == null)
                     InputChannel.ChannelType = ChannelType.File; // Spill sort requires file channel, so make sure it doesn't default to anything else
 
-                InputStageInfo input = InputChannel.CreateInput();
+                var input = InputChannel.CreateInput();
                 if (input.ChannelType != ChannelType.File)
                     throw new NotSupportedException("Spill sort can only be used on file channels.");
 
@@ -148,7 +146,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             }
             else
             {
-                StageConfiguration result = base.CreateConfiguration(compiler);
+                var result = base.CreateConfiguration(compiler);
                 if (_comparerType != null)
                     FirstStepStage.AddSetting(TaskConstants.SortTaskComparerSettingKey, _comparerType.AssemblyQualifiedName);
                 return result;

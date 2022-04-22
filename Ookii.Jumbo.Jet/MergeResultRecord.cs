@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet
@@ -19,7 +16,7 @@ namespace Ookii.Jumbo.Jet
         private RawRecord _rawRecord;
         private MemoryBufferStream _rawRecordStream;
         private BinaryReader _rawRecordReader;
-        private bool _allowRecordReuse;
+        private readonly bool _allowRecordReuse;
 
         internal MergeResultRecord(bool allowRecordReuse)
         {

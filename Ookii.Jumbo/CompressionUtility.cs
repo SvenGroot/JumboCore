@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -23,7 +20,7 @@ namespace Ookii.Jumbo
         {
             private long _bytesWritten;
             private long _bytesRead;
-            private long _uncompressedLength;
+            private readonly long _uncompressedLength;
 
             public GZipCompressionStream(Stream stream, CompressionMode mode, long uncompressedLength)
                 : base(stream, mode)
@@ -95,14 +92,14 @@ namespace Ookii.Jumbo
 
             public override int Read(byte[] array, int offset, int count)
             {
-                int bytesRead = base.Read(array, offset, count);
+                var bytesRead = base.Read(array, offset, count);
                 _bytesRead += bytesRead;
                 return bytesRead;
             }
 
             public override int ReadByte()
             {
-                int result = base.ReadByte();
+                var result = base.ReadByte();
                 if (result >= 0)
                 {
                     ++_bytesRead;

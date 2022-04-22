@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -98,7 +97,7 @@ namespace Ookii.Jumbo.IO
         {
             if (_writers == null)
                 throw new ObjectDisposedException("MultiRecordWriter");
-            int partition = _partitioner.GetPartition(record);
+            var partition = _partitioner.GetPartition(record);
             _writers[partition].WriteRecord(record);
         }
 

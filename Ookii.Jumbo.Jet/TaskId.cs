@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text;
 
 namespace Ookii.Jumbo.Jet
@@ -61,7 +59,7 @@ namespace Ookii.Jumbo.Jet
             else
             {
                 _taskId = taskId;
-                int lastSeparatorIndex = taskId.LastIndexOf(ChildStageSeparator);
+                var lastSeparatorIndex = taskId.LastIndexOf(ChildStageSeparator);
                 if (lastSeparatorIndex >= 0)
                 {
                     _parentTaskId = new TaskId(taskId.Substring(0, lastSeparatorIndex));
@@ -81,7 +79,7 @@ namespace Ookii.Jumbo.Jet
         public TaskId(TaskId parentTaskId, string stageId, int taskNumber)
         {
             // CreateTaskIdString does the argument validation.
-            string taskId = CreateTaskIdString(stageId, taskNumber);
+            var taskId = CreateTaskIdString(stageId, taskNumber);
 
             _stageId = stageId;
             _taskNumber = taskNumber;
@@ -110,8 +108,8 @@ namespace Ookii.Jumbo.Jet
                 throw new ArgumentNullException(nameof(info));
 
             _taskId = info.GetString("TaskId");
-            string localTaskId = _taskId;
-            int lastSeparatorIndex = _taskId.LastIndexOf(ChildStageSeparator);
+            var localTaskId = _taskId;
+            var lastSeparatorIndex = _taskId.LastIndexOf(ChildStageSeparator);
             if (lastSeparatorIndex >= 0)
             {
                 _parentTaskId = new TaskId(_taskId.Substring(0, lastSeparatorIndex));
@@ -152,7 +150,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                StringBuilder result = new StringBuilder(_taskId.Length);
+                var result = new StringBuilder(_taskId.Length);
                 BuildCompoundStageId(result);
                 return result.ToString();
             }
@@ -290,7 +288,7 @@ namespace Ookii.Jumbo.Jet
         /// </returns>
         public int CompareTo(object obj)
         {
-            TaskId other = obj as TaskId;
+            var other = obj as TaskId;
             if (other != null)
                 throw new ArgumentException("The specified object is not a TaskId.", nameof(obj));
 
@@ -325,7 +323,7 @@ namespace Ookii.Jumbo.Jet
 
         private static void ParseStageIdAndNumber(string localTaskId, out string stageId, out int taskNumber)
         {
-            string[] parts = localTaskId.Split(TaskNumberSeparator);
+            var parts = localTaskId.Split(TaskNumberSeparator);
             if (parts.Length != 2)
                 throw new FormatException("Task ID doesn't have the format StageId-Number.");
             stageId = parts[0];
@@ -336,7 +334,7 @@ namespace Ookii.Jumbo.Jet
         {
             if (ParentTaskId != null)
             {
-                TaskId parent = ParentTaskId;
+                var parent = ParentTaskId;
                 parent.BuildCompoundStageId(result);
                 result.Append(ChildStageSeparator);
             }

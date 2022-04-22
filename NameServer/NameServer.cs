@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -60,7 +59,7 @@ namespace NameServerApplication
             _fileSystem = FileSystem.Load(dfsConfig);
             _fileSystem.FileDeleted += new EventHandler<FileDeletedEventArgs>(_fileSystem_FileDeleted);
             _fileSystem.GetBlocks(_blocks, _pendingBlocks);
-            foreach (BlockInfo block in _blocks.Values)
+            foreach (var block in _blocks.Values)
             {
                 _underReplicatedBlocks.Add(block.BlockId, block);
             }
@@ -117,10 +116,9 @@ namespace NameServerApplication
             // I believe this is what Hadoop does, but is it the right thing to do?
             lock (_underReplicatedBlocks)
             {
-                foreach (Guid blockID in blocks)
+                foreach (var blockID in blocks)
                 {
-                    BlockInfo info;
-                    if (_underReplicatedBlocks.TryGetValue(blockID, out info))
+                    if (_underReplicatedBlocks.TryGetValue(blockID, out var info))
                         throw new DfsException("Cannot add a block to a file with under-replicated blocks.");
                 }
             }
@@ -135,7 +133,7 @@ namespace NameServerApplication
             }
             lock (_dataServers)
             {
-                foreach (DataServerInfo server in _dataServers.Values)
+                foreach (var server in _dataServers.Values)
                     server.PendingBlocks.Remove(blockID);
             }
         }
@@ -146,8 +144,7 @@ namespace NameServerApplication
             {
                 lock (_pendingBlocks)
                 {
-                    PendingBlock pendingBlock;
-                    if (_pendingBlocks.TryGetValue(blockID, out pendingBlock))
+                    if (_pendingBlocks.TryGetValue(blockID, out var pendingBlock))
                     {
                         // No need to remove the block from the data servers PendingBlocks list, because that has already been done when the data servers sent
                         // a new block heartbeat.
@@ -228,7 +225,7 @@ namespace NameServerApplication
         {
             _log.Debug("CreateFile called");
             CheckSafeMode();
-            BlockInfo block = _fileSystem.CreateFile(path, blockSize == 0 ? BlockSize : blockSize, replicationFactor == 0 ? _replicationFactor : replicationFactor, recordOptions);
+            var block = _fileSystem.CreateFile(path, blockSize == 0 ? BlockSize : blockSize, replicationFactor == 0 ? _replicationFactor : replicationFactor, recordOptions);
             try
             {
                 lock (_pendingBlocks)
@@ -282,7 +279,7 @@ namespace NameServerApplication
                 dataServerCount = _dataServers.Count;
             }
 
-            BlockInfo block = _fileSystem.AppendBlock(path, dataServerCount);
+            var block = _fileSystem.AppendBlock(path, dataServerCount);
             lock (_pendingBlocks)
             {
                 _pendingBlocks.Add(block.BlockId, new PendingBlock(block));
@@ -295,7 +292,7 @@ namespace NameServerApplication
         {
             _log.Debug("CloseFile called");
             CheckSafeMode();
-            Guid? pendingBlock = _fileSystem.CloseFile(path);
+            var pendingBlock = _fileSystem.CloseFile(path);
             if (pendingBlock != null)
                 DiscardBlock(pendingBlock.Value);
         }
@@ -308,12 +305,11 @@ namespace NameServerApplication
             {
                 lock (_dataServers)
                 {
-                    BlockInfo block;
-                    if (!_blocks.TryGetValue(blockID, out block))
+                    if (!_blocks.TryGetValue(blockID, out var block))
                         throw new ArgumentException("Invalid block ID.");
 
-                    string hostName = ServerContext.Current.ClientHostName;
-                    string rackId = _topology.ResolveNode(hostName);
+                    var hostName = ServerContext.Current.ClientHostName;
+                    var rackId = _topology.ResolveNode(hostName);
 
                     return (from server in block.DataServers
                             orderby server.DistanceFrom(hostName, rackId) ascending
@@ -327,8 +323,7 @@ namespace NameServerApplication
             // This call is allowed even if safemode is on.
             lock (_blocks)
             {
-                BlockInfo block;
-                if (_blocks.TryGetValue(blockId, out block))
+                if (_blocks.TryGetValue(blockId, out var block))
                     return block.File.FullPath;
                 else
                     return null;
@@ -362,7 +357,7 @@ namespace NameServerApplication
         public DfsMetrics GetMetrics()
         {
             _log.Debug("GetMetrics called");
-            DfsMetrics metrics = new DfsMetrics()
+            var metrics = new DfsMetrics()
             {
                 NameServer = _localAddress
             };
@@ -381,7 +376,7 @@ namespace NameServerApplication
             }
             lock (_dataServers)
             {
-                foreach (DataServerInfo server in _dataServers.Values)
+                foreach (var server in _dataServers.Values)
                 {
                     metrics.DataServers.Add(new DataServerMetrics()
                     {
@@ -408,8 +403,7 @@ namespace NameServerApplication
                 throw new ArgumentNullException(nameof(blocks));
             lock (_dataServers)
             {
-                DataServerInfo server;
-                if (!_dataServers.TryGetValue(dataServer, out server))
+                if (!_dataServers.TryGetValue(dataServer, out var server))
                 {
                     server = (from s in _dataServers.Values
                               where s.Address.HostName == dataServer.HostName
@@ -427,7 +421,7 @@ namespace NameServerApplication
 
             lock (_dataServers)
             {
-                DataServerInfo server = _dataServers[dataServer];
+                var server = _dataServers[dataServer];
                 return server.Blocks.ToArray();
             }
         }
@@ -441,7 +435,7 @@ namespace NameServerApplication
                 throw new ArgumentNullException(nameof(blocks));
             lock (_dataServers)
             {
-                DataServerInfo server = _dataServers[dataServer];
+                var server = _dataServers[dataServer];
                 return server.Blocks.Intersect(blocks).ToArray();
             }
         }
@@ -456,10 +450,9 @@ namespace NameServerApplication
             if (dataServer == null)
                 throw new ArgumentNullException(nameof(dataServer));
 
-            DataServerInfo info;
             lock (_dataServers)
             {
-                if (_dataServers.TryGetValue(dataServer, out info))
+                if (_dataServers.TryGetValue(dataServer, out var info))
                 {
                     RemoveDataServer(info);
                     _dataServerMonitorEvent.Set();
@@ -483,12 +476,11 @@ namespace NameServerApplication
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
-            DataServerInfo dataServer;
             List<HeartbeatResponse> responseList = null;
             lock (_dataServers)
             {
-                InitialHeartbeatData initialData = data != null && data.Length > 0 ? data[0] as InitialHeartbeatData : null;
-                bool serverKnown = _dataServers.TryGetValue(address, out dataServer);
+                var initialData = data != null && data.Length > 0 ? data[0] as InitialHeartbeatData : null;
+                var serverKnown = _dataServers.TryGetValue(address, out var dataServer);
                 if (initialData != null || !serverKnown)
                 {
                     if (serverKnown && initialData != null)
@@ -522,9 +514,9 @@ namespace NameServerApplication
 
                 if (data != null)
                 {
-                    foreach (HeartbeatData item in data)
+                    foreach (var item in data)
                     {
-                        HeartbeatResponse response = ProcessHeartbeat(item, dataServer);
+                        var response = ProcessHeartbeat(item, dataServer);
                         if (response != null)
                         {
                             if (responseList == null)
@@ -540,7 +532,7 @@ namespace NameServerApplication
                     return new[] { new HeartbeatResponse(_fileSystem.FileSystemId, DataServerHeartbeatCommand.ReportBlocks) };
                 }
 
-                HeartbeatResponse[] pendingResponses = dataServer.GetAndClearPendingResponses();
+                var pendingResponses = dataServer.GetAndClearPendingResponses();
                 if (pendingResponses.Length > 0)
                 {
                     if (responseList == null)
@@ -560,8 +552,7 @@ namespace NameServerApplication
             {
                 lock (_pendingBlocks)
                 {
-                    PendingBlock info;
-                    if (_pendingBlocks.TryGetValue(e.PendingBlock.Value, out info))
+                    if (_pendingBlocks.TryGetValue(e.PendingBlock.Value, out var info))
                     {
                         _pendingBlocks.Remove(e.PendingBlock.Value);
                         MarkForDataServerDeletion(e.PendingBlock.Value, info.Block);
@@ -571,21 +562,20 @@ namespace NameServerApplication
                 }
                 lock (_dataServers)
                 {
-                    foreach (DataServerInfo server in _dataServers.Values)
+                    foreach (var server in _dataServers.Values)
                         server.PendingBlocks.Remove(e.PendingBlock.Value);
                 }
             }
             if (e.File.Blocks.Count > 0)
             {
-                List<BlockInfo> removedBlocks = new List<BlockInfo>(e.File.Blocks.Count);
+                var removedBlocks = new List<BlockInfo>(e.File.Blocks.Count);
                 lock (_blocks)
                 {
                     lock (_underReplicatedBlocks)
                     {
                         foreach (var block in e.File.Blocks)
                         {
-                            BlockInfo info;
-                            if (_blocks.TryGetValue(block, out info))
+                            if (_blocks.TryGetValue(block, out var info))
                             {
                                 _blocks.Remove(block);
                                 _underReplicatedBlocks.Remove(block);
@@ -599,9 +589,9 @@ namespace NameServerApplication
                 }
                 lock (_dataServers)
                 {
-                    foreach (BlockInfo block in removedBlocks)
+                    foreach (var block in removedBlocks)
                     {
-                        foreach (DataServerInfo server in block.DataServers)
+                        foreach (var server in block.DataServers)
                         {
                             server.Blocks.Remove(block.BlockId);
                         }
@@ -612,7 +602,7 @@ namespace NameServerApplication
 
         private void ShutdownInternal()
         {
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            using (var evt = new ManualResetEvent(false))
             {
                 _checkpointTimer.Dispose(evt);
                 evt.WaitOne();
@@ -627,7 +617,7 @@ namespace NameServerApplication
 
         private HeartbeatResponse ProcessHeartbeat(HeartbeatData data, DataServerInfo dataServer)
         {
-            StatusHeartbeatData status = data as StatusHeartbeatData;
+            var status = data as StatusHeartbeatData;
             if (status != null)
             {
                 _log.InfoFormat(CultureInfo.InvariantCulture, "Data server {0} status: {1}B used, {2}B free, {3}B total.", dataServer.Address, status.DiskSpaceUsed, status.DiskSpaceFree, status.DiskSpaceTotal);
@@ -637,13 +627,13 @@ namespace NameServerApplication
                 // Don't return; some of the other heartbeat types inherit from StatusHeartbeatData
             }
 
-            BlockReportHeartbeatData blockReport = data as BlockReportHeartbeatData;
+            var blockReport = data as BlockReportHeartbeatData;
             if (blockReport != null)
             {
                 return ProcessBlockReport(dataServer, blockReport);
             }
 
-            NewBlockHeartbeatData newBlock = data as NewBlockHeartbeatData;
+            var newBlock = data as NewBlockHeartbeatData;
             if (newBlock != null)
             {
                 return ProcessNewBlock(dataServer, newBlock);
@@ -662,7 +652,7 @@ namespace NameServerApplication
                 return null;
             }
 
-            bool commitBlock = false;
+            var commitBlock = false;
             HeartbeatResponse response = null;
             PendingBlock pendingBlock;
             lock (_pendingBlocks)
@@ -693,8 +683,7 @@ namespace NameServerApplication
                 {
                     lock (_underReplicatedBlocks)
                     {
-                        BlockInfo block;
-                        if (_underReplicatedBlocks.TryGetValue(newBlock.BlockId, out block))
+                        if (_underReplicatedBlocks.TryGetValue(newBlock.BlockId, out var block))
                         {
                             dataServer.Blocks.Add(newBlock.BlockId);
                             block.DataServers.Add(dataServer);
@@ -742,7 +731,7 @@ namespace NameServerApplication
                 List<Guid> invalidBlocks = null;
                 _log.Info("Received block report.");
                 dataServer.HasReportedBlocks = true;
-                foreach (Guid block in blockReport.Blocks)
+                foreach (var block in blockReport.Blocks)
                 {
                     BlockInfo info;
                     lock (_blocks)
@@ -773,10 +762,9 @@ namespace NameServerApplication
                     }
                     if (info == null)
                     {
-                        PendingBlock pendingBlock;
                         lock (_pendingBlocks)
                         {
-                            if (_pendingBlocks.TryGetValue(block, out pendingBlock))
+                            if (_pendingBlocks.TryGetValue(block, out var pendingBlock))
                             {
                                 Debug.Assert(pendingBlock.Block.DataServers.Contains(dataServer));
                                 _log.WarnFormat("Dataserver {0} re-reported block ID {1}", dataServer.Address, block);
@@ -821,9 +809,9 @@ namespace NameServerApplication
             }
             else
             {
-                BlockAssignment assignment = AssignBlockToDataServers(block, true); // Doesn't really matter what we pass for useLocalReplica, there's no writer.
+                var assignment = AssignBlockToDataServers(block, true); // Doesn't really matter what we pass for useLocalReplica, there's no writer.
 
-                DataServerInfo source = block.DataServers[0];
+                var source = block.DataServers[0];
 
                 source.AddResponseForNextHeartbeat(new ReplicateBlockHeartbeatResponse(_fileSystem.FileSystemId, assignment));
             }
@@ -886,10 +874,9 @@ namespace NameServerApplication
                         {
                             foreach (var blockID in info.Blocks)
                             {
-                                bool pending = false;
+                                var pending = false;
                                 BlockInfo blockInfo;
-                                PendingBlock pendingBlock;
-                                if (_pendingBlocks.TryGetValue(blockID, out pendingBlock))
+                                if (_pendingBlocks.TryGetValue(blockID, out var pendingBlock))
                                 {
                                     blockInfo = pendingBlock.Block;
                                     pending = true;
@@ -918,7 +905,7 @@ namespace NameServerApplication
 
         private void DataServerMonitorThread()
         {
-            int timeout = Configuration.NameServer.DataServerTimeout * 1000;
+            var timeout = Configuration.NameServer.DataServerTimeout * 1000;
             // This function will periodically check for dead data servers and underreplicated blocks.
             while (_running)
             {
@@ -955,9 +942,9 @@ namespace NameServerApplication
             lock (_dataServers)
             {
                 List<DataServerInfo> deadServers = null;
-                foreach (DataServerInfo server in _dataServers.Values)
+                foreach (var server in _dataServers.Values)
                 {
-                    TimeSpan lastContact = DateTime.UtcNow - server.LastContactUtc;
+                    var lastContact = DateTime.UtcNow - server.LastContactUtc;
                     if (lastContact.TotalSeconds > Configuration.NameServer.DataServerTimeout)
                     {
                         _log.WarnFormat("Data server {0} has not reported in {1} seconds and is considered dead.", server.Address, lastContact.TotalSeconds);
@@ -971,7 +958,7 @@ namespace NameServerApplication
 
                 if (deadServers != null)
                 {
-                    foreach (DataServerInfo server in deadServers)
+                    foreach (var server in deadServers)
                     {
                         RemoveDataServer(server);
                     }

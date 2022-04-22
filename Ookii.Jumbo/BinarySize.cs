@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -222,8 +219,8 @@ namespace Ookii.Jumbo
             if (value.Length == 0)
                 return new BinarySize();
 
-            string suffix = GetAndRemoveSuffix(ref value);
-            Decimal size = Decimal.Parse(value, provider);
+            var suffix = GetAndRemoveSuffix(ref value);
+            var size = Decimal.Parse(value, provider);
             if (suffix != null)
                 size *= GetUnitScalingFactor(suffix);
 
@@ -706,7 +703,7 @@ namespace Ookii.Jumbo
         {
             checked
             {
-                return (decimal)Value;
+                return Value;
             }
         }
 
@@ -732,7 +729,7 @@ namespace Ookii.Jumbo
         {
             checked
             {
-                return (float)Value;
+                return Value;
             }
         }
 
@@ -758,7 +755,7 @@ namespace Ookii.Jumbo
         {
             checked
             {
-                return (double)Value;
+                return Value;
             }
         }
 
@@ -1096,12 +1093,12 @@ namespace Ookii.Jumbo
 
         private static string GetAndRemoveSuffix(ref string value)
         {
-            int lastNumber = value.LastIndexOfAny(_numbers);
+            var lastNumber = value.LastIndexOfAny(_numbers);
             if (lastNumber == value.Length - 1)
                 return null;
             else
             {
-                string suffix = value.Substring(lastNumber + 1);
+                var suffix = value.Substring(lastNumber + 1);
                 value = value.Substring(0, lastNumber + 1);
                 return suffix.Trim();
             }

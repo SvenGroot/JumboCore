@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -123,7 +120,7 @@ namespace Ookii.Jumbo.Dfs
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            int size = (int)Math.Min(PacketSize, stream.Length);
+            var size = (int)Math.Min(PacketSize, stream.Length);
             if (!isLastPacket && size != PacketSize)
                 throw new ArgumentException("The packet has an invalid size.");
 
@@ -188,7 +185,7 @@ namespace Ookii.Jumbo.Dfs
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
-            uint expectedChecksum = reader.ReadUInt32();
+            var expectedChecksum = reader.ReadUInt32();
             if (format == PacketFormatOption.ChecksumOnly)
             {
                 // Determine the size from the stream length.
@@ -204,7 +201,7 @@ namespace Ookii.Jumbo.Dfs
                 if (Size > PacketSize || (!IsLastPacket && Size != PacketSize))
                     throw new InvalidPacketException("The packet has an invalid size.");
             }
-            int bytesRead = 0;
+            var bytesRead = 0;
             // We loop because the reader may use a NetworkStream which might not return all data at once.
             while (bytesRead < Size)
             {
@@ -263,12 +260,12 @@ namespace Ookii.Jumbo.Dfs
         /// <returns><see langword="true"/> if the object equals this instance; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            Packet other = obj as Packet;
+            var other = obj as Packet;
             if (other != null)
             {
                 if (IsLastPacket == other.IsLastPacket && Size == other.Size && Checksum == other.Checksum && SequenceNumber == other.SequenceNumber)
                 {
-                    for (int x = 0; x < Size; ++x)
+                    for (var x = 0; x < Size; ++x)
                     {
                         if (_data[x] != other._data[x])
                             return false;

@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -88,7 +85,7 @@ namespace Ookii.Jumbo.IO
         {
             if (_currentReader == null)
             {
-                int newReaderNumber = _currentReaderNumber + 1;
+                var newReaderNumber = _currentReaderNumber + 1;
                 if (newReaderNumber > TotalInputCount)
                     return false;
 

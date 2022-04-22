@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (recordReaderType.ContainsGenericParameters)
                 throw new ArgumentException("The record reader type must be a closed constructed generic type.", nameof(recordReaderType));
 
-            Type recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
+            var recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
 
             _path = path;
             _recordReaderType = recordReaderType;

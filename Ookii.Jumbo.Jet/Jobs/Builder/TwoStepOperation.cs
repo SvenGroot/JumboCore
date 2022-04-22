@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -120,19 +117,19 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (InputChannel.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1)
             {
                 // Second step needed
-                int taskCount = (_usePrePartitioning && InputChannel.Sender.Stage.InternalPartitionCount == 1) ? InputChannel.PartitionCount : 1;
+                var taskCount = (_usePrePartitioning && InputChannel.Sender.Stage.InternalPartitionCount == 1) ? InputChannel.PartitionCount : 1;
                 if (taskCount == 0)
                 {
                     taskCount = InputChannel.PartitionsPerTask * compiler.DefaultChannelInputTaskCount;
                     if (InputChannel.ChannelType == ChannelType.Tcp)
                         taskCount /= 2;
                 }
-                InputStageInfo input = new InputStageInfo(InputChannel.Sender.Stage)
+                var input = new InputStageInfo(InputChannel.Sender.Stage)
                 {
                     ChannelType = ChannelType.Pipeline,
                     PartitionerType = InputChannel.PartitionerType
                 };
-                string firstStepStageId = StageId;
+                var firstStepStageId = StageId;
                 if (SecondStepStageId == null)
                     firstStepStageId = "Local" + StageId;
                 FirstStepStage = compiler.CreateStage(firstStepStageId, TaskType.TaskType, taskCount, input, InputChannel, true, null);
@@ -151,7 +148,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static IOperationInput CreateExtraStepForDataInput(JobBuilder builder, IOperationInput input)
         {
-            FileInput dataInput = input as FileInput;
+            var dataInput = input as FileInput;
             if (dataInput != null)
             {
                 // If the input is DFS, we want to create a channel around which our first and second step are created.

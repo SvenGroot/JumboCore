@@ -1,16 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Ookii.Jumbo
 {
     static class BinarySizeFormatter
     {
-        private static Regex _formatRegex = new Regex(@"(?<before>\s*)(?<prefix>[ASKMGTP])?(?<iec>i?)(?<after>B?\s*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly Regex _formatRegex = new Regex(@"(?<before>\s*)(?<prefix>[ASKMGTP])?(?<iec>i?)(?<after>B?\s*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         public static string Format(BinarySize value, string format, IFormatProvider provider)
         {
@@ -28,13 +25,13 @@ namespace Ookii.Jumbo
             }
             else
             {
-                Match m = _formatRegex.Match(format);
+                var m = _formatRegex.Match(format);
                 if (!m.Success)
                     throw new FormatException("Invalid format string.");
 
                 before = m.Groups["before"].Value;
-                string prefix = m.Groups["prefix"].Success ? m.Groups["prefix"].Value : null;
-                string iec = m.Groups["iec"].Value;
+                var prefix = m.Groups["prefix"].Success ? m.Groups["prefix"].Value : null;
+                var iec = m.Groups["iec"].Value;
                 after = m.Groups["after"].Value;
                 numberFormat = format.Substring(0, m.Index);
 

@@ -1,9 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -68,7 +64,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int bytesRead = _baseStream.Read(buffer, offset, count);
+            var bytesRead = _baseStream.Read(buffer, offset, count);
             _bytesRead += bytesRead;
             return bytesRead;
         }

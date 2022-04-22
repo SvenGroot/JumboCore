@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo.Dfs.FileSystem;
@@ -19,7 +16,7 @@ namespace DfsWeb.Pages
 
         public void OnGet()
         {
-            DfsClient client = (DfsClient)FileSystemClient.Create();
+            var client = (DfsClient)FileSystemClient.Create();
             SafeMode = client.NameServer.SafeMode;
         }
 
@@ -27,7 +24,7 @@ namespace DfsWeb.Pages
         {
             try
             {
-                DfsClient client = (DfsClient)FileSystemClient.Create();
+                var client = (DfsClient)FileSystemClient.Create();
                 SafeMode = client.NameServer.SafeMode;
                 client.NameServer.SafeMode = NewSafeMode;
                 SafeMode = NewSafeMode;

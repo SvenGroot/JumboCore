@@ -1,7 +1,6 @@
 ﻿// $Id$
 //
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Ookii.Jumbo;
@@ -24,7 +23,7 @@ public class FileSystemEntryInfo
         Name = entry.Name;
         DateCreated = entry.DateCreated.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         FullPath = entry.FullPath;
-        JumboFile file = entry as JumboFile;
+        var file = entry as JumboFile;
         if (file != null)
         {
             SizeInBytes = file.Size.ToString("#,##0", CultureInfo.InvariantCulture);
@@ -36,7 +35,7 @@ public class FileSystemEntryInfo
         }
         else
         {
-            JumboDirectory dir = (JumboDirectory)entry;
+            var dir = (JumboDirectory)entry;
             IsDirectory = true;
             if (includeChildren)
             {

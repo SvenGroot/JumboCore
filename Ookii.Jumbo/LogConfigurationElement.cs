@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using log4net.Util;
 using Ookii.Jumbo.Rpc;
 
 namespace Ookii.Jumbo
@@ -36,7 +31,7 @@ namespace Ookii.Jumbo
         /// </summary>
         public void ConfigureLogger()
         {
-            string dir = Directory;
+            var dir = Directory;
 
             if (!string.IsNullOrEmpty(dir) && !(dir[dir.Length - 1] == Path.DirectorySeparatorChar || dir[dir.Length - 1] == Path.AltDirectorySeparatorChar))
                 dir += Path.DirectorySeparatorChar;

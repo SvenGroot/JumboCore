@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsWeb.Pages
@@ -50,16 +45,16 @@ namespace DfsWeb.Pages
                 break;
             }
 
-            int maxSize = Int32.MaxValue;
+            var maxSize = Int32.MaxValue;
             if (MaxSize != null)
                 maxSize = (int)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
 
             if (DataServer == null)
             {
-                DfsClient client = (DfsClient)FileSystemClient.Create();
-                DfsMetrics metrics = client.NameServer.GetMetrics();
+                var client = (DfsClient)FileSystemClient.Create();
+                var metrics = client.NameServer.GetMetrics();
                 ViewData["Title"] = $"Name server {metrics.NameServer} log file";
-                string log = client.NameServer.GetLogFileContents(logKind, maxSize);
+                var log = client.NameServer.GetLogFileContents(logKind, maxSize);
                 LogFileContents = FormatLogFile(log);
             }
             else
@@ -71,8 +66,8 @@ namespace DfsWeb.Pages
 
         private static HtmlString FormatLogFile(string log)
         {
-            StringBuilder result = new StringBuilder(log.Length);
-            using (StringReader reader = new StringReader(log))
+            var result = new StringBuilder(log.Length);
+            using (var reader = new StringReader(log))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)

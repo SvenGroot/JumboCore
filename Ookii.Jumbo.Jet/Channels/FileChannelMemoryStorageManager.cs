@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -99,7 +94,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 {
                     if (_maxSize == 0L)
                         return 0f;
-                    return (float)_currentSize / (float)_maxSize;
+                    return _currentSize / (float)_maxSize;
                 }
             }
         }
@@ -120,7 +115,7 @@ namespace Ookii.Jumbo.Jet.Channels
             if (size > _maxSingleStreamSize)
                 return null;
 
-            bool waited = false;
+            var waited = false;
             lock (_inputs)
             {
                 while (_currentSize + size > _maxSize)
@@ -128,7 +123,7 @@ namespace Ookii.Jumbo.Jet.Channels
                     if (!waited)
                     {
                         _log.Info("Waiting for buffer space...");
-                        MemoryStorageFullEventArgs e = new MemoryStorageFullEventArgs(_currentSize + size - _maxSize);
+                        var e = new MemoryStorageFullEventArgs(_currentSize + size - _maxSize);
                         OnWaitingForBuffer(e);
                         if (e.CancelWaiting)
                             return null;
@@ -153,14 +148,14 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void OnStreamRemoved(EventArgs e)
         {
-            EventHandler handler = StreamRemoved;
+            var handler = StreamRemoved;
             if (handler != null)
                 handler(this, e);
         }
 
         private void OnWaitingForBuffer(MemoryStorageFullEventArgs e)
         {
-            EventHandler<MemoryStorageFullEventArgs> handler = WaitingForBuffer;
+            var handler = WaitingForBuffer;
             if (handler != null)
                 handler(this, e);
         }
@@ -220,7 +215,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 _disposed = true;
                 lock (_inputs)
                 {
-                    foreach (UnmanagedBufferMemoryStream stream in _inputs)
+                    foreach (var stream in _inputs)
                     {
                         stream.Dispose();
                     }

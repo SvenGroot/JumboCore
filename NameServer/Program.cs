@@ -1,10 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;

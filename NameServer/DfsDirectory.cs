@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace NameServerApplication
@@ -13,7 +12,7 @@ namespace NameServerApplication
     /// </summary>
     class DfsDirectory : DfsFileSystemEntry
     {
-        private List<DfsFileSystemEntry> _children = new List<DfsFileSystemEntry>();
+        private readonly List<DfsFileSystemEntry> _children = new List<DfsFileSystemEntry>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DfsDirectory"/> class.
@@ -73,7 +72,7 @@ namespace NameServerApplication
                 throw new ArgumentNullException(nameof(writer));
             base.SaveToFileSystemImage(writer);
             writer.Write(Children.Count);
-            foreach (DfsFileSystemEntry entry in Children)
+            foreach (var entry in Children)
                 entry.SaveToFileSystemImage(writer);
         }
 
@@ -86,10 +85,10 @@ namespace NameServerApplication
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
-            int childCount = reader.ReadInt32();
+            var childCount = reader.ReadInt32();
             _children.Clear();
             _children.Capacity = childCount;
-            for (int x = 0; x < childCount; ++x)
+            for (var x = 0; x < childCount; ++x)
             {
                 // The FileSystemEntry constructor adds it to the Children collection, no need to do that here.
                 DfsFileSystemEntry.LoadFromFileSystemImage(reader, this, notifyFileSizeCallback);

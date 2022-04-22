@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 
@@ -42,9 +39,9 @@ namespace NameServerApplication
         public override void Flush()
         {
             _baseStream.Flush();
-            using (FileStream crcStream = File.Create(_crcFileName))
+            using (var crcStream = File.Create(_crcFileName))
             {
-                uint crc = (uint)_crc.Value;
+                var crc = (uint)_crc.Value;
                 _crcBytes[0] = (byte)(crc & 0xFF);
                 _crcBytes[1] = (byte)((crc >> 8) & 0xFF);
                 _crcBytes[2] = (byte)((crc >> 16) & 0xFF);
@@ -105,18 +102,18 @@ namespace NameServerApplication
 
         public static long CheckCrc(string file)
         {
-            byte[] crcBytes = new byte[4];
-            using (FileStream crcStream = File.OpenRead(file + ".crc"))
+            var crcBytes = new byte[4];
+            using (var crcStream = File.OpenRead(file + ".crc"))
             {
                 if (crcStream.Read(crcBytes, 0, 4) != 4)
                     throw new DfsException(string.Format(CultureInfo.InvariantCulture, "{0} CRC file is corrupt.", file));
             }
-            uint expectedCrc = (uint)crcBytes[0] | (uint)crcBytes[1] << 8 | (uint)crcBytes[2] << 16 | (uint)crcBytes[3] << 24;
+            var expectedCrc = crcBytes[0] | (uint)crcBytes[1] << 8 | (uint)crcBytes[2] << 16 | (uint)crcBytes[3] << 24;
 
-            using (FileStream stream = File.OpenRead(file))
+            using (var stream = File.OpenRead(file))
             {
-                Crc32Checksum crc = new Crc32Checksum();
-                byte[] buffer = new byte[4096];
+                var crc = new Crc32Checksum();
+                var buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {

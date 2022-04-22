@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Jobs;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -47,9 +46,9 @@ namespace Ookii.Jumbo.Jet.Channels
         public TcpChannelRecordWriter(TaskExecutionUtility taskExecution, bool reuseConnections, IPartitioner<T> partitioner, int bufferSize, int limit)
             : base(partitioner, bufferSize, limit, SpillRecordWriterOptions.AllowRecordWrapping | SpillRecordWriterOptions.AllowMultiRecordIndexEntries)
         {
-            StageConfiguration outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel.OutputStage);
+            var outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel.OutputStage);
             _outputIds = new TaskId[outputStage.TaskCount]; // We need this to be task based, not partition based.
-            for (int x = 0; x < _outputIds.Length; ++x)
+            for (var x = 0; x < _outputIds.Length; ++x)
                 _outputIds[x] = new TaskId(outputStage.StageId, x + 1);
             _taskConnections = new TaskConnectionInfo[_outputIds.Length];
             _taskExecution = taskExecution;
@@ -86,7 +85,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 if (disposing)
                 {
-                    for (int x = 0; x < _taskConnections.Length; ++x)
+                    for (var x = 0; x < _taskConnections.Length; ++x)
                         _taskConnections[x].Dispose();
                 }
             }
@@ -101,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 _header[0] |= (byte)TcpChannelConnectionFlags.FinalSegment;
             }
 
-            for (int taskIndex = 0; taskIndex < _outputIds.Length; ++taskIndex)
+            for (var taskIndex = 0; taskIndex < _outputIds.Length; ++taskIndex)
             {
                 SendSegmentToTask(sendData, taskIndex);
             }
@@ -110,23 +109,23 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Ownership may be handed off to cached connection.")]
         private void SendSegmentToTask(bool sendData, int taskIndex)
         {
-            bool disposeStream = false;
-            WriteBufferedStream stream = _taskConnections[taskIndex].ClientStream;
+            var disposeStream = false;
+            var stream = _taskConnections[taskIndex].ClientStream;
             TcpClient client = null;
             try
             {
-                int[] partitions = _taskConnections[taskIndex].Partitions;
+                var partitions = _taskConnections[taskIndex].Partitions;
                 if (partitions == null)
                 {
                     partitions = _taskExecution.Context.StageConfiguration.OutputChannel.PartitionsPerTask <= 1 ? new[] { _outputIds[taskIndex].TaskNumber } : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
                     _taskConnections[taskIndex].Partitions = partitions;
                 }
 
-                bool sentHeader = false;
+                var sentHeader = false;
                 // Always send all partitions, even if they're empty
-                foreach (int partition in partitions)
+                foreach (var partition in partitions)
                 {
-                    int size = sendData ? SpillDataSizeForPartition(partition - 1) : 0;
+                    var size = sendData ? SpillDataSizeForPartition(partition - 1) : 0;
                     if (stream == null)
                     {
                         disposeStream = true;
@@ -176,13 +175,13 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private void CheckResult(WriteBufferedStream stream, int taskIndex)
         {
-            int result = stream.ReadByte();
+            var result = stream.ReadByte();
             if (result == -1)
                 throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Task {0} did not send a status result.", _outputIds[taskIndex]));
             else if (result == 0)
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                Exception ex = (Exception)formatter.Deserialize(stream);
+                var formatter = new BinaryFormatter();
+                var ex = (Exception)formatter.Deserialize(stream);
                 throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Task {0} encountered an exception reading channel data.", _outputIds[taskIndex]), ex);
             }
         }
@@ -200,7 +199,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             if (_taskConnections[taskIndex].HostName == null)
             {
-                TaskId taskId = _outputIds[taskIndex];
+                var taskId = _outputIds[taskIndex];
                 ServerAddress taskServer;
                 do
                 {
@@ -214,7 +213,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 _log.InfoFormat("Task {0} is running on task server {1}", taskId, taskServer);
 
-                ITaskServerClientProtocol taskServerClient = JetClient.CreateTaskServerClient(taskServer);
+                var taskServerClient = JetClient.CreateTaskServerClient(taskServer);
                 int port;
                 do
                 {
@@ -233,7 +232,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             _log.DebugFormat("Connecting to task {0} at TCP channel server {1}:{2}", _outputIds[taskIndex], _taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
 
-            TcpClient client = new TcpClient(_taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
+            var client = new TcpClient(_taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
             if (_reuseConnections)
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             client.Client.NoDelay = true;

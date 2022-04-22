@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -114,16 +111,16 @@ namespace Ookii.Jumbo.IO
         public byte[] GetRecordMarker()
         {
             // This is not a property because it copies the array.
-            byte[] markerCopy = new byte[RecordFile.RecordMarkerSize];
+            var markerCopy = new byte[RecordFile.RecordMarkerSize];
             RecordMarker.CopyTo(markerCopy, 0);
             return markerCopy;
         }
 
         private static byte[] GenerateRecordMarker()
         {
-            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            using (var rng = RandomNumberGenerator.Create())
             {
-                byte[] boundary = new byte[RecordFile.RecordMarkerSize];
+                var boundary = new byte[RecordFile.RecordMarkerSize];
                 rng.GetBytes(boundary);
                 return boundary;
             }
@@ -145,7 +142,7 @@ namespace Ookii.Jumbo.IO
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
-            byte[] headerStart = reader.ReadBytes(_headerStart.Length);
+            var headerStart = reader.ReadBytes(_headerStart.Length);
             if (!(headerStart[0] == _headerStart[0] &&
                   headerStart[1] == _headerStart[1] &&
                   headerStart[2] == _headerStart[2]))

@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -114,7 +111,7 @@ namespace Ookii.Jumbo.IO
                     return false;
                 }
 
-                int recordPrefix = _reader.ReadInt32();
+                var recordPrefix = _reader.ReadInt32();
                 if (recordPrefix == RecordFile.RecordMarkerPrefix)
                     CheckRecordMarker();
                 else
@@ -158,8 +155,8 @@ namespace Ookii.Jumbo.IO
         {
             _reader.Read(_recordMarker, 0, RecordFile.RecordMarkerSize);
 
-            byte[] fileRecordMarker = _header.RecordMarker;
-            for (int x = 0; Stream.Position < _end; ++x)
+            var fileRecordMarker = _header.RecordMarker;
+            for (var x = 0; Stream.Position < _end; ++x)
             {
                 int y;
                 for (y = 0; y < RecordFile.RecordMarkerSize; ++y)
@@ -180,8 +177,8 @@ namespace Ookii.Jumbo.IO
         {
             _reader.Read(_recordMarker, 0, RecordFile.RecordMarkerSize);
 
-            byte[] fileRecordMarker = _header.RecordMarker;
-            for (int x = 0; x < RecordFile.RecordMarkerSize; ++x)
+            var fileRecordMarker = _header.RecordMarker;
+            for (var x = 0; x < RecordFile.RecordMarkerSize; ++x)
             {
                 if (fileRecordMarker[x] != _recordMarker[x])
                     throw new InvalidOperationException("Invalid record marker in file.");

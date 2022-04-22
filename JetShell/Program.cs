@@ -1,19 +1,12 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using JetShell.Commands;
 using Ookii.CommandLine;
-using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Jet;
-using Ookii.Jumbo.Jet.Jobs;
 using Ookii.Jumbo.Rpc;
 
 namespace JetShell
@@ -30,7 +23,7 @@ namespace JetShell
                 new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath));
 
             repository.Threshold = log4net.Core.Level.Info;
-            CreateShellCommandOptions options = new CreateShellCommandOptions()
+            var options = new CreateShellCommandOptions()
             {
                 ArgumentNamePrefixes = new[] { "-" }, // DFS paths use / as the directory separator, so use - even on Windows.
                 CommandDescriptionFormat = "    {0}\n{1}\n",

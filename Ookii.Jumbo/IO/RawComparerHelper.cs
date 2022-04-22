@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -51,9 +48,9 @@ namespace Ookii.Jumbo.IO
         {
             fixed (byte* str1ptr = buffer1, str2ptr = buffer2)
             {
-                byte* left = str1ptr + offset1;
-                byte* end = left + Math.Min(count1, count2);
-                byte* right = str2ptr + offset2;
+                var left = str1ptr + offset1;
+                var end = left + Math.Min(count1, count2);
+                var right = str2ptr + offset2;
                 while (left < end)
                 {
                     if (*left != *right)
@@ -79,11 +76,11 @@ namespace Ookii.Jumbo.IO
         {
             fixed (byte* str1ptr = buffer1, str2ptr = buffer2)
             {
-                byte* left = str1ptr + offset1;
-                byte* right = str2ptr + offset2;
-                int length1 = Decode7BitEncodedInt32(ref left);
-                int length2 = Decode7BitEncodedInt32(ref right);
-                byte* end = left + Math.Min(length1, length2);
+                var left = str1ptr + offset1;
+                var right = str2ptr + offset2;
+                var length1 = Decode7BitEncodedInt32(ref left);
+                var length2 = Decode7BitEncodedInt32(ref right);
+                var end = left + Math.Min(length1, length2);
                 while (left < end)
                 {
                     if (*left != *right)
@@ -98,8 +95,8 @@ namespace Ookii.Jumbo.IO
         private static unsafe int Decode7BitEncodedInt32(ref byte* buffer)
         {
             byte currentByte;
-            int result = 0;
-            int bits = 0;
+            var result = 0;
+            var bits = 0;
             do
             {
                 if (bits == 35)
@@ -116,11 +113,11 @@ namespace Ookii.Jumbo.IO
 
         internal static IRawComparer<T> GetComparer<T>()
         {
-            Type type = typeof(T);
-            RawComparerAttribute attribute = (RawComparerAttribute)Attribute.GetCustomAttribute(type, typeof(RawComparerAttribute));
+            var type = typeof(T);
+            var attribute = (RawComparerAttribute)Attribute.GetCustomAttribute(type, typeof(RawComparerAttribute));
             if (attribute != null && !string.IsNullOrEmpty(attribute.RawComparerTypeName))
             {
-                Type comparerType = Type.GetType(attribute.RawComparerTypeName);
+                var comparerType = Type.GetType(attribute.RawComparerTypeName);
                 if (comparerType.IsGenericTypeDefinition && type.IsGenericType)
                     comparerType = comparerType.MakeGenericType(type.GetGenericArguments());
                 return (IRawComparer<T>)Activator.CreateInstance(comparerType);

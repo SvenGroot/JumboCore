@@ -5,13 +5,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Ookii.CommandLine;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs.Builder;
-using Ookii.Jumbo.Jet.Tasks;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {

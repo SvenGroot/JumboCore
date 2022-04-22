@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Ookii.Jumbo.Jet;
 
@@ -17,7 +14,7 @@ namespace JetWeb.Api
         [HttpGet]
         public IActionResult Get(Guid id, bool archived)
         {
-            JetClient client = new JetClient();
+            var client = new JetClient();
             var config = client.JobServer.GetJobConfigurationFile(id, archived);
 
             Response.ContentType = "text/xml; charset=utf-8";

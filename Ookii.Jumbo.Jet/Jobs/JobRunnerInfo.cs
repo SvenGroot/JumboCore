@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -51,7 +50,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             get
             {
-                DescriptionAttribute description = (DescriptionAttribute)Attribute.GetCustomAttribute(_jobRunnerType, typeof(DescriptionAttribute));
+                var description = (DescriptionAttribute)Attribute.GetCustomAttribute(_jobRunnerType, typeof(DescriptionAttribute));
                 return description == null ? "" : description.Description;
             }
         }
@@ -78,7 +77,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
 
-            Type[] types = assembly.GetTypes();
+            var types = assembly.GetTypes();
             return (from type in types
                     where type.IsPublic && type.IsClass && !type.IsAbstract && type.GetInterfaces().Contains(typeof(IJobRunner))
                     orderby type.Name
@@ -98,7 +97,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            Type[] types = assembly.GetTypes();
+            var types = assembly.GetTypes();
             return (from type in types
                     where type.IsPublic && type.IsClass && !type.IsAbstract && type.GetInterfaces().Contains(typeof(IJobRunner)) && string.Equals(type.Name, name, StringComparison.OrdinalIgnoreCase)
                     select new JobRunnerInfo(type)).SingleOrDefault();
@@ -133,12 +132,12 @@ namespace Ookii.Jumbo.Jet.Jobs
 
             if (jobRunner != null)
             {
-                StringBuilder logMessage = new StringBuilder("Created job runner for job ");
+                var logMessage = new StringBuilder("Created job runner for job ");
                 logMessage.Append(Name);
 
                 if (_log.IsInfoEnabled)
                 {
-                    foreach (CommandLineArgument argument in CommandLineParser.Arguments)
+                    foreach (var argument in CommandLineParser.Arguments)
                     {
                         if (argument.HasValue)
                         {
@@ -177,7 +176,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         private static void AppendDictionayArgument(StringBuilder logMessage, IDictionary values)
         {
             logMessage.Append("{ ");
-            bool first = true;
+            var first = true;
             foreach (DictionaryEntry entry in values)
             {
                 if (first)

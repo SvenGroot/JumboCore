@@ -38,9 +38,9 @@ namespace JobServerApplication
                 }
 
                 // We need to be notified if the dependency is finished if it is a hard dependency, or if it isn't ready for scheduling itself.
-                foreach (StageConfiguration dependency in job.Configuration.GetExplicitDependenciesForStage(configuration.StageId))
+                foreach (var dependency in job.Configuration.GetExplicitDependenciesForStage(configuration.StageId))
                 {
-                    StageInfo stage = job.GetStage(dependency.Root.StageId);
+                    var stage = job.GetStage(dependency.Root.StageId);
                     ++_remainingSchedulingDependencies;
                     if (stage._hardDependentStages == null)
                         stage._hardDependentStages = new List<StageInfo>();
@@ -71,9 +71,9 @@ namespace JobServerApplication
 
         public void SetupSoftDependencies(JobInfo job)
         {
-            foreach (StageConfiguration inputStage in job.Configuration.GetInputStagesForStage(_configuration.StageId))
+            foreach (var inputStage in job.Configuration.GetInputStagesForStage(_configuration.StageId))
             {
-                StageInfo stage = job.GetStage(inputStage.Root.StageId);
+                var stage = job.GetStage(inputStage.Root.StageId);
                 // Ignore scheduling threshold for TCP channels.
                 if (!stage.IsReadyForScheduling || (_schedulingThreshold > 0 && inputStage.OutputChannel.ChannelType != Ookii.Jumbo.Jet.Channels.ChannelType.Tcp))
                 {
@@ -97,7 +97,7 @@ namespace JobServerApplication
 
         public StageStatus ToStageStatus()
         {
-            StageStatus result = new StageStatus() { StageId = StageId };
+            var result = new StageStatus() { StageId = StageId };
             result.Tasks.AddRange(from task in Tasks select task.ToTaskStatus());
             return result;
         }
@@ -107,7 +107,7 @@ namespace JobServerApplication
             if (_hardDependentStages != null)
             {
                 // This can happen only once, so there's no need to remove items from the _hardDependentStages collection.
-                foreach (StageInfo stage in _hardDependentStages)
+                foreach (var stage in _hardDependentStages)
                     stage.NotifyDependencyFinished(1.0f); // Hard dependencies are only notified when all tasks are finished.
             }
         }
@@ -115,12 +115,12 @@ namespace JobServerApplication
         private void NotifySoftDependentStages()
         {
             System.Diagnostics.Debug.Assert(IsReadyForScheduling);
-            float percentTasksFinished = (_tasks.Count() - _remainingTasks) / (float)_tasks.Count;
+            var percentTasksFinished = (_tasks.Count() - _remainingTasks) / (float)_tasks.Count;
             if (_softDependentStages != null)
             {
-                for (int x = 0; x < _softDependentStages.Count; ++x)
+                for (var x = 0; x < _softDependentStages.Count; ++x)
                 {
-                    StageInfo stage = _softDependentStages[x];
+                    var stage = _softDependentStages[x];
                     if (stage.NotifyDependencyFinished(percentTasksFinished))
                     {
                         // Don't notify soft dependent stages again after they're satisfied.

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
@@ -187,23 +186,23 @@ namespace Ookii.Jumbo.Jet
             // When the specified comparer is not a raw comparer or some of the inputs don't support raw records, we must use deserialization.
             // When the comparer is a raw comparer uses deserialization, we deserialize in the merger and use regular comparisons rather than raw comparisons, since that's more
             // efficient than deserializing inside the raw comparer.
-            IDeserializingRawComparer deserializingComparer = comparer as IDeserializingRawComparer;
-            bool rawReaderSupported = (comparer == null || comparer is IRawComparer<T>) && (deserializingComparer == null || !deserializingComparer.UsesDeserialization) && (memoryInputs == null || memoryInputs.All(i => i.IsRawReaderSupported)) && (diskInputs == null || diskInputs.All(i => i.IsRawReaderSupported));
+            var deserializingComparer = comparer as IDeserializingRawComparer;
+            var rawReaderSupported = (comparer == null || comparer is IRawComparer<T>) && (deserializingComparer == null || !deserializingComparer.UsesDeserialization) && (memoryInputs == null || memoryInputs.All(i => i.IsRawReaderSupported)) && (diskInputs == null || diskInputs.All(i => i.IsRawReaderSupported));
 
-            int diskInputsProcessed = 0;
+            var diskInputsProcessed = 0;
             if (diskInputs != null && diskInputs.Count > maxDiskInputsPerPass)
             {
                 // Make a copy of the list that we can add the intermediate results to
-                List<RecordInput> actualDiskInputs = diskInputs.ToList();
+                var actualDiskInputs = diskInputs.ToList();
 
-                int pass = 0;
+                var pass = 0;
                 while (actualDiskInputs.Count - diskInputsProcessed > maxDiskInputsPerPass)
                 {
-                    string outputFileName = Path.Combine(intermediateOutputPath, string.Format(CultureInfo.InvariantCulture, "{0}merge_pass{1}.tmp", passFilePrefix, pass));
-                    int numDiskInputsForPass = GetNumDiskInputsForPass(pass, actualDiskInputs.Count - diskInputsProcessed, maxDiskInputsPerPass);
+                    var outputFileName = Path.Combine(intermediateOutputPath, string.Format(CultureInfo.InvariantCulture, "{0}merge_pass{1}.tmp", passFilePrefix, pass));
+                    var numDiskInputsForPass = GetNumDiskInputsForPass(pass, actualDiskInputs.Count - diskInputsProcessed, maxDiskInputsPerPass);
                     _log.InfoFormat("Merging {0} intermediate segments out of a total of {1} disk segments.", numDiskInputsForPass, actualDiskInputs.Count - diskInputsProcessed);
                     IEnumerable<MergeResultRecord<T>> passResult = RunMergePass(actualDiskInputs.Skip(diskInputsProcessed).Take(numDiskInputsForPass), comparer, true, rawReaderSupported, false);
-                    long uncompressedSize = WriteMergePass(passResult, outputFileName, bufferSize, compressionType, enableChecksum, rawReaderSupported);
+                    var uncompressedSize = WriteMergePass(passResult, outputFileName, bufferSize, compressionType, enableChecksum, rawReaderSupported);
                     actualDiskInputs.Add(new FileRecordInput(typeof(BinaryRecordReader<T>), outputFileName, null, uncompressedSize, true, rawReaderSupported, 0, allowRecordReuse, bufferSize, compressionType));
                     diskInputsProcessed += numDiskInputsForPass;
                     ++pass;
@@ -211,9 +210,9 @@ namespace Ookii.Jumbo.Jet
                 diskInputs = actualDiskInputs;
             }
 
-            IEnumerable<RecordInput> inputs = memoryInputs ?? Enumerable.Empty<RecordInput>();
-            int memoryInputCount = inputs.Count();
-            int diskInputCount = 0;
+            var inputs = memoryInputs ?? Enumerable.Empty<RecordInput>();
+            var memoryInputCount = inputs.Count();
+            var diskInputCount = 0;
             if (diskInputs != null)
             {
                 inputs = inputs.Concat(diskInputs.Skip(diskInputsProcessed));
@@ -278,7 +277,7 @@ namespace Ookii.Jumbo.Jet
         private long WriteMergePass(IEnumerable<MergeResultRecord<T>> pass, string outputFileName, int bufferSize, CompressionType compressionType, bool enableChecksum, bool rawReaderSupported)
         {
             using (Stream fileStream = File.Create(outputFileName, bufferSize))
-            using (Stream outputStream = new ChecksumOutputStream(fileStream, true, enableChecksum).CreateCompressor(compressionType))
+            using (var outputStream = new ChecksumOutputStream(fileStream, true, enableChecksum).CreateCompressor(compressionType))
             {
                 return WriteMergePass(pass, outputStream, rawReaderSupported);
             }
@@ -286,10 +285,10 @@ namespace Ookii.Jumbo.Jet
 
         private long WriteMergePass(IEnumerable<MergeResultRecord<T>> pass, Stream outputStream, bool rawReaderSupported)
         {
-            using (BinaryRecordWriter<RawRecord> rawWriter = rawReaderSupported ? new BinaryRecordWriter<RawRecord>(outputStream) : null)
-            using (BinaryRecordWriter<T> writer = rawReaderSupported ? null : new BinaryRecordWriter<T>(outputStream))
+            using (var rawWriter = rawReaderSupported ? new BinaryRecordWriter<RawRecord>(outputStream) : null)
+            using (var writer = rawReaderSupported ? null : new BinaryRecordWriter<T>(outputStream))
             {
-                foreach (MergeResultRecord<T> record in pass)
+                foreach (var record in pass)
                 {
                     if (rawWriter == null)
                         writer.WriteRecord(record.GetValue());
@@ -304,21 +303,20 @@ namespace Ookii.Jumbo.Jet
         private MergeResult<T> RunMergePass(IEnumerable<RecordInput> inputs, IComparer<T> comparer, bool allowRecordReuse, bool rawReaderSupported, bool returnReaders)
         {
             MergePassCount++;
-            IRecordReader[] readers;
-            PriorityQueue<MergeInput> mergeQueue = CreateMergeQueue(inputs, comparer, rawReaderSupported, returnReaders, out readers);
+            var mergeQueue = CreateMergeQueue(inputs, comparer, rawReaderSupported, returnReaders, out var readers);
 
             return new MergeResult<T>(readers, RunMergePassCore(mergeQueue, allowRecordReuse));
         }
 
         private IEnumerator<MergeResultRecord<T>> RunMergePassCore(PriorityQueue<MergeInput> mergeQueue, bool allowRecordReuse)
         {
-            MergeResultRecord<T> record = new MergeResultRecord<T>(allowRecordReuse);
+            var record = new MergeResultRecord<T>(allowRecordReuse);
 
             try
             {
                 while (mergeQueue.Count > 0)
                 {
-                    MergeInput front = mergeQueue.Peek();
+                    var front = mergeQueue.Peek();
                     front.GetCurrentRecord(record);
                     yield return record;
                     if (front.ReadRecord())
@@ -345,7 +343,7 @@ namespace Ookii.Jumbo.Jet
             readers = null;
             if (rawReaderSupported)
             {
-                IRawComparer<T> rawComparer = (IRawComparer<T>)comparer; // Caller makes sure that rawReaderSupported is only true if comparer is a raw comparer or null.
+                var rawComparer = (IRawComparer<T>)comparer; // Caller makes sure that rawReaderSupported is only true if comparer is a raw comparer or null.
                 mergeComparer = new MergeInputComparer(rawComparer ?? RawComparer<T>.CreateComparer());
                 mergeInputs = inputs.Select(i => new MergeInput(i.GetRawReader(), i.IsMemoryBased)).Where(i => i.RawRecordReader.ReadRecord());
                 if (returnReaders)
@@ -379,7 +377,7 @@ namespace Ookii.Jumbo.Jet
              */
             if (pass > 0 || diskInputsRemaining <= maxDiskInputsPerPass || maxDiskInputsPerPass == 1)
                 return Math.Min(diskInputsRemaining, maxDiskInputsPerPass);
-            int mod = (diskInputsRemaining - 1) % (maxDiskInputsPerPass - 1);
+            var mod = (diskInputsRemaining - 1) % (maxDiskInputsPerPass - 1);
             if (mod == 0)
                 return Math.Min(diskInputsRemaining, maxDiskInputsPerPass); ;
             return mod + 1;

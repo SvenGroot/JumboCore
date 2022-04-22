@@ -1,12 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
@@ -18,7 +12,7 @@ namespace Ookii.Jumbo.Dfs
     public class DfsOutputStream : Stream, IRecordOutputStream
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(DfsOutputStream));
-        private Packet _packet = new Packet();
+        private readonly Packet _packet = new Packet();
         private long _nextSequenceNumber;
         private BlockSender _sender;
         private BlockAssignment _block;
@@ -287,8 +281,8 @@ namespace Ookii.Jumbo.Dfs
             }
             else
             {
-                int bufferPos = offset;
-                int end = offset + count;
+                var bufferPos = offset;
+                var end = offset + count;
 
                 while (bufferPos < end)
                 {
@@ -296,8 +290,8 @@ namespace Ookii.Jumbo.Dfs
                     {
                         WriteBufferToPacket(false);
                     }
-                    int bufferRemaining = _buffer.Length - _bufferPos;
-                    int writeSize = Math.Min(end - bufferPos, bufferRemaining);
+                    var bufferRemaining = _buffer.Length - _bufferPos;
+                    var writeSize = Math.Min(end - bufferPos, bufferRemaining);
                     Array.Copy(buffer, bufferPos, _buffer, _bufferPos, writeSize);
                     _bufferPos += writeSize;
                     bufferPos += writeSize;
@@ -321,7 +315,7 @@ namespace Ookii.Jumbo.Dfs
                 // Does the record fit in the current block?
                 if (_blockBytesWritten + _bufferPos + _recordBuffer.Length > BlockSize)
                 {
-                    int padding = BlockSize - (_blockBytesWritten + _bufferPos);
+                    var padding = BlockSize - (_blockBytesWritten + _bufferPos);
                     // Write the current buffer contents to the block and start a new block. We do this even if _bufferPos == 0 because we at least have to tell the block server the block is finished.
                     WriteBufferToPacket(true);
                     // Correct length to account for padding added to the block.
@@ -330,13 +324,13 @@ namespace Ookii.Jumbo.Dfs
                 }
 
                 _recordBuffer.Position = 0;
-                int remaining = (int)_recordBuffer.Length;
+                var remaining = (int)_recordBuffer.Length;
                 // If there is data in the buffer, we copy this record into the current buffer.
                 if (_bufferPos > 0)
                 {
                     if (_bufferPos < _buffer.Length)
                     {
-                        int bytesRead = _recordBuffer.Read(_buffer, _bufferPos, _buffer.Length - _bufferPos);
+                        var bytesRead = _recordBuffer.Read(_buffer, _bufferPos, _buffer.Length - _bufferPos);
                         remaining -= bytesRead;
                         _bufferPos += bytesRead;
                     }
@@ -445,7 +439,7 @@ namespace Ookii.Jumbo.Dfs
         private void WriteBufferToPacket(bool forceFinalPacket)
         {
             System.Diagnostics.Debug.Assert(_blockBytesWritten + _bufferPos <= BlockSize);
-            bool finalPacket = forceFinalPacket || _blockBytesWritten + _bufferPos == BlockSize;
+            var finalPacket = forceFinalPacket || _blockBytesWritten + _bufferPos == BlockSize;
             WritePacket(_buffer, _bufferPos, finalPacket);
             _blockBytesWritten += _bufferPos;
             _fileBytesWritten += _bufferPos;

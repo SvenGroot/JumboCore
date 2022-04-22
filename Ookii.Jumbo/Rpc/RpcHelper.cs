@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
@@ -33,9 +29,9 @@ namespace Ookii.Jumbo.Rpc
 
             if (!_serverChannels.ContainsKey(port))
             {
-                IPAddress[] localAddresses = TcpServer.GetDefaultListenerAddresses(listen4And6);
+                var localAddresses = TcpServer.GetDefaultListenerAddresses(listen4And6);
 
-                RpcServer server = new RpcServer(localAddresses, port);
+                var server = new RpcServer(localAddresses, port);
                 server.StartListening();
 
                 _serverChannels.Add(port, server);
@@ -50,8 +46,7 @@ namespace Ookii.Jumbo.Rpc
         {
             if (_serverChannels != null)
             {
-                RpcServer server;
-                if (_serverChannels.TryGetValue(port, out server))
+                if (_serverChannels.TryGetValue(port, out var server))
                 {
                     server.StopListening();
                     _serverChannels.Remove(port);
@@ -107,7 +102,7 @@ namespace Ookii.Jumbo.Rpc
             if (retryInterval <= 0)
                 throw new ArgumentOutOfRangeException(nameof(retryInterval), "The retry interval must be greater than zero.");
 
-            bool retry = true;
+            var retry = true;
             do
             {
                 try

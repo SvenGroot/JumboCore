@@ -134,11 +134,11 @@ namespace JobServerApplication
         public Job CreateJob()
         {
             _log.Debug("CreateJob");
-            Guid jobID = Guid.NewGuid();
-            string path = _fileSystemClient.Path.Combine(Configuration.JobServer.JetDfsPath, FormattableString.Invariant($"job_{jobID:B}"));
+            var jobID = Guid.NewGuid();
+            var path = _fileSystemClient.Path.Combine(Configuration.JobServer.JetDfsPath, FormattableString.Invariant($"job_{jobID:B}"));
             _fileSystemClient.CreateDirectory(path);
             _fileSystemClient.CreateDirectory(_fileSystemClient.Path.Combine(path, "temp"));
-            Job job = new Job(jobID, path);
+            var job = new Job(jobID, path);
             lock (_pendingJobs)
             {
                 _pendingJobs.Add(jobID, job);
@@ -159,13 +159,13 @@ namespace JobServerApplication
                 _pendingJobs.Remove(jobId);
             }
 
-            string configFile = job.GetJobConfigurationFilePath(_fileSystemClient);
+            var configFile = job.GetJobConfigurationFilePath(_fileSystemClient);
 
             _log.InfoFormat("Starting job {0}.", jobId);
             JobConfiguration config;
             try
             {
-                using (Stream stream = _fileSystemClient.OpenFile(configFile))
+                using (var stream = _fileSystemClient.OpenFile(configFile))
                 {
                     config = JobConfiguration.LoadXml(stream);
                 }
@@ -177,7 +177,7 @@ namespace JobServerApplication
             }
 
 
-            JobInfo jobInfo = new JobInfo(job, config, _fileSystemClient);
+            var jobInfo = new JobInfo(job, config, _fileSystemClient);
             if (!_jobs.TryAdd(jobId, jobInfo))
                 throw new ArgumentException("The job is already running.");
 
@@ -195,8 +195,7 @@ namespace JobServerApplication
         {
             lock (_pendingJobs)
             {
-                Job job;
-                if (_pendingJobs.TryGetValue(jobId, out job))
+                if (_pendingJobs.TryGetValue(jobId, out var job))
                 {
                     _pendingJobs.Remove(jobId);
                     _log.InfoFormat("Removed pending job {0} from the job queue.", jobId);
@@ -206,8 +205,7 @@ namespace JobServerApplication
 
             lock (_schedulerLock)
             {
-                JobInfo job;
-                if (!_jobs.TryGetValue(jobId, out job))
+                if (!_jobs.TryGetValue(jobId, out var job))
                     _log.InfoFormat("Didn't abort job {0} because it wasn't found in the running job list.", jobId);
                 else if (job.State == JobState.Running)
                 {
@@ -229,9 +227,9 @@ namespace JobServerApplication
             _log.DebugFormat("GetTaskServerForTask, jobID = {{{0}}}, taskID = \"{1}\"", jobID, taskID);
             if (taskID == null)
                 throw new ArgumentNullException(nameof(taskID));
-            JobInfo job = _jobs[jobID];
-            TaskInfo task = job.GetTask(taskID);
-            TaskServerInfo server = task.Server; // For thread-safety, we should do only one read of the property.
+            var job = _jobs[jobID];
+            var task = job.GetTask(taskID);
+            var server = task.Server; // For thread-safety, we should do only one read of the property.
             return server == null ? null : server.Address;
         }
 
@@ -245,15 +243,15 @@ namespace JobServerApplication
             // This method is safe without locking because none of the state of the job it accesses can be changed after the job is created.
             // The exception is task.State, but since that's a single integer value and we're only reading it that's not an issue either.
 
-            JobInfo job = GetRunningOrFinishedJob(jobId);
+            var job = GetRunningOrFinishedJob(jobId);
 
-            List<CompletedTask> result = new List<CompletedTask>();
-            foreach (string taskId in taskIds)
+            var result = new List<CompletedTask>();
+            foreach (var taskId in taskIds)
             {
-                TaskInfo task = job.GetTask(taskId);
+                var task = job.GetTask(taskId);
                 if (task.State == TaskState.Finished)
                 {
-                    TaskServerInfo server = task.Server; // For thread-safety, do only one read of the property
+                    var server = task.Server; // For thread-safety, do only one read of the property
                     result.Add(new CompletedTask() { JobId = jobId, TaskAttemptId = task.SuccessfulAttempt, TaskServer = server.Address, TaskServerFileServerPort = server.FileServerPort });
                 }
             }
@@ -263,8 +261,7 @@ namespace JobServerApplication
 
         public JobStatus GetJobStatus(Guid jobId)
         {
-            JobInfo job;
-            if (!_jobs.TryGetValue(jobId, out job))
+            if (!_jobs.TryGetValue(jobId, out var job))
             {
                 lock (_finishedJobs)
                 {
@@ -283,7 +280,7 @@ namespace JobServerApplication
 
         public JetMetrics GetMetrics()
         {
-            JetMetrics result = new JetMetrics()
+            var result = new JetMetrics()
             {
                 JobServer = _localAddress
             };
@@ -319,16 +316,16 @@ namespace JobServerApplication
 
         public ArchivedJob[] GetArchivedJobs()
         {
-            string archiveDir = Configuration.JobServer.ArchiveDirectory;
+            var archiveDir = Configuration.JobServer.ArchiveDirectory;
             if (archiveDir != null)
             {
-                string archiveFilePath = Path.Combine(archiveDir, _archiveFileName);
+                var archiveFilePath = Path.Combine(archiveDir, _archiveFileName);
                 if (File.Exists(archiveFilePath))
                 {
                     lock (_archiveLock)
                     {
-                        using (FileStream stream = File.OpenRead(archiveFilePath))
-                        using (BinaryRecordReader<ArchivedJob> reader = new BinaryRecordReader<ArchivedJob>(stream))
+                        using (var stream = File.OpenRead(archiveFilePath))
+                        using (var reader = new BinaryRecordReader<ArchivedJob>(stream))
                         {
                             return reader.EnumerateRecords().ToArray();
                         }
@@ -341,10 +338,10 @@ namespace JobServerApplication
 
         public JobStatus GetArchivedJobStatus(Guid jobId)
         {
-            string archiveDir = Configuration.JobServer.ArchiveDirectory;
+            var archiveDir = Configuration.JobServer.ArchiveDirectory;
             if (archiveDir != null)
             {
-                string summaryPath = Path.Combine(archiveDir, jobId.ToString() + "_summary.xml");
+                var summaryPath = Path.Combine(archiveDir, jobId.ToString() + "_summary.xml");
                 if (File.Exists(summaryPath))
                 {
                     return JobStatus.FromXml(XDocument.Load(summaryPath).Root);
@@ -358,10 +355,10 @@ namespace JobServerApplication
         {
             if (archived)
             {
-                string archiveDir = Configuration.JobServer.ArchiveDirectory;
+                var archiveDir = Configuration.JobServer.ArchiveDirectory;
                 if (archiveDir != null)
                 {
-                    string configPath = Path.Combine(archiveDir, jobId.ToString() + "_config.xml");
+                    var configPath = Path.Combine(archiveDir, jobId.ToString() + "_config.xml");
                     if (File.Exists(configPath))
                     {
                         return File.ReadAllText(configPath);
@@ -370,13 +367,12 @@ namespace JobServerApplication
             }
             else
             {
-                JobInfo job;
                 lock (_finishedJobs)
                 {
-                    if (_jobs.TryGetValue(jobId, out job) || _finishedJobs.TryGetValue(jobId, out job))
+                    if (_jobs.TryGetValue(jobId, out var job) || _finishedJobs.TryGetValue(jobId, out job))
                     {
-                        using (Stream stream = _fileSystemClient.OpenFile(job.Job.GetJobConfigurationFilePath(_fileSystemClient)))
-                        using (StreamReader reader = new StreamReader(stream))
+                        using (var stream = _fileSystemClient.OpenFile(job.Job.GetJobConfigurationFilePath(_fileSystemClient)))
+                        using (var reader = new StreamReader(stream))
                         {
                             return reader.ReadToEnd();
                         }
@@ -396,10 +392,9 @@ namespace JobServerApplication
             if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
 
-            JobInfo job;
-            if (!_jobs.TryGetValue(jobId, out job))
+            if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
-            TaskInfo task = job.GetTask(taskId.ToString());
+            var task = job.GetTask(taskId.ToString());
             return task.PartitionInfo == null ? null : task.PartitionInfo.GetAssignedPartitions();
         }
 
@@ -408,10 +403,9 @@ namespace JobServerApplication
             if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
 
-            JobInfo job;
-            if (!_jobs.TryGetValue(jobId, out job))
+            if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
-            TaskInfo task = job.GetTask(taskId.ToString());
+            var task = job.GetTask(taskId.ToString());
             if (task.PartitionInfo == null)
                 throw new ArgumentException("Task doesn't have partitions.");
 
@@ -423,14 +417,13 @@ namespace JobServerApplication
             if (taskId == null)
                 throw new ArgumentNullException(nameof(taskId));
 
-            JobInfo job;
-            if (!_jobs.TryGetValue(jobId, out job))
+            if (!_jobs.TryGetValue(jobId, out var job))
                 throw new ArgumentException("Unknown job ID.");
-            TaskInfo task = job.GetTask(taskId.ToString());
+            var task = job.GetTask(taskId.ToString());
             if (task.PartitionInfo == null)
                 throw new ArgumentException("Task doesn't have partitions.");
 
-            int additionalPartition = task.PartitionInfo.AssignAdditionalPartition();
+            var additionalPartition = task.PartitionInfo.AssignAdditionalPartition();
             if (additionalPartition == -1)
                 return null;
             else
@@ -446,7 +439,7 @@ namespace JobServerApplication
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
-            TaskServerInfo server = _taskServers.GetOrAdd(address, key => new TaskServerInfo(key));
+            var server = _taskServers.GetOrAdd(address, key => new TaskServerInfo(key));
 
             if (!server.HasReportedStatus)
             {
@@ -473,9 +466,9 @@ namespace JobServerApplication
             List<JetHeartbeatResponse> responses = null;
             if (data != null)
             {
-                foreach (JetHeartbeatData item in data)
+                foreach (var item in data)
                 {
-                    JetHeartbeatResponse response = ProcessHeartbeat(server, item);
+                    var response = ProcessHeartbeat(server, item);
                     if (response != null)
                     {
                         if (responses == null)
@@ -504,14 +497,14 @@ namespace JobServerApplication
                 if (server.SchedulerInfo.AssignedTasks.Count > 0)
                 {
                     var tasks = server.SchedulerInfo.AssignedTasks;
-                    foreach (TaskInfo task in tasks)
+                    foreach (var task in tasks)
                     {
                         if (task.State == TaskState.Scheduled)
                         {
                             if (responses == null)
                                 responses = new List<JetHeartbeatResponse>();
                             ++task.SchedulerInfo.Attempts;
-                            TaskAttemptId attemptId = new TaskAttemptId(task.TaskId, task.Attempts);
+                            var attemptId = new TaskAttemptId(task.TaskId, task.Attempts);
                             task.SchedulerInfo.CurrentAttempt = attemptId;
                             responses.Add(new RunTaskJetHeartbeatResponse(task.Job.Job, attemptId));
                             task.SchedulerInfo.State = TaskState.Running;
@@ -532,11 +525,11 @@ namespace JobServerApplication
         {
             lock (_jobsNeedingCleanup)
             {
-                for (int x = 0; x < _jobsNeedingCleanup.Count; ++x)
+                for (var x = 0; x < _jobsNeedingCleanup.Count; ++x)
                 {
                     // Although we're accessing scheduler info, there's no need to take the scheduler lock because this job is in _jobsNeedingCleanup
-                    JobInfo job = _jobsNeedingCleanup[x];
-                    TaskServerJobInfo info = job.SchedulerInfo.GetTaskServer(server.Address);
+                    var job = _jobsNeedingCleanup[x];
+                    var info = job.SchedulerInfo.GetTaskServer(server.Address);
                     if (info != null && info.NeedsCleanup)
                     {
                         job.CleanupServer(server);
@@ -558,14 +551,14 @@ namespace JobServerApplication
 
         private JetHeartbeatResponse ProcessHeartbeat(TaskServerInfo server, JetHeartbeatData data)
         {
-            InitialStatusJetHeartbeatData statusData = data as InitialStatusJetHeartbeatData;
+            var statusData = data as InitialStatusJetHeartbeatData;
             if (statusData != null)
             {
                 ProcessStatusHeartbeat(server, statusData);
                 return null;
             }
 
-            TaskStatusChangedJetHeartbeatData taskStatusChangedData = data as TaskStatusChangedJetHeartbeatData;
+            var taskStatusChangedData = data as TaskStatusChangedJetHeartbeatData;
             if (taskStatusChangedData != null)
             {
                 return ProcessTaskStatusChangedHeartbeat(server, taskStatusChangedData);
@@ -598,8 +591,7 @@ namespace JobServerApplication
         {
             if (data.Status >= TaskAttemptStatus.Running)
             {
-                JobInfo job;
-                if (!_jobs.TryGetValue(data.JobId, out job))
+                if (!_jobs.TryGetValue(data.JobId, out var job))
                 {
                     _log.WarnFormat("Task server {0} reported status for unknown job {1} (this may be the aftermath of a failed job).", server.Address, data.JobId);
                     if (data.Status == TaskAttemptStatus.Running)
@@ -607,7 +599,7 @@ namespace JobServerApplication
                     else
                         return null;
                 }
-                TaskInfo task = job.GetTask(data.TaskAttemptId.TaskId.ToString());
+                var task = job.GetTask(data.TaskAttemptId.TaskId.ToString());
 
 
                 if (task.Server != server || task.CurrentAttempt == null || task.CurrentAttempt.Attempt != data.TaskAttemptId.Attempt)
@@ -668,7 +660,7 @@ namespace JobServerApplication
                             if (task.PartitionInfo != null)
                                 task.PartitionInfo.Reset();
                             _log.WarnFormat("Task {0} encountered an error.", Job.CreateFullTaskId(data.JobId, data.TaskAttemptId));
-                            TaskStatus failedAttempt = task.ToTaskStatus();
+                            var failedAttempt = task.ToTaskStatus();
                             task.Progress = null;
                             failedAttempt.EndTime = DateTime.UtcNow;
                             if (data.Progress != null)
@@ -740,8 +732,7 @@ namespace JobServerApplication
                 job.SchedulerInfo.AbortTasks();
             }
 
-            JobInfo job2;
-            _jobs.TryRemove(job.Job.JobId, out job2);
+            _jobs.TryRemove(job.Job.JobId, out var job2);
             lock (_orderedJobs)
             {
                 _orderedJobs.Remove(job);
@@ -764,7 +755,7 @@ namespace JobServerApplication
         {
             StartSchedulerThread();
 
-            using (ManualResetEventSlim evt = new ManualResetEventSlim())
+            using (var evt = new ManualResetEventSlim())
             {
                 _schedulerRequests.Add(evt, _cancellation.Token);
                 if (!evt.Wait(_schedulerTimeoutMilliseconds, _cancellation.Token))
@@ -784,7 +775,7 @@ namespace JobServerApplication
                                 jobs = new List<JobInfo>(_orderedJobs);
                             }
 
-                            foreach (JobInfo job in jobs)
+                            foreach (var job in jobs)
                             {
                                 job.SchedulerInfo.State = JobState.Failed;
                                 job.FailureReason = "Scheduler timed out.";
@@ -885,8 +876,7 @@ namespace JobServerApplication
 
         private JobInfo GetRunningOrFinishedJob(Guid jobId)
         {
-            JobInfo job;
-            if (!_jobs.TryGetValue(jobId, out job))
+            if (!_jobs.TryGetValue(jobId, out var job))
             {
                 lock (_finishedJobs)
                 {
@@ -904,8 +894,8 @@ namespace JobServerApplication
 
             try
             {
-                List<JobInfo> jobs = new List<JobInfo>();
-                foreach (ManualResetEventSlim request in _schedulerRequests.GetConsumingEnumerable(_cancellation.Token))
+                var jobs = new List<JobInfo>();
+                foreach (var request in _schedulerRequests.GetConsumingEnumerable(_cancellation.Token))
                 {
                     try
                     {
@@ -935,11 +925,11 @@ namespace JobServerApplication
             {
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                foreach (JobInfo job in jobs)
+                foreach (var job in jobs)
                 {
                     if (_taskServersModified || _taskServers.Count != job.SchedulerInfo.TaskServerCount)
                     {
-                        foreach (TaskServerInfo server in _taskServers.Values)
+                        foreach (var server in _taskServers.Values)
                         {
                             job.SchedulerInfo.AddTaskServer(server);
                         }
@@ -955,7 +945,7 @@ namespace JobServerApplication
                 {
                     // TODO: Fail only the responsible job.
                     _log.Error("The scheduler encountered an error.", ex);
-                    foreach (JobInfo job in jobs)
+                    foreach (var job in jobs)
                     {
                         job.FailureReason = "The scheduler encountered an error.";
                         job.SchedulerInfo.State = JobState.Failed;
@@ -972,15 +962,15 @@ namespace JobServerApplication
 
         private void CheckTaskServerTimeoutThread()
         {
-            int timeout = Configuration.JobServer.TaskServerTimeout;
-            int sleepTime = timeout / 3;
+            var timeout = Configuration.JobServer.TaskServerTimeout;
+            var sleepTime = timeout / 3;
 
             while (!_cancellation.IsCancellationRequested)
             {
                 List<TaskServerInfo> deadServers = null;
                 Thread.Sleep(sleepTime);
 
-                foreach (TaskServerInfo server in _taskServers.Values)
+                foreach (var server in _taskServers.Values)
                 {
                     if (server.HasReportedStatus && (DateTime.UtcNow - server.LastContactUtc).TotalMilliseconds > timeout)
                     {
@@ -995,7 +985,7 @@ namespace JobServerApplication
                 {
                     lock (_schedulerLock)
                     {
-                        foreach (TaskServerInfo server in deadServers)
+                        foreach (var server in deadServers)
                         {
                             server.SchedulerInfo.UnassignAllTasks();
                         }
@@ -1006,18 +996,18 @@ namespace JobServerApplication
 
         private void ArchiveJob(JobInfo job)
         {
-            string archiveDir = Configuration.JobServer.ArchiveDirectory;
+            var archiveDir = Configuration.JobServer.ArchiveDirectory;
             if (!string.IsNullOrEmpty(archiveDir))
             {
                 Directory.CreateDirectory(archiveDir);
-                string archiveFilePath = Path.Combine(archiveDir, _archiveFileName);
-                JobStatus jobStatus = job.ToJobStatus();
+                var archiveFilePath = Path.Combine(archiveDir, _archiveFileName);
+                var jobStatus = job.ToJobStatus();
                 _log.InfoFormat("Archiving job {{{0}}}.", job.Job.JobId);
 
                 lock (_archiveLock)
                 {
-                    using (FileStream stream = new FileStream(archiveFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
-                    using (BinaryRecordWriter<ArchivedJob> writer = new BinaryRecordWriter<ArchivedJob>(stream))
+                    using (var stream = new FileStream(archiveFilePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                    using (var writer = new BinaryRecordWriter<ArchivedJob>(stream))
                     {
                         writer.WriteRecord(new ArchivedJob(jobStatus));
                     }

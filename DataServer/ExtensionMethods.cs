@@ -1,9 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 
 namespace DataServerApplication

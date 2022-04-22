@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -36,7 +33,7 @@ namespace Ookii.Jumbo.Rpc
                 {
                     if (_firstConnection != null)
                     {
-                        RpcClientConnectionHandler handler = _firstConnection.Handler;
+                        var handler = _firstConnection.Handler;
                         _firstConnection = _firstConnection.Next;
                         --_connectionCount;
                         return handler;
@@ -74,7 +71,7 @@ namespace Ookii.Jumbo.Rpc
             {
                 lock (this)
                 {
-                    CachedConnection connection = _firstConnection;
+                    var connection = _firstConnection;
                     CachedConnection previous = null;
                     while (connection != null)
                     {

@@ -100,9 +100,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         private void ValidatePartitionerType()
         {
             // Get the output type of the input stage, which is the input to the partitioner.
-            Type inputType = InputStageOutputType;
-            Type partitionerInterfaceType = PartitionerType.FindGenericInterfaceType(typeof(IPartitioner<>));
-            Type partitionedType = partitionerInterfaceType.GetGenericArguments()[0];
+            var inputType = InputStageOutputType;
+            var partitionerInterfaceType = PartitionerType.FindGenericInterfaceType(typeof(IPartitioner<>));
+            var partitionedType = partitionerInterfaceType.GetGenericArguments()[0];
             if (partitionedType != inputType)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The partitioner type {0} cannot partition objects of type {1}.", PartitionerType, inputType));
         }
@@ -129,12 +129,12 @@ namespace Ookii.Jumbo.Jet.Jobs
             else
                 acceptedInputTypes = new[] { inputType };
 
-            Type stageOutputType = InputStageOutputType;
+            var stageOutputType = InputStageOutputType;
             recordType = RecordReader.GetRecordType(MultiInputRecordReaderType);
             if (!acceptedInputTypes.Contains(recordType))
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified channel multi input record reader type {0} doesn't return objects of the correct type.", MultiInputRecordReaderType));
 
-            IEnumerable<Type> channelAcceptedInputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType);
+            var channelAcceptedInputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType);
             if (!channelAcceptedInputTypes.Contains(stageOutputType))
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified channel multi input record reader type {0} doesn't accept objects of the correct type.", MultiInputRecordReaderType));
         }

@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -24,14 +22,14 @@ namespace Ookii.Jumbo.IO
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            Type baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
+            var baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
 
             return GetAcceptedInputTypesCore(type, baseType);
         }
 
         private static IEnumerable<Type> GetAcceptedInputTypesCore(Type type, Type baseType)
         {
-            Attribute[] attributes = Attribute.GetCustomAttributes(type, typeof(InputTypeAttribute));
+            var attributes = Attribute.GetCustomAttributes(type, typeof(InputTypeAttribute));
             if (attributes.Length == 0)
                 yield return baseType.GetGenericArguments()[0];
             else
@@ -148,7 +146,7 @@ namespace Ookii.Jumbo.IO
             public RecordInput GetInput(int index, bool memoryOnly)
             {
                 // Inputs that have been retrieved may not be moved; adjusting the _firstNonMemoryIndex field will make sure they won't be.
-                RecordInput result = _inputs[index];
+                var result = _inputs[index];
                 if (memoryOnly && !result.IsMemoryBased)
                     return null;
                 if (index >= _firstNonMemoryIndex)
@@ -167,7 +165,7 @@ namespace Ookii.Jumbo.IO
                     _inputBytes = InputBytesSum;
                 if (_bytesRead == -1)
                     _bytesRead = BytesReadSum;
-                foreach (RecordInput input in _inputs)
+                foreach (var input in _inputs)
                     input.Dispose();
             }
         }
@@ -219,9 +217,9 @@ namespace Ookii.Jumbo.IO
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size must be larger than zero.");
 
-            foreach (int partitionNumber in partitions)
+            foreach (var partitionNumber in partitions)
             {
-                Partition partition = new Partition(partitionNumber, totalInputCount);
+                var partition = new Partition(partitionNumber, totalInputCount);
                 _partitions.Add(partition);
                 _partitionsByNumber.Add(partitionNumber, partition);
             }
@@ -266,7 +264,7 @@ namespace Ookii.Jumbo.IO
                         return 0;
 
                     return (from partition in _partitions
-                            select partition.ProgressSum).Sum() / (float)(TotalInputCount * _partitions.Count);
+                            select partition.ProgressSum).Sum() / (TotalInputCount * _partitions.Count);
                 }
             }
         }
@@ -395,13 +393,13 @@ namespace Ookii.Jumbo.IO
         {
             lock (_partitions)
             {
-                int newPartitionIndex = _currentPartitionIndex + 1;
+                var newPartitionIndex = _currentPartitionIndex + 1;
                 _partitions[_currentPartitionIndex].Dispose();
                 while (newPartitionIndex < _partitions.Count)
                 {
                     if (_currentPartitionIndex < _partitions.Count - 1)
                     {
-                        CurrentPartitionChangingEventArgs e = new CurrentPartitionChangingEventArgs(_partitions[newPartitionIndex].PartitionNumber);
+                        var e = new CurrentPartitionChangingEventArgs(_partitions[newPartitionIndex].PartitionNumber);
                         OnCurrentPartitionChanging(e);
                         if (e.Cancel)
                         {
@@ -452,9 +450,9 @@ namespace Ookii.Jumbo.IO
                 if (CurrentInputCount >= TotalInputCount)
                     throw new InvalidOperationException("The merge task input already has all inputs.");
 
-                for (int x = 0; x < partitions.Count; ++x)
+                for (var x = 0; x < partitions.Count; ++x)
                 {
-                    RecordInput input = partitions[x];
+                    var input = partitions[x];
                     _partitions[_firstActivePartitionIndex + x].AddInput(input);
                 }
 
@@ -484,9 +482,9 @@ namespace Ookii.Jumbo.IO
                     throw new InvalidOperationException("You cannot assign new partitions to a record reader until the currently assigned partitions have all their inputs.");
 
                 _firstActivePartitionIndex = _partitions.Count;
-                foreach (int partitionNumber in newPartitions)
+                foreach (var partitionNumber in newPartitions)
                 {
-                    Partition partition = new Partition(partitionNumber, TotalInputCount);
+                    var partition = new Partition(partitionNumber, TotalInputCount);
                     _partitions.Add(partition);
                     _partitionsByNumber.Add(partitionNumber, partition);
                 }
@@ -519,7 +517,7 @@ namespace Ookii.Jumbo.IO
             {
                 while (_partitions[_firstActivePartitionIndex].InputCount < inputCount)
                 {
-                    int timeoutRemaining = Timeout.Infinite;
+                    var timeoutRemaining = Timeout.Infinite;
                     if (timeout >= 0)
                     {
                         timeoutRemaining = (int)(timeout - sw.ElapsedMilliseconds);
@@ -596,7 +594,7 @@ namespace Ookii.Jumbo.IO
         {
             lock (_partitions)
             {
-                RecordInput input = _partitionsByNumber[partition].GetInput(index, memoryOnly);
+                var input = _partitionsByNumber[partition].GetInput(index, memoryOnly);
                 return input == null ? null : input.Reader;
             }
         }
@@ -650,7 +648,7 @@ namespace Ookii.Jumbo.IO
                     {
                         lock (_partitions)
                         {
-                            foreach (Partition partition in _partitions)
+                            foreach (var partition in _partitions)
                             {
                                 partition.Dispose();
                             }
@@ -672,7 +670,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="e">The data for the event.</param>
         protected virtual void OnCurrentPartitionChanged(EventArgs e)
         {
-            EventHandler handler = CurrentPartitionChanged;
+            var handler = CurrentPartitionChanged;
             if (handler != null)
                 handler(this, e);
         }
@@ -683,7 +681,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="e">The data for the event.</param>
         protected virtual void OnCurrentPartitionChanging(CurrentPartitionChangingEventArgs e)
         {
-            EventHandler<CurrentPartitionChangingEventArgs> handler = CurrentPartitionChanging;
+            var handler = CurrentPartitionChanging;
             if (handler != null)
                 handler(this, e);
         }

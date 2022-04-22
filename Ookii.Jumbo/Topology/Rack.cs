@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Topology
 {
@@ -16,7 +13,7 @@ namespace Ookii.Jumbo.Topology
 
         private class NodeCollection : ExtendedCollection<TopologyNode>
         {
-            private Rack _rack;
+            private readonly Rack _rack;
 
             public NodeCollection(Rack rack)
             {
@@ -52,7 +49,7 @@ namespace Ookii.Jumbo.Topology
 
             protected override void ClearItems()
             {
-                foreach (TopologyNode node in this)
+                foreach (var node in this)
                     node.Rack = null;
                 base.ClearItems();
             }

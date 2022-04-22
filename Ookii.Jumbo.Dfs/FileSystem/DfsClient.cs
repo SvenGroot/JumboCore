@@ -6,9 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Rpc;
 
@@ -145,13 +143,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
 
-            using (TcpClient client = new TcpClient(hostName, port))
-            using (NetworkStream stream = client.GetStream())
+            using (var client = new TcpClient(hostName, port))
+            using (var stream = client.GetStream())
             {
                 DataServerClientProtocolHeader header = new DataServerClientProtocolGetLogFileContentsHeader(maxSize) { Kind = kind };
-                BinaryFormatter formatter = new BinaryFormatter();
+                var formatter = new BinaryFormatter();
                 formatter.Serialize(stream, header);
-                using (StreamReader reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
                     return reader.ReadToEnd();
                 }
@@ -271,7 +269,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         {
             if (millisecondsInterval < 0)
                 throw new ArgumentOutOfRangeException(nameof(millisecondsInterval));
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
 
             while (NameServer.SafeMode && (millisecondsTimeout == Timeout.Infinite || sw.ElapsedMilliseconds < millisecondsTimeout))
             {
@@ -296,8 +294,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (offset < 0 || offset >= file.Size)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
-            int blockIndex = (int)(offset / file.BlockSize);
-            Guid blockId = file.Blocks[blockIndex];
+            var blockIndex = (int)(offset / file.BlockSize);
+            var blockId = file.Blocks[blockIndex];
             return NameServer.GetDataServersForBlock(blockId).Select(server => server.HostName);
         }
 

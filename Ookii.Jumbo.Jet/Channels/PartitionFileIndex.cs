@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet.Channels;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
@@ -16,7 +14,7 @@ namespace Ookii.Jumbo.Jet.Channels
     /// </summary>
     public sealed class PartitionFileIndex : IDisposable
     {
-        private ManualResetEvent _loadCompleteEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent _loadCompleteEvent = new ManualResetEvent(false);
         private Exception _loadException = null;
         private List<PartitionFileIndexEntry>[] _index;
         private bool _disposed;
@@ -61,7 +59,7 @@ namespace Ookii.Jumbo.Jet.Channels
             WaitUntilLoaded();
             if (partition < 1 || partition > _index.Length)
                 throw new ArgumentOutOfRangeException(nameof(partition));
-            List<PartitionFileIndexEntry> index = _index[partition - 1];
+            var index = _index[partition - 1];
             long result = 0;
             if (index != null)
             {
@@ -84,17 +82,17 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             try
             {
-                string indexFilePath = (string)state;
-                using (FileStream stream = File.OpenRead(indexFilePath))
-                using (BinaryRecordReader<PartitionFileIndexEntry> reader = new BinaryRecordReader<PartitionFileIndexEntry>(stream, false))
+                var indexFilePath = (string)state;
+                using (var stream = File.OpenRead(indexFilePath))
+                using (var reader = new BinaryRecordReader<PartitionFileIndexEntry>(stream, false))
                 {
-                    foreach (PartitionFileIndexEntry entry in reader.EnumerateRecords())
+                    foreach (var entry in reader.EnumerateRecords())
                     {
                         if (_index == null)
                             _index = new List<PartitionFileIndexEntry>[entry.Partition]; // First entry isn't a real entry but gives us the total number of partitions.
                         else
                         {
-                            List<PartitionFileIndexEntry> partition = _index[entry.Partition];
+                            var partition = _index[entry.Partition];
                             if (partition == null)
                             {
                                 partition = new List<PartitionFileIndexEntry>(1);
@@ -120,7 +118,7 @@ namespace Ookii.Jumbo.Jet.Channels
             if (!_disposed)
             {
                 _disposed = true;
-                ((IDisposable)_loadCompleteEvent).Dispose();
+                _loadCompleteEvent.Dispose();
             }
             GC.SuppressFinalize(this);
         }

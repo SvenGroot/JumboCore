@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -22,7 +19,7 @@ namespace Ookii.Jumbo.IO
         {
             if (recordReaderType == null)
                 throw new ArgumentNullException(nameof(recordReaderType));
-            Type baseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
+            var baseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
             return baseType.GetGenericArguments()[0];
         }
     }
@@ -248,7 +245,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         protected virtual void OnHasRecordsChanged(EventArgs e)
         {
-            EventHandler handler = HasRecordsChanged;
+            var handler = HasRecordsChanged;
             if (handler != null)
                 handler(this, e);
         }

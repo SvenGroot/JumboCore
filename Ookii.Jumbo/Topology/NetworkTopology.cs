@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Topology
 {
@@ -47,10 +44,9 @@ namespace Ookii.Jumbo.Topology
             if (node == null)
                 throw new ArgumentNullException(nameof(node));
 
-            string rackId = ResolveNode(node.Address.HostName);
+            var rackId = ResolveNode(node.Address.HostName);
             _log.InfoFormat("Node {0} was resolved to rack {1}.", node.Address, rackId);
-            Rack rack;
-            if (!_racks.TryGetValue(rackId, out rack))
+            if (!_racks.TryGetValue(rackId, out var rack))
             {
                 rack = new Rack(rackId);
                 _racks.Add(rackId, rack);

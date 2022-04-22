@@ -2,12 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
-using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.IO

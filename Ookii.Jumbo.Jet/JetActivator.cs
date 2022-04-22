@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 
 namespace Ookii.Jumbo.Jet
@@ -31,7 +28,7 @@ namespace Ookii.Jumbo.Jet
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            object instance = Activator.CreateInstance(type, args);
+            var instance = Activator.CreateInstance(type, args);
 
             ApplyConfiguration(instance, dfsConfiguration, jetConfiguration, taskAttemptConfiguration);
 
@@ -54,7 +51,7 @@ namespace Ookii.Jumbo.Jet
         public static object CreateInstance(Type type, TaskExecutionUtility taskExecution, params object[] args)
         {
             if (taskExecution == null)
-                return CreateInstance(type, (DfsConfiguration)null, null, null, args);
+                return CreateInstance(type, null, null, null, args);
             else
                 return CreateInstance(type, taskExecution.FileSystemClient.Configuration, taskExecution.JetClient.Configuration, taskExecution.Context, args);
         }
@@ -76,7 +73,7 @@ namespace Ookii.Jumbo.Jet
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            IConfigurable configurable = target as IConfigurable;
+            var configurable = target as IConfigurable;
             if (configurable != null)
             {
                 configurable.DfsConfiguration = dfsConfiguration;

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -229,8 +226,8 @@ namespace Ookii.Jumbo.IO
             {
                 if (reader == null)
                     throw new ArgumentNullException(nameof(reader));
-                DateTimeKind kind = (DateTimeKind)reader.ReadInt32();
-                long ticks = reader.ReadInt64();
+                var kind = (DateTimeKind)reader.ReadInt32();
+                var ticks = reader.ReadInt64();
                 return new DateTime(ticks, kind);
             }
         }
@@ -439,7 +436,7 @@ namespace Ookii.Jumbo.IO
                 return new BooleanWriter();
             else if (type.IsGenericType)
             {
-                Type definition = type.GetGenericTypeDefinition();
+                var definition = type.GetGenericTypeDefinition();
                 if (definition == typeof(Tuple<>))
                     return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()));
                 if (definition == typeof(Tuple<,>))

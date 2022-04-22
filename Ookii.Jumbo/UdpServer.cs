@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -47,9 +44,9 @@ namespace Ookii.Jumbo
                 else
                     remote = new IPEndPoint(IPAddress.Any, 0);
 
-                int count = _socket.EndReceiveFrom(ar, ref remote);
+                var count = _socket.EndReceiveFrom(ar, ref remote);
                 remoteEndPoint = (IPEndPoint)remote;
-                byte[] result = new byte[count];
+                var result = new byte[count];
                 Buffer.BlockCopy(_buffer, 0, result, 0, count);
                 return result;
             }
@@ -83,8 +80,8 @@ namespace Ookii.Jumbo
 
             _callback = new AsyncCallback(ReceiveFromCallback);
             _sockets = new SlimUdpClient[localAddresses.Length];
-            int x = 0;
-            foreach (IPAddress localAddress in localAddresses)
+            var x = 0;
+            foreach (var localAddress in localAddresses)
             {
                 _sockets[x] = new SlimUdpClient(localAddress, port, allowAddressReuse);
             }
@@ -95,7 +92,7 @@ namespace Ookii.Jumbo
         /// </summary>
         public void Start()
         {
-            foreach (SlimUdpClient socket in _sockets)
+            foreach (var socket in _sockets)
             {
                 socket.BeginReceive(_callback, socket);
             }
@@ -125,7 +122,7 @@ namespace Ookii.Jumbo
         {
             if (disposing)
             {
-                foreach (SlimUdpClient socket in _sockets)
+                foreach (var socket in _sockets)
                 {
                     socket.Dispose();
                 }
@@ -137,10 +134,9 @@ namespace Ookii.Jumbo
         {
             try
             {
-                SlimUdpClient client = (SlimUdpClient)ar.AsyncState;
-                IPEndPoint remoteEndPoint;
+                var client = (SlimUdpClient)ar.AsyncState;
                 byte[] message;
-                message = client.EndReceive(ar, out remoteEndPoint);
+                message = client.EndReceive(ar, out var remoteEndPoint);
                 client.BeginReceive(_callback, client);
                 try
                 {

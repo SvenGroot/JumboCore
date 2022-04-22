@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -29,10 +27,10 @@ namespace Ookii.Jumbo.IO
                 throw new ArgumentNullException(nameof(type));
             if (type.GetInterfaces().Contains(typeof(IWritable)))
                 return null;
-            ValueWriterAttribute attribute = (ValueWriterAttribute)Attribute.GetCustomAttribute(type, typeof(ValueWriterAttribute));
+            var attribute = (ValueWriterAttribute)Attribute.GetCustomAttribute(type, typeof(ValueWriterAttribute));
             if (attribute != null && !string.IsNullOrEmpty(attribute.ValueWriterTypeName))
             {
-                Type writerType = Type.GetType(attribute.ValueWriterTypeName, true);
+                var writerType = Type.GetType(attribute.ValueWriterTypeName, true);
                 return Activator.CreateInstance(writerType);
             }
 
@@ -123,7 +121,7 @@ namespace Ookii.Jumbo.IO
         {
             if (_writer == null)
             {
-                T result = (T)FormatterServices.GetUninitializedObject(typeof(T));
+                var result = (T)FormatterServices.GetUninitializedObject(typeof(T));
                 ((IWritable)result).Read(reader);
                 return result;
             }

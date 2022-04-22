@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Ookii.Jumbo.Jet
+﻿namespace Ookii.Jumbo.Jet
 {
     /// <summary>
     /// Indicates how the scheduler should assign tasks to servers.

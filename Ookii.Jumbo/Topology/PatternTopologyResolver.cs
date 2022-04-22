@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Ookii.Jumbo.Topology
@@ -41,7 +39,7 @@ namespace Ookii.Jumbo.Topology
 
             foreach (RackConfigurationElement rackConfig in configuration.PatternTopologyResolver.Racks)
             {
-                RackInfo rack = new RackInfo() { RackId = rackConfig.RackId };
+                var rack = new RackInfo() { RackId = rackConfig.RackId };
                 switch (configuration.PatternTopologyResolver.PatternType)
                 {
                 case PatternType.RegularExpression:
@@ -69,7 +67,7 @@ namespace Ookii.Jumbo.Topology
             if (hostName == null)
                 throw new ArgumentNullException(nameof(hostName));
 
-            foreach (RackInfo rack in _racks)
+            foreach (var rack in _racks)
             {
                 bool match;
                 if (rack.Regex != null)

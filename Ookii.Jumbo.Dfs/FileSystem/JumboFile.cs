@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
@@ -169,7 +167,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             writer.WriteLine("Record options:   {0}", RecordOptions);
             writer.WriteLine("Open for writing: {0}", IsOpenForWriting);
             writer.WriteLine("Blocks:           {0}", Blocks.Count);
-            foreach (Guid block in Blocks)
+            foreach (var block in Blocks)
                 writer.WriteLine("{{{0}}}", block);
         }
     }

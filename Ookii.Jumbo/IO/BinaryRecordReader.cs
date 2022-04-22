@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.IO
 {
@@ -32,10 +28,10 @@ namespace Ookii.Jumbo.IO
 
         private BinaryReader _reader;
         private readonly bool _inputContainsRecordSizes;
-        private T _record;
-        private bool _allowRecordReuse;
-        private string _fileName;
-        private bool _deleteFile;
+        private readonly T _record;
+        private readonly bool _allowRecordReuse;
+        private readonly string _fileName;
+        private readonly bool _deleteFile;
         private readonly long _end;
 
         /// <summary>
@@ -151,7 +147,7 @@ namespace Ookii.Jumbo.IO
             }
             else
             {
-                T record = ValueWriter<T>.ReadValue(_reader);
+                var record = ValueWriter<T>.ReadValue(_reader);
                 CurrentRecord = record;
             }
 

@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -269,7 +266,7 @@ namespace Ookii.Jumbo.IO
 
         object ICloneable.Clone()
         {
-            Pair<TKey, TValue> clone = new Pair<TKey, TValue>();
+            var clone = new Pair<TKey, TValue>();
             if (typeof(TKey).IsValueType)
                 clone.Key = Key;
             else if (Key != null)

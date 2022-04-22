@@ -152,8 +152,8 @@ namespace JobServerApplication
         public TaskStatus ToTaskStatus()
         {
             // making a local copy of stuff we need more than once for thread safety.
-            TaskServerInfo server = Server;
-            DateTime startTimeUtc = StartTimeUtc;
+            var server = Server;
+            var startTimeUtc = StartTimeUtc;
             return new TaskStatus()
             {
                 TaskId = TaskId.ToString(),

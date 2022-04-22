@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Ookii.Jumbo;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth

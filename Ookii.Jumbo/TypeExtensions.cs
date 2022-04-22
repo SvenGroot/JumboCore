@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -43,8 +40,8 @@ namespace Ookii.Jumbo
             if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == interfaceType)
                 return type;
 
-            Type[] interfaces = type.GetInterfaces();
-            foreach (Type i in interfaces)
+            var interfaces = type.GetInterfaces();
+            foreach (var i in interfaces)
             {
                 if (i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType)
                     return i;
@@ -67,7 +64,7 @@ namespace Ookii.Jumbo
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
-            Type current = type.BaseType;
+            var current = type.BaseType;
             while (current != null)
             {
                 if (current.IsGenericType && current.GetGenericTypeDefinition() == baseType)

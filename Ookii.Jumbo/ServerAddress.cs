@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -48,7 +46,7 @@ namespace Ookii.Jumbo
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
-            string[] parts = address.Split(':');
+            var parts = address.Split(':');
             if (parts.Length != 2)
                 throw new ArgumentException("Invalid server address string.", nameof(address));
 
@@ -96,7 +94,7 @@ namespace Ookii.Jumbo
         /// <returns><see langword="true"/> if this <see cref="ServerAddress"/> is equal to the specified object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object obj)
         {
-            ServerAddress other = obj as ServerAddress;
+            var other = obj as ServerAddress;
             return other == null ? false : (HostName == other.HostName && Port == other.Port);
         }
 
@@ -189,7 +187,7 @@ namespace Ookii.Jumbo
         {
             if (other == null)
                 return 1;
-            int result = StringComparer.Ordinal.Compare(HostName, other.HostName);
+            var result = StringComparer.Ordinal.Compare(HostName, other.HostName);
             if (result == 0)
                 result = Port - other.Port;
             return result;

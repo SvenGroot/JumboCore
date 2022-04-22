@@ -1,9 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -54,7 +50,7 @@ namespace Ookii.Jumbo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static JumboConfiguration GetConfiguration()
         {
-            JumboConfiguration config = (JumboConfiguration)ConfigurationManager.GetSection("ookii.jumbo");
+            var config = (JumboConfiguration)ConfigurationManager.GetSection("ookii.jumbo");
             return config ?? new JumboConfiguration();
         }
     }

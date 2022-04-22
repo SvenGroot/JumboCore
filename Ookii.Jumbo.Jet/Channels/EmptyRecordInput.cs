@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
@@ -49,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         protected override IRecordReader CreateReader()
         {
-            IRecordReader reader = (IRecordReader)Activator.CreateInstance(_recordReaderType);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType);
             reader.SourceName = _sourceName;
             return reader;
         }

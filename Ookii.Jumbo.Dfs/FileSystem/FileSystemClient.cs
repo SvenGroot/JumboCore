@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
@@ -94,7 +90,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 return new DfsClient(configuration);
             else
             {
-                Type type = _fileSystemTypes[configuration.FileSystem.Url.Scheme];
+                var type = _fileSystemTypes[configuration.FileSystem.Url.Scheme];
 
                 return (FileSystemClient)Activator.CreateInstance(type, configuration);
             }
@@ -165,7 +161,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            using (Stream outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None))
+            using (var outputStream = CreateFile(targetPath, blockSize, replicationFactor, useLocalReplica, IO.RecordStreamOptions.None))
             {
                 CopyStream(targetPath, stream, outputStream, progressCallback);
             }
@@ -198,13 +194,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 throw new ArgumentNullException(nameof(targetPath));
             if (localSourcePath == null)
                 throw new ArgumentNullException(nameof(localSourcePath));
-            JumboDirectory dir = GetDirectoryInfo(targetPath);
+            var dir = GetDirectoryInfo(targetPath);
             if (dir != null)
             {
-                string fileName = System.IO.Path.GetFileName(localSourcePath);
+                var fileName = System.IO.Path.GetFileName(localSourcePath);
                 targetPath = Path.Combine(targetPath, fileName);
             }
-            using (FileStream inputStream = File.OpenRead(localSourcePath))
+            using (var inputStream = File.OpenRead(localSourcePath))
             {
                 UploadStream(inputStream, targetPath, blockSize, replicationFactor, useLocalReplica, progressCallback);
             }
@@ -237,16 +233,16 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (targetPath == null)
                 throw new ArgumentNullException(nameof(targetPath));
 
-            string[] files = System.IO.Directory.GetFiles(localSourcePath);
+            var files = System.IO.Directory.GetFiles(localSourcePath);
 
-            JumboDirectory directory = GetDirectoryInfo(targetPath);
+            var directory = GetDirectoryInfo(targetPath);
             if (directory != null)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Directory {0} already exists on the file system.", targetPath), nameof(targetPath));
             CreateDirectory(targetPath);
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
-                string targetFile = Path.Combine(targetPath, System.IO.Path.GetFileName(file));
+                var targetFile = Path.Combine(targetPath, System.IO.Path.GetFileName(file));
                 UploadFile(file, targetFile, blockSize, replicationFactor, useLocalReplica, progressCallback);
             }
         }
@@ -273,7 +269,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 throw new ArgumentNullException(nameof(sourcePath));
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            using (Stream inputStream = OpenFile(sourcePath))
+            using (var inputStream = OpenFile(sourcePath))
             {
                 CopyStream(sourcePath, inputStream, stream, progressCallback);
             }
@@ -306,10 +302,10 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
             if (Directory.Exists(localTargetPath))
             {
-                string fileName = Path.GetFileName(sourcePath);
+                var fileName = Path.GetFileName(sourcePath);
                 localTargetPath = System.IO.Path.Combine(localTargetPath, fileName);
             }
-            using (FileStream stream = File.Create(localTargetPath))
+            using (var stream = File.Create(localTargetPath))
             {
                 DownloadStream(sourcePath, stream, progressCallback);
             }
@@ -346,15 +342,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (localTargetPath == null)
                 throw new ArgumentNullException(nameof(localTargetPath));
 
-            JumboDirectory dir = GetDirectoryInfo(sourcePath);
+            var dir = GetDirectoryInfo(sourcePath);
             if (dir == null)
                 throw new DfsException("The specified directory does not exist.");
-            foreach (JumboFileSystemEntry entry in dir.Children)
+            foreach (var entry in dir.Children)
             {
-                JumboFile file = entry as JumboFile;
+                var file = entry as JumboFile;
                 if (file != null)
                 {
-                    string localFile = System.IO.Path.Combine(localTargetPath, file.Name);
+                    var localFile = System.IO.Path.Combine(localTargetPath, file.Name);
                     DownloadFile(file.FullPath, localFile, progressCallback);
                 }
             }
@@ -436,15 +432,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
         private static void CopyStream(string fileName, Stream inputStream, Stream outputStream, ProgressCallback progressCallback)
         {
-            byte[] buffer = new byte[4096];
+            var buffer = new byte[4096];
             int bytesRead;
-            int prevPercentage = -1;
+            var prevPercentage = -1;
             float length = inputStream.Length;
             if (progressCallback != null)
                 progressCallback(fileName, 0, 0L);
             while ((bytesRead = inputStream.Read(buffer, 0, buffer.Length)) != 0)
             {
-                int percentage = (int)((inputStream.Position / length) * 100);
+                var percentage = (int)((inputStream.Position / length) * 100);
                 if (percentage > prevPercentage)
                 {
                     prevPercentage = percentage;

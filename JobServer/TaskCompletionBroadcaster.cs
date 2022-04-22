@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -35,10 +33,10 @@ namespace JobServerApplication
              * Next 2 bytes: task server port number
              * Next 2 bytes: task server file channel port number */
 
-            int length = 16;
+            var length = 16;
             Buffer.BlockCopy(jobId.ToByteArray(), 0, _buffer, 0, 16);
-            string taskId = taskAttemptId.TaskId.ToString();
-            int stringLength = Encoding.UTF8.GetBytes(taskId, 0, taskId.Length, _buffer, length + 1);
+            var taskId = taskAttemptId.TaskId.ToString();
+            var stringLength = Encoding.UTF8.GetBytes(taskId, 0, taskId.Length, _buffer, length + 1);
             _buffer[length++] = (byte)stringLength;
             length += stringLength;
             _buffer[length++] = (byte)taskAttemptId.Attempt;

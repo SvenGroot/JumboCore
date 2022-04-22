@@ -80,7 +80,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </returns>
         public override bool Equals(object obj)
         {
-            RecordIndexEntry? entry = obj as RecordIndexEntry?;
+            var entry = obj as RecordIndexEntry?;
             if (entry == null)
                 return false;
             return Equals(entry.Value);

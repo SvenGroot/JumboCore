@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Ookii.Jumbo.Jet.Jobs.Builder
+﻿namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
     /// <summary>
     /// The way the record reuse attribute is applied to tasks that are generated from a

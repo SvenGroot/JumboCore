@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -79,7 +78,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             IEnumerable<JumboFileSystemEntry> children = null;
             if (includeChildren)
                 children = directory.GetFileSystemInfos().Select(info => JumboFileSystemEntry.FromFileSystemInfo(info, rootPath, false));
-            string fullPath = StripRootPath(directory.FullName, rootPath);
+            var fullPath = StripRootPath(directory.FullName, rootPath);
             return new JumboDirectory(fullPath, fullPath.Length == 1 ? "" : directory.Name, directory.CreationTimeUtc, children);
         }
 

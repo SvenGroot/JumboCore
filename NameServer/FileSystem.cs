@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
@@ -51,11 +50,11 @@ namespace NameServerApplication
             _configuration = configuration;
 
             // TODO: Automatic recovery from this.
-            string tempImageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemTempImageFileName);
+            var tempImageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemTempImageFileName);
             if (File.Exists(tempImageFile) || File.Exists(tempImageFile + ".crc"))
                 throw new DfsException("The nameserver was previously interrupted while making a checkpoint; please resolve the situation and restart.");
 
-            string imageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
+            var imageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
 
             if (readExistingFileSystem && !File.Exists(imageFile))
                 throw new DfsException("File system is not formatted.");
@@ -68,10 +67,10 @@ namespace NameServerApplication
 
                 ChecksumOutputStream.CheckCrc(imageFile);
 
-                using (FileStream stream = File.OpenRead(imageFile))
-                using (BinaryReader reader = new BinaryReader(stream))
+                using (var stream = File.OpenRead(imageFile))
+                using (var reader = new BinaryReader(stream))
                 {
-                    int version = reader.ReadInt32();
+                    var version = reader.ReadInt32();
                     if (version != FileSystemFormatVersion)
                         throw new NotSupportedException("The file system image uses an unsupported file system version.");
                     _fileSystemId = new Guid(reader.ReadBytes(16));
@@ -132,9 +131,9 @@ namespace NameServerApplication
         {
             _log.InfoFormat("Formatting file system {0}", configuration.NameServer.ImageDirectory);
             Directory.CreateDirectory(configuration.NameServer.ImageDirectory);
-            using (FileSystem fs = new FileSystem(configuration, false, false))
+            using (var fs = new FileSystem(configuration, false, false))
             {
-                string imageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
+                var imageFile = Path.Combine(configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
                 fs.SaveToFileSystemImage(imageFile);
             }
             _log.Info("File system successfully formatted.");
@@ -183,7 +182,7 @@ namespace NameServerApplication
         {
             _log.DebugFormat("CreateDirectory: path = \"{0}\"", path);
 
-            DfsDirectory result = GetDirectoryInternal(path, true, dateCreated);
+            var result = GetDirectoryInternal(path, true, dateCreated);
             if (result != null)
             {
                 lock (_root)
@@ -210,7 +209,7 @@ namespace NameServerApplication
         {
             _log.DebugFormat("GetDirectory: path = \"{0}\"", path);
 
-            DfsDirectory result = GetDirectoryInternal(path, false, DateTime.Now);
+            var result = GetDirectoryInternal(path, false, DateTime.Now);
             if (result != null)
             {
                 lock (_root)
@@ -263,19 +262,16 @@ namespace NameServerApplication
 
             lock (_root)
             {
-                string name;
-                DfsDirectory parent;
-                DfsFileSystemEntry entry;
-                FindEntry(path, out name, out parent, out entry);
+                FindEntry(path, out var name, out var parent, out var entry);
                 if (entry != null)
                     throw new ArgumentException("The specified directory already has a file or directory with the specified name.", nameof(path));
 
-                PendingFile file = CreateFile(parent, name, dateCreated, blockSize, replicationFactor, recordOptions);
+                var file = CreateFile(parent, name, dateCreated, blockSize, replicationFactor, recordOptions);
                 try
                 {
                     if (appendBlock)
                     {
-                        Guid blockID = NewBlockID();
+                        var blockID = NewBlockID();
                         AppendBlock(file, blockID);
                         return new BlockInfo(blockID, file.File);
                     }
@@ -313,7 +309,7 @@ namespace NameServerApplication
             JumboFile result = null;
             lock (_root)
             {
-                DfsFile file = GetFileInfoInternal(path);
+                var file = GetFileInfoInternal(path);
                 if (file != null)
                     result = file.ToJumboFile();
             }
@@ -342,10 +338,7 @@ namespace NameServerApplication
             JumboFileSystemEntry result = null;
             lock (_root)
             {
-                string name;
-                DfsDirectory parent;
-                DfsFileSystemEntry entry;
-                FindEntry(path, out name, out parent, out entry);
+                FindEntry(path, out var name, out var parent, out var entry);
                 if (entry != null)
                     result = entry.ToJumboFileSystemEntry();
             }
@@ -355,7 +348,7 @@ namespace NameServerApplication
         public BlockInfo AppendBlock(string path, int availableServers)
         {
             _log.DebugFormat("AppendBlock: path = \"{0}\"", path);
-            Guid blockID = NewBlockID();
+            var blockID = NewBlockID();
             return AppendBlock(path, blockID, availableServers);
         }
 
@@ -365,8 +358,7 @@ namespace NameServerApplication
 
             lock (_root)
             {
-                PendingFile file;
-                if (!(_pendingFiles.TryGetValue(path, out file) && file.File.IsOpenForWriting))
+                if (!(_pendingFiles.TryGetValue(path, out var file) && file.File.IsOpenForWriting))
                     throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
                 if (availableServers >= 0 && file.File.ReplicationFactor > availableServers)
                     throw new InvalidOperationException("Insufficient data servers.");
@@ -387,8 +379,7 @@ namespace NameServerApplication
             _log.DebugFormat("CommitBlock: path = \"{0}\", blockID = {1}, size = {2}", path, blockID, size);
             lock (_root)
             {
-                PendingFile file;
-                if (!_pendingFiles.TryGetValue(path, out file))
+                if (!_pendingFiles.TryGetValue(path, out var file))
                     throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
 
                 if (file.PendingBlock == null || file.PendingBlock != blockID)
@@ -422,8 +413,7 @@ namespace NameServerApplication
             Guid? pendingBlock = null;
             lock (_root)
             {
-                PendingFile file;
-                if (!(_pendingFiles.TryGetValue(path, out file) && file.File.IsOpenForWriting))
+                if (!(_pendingFiles.TryGetValue(path, out var file) && file.File.IsOpenForWriting))
                     throw new InvalidOperationException($"The file '{path}' does not exist or is not open for writing.");
 
                 if (file.PendingBlock != null)
@@ -452,7 +442,6 @@ namespace NameServerApplication
         public bool Delete(string path, bool recursive)
         {
             _log.DebugFormat("Delete: path = \"{0}\", recursive = {1}", path, recursive);
-            string name;
             DfsDirectory parent;
             DfsFileSystemEntry entry;
             // The entire operation must be locked, otherwise it opens up the possibility of someone else deleting
@@ -461,7 +450,7 @@ namespace NameServerApplication
             {
                 try
                 {
-                    FindEntry(path, out name, out parent, out entry);
+                    FindEntry(path, out var name, out parent, out entry);
                 }
                 catch (System.IO.DirectoryNotFoundException)
                 {
@@ -471,7 +460,7 @@ namespace NameServerApplication
                 if (entry == null)
                     return false;
 
-                DfsDirectory dir = entry as DfsDirectory;
+                var dir = entry as DfsDirectory;
                 if (dir != null && dir.Children.Count > 0 && !recursive)
                     throw new InvalidOperationException("The specified directory is not empty.");
 
@@ -489,18 +478,12 @@ namespace NameServerApplication
             _log.DebugFormat("Move: from = \"{0}\", to = \"{1}\"", from, to);
             lock (_root)
             {
-                string fromName;
-                DfsFileSystemEntry fromEntry;
-                DfsDirectory fromParent;
-                FindEntry(from, out fromName, out fromParent, out fromEntry);
+                FindEntry(from, out var fromName, out var fromParent, out var fromEntry);
 
                 if (fromEntry == null)
                     throw new ArgumentException($"The file or directory \"{from}\" does not exist.");
 
-                string toName;
-                DfsFileSystemEntry toEntry;
-                DfsDirectory toParent;
-                FindEntry(to, out toName, out toParent, out toEntry);
+                FindEntry(to, out var toName, out var toParent, out var toEntry);
                 if (toEntry is DfsDirectory)
                 {
                     toName = null;
@@ -516,9 +499,9 @@ namespace NameServerApplication
         public void SaveToFileSystemImage()
         {
             _log.Info("Creating file system image.");
-            string tempFileName = Path.Combine(_configuration.NameServer.ImageDirectory, _fileSystemTempImageFileName);
+            var tempFileName = Path.Combine(_configuration.NameServer.ImageDirectory, _fileSystemTempImageFileName);
             _editLog.SwitchToNewLogFile();
-            using (FileSystem tempFileSystem = FileSystem.LoadReadOnly(_configuration))
+            using (var tempFileSystem = FileSystem.LoadReadOnly(_configuration))
             {
                 tempFileSystem.SaveToFileSystemImage(tempFileName);
             }
@@ -526,10 +509,10 @@ namespace NameServerApplication
             // The last thing we do is rename the temp image; while the temp image file exists, the name server will not start
             // alerting the user something is wrong and they can correct it.
             // TODO: Automatic recovery.
-            string fileName = Path.Combine(_configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
+            var fileName = Path.Combine(_configuration.NameServer.ImageDirectory, _fileSystemImageFileName);
             if (File.Exists(fileName))
                 File.Delete(fileName);
-            string crcFileName = fileName + ".crc";
+            var crcFileName = fileName + ".crc";
             if (File.Exists(crcFileName))
                 File.Delete(crcFileName);
             _editLog.DiscardOldLogFile();
@@ -545,7 +528,7 @@ namespace NameServerApplication
                 GetBlocks(_root, blocks);
                 lock (_pendingFiles)
                 {
-                    foreach (PendingFile file in _pendingFiles.Values)
+                    foreach (var file in _pendingFiles.Values)
                     {
                         if (file.PendingBlock != null)
                             pendingBlocks.Add(file.PendingBlock.Value, new PendingBlock(new BlockInfo(file.PendingBlock.Value, file.File)));
@@ -557,18 +540,18 @@ namespace NameServerApplication
         private void LoadPendingFiles(BinaryReader reader)
         {
             _pendingFiles.Clear();
-            int pendingFileCount = reader.ReadInt32();
-            for (int x = 0; x < pendingFileCount; ++x)
+            var pendingFileCount = reader.ReadInt32();
+            for (var x = 0; x < pendingFileCount; ++x)
             {
-                string path = reader.ReadString();
-                bool hasPendingBlock = reader.ReadBoolean();
+                var path = reader.ReadString();
+                var hasPendingBlock = reader.ReadBoolean();
                 Guid? pendingBlock = null;
                 if (hasPendingBlock)
                     pendingBlock = new Guid(reader.ReadBytes(16));
-                DfsFile file = GetFileInfoInternal(path);
+                var file = GetFileInfoInternal(path);
                 if (file == null)
                     throw new DfsException("Invalid file system image.");
-                PendingFile pendingFile = new PendingFile(file);
+                var pendingFile = new PendingFile(file);
                 pendingFile.PendingBlock = pendingBlock;
                 _pendingFiles.Add(file.FullPath, pendingFile);
                 _log.WarnFormat("File {0} was not committed before previous name server shutdown and is still open.", file.FullPath);
@@ -577,9 +560,9 @@ namespace NameServerApplication
 
         private void SaveToFileSystemImage(string fileName)
         {
-            using (FileStream stream = File.Create(fileName))
-            using (ChecksumOutputStream crcStream = new ChecksumOutputStream(stream, fileName + ".crc", 0L))
-            using (BinaryWriter writer = new BinaryWriter(crcStream))
+            using (var stream = File.Create(fileName))
+            using (var crcStream = new ChecksumOutputStream(stream, fileName + ".crc", 0L))
+            using (var writer = new BinaryWriter(crcStream))
             {
                 writer.Write(FileSystemFormatVersion);
                 writer.Write(_fileSystemId.ToByteArray());
@@ -589,7 +572,7 @@ namespace NameServerApplication
                     lock (_pendingFiles)
                     {
                         writer.Write(_pendingFiles.Count);
-                        foreach (PendingFile file in _pendingFiles.Values)
+                        foreach (var file in _pendingFiles.Values)
                             file.SaveToFileSystemImage(writer);
                     }
                 }
@@ -605,12 +588,12 @@ namespace NameServerApplication
 
         private void GetBlocks(DfsDirectory directory, IDictionary<Guid, BlockInfo> blocks)
         {
-            foreach (DfsFileSystemEntry child in directory.Children)
+            foreach (var child in directory.Children)
             {
-                DfsFile file = child as DfsFile;
+                var file = child as DfsFile;
                 if (file != null)
                 {
-                    foreach (Guid blockId in file.Blocks)
+                    foreach (var blockId in file.Blocks)
                     {
                         blocks.Add(blockId, new BlockInfo(blockId, file));
                     }
@@ -647,17 +630,13 @@ namespace NameServerApplication
 
         private DfsFile GetFileInfoInternal(string path)
         {
-            string name;
-            DfsDirectory parent;
-            DfsFile result;
-            FindFile(path, out name, out parent, out result);
+            FindFile(path, out var name, out var parent, out var result);
             return result;
         }
 
         private void FindFile(string path, out string name, out DfsDirectory parent, out DfsFile file)
         {
-            DfsFileSystemEntry entry;
-            FindEntry(path, out name, out parent, out entry);
+            FindEntry(path, out name, out parent, out var entry);
             file = entry as DfsFile;
         }
 
@@ -666,9 +645,8 @@ namespace NameServerApplication
         /// </summary>
         private void FindEntry(string path, out string name, out DfsDirectory parent, out DfsFileSystemEntry file)
         {
-            string directory;
 
-            ExtractDirectoryAndFileName(path, out directory, out name);
+            ExtractDirectoryAndFileName(path, out var directory, out name);
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("No file name specified.");
 
@@ -688,7 +666,7 @@ namespace NameServerApplication
 
         private static void ExtractDirectoryAndFileName(string path, out string directory, out string name)
         {
-            int index = path.LastIndexOf(DfsPath.DirectorySeparator);
+            var index = path.LastIndexOf(DfsPath.DirectorySeparator);
             if (index == -1)
                 throw new ArgumentException("Path is not rooted.", nameof(path));
             directory = path.Substring(0, index);
@@ -704,7 +682,7 @@ namespace NameServerApplication
             if (!DfsPath.IsPathRooted(path))
                 throw new ArgumentException("Path is not an absolute path.", nameof(path));
 
-            string[] components = path.Split(DfsPath.DirectorySeparator);
+            var components = path.Split(DfsPath.DirectorySeparator);
 
             lock (_root)
             {
@@ -716,10 +694,10 @@ namespace NameServerApplication
                 if ((from c in components where c.Length == 0 select c).Count() > 1)
                     throw new ArgumentException("Path contains an empty components.", nameof(path));
 
-                DfsDirectory currentDirectory = _root;
-                for (int x = 1; x < components.Length; ++x)
+                var currentDirectory = _root;
+                for (var x = 1; x < components.Length; ++x)
                 {
-                    string component = components[x];
+                    var component = components[x];
                     var entry = (from e in currentDirectory.Children
                                  where e.Name == component
                                  select e).FirstOrDefault();
@@ -760,7 +738,7 @@ namespace NameServerApplication
 
             _log.InfoFormat("Creating file \"{0}\" inside \"{1}\" with block size {2}.", name, parent.FullPath, blockSize);
             _editLog.LogCreateFile(AppendPath(parent.FullPath, name), dateCreated, blockSize, replicationFactor, recordOptions);
-            PendingFile result = new PendingFile(new DfsFile(parent, name, dateCreated, blockSize, replicationFactor, recordOptions) { IsOpenForWriting = true });
+            var result = new PendingFile(new DfsFile(parent, name, dateCreated, blockSize, replicationFactor, recordOptions) { IsOpenForWriting = true });
             lock (_pendingFiles)
             {
                 _pendingFiles.Add(result.File.FullPath, result);
@@ -773,7 +751,7 @@ namespace NameServerApplication
             _log.InfoFormat("Deleting file system entry \"{0}\"", entry.FullPath);
             _editLog.LogDelete(entry.FullPath, recursive);
             parent.Children.Remove(entry);
-            DfsFile file = entry as DfsFile;
+            var file = entry as DfsFile;
             if (file != null)
             {
                 DeleteFile(file);
@@ -787,7 +765,7 @@ namespace NameServerApplication
 
         private void Move(DfsFileSystemEntry entry, DfsDirectory newParent, string newName)
         {
-            string to = DfsPath.Combine(newParent.FullPath, newName ?? entry.Name);
+            var to = DfsPath.Combine(newParent.FullPath, newName ?? entry.Name);
             _log.InfoFormat("Moving file system entry \"{0}\" to \"{1}\".", entry.FullPath, to);
             _editLog.LogMove(entry.FullPath, to);
             entry.MoveTo(newParent, newName);
@@ -796,9 +774,9 @@ namespace NameServerApplication
 
         private void DeleteFilesRecursive(DfsDirectory dir)
         {
-            foreach (DfsFileSystemEntry entry in dir.Children)
+            foreach (var entry in dir.Children)
             {
-                DfsDirectory childDir = entry as DfsDirectory;
+                var childDir = entry as DfsDirectory;
                 if (childDir != null)
                     DeleteFilesRecursive(childDir);
                 else
@@ -815,7 +793,7 @@ namespace NameServerApplication
                 _log.WarnFormat("Deleted file {0} was open for writing.", file.FullPath);
                 lock (_pendingFiles)
                 {
-                    PendingFile pendingFile = _pendingFiles[file.FullPath];
+                    var pendingFile = _pendingFiles[file.FullPath];
                     pendingBlock = pendingFile.PendingBlock;
                     _pendingFiles.Remove(file.FullPath);
                 }
@@ -831,7 +809,7 @@ namespace NameServerApplication
 
         private void OnFileDeleted(FileDeletedEventArgs e)
         {
-            EventHandler<FileDeletedEventArgs> handler = FileDeleted;
+            var handler = FileDeleted;
             if (handler != null)
                 handler(this, e);
         }

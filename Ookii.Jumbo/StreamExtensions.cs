@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -34,8 +31,8 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(source));
             if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            byte[] buffer = new byte[bufferSize];
-            int bytesRead = 0;
+            var buffer = new byte[bufferSize];
+            var bytesRead = 0;
             do
             {
                 bytesRead = source.Read(buffer, 0, buffer.Length);
@@ -70,11 +67,11 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(source));
             if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
-            byte[] buffer = new byte[bufferSize];
-            long bytesLeft = size;
+            var buffer = new byte[bufferSize];
+            var bytesLeft = size;
             while (bytesLeft > 0)
             {
-                int bytesRead = source.Read(buffer, 0, (int)Math.Min(buffer.Length, bytesLeft));
+                var bytesRead = source.Read(buffer, 0, (int)Math.Min(buffer.Length, bytesLeft));
                 if (bytesRead == 0)
                 {
                     throw new EndOfStreamException("Reached end of stream before specified number of bytes was copied.");

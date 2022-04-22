@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -32,9 +30,9 @@ namespace Ookii.Jumbo.Jet
         {
             // The TaskHost wants to use Type.GetType to instantiate various types, and it wants to include the
             // assemblies loaded by Assembly.LoadFrom, which isn't done by default. We'll do that here.
-            Assembly result = (from assembly in ((AppDomain)sender).GetAssemblies()
-                               where assembly.FullName == args.Name || assembly.GetName().Name == args.Name
-                               select assembly).SingleOrDefault();
+            var result = (from assembly in ((AppDomain)sender).GetAssemblies()
+                          where assembly.FullName == args.Name || assembly.GetName().Name == args.Name
+                          select assembly).SingleOrDefault();
             return result;
         }
     }

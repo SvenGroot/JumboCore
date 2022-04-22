@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 
 namespace Ookii.Jumbo.Dfs
@@ -58,7 +57,7 @@ namespace Ookii.Jumbo.Dfs
             _dataServers = dataServers == null ? Array.Empty<ServerAddress>() : dataServers.ToArray();
             if (_dataServers.Length > 0)
             {
-                ServerAddress server = _dataServers[0];
+                var server = _dataServers[0];
                 try
                 {
                     _serverClient = new TcpClient(server.HostName, server.Port);
@@ -186,9 +185,9 @@ namespace Ookii.Jumbo.Dfs
         private bool WriteHeader()
         {
             // Send the header
-            DataServerClientProtocolWriteHeader header = new DataServerClientProtocolWriteHeader(_dataServers);
+            var header = new DataServerClientProtocolWriteHeader(_dataServers);
             header.BlockId = _blockId;
-            BinaryFormatter formatter = new BinaryFormatter();
+            var formatter = new BinaryFormatter();
             formatter.Serialize(_serverStream, header);
             _serverStream.Flush();
 
@@ -197,7 +196,7 @@ namespace Ookii.Jumbo.Dfs
 
         private bool ReadResult()
         {
-            DataServerClientProtocolResult result = (DataServerClientProtocolResult)_serverReader.ReadInt16();
+            var result = (DataServerClientProtocolResult)_serverReader.ReadInt16();
             if (result != DataServerClientProtocolResult.Ok)
             {
                 _serverStatus = result;
@@ -219,10 +218,9 @@ namespace Ookii.Jumbo.Dfs
             {
                 if (_serverClient != null)
                 {
-                    long expected;
-                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out expected, Timeout.Infinite, _cancellation.Token))
+                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out var expected, Timeout.Infinite, _cancellation.Token))
                     {
-                        long sequenceNumber = _serverReader.ReadInt64();
+                        var sequenceNumber = _serverReader.ReadInt64();
                         if (sequenceNumber != expected)
                         {
                             _log.ErrorFormat("Block sender received unexpected sequence number acknowledgement {0}", sequenceNumber);
@@ -246,8 +244,7 @@ namespace Ookii.Jumbo.Dfs
                 }
                 else
                 {
-                    long sequenceNumber;
-                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out sequenceNumber, Timeout.Infinite, _cancellation.Token))
+                    while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out var sequenceNumber, Timeout.Infinite, _cancellation.Token))
                     {
                         _clientWriter.Write(sequenceNumber);
                     }

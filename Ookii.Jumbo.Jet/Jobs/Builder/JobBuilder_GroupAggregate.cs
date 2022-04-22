@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -34,20 +32,20 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 accumulatorTaskType = ConstructGenericAccumulatorTaskType(input.RecordType, accumulatorTaskType);
             }
 
-            Type taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true); // Ensure it's an accumulator.
+            var taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true); // Ensure it's an accumulator.
 
             if (keyComparerType != null)
             {
                 if (keyComparerType.IsGenericTypeDefinition)
                     keyComparerType = keyComparerType.MakeGenericType(taskBaseType.GetGenericArguments()[0]);
 
-                Type comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true);
+                var comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true);
                 if (comparerBaseType.GetGenericArguments()[0] != taskBaseType.GetGenericArguments()[0])
                     throw new ArgumentException("Comparer type is not an IEqualityComparer for the key type.", nameof(keyComparerType));
             }
 
             CheckIfInputBelongsToJobBuilder(input);
-            TwoStepOperation result = new TwoStepOperation(this, input, accumulatorTaskType, null, false);
+            var result = new TwoStepOperation(this, input, accumulatorTaskType, null, false);
 
             if (keyComparerType != null)
             {
@@ -142,9 +140,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentNullException(nameof(accumulator));
             CheckIfInputBelongsToJobBuilder(input);
 
-            Type taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), accumulator, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), accumulator, 0, recordReuse);
 
-            TwoStepOperation result = GroupAggregate(input, taskType, keyComparerType);
+            var result = GroupAggregate(input, taskType, keyComparerType);
             AddAssemblyAndSerializeDelegateIfNeeded(accumulator, result);
             return result;
         }
@@ -152,7 +150,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private static Type ConstructGenericAccumulatorTaskType(Type recordType, Type accumulatorTaskType)
         {
             Type[] arguments;
-            Type[] parameters = accumulatorTaskType.GetGenericArguments();
+            var parameters = accumulatorTaskType.GetGenericArguments();
             switch (parameters.Length)
             {
             case 1:

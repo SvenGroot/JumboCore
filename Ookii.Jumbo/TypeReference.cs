@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo
@@ -130,7 +127,7 @@ namespace Ookii.Jumbo
         {
             if (obj is TypeReference)
             {
-                TypeReference right = (TypeReference)obj;
+                var right = (TypeReference)obj;
                 return right.ReferencedType == ReferencedType;
             }
             else

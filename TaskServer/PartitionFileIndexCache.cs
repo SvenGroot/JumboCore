@@ -1,13 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 
 namespace TaskServerApplication
@@ -29,7 +22,7 @@ namespace TaskServerApplication
 
         public PartitionFileIndex GetIndex(string outputFile)
         {
-            PartitionFileIndex index = (PartitionFileIndex)_indices[outputFile];
+            var index = (PartitionFileIndex)_indices[outputFile];
             if (index == null)
             {
                 lock (_indices.SyncRoot)
@@ -41,7 +34,7 @@ namespace TaskServerApplication
                         if (_indices.Count == _maxSize)
                         {
                             // We cannot safely Dispose the index we removed because some thread may still be using it, so we don't and just wait for the GC to clean up the WaitHandle.
-                            PartitionFileIndex indexToRemove = _indexQueue.Dequeue();
+                            var indexToRemove = _indexQueue.Dequeue();
                             _indices.Remove(indexToRemove.OutputFilePath);
                         }
                         index = new PartitionFileIndex(outputFile);

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.IO;
@@ -28,7 +25,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             _path = path;
             _recordWriterType = recordWriterType;
-            Type baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
+            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
             _recordType = baseType.GetGenericArguments()[0];
         }
 

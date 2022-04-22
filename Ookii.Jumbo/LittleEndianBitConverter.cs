@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo
 {
@@ -93,8 +90,8 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
-            uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
+            var low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
+            var high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
             return ((long)high << 32) | low;
         }
 
@@ -111,8 +108,8 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
-            uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
+            var low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
+            var high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
             return ((ulong)high << 32) | low;
         }
 
@@ -128,7 +125,7 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 4)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            uint bits = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
+            var bits = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
             return *(float*)&bits;
         }
 
@@ -144,9 +141,9 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 8)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            uint low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
-            uint high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
-            ulong bits = ((ulong)high << 32) | low;
+            var low = (uint)(buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24));
+            var high = (uint)(buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24));
+            var bits = ((ulong)high << 32) | low;
             return *(double*)&bits;
         }
 
@@ -162,7 +159,7 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 16)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            int[] bits = new[]
+            var bits = new[]
             {
                 (buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24)),
                 (buffer[offset + 4] | (buffer[offset + 5] << 8) | (buffer[offset + 6] << 16) | (buffer[offset + 7] << 24)),
@@ -184,8 +181,8 @@ namespace Ookii.Jumbo
                 throw new ArgumentNullException(nameof(buffer));
             if (offset < 0 || offset > buffer.Length - 12)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            DateTimeKind kind = (DateTimeKind)ToInt32(buffer, offset);
-            long ticks = ToInt64(buffer, offset + 4);
+            var kind = (DateTimeKind)ToInt32(buffer, offset);
+            var ticks = ToInt64(buffer, offset + 4);
             return new DateTime(ticks, kind);
         }
 
@@ -203,8 +200,8 @@ namespace Ookii.Jumbo
             if (offset < 0 || offset >= buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
             byte currentByte;
-            int result = 0;
-            int bits = 0;
+            var result = 0;
+            var bits = 0;
             do
             {
                 if (bits == 35)

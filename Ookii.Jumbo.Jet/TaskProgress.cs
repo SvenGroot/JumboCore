@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.Jet
 {
@@ -38,7 +37,7 @@ namespace Ookii.Jumbo.Jet
                 if (_additionalProgressValues == null)
                     return Progress;
                 else
-                    return (Progress + _additionalProgressValues.Sum(x => x.Progress)) / (float)(_additionalProgressValues.Count + 1);
+                    return (Progress + _additionalProgressValues.Sum(x => x.Progress)) / (_additionalProgressValues.Count + 1);
             }
         }
 
@@ -71,7 +70,7 @@ namespace Ookii.Jumbo.Jet
             Progress = 1.0f;
             if (_additionalProgressValues != null)
             {
-                foreach (AdditionalProgressValue value in _additionalProgressValues)
+                foreach (var value in _additionalProgressValues)
                     value.Progress = 1.0f;
             }
         }

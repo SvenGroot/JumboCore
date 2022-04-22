@@ -1,8 +1,4 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ookii.Jumbo.IO
 {
@@ -17,7 +13,7 @@ namespace Ookii.Jumbo.IO
     /// </remarks>
     public class InvertedRawComparer<T> : IRawComparer<T>
     {
-        private IRawComparer<T> _comparer = RawComparer<T>.CreateComparer();
+        private readonly IRawComparer<T> _comparer = RawComparer<T>.CreateComparer();
 
         /// <summary>
         /// Compares the binary representation of two objects and returns a value indicating whether one is less than, equal to, or greater than the other.

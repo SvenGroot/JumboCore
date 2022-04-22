@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace Ookii.Jumbo.Jet.Scheduling
 {
@@ -50,8 +48,8 @@ namespace Ookii.Jumbo.Jet.Scheduling
                 if (x == y)
                     return 0;
 
-                int tasksX = x.GetLocalTaskCount(_stage);
-                int tasksY = y.GetLocalTaskCount(_stage);
+                var tasksX = x.GetLocalTaskCount(_stage);
+                var tasksY = y.GetLocalTaskCount(_stage);
 
                 if (tasksX < tasksY)
                     return -1;
@@ -78,7 +76,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
             // Schedule with increasing data distance or until we run out of capacity or tasks
             // If the cluster has only one rack, distance 1 is the same as distance 2, and the cluster must run out of either tasks or capacity
             // for distance 1 so there's no need to check and short-circuit the loop.
-            foreach (IJobInfo job in jobs)
+            foreach (var job in jobs)
             {
                 token.ThrowIfCancellationRequested();
                 if (!ScheduleJob(job, token))
@@ -88,7 +86,7 @@ namespace Ookii.Jumbo.Jet.Scheduling
 
         private static bool ScheduleJob(IJobInfo job, CancellationToken token)
         {
-            foreach (IStageInfo stage in job.Stages)
+            foreach (var stage in job.Stages)
             {
                 token.ThrowIfCancellationRequested();
                 if (stage.IsReadyForScheduling && stage.UnscheduledTaskCount > 0)
@@ -130,11 +128,11 @@ namespace Ookii.Jumbo.Jet.Scheduling
             }
 
 
-            bool tasksAndCapacityLeft = true;
-            for (int distance = 0; distance < 3 && distance <= job.Configuration.SchedulerOptions.MaximumDataDistance && tasksAndCapacityLeft; ++distance)
+            var tasksAndCapacityLeft = true;
+            for (var distance = 0; distance < 3 && distance <= job.Configuration.SchedulerOptions.MaximumDataDistance && tasksAndCapacityLeft; ++distance)
             {
                 var availableTaskServers = job.TaskServers.Where(server => server.IsActive && server.AvailableTaskSlots > 0);
-                PriorityQueue<ITaskServerJobInfo> taskServers = new PriorityQueue<ITaskServerJobInfo>(availableTaskServers, comparer);
+                var taskServers = new PriorityQueue<ITaskServerJobInfo>(availableTaskServers, comparer);
                 tasksAndCapacityLeft = ScheduleDataInputTasks(taskServers, stage, distance, token);
             }
 
@@ -143,16 +141,16 @@ namespace Ookii.Jumbo.Jet.Scheduling
 
         private static bool ScheduleDataInputTasks(PriorityQueue<ITaskServerJobInfo> taskServers, IStageInfo stage, int distance, CancellationToken token)
         {
-            int unscheduledTasks = stage.UnscheduledTaskCount; // Tasks that can be scheduled but haven't been scheduled yet.
-            bool capacityRemaining = false;
+            var unscheduledTasks = stage.UnscheduledTaskCount; // Tasks that can be scheduled but haven't been scheduled yet.
+            var capacityRemaining = false;
 
             if (unscheduledTasks > 0)
             {
                 while (taskServers.Count > 0 && unscheduledTasks > 0)
                 {
                     token.ThrowIfCancellationRequested();
-                    ITaskServerJobInfo server = taskServers.Peek();
-                    ITaskInfo task = server.FindDataInputTaskToSchedule(stage, distance);
+                    var server = taskServers.Peek();
+                    var task = server.FindDataInputTaskToSchedule(stage, distance);
                     if (task != null)
                     {
                         server.AssignTask(task, distance);
@@ -178,24 +176,24 @@ namespace Ookii.Jumbo.Jet.Scheduling
 
         private static bool ScheduleNonDataInputTasks(IJobInfo job, IStageInfo stage, CancellationToken token)
         {
-            List<ITaskInfo> unscheduledTasks = stage.Tasks.Where(t => !t.IsAssignedToServer).ToList();
+            var unscheduledTasks = stage.Tasks.Where(t => !t.IsAssignedToServer).ToList();
             Debug.Assert(unscheduledTasks.Count > 0);
             var availableTaskServers = job.TaskServers.Where(server => server.IsActive && server.AvailableTaskSlots > 0);
 
-            TaskServerSlotsComparer comparer = new TaskServerSlotsComparer();
+            var comparer = new TaskServerSlotsComparer();
             comparer.Invert = job.Configuration.SchedulerOptions.NonDataInputSchedulingMode != SchedulingMode.FewerServers;
-            PriorityQueue<ITaskServerJobInfo> taskServers = new PriorityQueue<ITaskServerJobInfo>(availableTaskServers, comparer);
+            var taskServers = new PriorityQueue<ITaskServerJobInfo>(availableTaskServers, comparer);
 
             while (taskServers.Count > 0 && unscheduledTasks.Count > 0)
             {
                 token.ThrowIfCancellationRequested();
-                ITaskServerJobInfo server = taskServers.Peek();
+                var server = taskServers.Peek();
                 // We search backwards because that will make the remove operation cheaper.
-                int taskIndex = unscheduledTasks.FindLastIndex(task => !task.IsBadServer(server));
+                var taskIndex = unscheduledTasks.FindLastIndex(task => !task.IsBadServer(server));
                 if (taskIndex >= 0)
                 {
                     // Found a task we can schedule.
-                    ITaskInfo task = unscheduledTasks[taskIndex];
+                    var task = unscheduledTasks[taskIndex];
                     unscheduledTasks.RemoveAt(taskIndex);
                     server.AssignTask(task);
                     _log.InfoFormat("Task {0} has been assigned to server {1}.", task.FullTaskId, server.Address);

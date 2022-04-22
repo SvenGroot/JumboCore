@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -75,7 +74,7 @@ namespace NameServerApplication
                     return DfsPath.DirectorySeparator.ToString(CultureInfo.InvariantCulture);
                 else
                 {
-                    StringBuilder path = new StringBuilder();
+                    var path = new StringBuilder();
                     BuildPath(path);
                     return path.ToString();
                 }
@@ -97,7 +96,7 @@ namespace NameServerApplication
 
             if (newParent != Parent || newName != null)
             {
-                string name = newName ?? Name;
+                var name = newName ?? Name;
                 if ((from child in newParent.Children where child.Name == name select child).Count() > 0)
                     throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The specified new parent already contains an entry with the name \"{0}\".", newName));
             }
@@ -137,9 +136,9 @@ namespace NameServerApplication
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
-            string className = reader.ReadString();
-            string name = reader.ReadString();
-            DateTime dateCreated = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
+            var className = reader.ReadString();
+            var name = reader.ReadString();
+            var dateCreated = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
             DfsFileSystemEntry entry;
             if (className == typeof(DfsFile).FullName)
                 entry = new DfsFile(parent, name, dateCreated);
