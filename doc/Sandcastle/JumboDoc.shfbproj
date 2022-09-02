@@ -31,10 +31,10 @@
       <Argument Key="maxVersionParts" Value="" xmlns="" />
     </TransformComponentArguments>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
-      <DocumentationSource sourceFile="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
-      <DocumentationSource sourceFile="..\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
-      <DocumentationSource sourceFile="..\Ookii.Jumbo.Jet.Samples\Ookii.Jumbo.Jet.Samples.csproj" />
+      <DocumentationSource sourceFile="..\..\src\Ookii.Jumbo\Ookii.Jumbo.csproj" />
+      <DocumentationSource sourceFile="..\..\src\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
+      <DocumentationSource sourceFile="..\..\src\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
+      <DocumentationSource sourceFile="..\..\src\Ookii.Jumbo.Jet.Samples\Ookii.Jumbo.Jet.Samples.csproj" />
     </DocumentationSources>
     <HelpFileFormat>Website</HelpFileFormat>
     <SyntaxFilters>Standard</SyntaxFilters>
