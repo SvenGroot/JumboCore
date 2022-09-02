@@ -1,0 +1,2510 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ookii.Jumbo.Dfs</name>
+    </assembly>
+    <members>
+        <member name="T:Ookii.Jumbo.Dfs.BlockAssignment">
+            <summary>
+            Provides information about a block of a file.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockAssignment.#ctor(System.Guid,System.Collections.Generic.IEnumerable{Ookii.Jumbo.ServerAddress})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.BlockAssignment"/> class.
+            </summary>
+            <param name="blockId">The ID of the block.</param>
+            <param name="dataServers">The list of data servers that have this block.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.BlockAssignment.BlockId">
+            <summary>
+            Gets the unique identifier of this block.
+            </summary>
+            <value>
+            A <see cref="T:System.Guid"/> that uniquely identifies this block.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.BlockAssignment.DataServers">
+            <summary>
+            Gets the data servers that have a replica of this block.
+            </summary>
+            <value>
+            A collection of <see cref="T:Ookii.Jumbo.ServerAddress"/> objects for the data servers that have this block.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.BlockKind">
+            <summary>
+            Specifies what kind of blocks to return from <see cref="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetBlocks(Ookii.Jumbo.Dfs.BlockKind)"/>.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.BlockKind.Normal">
+            <summary>
+            All regular, non-pending blocks.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.BlockKind.UnderReplicated">
+            <summary>
+            All blocks that are insufficiently replicated.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.BlockKind.Pending">
+            <summary>
+            All blocks that are pending.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.BlockReportHeartbeatData">
+            <summary>
+            Represents the data sent during a heartbeat when the data server is sending a block report.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockReportHeartbeatData.#ctor(System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.BlockReportHeartbeatData"/> class.
+            </summary>
+            <param name="blocks">The list of blocks that this data server has.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.BlockReportHeartbeatData.Blocks">
+            <summary>
+            Gets the the blocks that are stored on this data server.
+            </summary>
+            <value>
+            A list of block IDs for the blocks stored on this data server.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.BlockSender">
+            <summary>
+            Handles sending a block to a data server, and sending acknowledgements to a client.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.#ctor(Ookii.Jumbo.Dfs.BlockAssignment)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.BlockSender"/> class.
+            </summary>
+            <param name="assignment">The block assignment.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.#ctor(System.Guid,System.Collections.Generic.IEnumerable{Ookii.Jumbo.ServerAddress},System.IO.BinaryWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.BlockSender"/> class.
+            </summary>
+            <param name="blockId">The <see cref="T:System.Guid"/> of the block to send.</param>
+            <param name="dataServers">The data servers that the block should be forwarded to. May be an empty list.</param>
+            <param name="clientWriter">The writer to use to forward acknowledgements. May be null.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.BlockSender.IsResponseOnly">
+            <summary>
+            Gets a value indicating whether this instance only sends responses, and doesn't send the data to any server.
+            </summary>
+            <value>
+            <see langword="true" /> if this instance only sends responses; otherwise, <see langword="false" />.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.BlockSender.ServerStatus">
+            <summary>
+            Gets the server status.
+            </summary>
+            <value>
+            One of the <see cref="T:Ookii.Jumbo.Dfs.DataServerClientProtocolResult"/> values that indicates the server status.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.SendPacket(Ookii.Jumbo.Dfs.Packet)">
+            <summary>
+            Sends the packet to the server, and queues the acknowledgement.
+            </summary>
+            <param name="packet">The packet.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.WaitForAcknowledgements">
+            <summary>
+            Waits for acknowledgements.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.Cancel">
+            <summary>
+            Cancels this instance.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.ThrowIfErrorOccurred">
+            <summary>
+            Throws an exception if an error occurred.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.BlockSender.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.ChecksumConfigurationElement">
+            <summary>
+            Provides configuration for the file checksums used by both the data server and client.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.ChecksumConfigurationElement.IsEnabled">
+            <summary>
+            Gets or sets a value that indicates whether checksums are enabled.
+            </summary>
+            <value>
+            <see langword="true" /> if this checksums are enabled; otherwise, <see langword="false" />.
+            </value>
+            <remarks>
+            If you change this attribute on an existing file system it may prevent you from reading
+            the existing files.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerClientProtocolGetLogFileContentsHeader">
+            <summary>
+            Header sent to the data server for the GetLogFileContents command.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DataServerClientProtocolGetLogFileContentsHeader.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DataServerClientProtocolGetLogFileContentsHeader"/> class with
+            the specified maximum size.
+            </summary>
+            <param name="maxSize">The maximum size of the log data to return.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolGetLogFileContentsHeader.MaxSize">
+            <summary>
+            Gets the maximum size of the log data to return.
+            </summary>
+            <value>
+            The maximum size of the log data to return, in bytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolGetLogFileContentsHeader.Kind">
+            <summary>
+            Gets or sets the type of the log file that the data server return.
+            </summary>
+            <value>The type of the log file.</value>
+            <remarks>
+            <para>
+              When returning standard error and standard output stream, it's assumed the files containing these are in the directory specified by <see cref="P:Ookii.Jumbo.LogConfigurationElement.Directory"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerClientProtocolHeader">
+            <summary>
+            Abstract base class for the header sent by a client when communicating with a data server.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DataServerClientProtocolHeader.#ctor(Ookii.Jumbo.Dfs.DataServerCommand)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DataServerClientProtocolHeader"/> class with the specified command.
+            </summary>
+            <param name="command">The command to send to the server.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolHeader.Command">
+            <summary>
+            Gets or sets the command issued to the data server.
+            </summary>
+            <value>
+            One of the <see cref="T:Ookii.Jumbo.Dfs.DataServerCommand"/> values indicating which command is issued to the data server.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolHeader.BlockId">
+            <summary>
+            Gets or sets the block ID to be read or written.
+            </summary>
+            <value>
+            The ID of the block to be read or written.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerClientProtocolReadHeader">
+            <summary>
+            Represents the header sent by a client to the data server when reading a block.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DataServerClientProtocolReadHeader.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DataServerClientProtocolReadHeader"/> class.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolReadHeader.Offset">
+            <summary>
+            Gets or sets the offset into the block at which to start reading.
+            </summary>
+            <value>
+            The offset into the block, in bytes, at which to start reading.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolReadHeader.Size">
+            <summary>
+            Gets or sets the size of the data to read.
+            </summary>
+            <value>
+            The size of the data to read, in bytes.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerClientProtocolResult">
+            <summary>
+            A status code sent by the data server when it received a packet.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerClientProtocolResult.Ok">
+            <summary>
+            The packet was successfully received and written to disk.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerClientProtocolResult.Error">
+            <summary>
+            An error occurred while receiving or processing the packet.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerClientProtocolResult.OutOfRange">
+            <summary>
+            The requested block offset was larger than the block size.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerClientProtocolWriteHeader">
+            <summary>
+            Represents the header a client sends to a data server when writing a block.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DataServerClientProtocolWriteHeader.#ctor(System.Collections.Generic.IEnumerable{Ookii.Jumbo.ServerAddress})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DataServerClientProtocolWriteHeader"/> class.
+            </summary>
+            <param name="dataServers">The list of data servers that this block should be written to.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerClientProtocolWriteHeader.DataServers">
+            <summary>
+            Gets or sets the data servers that this block should be written to.
+            </summary>
+            <value>
+            A list of <see cref="T:Ookii.Jumbo.ServerAddress"/> objects for the data servers that this block should be written to.
+            </value>
+            <remarks>
+            The first server in the list should be the data server this header is sent to. The server
+            will forward the block to the next server in the list.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerCommand">
+            <summary>
+            The function the data server should perform for a client.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerCommand.ReadBlock">
+            <summary>
+            The client wants to read a block from the data server.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerCommand.WriteBlock">
+            <summary>
+            The client wants to write a block to the data server.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerCommand.GetLogFileContents">
+            <summary>
+            The clients wants to read the contents of the data servers diagnostic log file.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerConfigurationElement">
+            <summary>
+            Provides configuration settings for the data servers.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.Port">
+            <summary>
+            Gets or sets the port number on which the data server listens for client connections.
+            </summary>
+            <value>
+            The port number on which the data server listens for client connections. The default value is 9001.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.BlockStorageDirectory">
+            <summary>
+            Gets or sets the path to the directory where the data server stores block files.
+            </summary>
+            <value>
+            The path to the directory where the data server stores block files.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.ListenIPv4AndIPv6">
+            <summary>
+            Gets or sets value that indicates whether the server should listen on both IPv6 and IPv4.
+            </summary>
+            <value>
+            <see langword="true"/> if the server should listen on both IPv6 and IPv4; <see langword="false"/>
+            if the server should listen only on IPv6 if it's available, and otherwise on IPv4.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.StatusUpdateInterval">
+            <summary>
+            Gets or sets the interval at which the data server should send status updates
+            (including disk space reports) to the name server.
+            </summary>
+            <value>
+            The interval at which the data server should send status updates, in seconds. The default value is 60.
+            </value>
+            <remarks>
+            Disk space status updates are always sent after blocks are received or deleted, regardless
+            of this value.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.WriteBufferSize">
+            <summary>
+            Gets or sets the size of the write buffer for block files.
+            </summary>
+            <value>
+            The size of the write buffer for block files. The default value is 128 kilobytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerConfigurationElement.ReadBufferSize">
+            <summary>
+            Gets or sets the size of the read buffer for block files.
+            </summary>
+            <value>
+            The size of the read buffer for block files. The default value is 128 kilobytes.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand">
+            <summary>
+            The command given to a DataServer by the NameServer.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.None">
+            <summary>
+            The name server doesn't have any tasks for the data server to perform.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.ReportBlocks">
+            <summary>
+            The name server wants the data server to send a full list of all its blocks.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.DeleteBlocks">
+            <summary>
+            The name server wants the data server to delete certain blocks.
+            </summary>
+            <remarks>
+            The most likely causes for this command would be if the data server reported blocks that the name server
+            does not recognise, or if the some blocks are over-replicated.
+            </remarks>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.ReplicateBlock">
+            <summary>
+            The name server wants the data server to replicate a block to a different data server.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.SendInitialData">
+            <summary>
+            The name server doesn't know this data server and needs an initial data heartbeat to verify the file system ID.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DataServerMetrics">
+            <summary>
+            Provides metrics about a data server.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerMetrics.BlockCount">
+            <summary>
+            Gets or sets the number of blocks stored on this server.
+            </summary>
+            <value>
+            The number of blocks stored on this server.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerMetrics.DiskSpaceUsed">
+            <summary>
+            Gets or sets the amount of disk space used by the block files.
+            </summary>
+            <value>
+            The amount of disk space used by the block files, in bytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerMetrics.DiskSpaceFree">
+            <summary>
+            Gets or sets the amount of free disk space on the disk holding the blocks.
+            </summary>
+            <value>
+            The amount of free disk space on the disk holding the blocks, in bytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DataServerMetrics.DiskSpaceTotal">
+            <summary>
+            Gets or sets the total size of the disk holding the blocks.
+            </summary>
+            <value>
+            The total size of the disk holding the blocks, in bytes.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DataServerMetrics.ToString">
+            <summary>
+            Gets a string representation of the <see cref="T:Ookii.Jumbo.Dfs.DataServerMetrics"/>.
+            </summary>
+            <returns>A string representation of the <see cref="T:Ookii.Jumbo.Dfs.DataServerMetrics"/>.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DeleteBlocksHeartbeatResponse">
+            <summary>
+            Provides data for the data server about which blocks it should delete.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DeleteBlocksHeartbeatResponse.#ctor(System.Guid,System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DeleteBlocksHeartbeatResponse" /> class.
+            </summary>
+            <param name="fileSystemId">The file system id.</param>
+            <param name="blocks">A list of the identifiers of the blocks to delete.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DeleteBlocksHeartbeatResponse.Blocks">
+            <summary>
+            Gets a list with the identifiers of the blocks to delete.
+            </summary>
+            <value>
+            A list of <see cref="T:System.Guid"/> values that identiy the blocks to delete.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsConfiguration">
+            <summary>
+            Provides configuration for the distributed file system.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsConfiguration.FileSystem">
+            <summary>
+            Gets the configuration element that configures the file system.
+            </summary>
+            <value>
+            The configuration element for the file system.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsConfiguration.NameServer">
+            <summary>
+            Gets the configuration element that configures the name server.
+            </summary>
+            <value>
+            The configuration element that configures the name server.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsConfiguration.DataServer">
+            <summary>
+            Gets the configuration element that configures the data server.
+            </summary>
+            <value>
+            The configuration element that configures the data server.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsConfiguration.Checksum">
+            <summary>
+            Gets the configuration element for the checksums used by both the data servers and the clients.
+            </summary>
+            <value>
+            The configuration element for the checksums used by both the data servers and the clients.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsConfiguration.GetConfiguration">
+            <summary>
+            Loads the DFS configuration from the application configuration file.
+            </summary>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> object representing the settings in the application configuration file, or
+            a default instance if the section was not present in the configuration file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsConfiguration.GetConfiguration(System.Configuration.Configuration)">
+            <summary>
+            Loads the DFS configuration from the specified configuration.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration" /> object representing the settings in the application configuration file, or
+            a default instance if the section was not present in the configuration file.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsException">
+            <summary>
+            Represents an error with the distributed file system.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> class. 
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> class with a specified error message and a reference to the inner <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> that is the cause of this <see cref="T:Ookii.Jumbo.Dfs.DfsException"/>. 
+            </summary>
+            <param name="message">The error message that explains the reason for the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/>.</param>
+            <param name="inner">The <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> that is the cause of the current <see cref="T:Ookii.Jumbo.Dfs.DfsException"/>, or a null reference (Nothing in Visual Basic) if no inner <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> is specified.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> class with serialized data. 
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the <see cref="T:Ookii.Jumbo.Dfs.DfsException"/> being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsInputStream">
+            <summary>
+            Provides a stream for reading a block from the distributed file system.
+            </summary>
+            <threadsafety static="true" instance="false" />
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.#ctor(Ookii.Jumbo.Dfs.INameServerClientProtocol,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsInputStream"/> with the specified name server and file.
+            </summary>
+            <param name="nameServer">The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> interface of the name server for the distributed
+            file system.</param>
+            <param name="path">The path of the file to read.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Finalize">
+            <summary>
+            Ensures that resources are freed and other cleanup operations are performed when the garbage collector reclaims the <see cref="T:Ookii.Jumbo.Dfs.DfsInputStream"/>.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.BlockSize">
+            <summary>
+            Gets the size of the blocks of this file.
+            </summary>
+            <value>
+            The size of the blocks of this file, in bytes.
+            </value>
+            <remarks>
+            This value doesn't need to be the same as the default block size specified by <see cref="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.BlockSize"/>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.CanRead">
+            <summary>
+            Gets a value that indicates whether the current stream supports reading.
+            </summary>
+            <value>
+            Returns <see langword="true"/>.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.CanSeek">
+            <summary>
+            Gets a value that indicates whether the current stream supports seeking.
+            </summary>
+            <value>
+            Returns <see langword="true"/>.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.CanWrite">
+            <summary>
+            Gets a value that indicates whether the current stream supports writing.
+            </summary>
+            <value>
+            Returns <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Flush">
+            <summary>
+            This method is not used for this class; it does nothing.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.Length">
+            <summary>
+            Gets the length of the stream.
+            </summary>
+            <value>
+            The size of the file in the distributed file system.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.Position">
+            <summary>
+            Gets or sets the current stream position.
+            </summary>
+            <returns>The current position within the stream.</returns>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.DataServerErrors">
+            <summary>
+            Gets the number of errors encountered while reading data from the data servers.
+            </summary>
+            <value>
+            The number of errors encountered while reading data from the data servers.
+            </value>
+            <remarks>
+            If the read operation completes successfully, and this value is higher than zero, it means the error was
+            recovered from.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.BlocksRead">
+            <summary>
+            Gets the number of blocks read.
+            </summary>
+            <value>
+            The number of blocks read.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.RecordOptions">
+            <summary>
+            Gets the record options applied to this stream.
+            </summary>
+            <value>
+            One or more of the <see cref="T:Ookii.Jumbo.IO.RecordStreamOptions" /> values indicating the record options applied to this stream.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.StopReadingAtPosition">
+            <summary>
+            Gets or sets the position in the stream after which no data will be read.
+            </summary>
+            <value>
+            The position after which <see cref="M:System.IO.Stream.Read(System.Byte[],System.Int32,System.Int32)"/> method will not return any data. The default value is the length of the stream.
+            </value>
+            <remarks>
+            	<para>
+            For a stream where <see cref="P:Ookii.Jumbo.Dfs.DfsInputStream.RecordOptions"/> is set to <see cref="F:Ookii.Jumbo.IO.RecordStreamOptions.DoNotCrossBoundary"/> you can use this property
+            to ensure that no data after the boundary is read if you only wish to read records up to the boundary.
+            </para>
+            	<para>
+            On the Jumbo DFS, crossing a block boundary will cause a network connection to be established and data to be read from
+            a different data server. If you are reading records from only a single block (as is often the case for Jumbo Jet tasks)
+            this property can be used to ensure that no data from the next block will be read.
+            </para>
+            	<para>
+            Setting this property to a value other than the stream length if <see cref="F:Ookii.Jumbo.IO.RecordStreamOptions.DoNotCrossBoundary"/> is not set, or
+            to a value that is not on a structural boundary can cause reading to halt in the middle of a record, and is therefore not recommended.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.PaddingBytesSkipped">
+            <summary>
+            Gets the amount of padding skipped while reading from the stream.
+            </summary>
+            <value>The amount of padding bytes skipped.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsInputStream.IsStopped">
+            <summary>
+            Gets a value indicating whether this instance has stopped reading.
+            </summary>
+            <value>
+            	<see langword="true"/> if the stream has reached the position indicated by <see cref="P:Ookii.Jumbo.Dfs.DfsInputStream.StopReadingAtPosition"/>; otherwise, <see langword="false"/>.
+            </value>
+            <remarks>
+            If this property is <see langword="true"/> it means the next call to <see cref="M:Ookii.Jumbo.Dfs.DfsInputStream.Read(System.Byte[],System.Int32,System.Int32)"/> will return 0.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read. 
+            </summary>
+            <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between offset and (offset + count - 1) replaced by the bytes read from the current source.</param>
+            <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
+            <param name="count">The maximum number of bytes to be read from the current stream.</param>
+            <returns>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Sets the position within the current stream.
+            </summary>
+            <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
+            <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
+            <returns>The new position within the current stream.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.SetLength(System.Int64)">
+            <summary>
+            Not supported.
+            </summary>
+            <param name="value">The desired length of the current stream in bytes.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Not supported.
+            </summary>
+            <param name="buffer">An array of bytes. This method copies <paramref name="count" /> bytes from <paramref name="buffer" /> to the current stream.</param>
+            <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin copying bytes to the current stream.</param>
+            <param name="count">The number of bytes to be written to the current stream.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.OffsetFromBoundary(System.Int64)">
+            <summary>
+            Determines the offset of the specified position from the directly preceding structural boundary (e.g. a block boundary on the DFS).
+            </summary>
+            <param name="position">The position.</param>
+            <returns>
+            The offset from the structural boundary that directly precedes the specified position.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.AreInsideSameBoundary(System.Int64,System.Int64)">
+            <summary>
+            Determines whether the range between two specified positions does not cross a structural boundary (e.g. a block boundary on the DFS).
+            </summary>
+            <param name="position1">The first position.</param>
+            <param name="position2">The second position.</param>
+            <returns>
+            	<see langword="true"/> if the <paramref name="position1"/> and <paramref name="position2"/> fall inside the same boundaries (e.g. if
+            both positions are in the same block in the DFS); otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsInputStream.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:Ookii.Jumbo.Dfs.DfsInputStream"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsMetrics">
+            <summary>
+            Represents information about the current state of the distributed file system.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.NameServer">
+            <summary>
+            Gets or sets the address of the name server.
+            </summary>
+            <value>The address of the name server.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.TotalSize">
+            <summary>
+            Gets or sets the total size of all files.
+            </summary>
+            <value>
+            The size of all files in the DFS added together; note that the actual space used on the
+            data servers will be higher due to replication.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.TotalCapacity">
+            <summary>
+            Gets the total storage capacity of the DFS.
+            </summary>
+            <value>The total capacity. This is the total disk space of all the data servers combined.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.DfsCapacityUsed">
+            <summary>
+            Gets or sets the storage capacity that is used by files on the DFS.
+            </summary>
+            <value>The storage capacity that is used by files on the DFS; this includes space used by replicated blocks.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.AvailableCapacity">
+            <summary>
+            Gets or sets the storage capacity that is available.
+            </summary>
+            <value>The storage capacity that is available, which is the value of <see cref="P:Ookii.Jumbo.Dfs.DfsMetrics.TotalCapacity"/>
+            minus <see cref="P:Ookii.Jumbo.Dfs.DfsMetrics.DfsCapacityUsed"/> minus the capacity used by other files on the same disks.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.TotalBlockCount">
+            <summary>
+            Gets or sets the total number of blocks. This does not include pending blocks.
+            </summary>
+            <value>
+            The the total number of non-pending blocks.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.UnderReplicatedBlockCount">
+            <summary>
+            Gets or sets the total number of blocks that are not fully replicated.
+            </summary>
+            <value>
+            The total number of blocks that are not fully replicated.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.PendingBlockCount">
+            <summary>
+            Gets or sets the total number of blocks that have not yet been committed.
+            </summary>
+            <value>
+            The total number of blocks that have not yet been committed.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsMetrics.DataServers">
+            <summary>
+            Gets metrics for all data servers registered with the system.
+            </summary>
+            <value>
+            A list of <see cref="T:Ookii.Jumbo.Dfs.DataServerMetrics"/> objects for each data server.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsMetrics.PrintMetrics(System.IO.TextWriter)">
+            <summary>
+            Prints the metrics.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> to print the metrics to.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsOutputStream">
+            <summary>
+            Provides a stream for writing files to the distributed file system.
+            </summary>
+            <threadsafety static="true" instance="false" />
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.#ctor(Ookii.Jumbo.Dfs.INameServerClientProtocol,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> with the specified name server and file.
+            </summary>
+            <param name="nameServer">The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> interface of the name server for the distributed
+            file system.</param>
+            <param name="path">The path of the file to write.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.#ctor(Ookii.Jumbo.Dfs.INameServerClientProtocol,System.String,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> class.
+            </summary>
+            <param name="nameServer">The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> interface of the name server for the distributed
+            file system.</param>
+            <param name="path">The path of the file to write.</param>
+            <param name="recordOptions">The record options for the file.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.#ctor(Ookii.Jumbo.Dfs.INameServerClientProtocol,System.String,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> with the specified name server and file.
+            </summary>
+            <param name="nameServer">The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> interface of the name server for the distributed
+            file system.</param>
+            <param name="path">The path of the file to write.</param>
+            <param name="blockSize">The size of the blocks of the file, or zero to use the file system default block size.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.#ctor(Ookii.Jumbo.Dfs.INameServerClientProtocol,System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> with the specified name server and file.
+            </summary>
+            <param name="nameServer">The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> interface of the name server for the distributed
+            file system.</param>
+            <param name="path">The path of the file to write.</param>
+            <param name="blockSize">The size of the blocks of the file, or zero to use the file system default block size.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>.</param>
+            <param name="recordOptions">The record options for the file.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Finalize">
+            <summary>
+            Finalizes this instance of the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> class.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.BlockSize">
+            <summary>
+            Gets the size of the blocks of this file.
+            </summary>
+            <value>
+            The size of the blocks of this file, in bytes.
+            </value>
+            <remarks>
+            This value doesn't need to be the same as the default block size specified by <see cref="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.BlockSize"/>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.CanRead">
+            <summary>
+            Gets a value that indicates whether the current stream supports reading.
+            </summary>
+            <value>
+            Returns <see langword="false"/>.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.CanSeek">
+            <summary>
+            Gets a value that indicates whether the current stream supports seeking.
+            </summary>
+            <value>
+            Returns <see langword="false"/>.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.CanWrite">
+            <summary>
+            Gets a value that indicates whether the current stream supports writing.
+            </summary>
+            <value>
+            Returns <see langword="true"/>.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Flush">
+            <summary>
+            This method is not used; it does nothing.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.Length">
+            <summary>
+            Gets the length of the stream.
+            </summary>
+            <value>
+            The total number of bytes written to the stream so far.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.Position">
+            <summary>
+            Gets the current stream position.
+            </summary>
+            <value>
+            The current stream position. This value is always equal to <see cref="P:Ookii.Jumbo.Dfs.DfsOutputStream.Length"/>.
+            </value>
+            <remarks>
+            Setting this property is not supported and throws an exception.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.RecordOptions">
+            <summary>
+            Gets the options applied to records in the stream.
+            </summary>
+            <value>One or more of the <see cref="T:Ookii.Jumbo.IO.RecordStreamOptions"/> values.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.DfsOutputStream.RecordsSize">
+            <summary>
+            Gets the amount of the stream that is actually used by records.
+            </summary>
+            <value>The length of the stream minus padding.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Not supported.
+            </summary>
+            <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset" /> and (<paramref name="offset" /> + <paramref name="count" /> - 1) replaced by the bytes read from the current source.</param>
+            <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin storing the data read from the current stream.</param>
+            <param name="count">The maximum number of bytes to be read from the current stream.</param>
+            <returns>
+            The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Not supported.
+            </summary>
+            <param name="offset">A byte offset relative to the <paramref name="origin" /> parameter.</param>
+            <param name="origin">A value of type <see cref="T:System.IO.SeekOrigin" /> indicating the reference point used to obtain the new position.</param>
+            <returns>
+            The new position within the current stream.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.SetLength(System.Int64)">
+            <summary>
+            Not supported.
+            </summary>
+            <param name="value">The desired length of the current stream in bytes.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.
+            </summary>
+            <param name="buffer">An array of bytes. This method copies count bytes from buffer to the current stream.</param>
+            <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the current stream.</param>
+            <param name="count">The number of bytes to be written to the current stream.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.MarkRecord">
+            <summary>
+            Indicates that the current position of the stream is a record boundary.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsOutputStream.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:Ookii.Jumbo.Dfs.DfsOutputStream"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+            <remarks>
+            This function writes all remaining data the data server, waits until sending the packets is finished, and closes
+            the file on the name server.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.DfsPath">
+            <summary>
+            Performs operations on strings that contain file or directory path information for the distributed file system.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.DfsPath.DirectorySeparator">
+            <summary>
+            The character that separates directory names in a path.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsPath.IsPathRooted(System.String)">
+            <summary>
+            Determines if the specified path is rooted.
+            </summary>
+            <param name="path">The path to check.</param>
+            <returns><see langword="true"/> if the path is rooted; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsPath.Combine(System.String,System.String)">
+            <summary>
+            Combines two paths.
+            </summary>
+            <param name="path1">The first path.</param>
+            <param name="path2">The second path.</param>
+            <returns>The combined path.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsPath.GetFileName(System.String)">
+            <summary>
+            Returns the file name and extension of the specified path string.
+            </summary>
+            <param name="path">The path string from which to obtain the file name and extension.</param>
+            <returns>The file name and extension of the specified path string.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.DfsPath.GetDirectoryName(System.String)">
+            <summary>
+            Returns the directory information for the specified path string.
+            </summary>
+            <param name="path">The path of a file or directory.</param>
+            <returns>Directory information for <paramref name="path"/>, or <see langword="null"/> if <paramref name="path"/> denotes a root directory. return <see cref="F:System.String.Empty"/> if <paramref name="path"/> does
+            not contain directory information.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystemConfigurationElement">
+            <summary>
+            Provides configuration information about the file system.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystemConfigurationElement.Url">
+            <summary>
+            Gets or sets the URL of the file system.
+            </summary>
+            <value>
+            The URL of the file system.
+            </value>
+            <remarks>
+            <para>
+              What type of file system is used is determined by the URL's scheme. The scheme "jdfs://" is used for the Jumbo DFS,
+              and "file://" is used for the local file system.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.DfsClient">
+            <summary>
+            Provides client access to the Distributed File System.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.DfsClient.NameServer">
+            <summary>
+            Gets the name server client protocol object used by this instance to communicate with the name server.
+            </summary>
+            <value>
+            The <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol" /> object used by this instance to communicate with the name server.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.DfsClient.Path">
+            <summary>
+            Gets the path utility for this file system.
+            </summary>
+            <value>
+            The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility"/> implementation for this file system.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.DfsClient.DefaultBlockSize">
+            <summary>
+            Gets the default block size for the file system.
+            </summary>
+            <value>
+            The default block size, or 0 if the file system doesn't support blocks.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateNameServerClient">
+            <summary>
+            Creates a client object that can be used to communicate with a name server.
+            </summary>
+            <returns>An object implementing <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> that is a proxy class for
+            communicating with the name server via RPC.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateNameServerClient(Ookii.Jumbo.Dfs.DfsConfiguration)">
+            <summary>
+            Creates a client object that can be used to communicate with a name server using the specified configuration.
+            </summary>
+            <param name="config">A <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> that provides the name server configuration to use.</param>
+            <returns>An object implementing <see cref="T:Ookii.Jumbo.Dfs.INameServerClientProtocol"/> that is a proxy class for
+            communicating with the name server via RPC.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateNameServerHeartbeatClient">
+            <summary>
+            Creates a client object that can be used to communicate with a name server via the heartbeat protocol.
+            </summary>
+            <returns>An object implementing <see cref="T:Ookii.Jumbo.Dfs.INameServerHeartbeatProtocol"/> that is a proxy class for
+            communicating with the name server via RPC.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateNameServerHeartbeatClient(Ookii.Jumbo.Dfs.DfsConfiguration)">
+            <summary>
+            Creates a client object that can be used to communicate with a name server via the heartbeat protocol
+            using the specified configuration.
+            </summary>
+            <param name="config">A <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> that provides the name server configuration to use.</param>
+            <returns>An object implementing <see cref="T:Ookii.Jumbo.Dfs.INameServerHeartbeatProtocol"/> that is a proxy class for
+            communicating with the name server via RPC.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetDataServerLogFileContents(Ookii.Jumbo.ServerAddress,Ookii.Jumbo.LogFileKind,System.Int32)">
+            <summary>
+            Gets the contents of the diagnostic log file of a data server.
+            </summary>
+            <param name="address">The <see cref="T:Ookii.Jumbo.ServerAddress"/> of the data server.</param>
+            <param name="kind">The kind of log file.</param>
+            <param name="maxSize">The maximum size of the log data to return.</param>
+            <returns>The contents of the log file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetDataServerLogFileContents(System.String,System.Int32,Ookii.Jumbo.LogFileKind,System.Int32)">
+            <summary>
+            Gets the contents of the diagnostic log file of a data server.
+            </summary>
+            <param name="hostName">The host name of the data server.</param>
+            <param name="port">The port on which the data server is listening.</param>
+            <param name="kind">The kind of log file.</param>
+            <param name="maxSize">The maximum size of the log data to return.</param>
+            <returns>The contents of the log file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateDirectory(System.String)">
+            <summary>
+            Creates the specified directory in the file system.
+            </summary>
+            <param name="path">The path of the directory to create.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetDirectoryInfo(System.String)">
+            <summary>
+            Gets information about a directory in the file system.
+            </summary>
+            <param name="path">The full path of the directory.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetFileInfo(System.String)">
+            <summary>
+            Gets information about a file.
+            </summary>
+            <param name="path">The full path of the file.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> object referring to the file, or <see langword="null"/> if the file doesn't exist.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetFileSystemEntryInfo(System.String)">
+            <summary>
+            Gets information about a file or directory.
+            </summary>
+            <param name="path">The full path of the file or directory.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null"/> if the entry doesn't exist.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.OpenFile(System.String)">
+            <summary>
+            Opens the specified file on the distributed file system for reading.
+            </summary>
+            <param name="path">The path of the file.</param>
+            <returns>A <see cref="T:System.IO.Stream"/> that can be used to read the contents of the file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.CreateFile(System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Creates a new file with the specified path on the distributed file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <param name="blockSize">The block size of the new file, or zero to use the file system default block size.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>.</param>
+            <param name="recordOptions">The record options for the file.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes the specified file or directory.
+            </summary>
+            <param name="path">The path of the file or directory to delete.</param>
+            <param name="recursive"><see langword="true"/> to delete all children if <paramref name="path"/> refers to a directory; otherwise <see langword="false"/>.</param>
+            <returns><see langword="true"/> if the file was deleted; <see langword="false"/> if it doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.Move(System.String,System.String)">
+            <summary>
+            Moves the specified file or directory.
+            </summary>
+            <param name="source">The path of the file or directory to move.</param>
+            <param name="destination">The path to move the entry to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.WaitForSafeModeOff(System.Int32)">
+            <summary>
+            Waits until safe mode is off.
+            </summary>
+            <param name="millisecondsTimeout">The maximum time to wait for safe mode to be turned off in milliseconds, or <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.</param>
+            <returns><see langword="true"/> if safe mode was turned off; <see langword="false"/> if the time out expired.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.WaitForSafeModeOff(System.Int32,System.Int32)">
+            <summary>
+            Waits until safe mode is off.
+            </summary>
+            <param name="millisecondsTimeout">The maximum time to wait for safe mode to be turned off in milliseconds, or <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.</param>
+            <param name="millisecondsInterval">The polling interval, in milliseconds.</param>
+            <returns><see langword="true"/> if safe mode was turned off; <see langword="false"/> if the time out expired.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.DfsClient.GetLocationsForOffset(Ookii.Jumbo.Dfs.FileSystem.JumboFile,System.Int64)">
+            <summary>
+            Gets the location where the part of the file beginning with the specified offset is stored.
+            </summary>
+            <param name="file">The file.</param>
+            <param name="offset">The offset.</param>
+            <returns>
+            The host name of the location.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient">
+            <summary>
+            Abstract base class for a class providing file system functionality.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.#ctor(Ookii.Jumbo.Dfs.DfsConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient" /> class.
+            </summary>
+            <param name="configuration">The <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> for the file system.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Path">
+            <summary>
+            Gets the path utility for this file system.
+            </summary>
+            <value>
+            The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility"/> implementation for this file system.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DefaultBlockSize">
+            <summary>
+            Gets the default block size for the file system.
+            </summary>
+            <value>
+            The default block size, or <see langword="null"/> if the file system doesn't support blocks.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Configuration">
+            <summary>
+            Gets the <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> used to create this instance.
+            </summary>
+            <value>
+            The <see cref="T:Ookii.Jumbo.Dfs.DfsConfiguration"/> used to create this instance.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.RegisterFileSystem(System.String,System.Type)">
+            <summary>
+            Registers a file system for the specified scheme.
+            </summary>
+            <param name="scheme">The URL scheme.</param>
+            <param name="fileSystemClientType">Type of the file system client.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Create(Ookii.Jumbo.Dfs.DfsConfiguration)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/> instance with the specified configuration.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <returns>An instance of a class deriving form <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Create">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/> instance.
+            </summary>
+            <returns>An instance of a class deriving form <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.GetDirectoryInfo(System.String)">
+            <summary>
+            Gets information about a directory in the file system.
+            </summary>
+            <param name="path">The full path of the directory.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.GetFileInfo(System.String)">
+            <summary>
+            Gets information about a file.
+            </summary>
+            <param name="path">The full path of the file.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> object referring to the file, or <see langword="null"/> if the file doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.GetFileSystemEntryInfo(System.String)">
+            <summary>
+            Gets information about a file or directory.
+            </summary>
+            <param name="path">The full path of the file or directory.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null" /> if the entry doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.CreateDirectory(System.String)">
+            <summary>
+            Creates the specified directory in the file system.
+            </summary>
+            <param name="path">The path of the directory to create.</param>
+            <remarks>
+            If the directory specified by <paramref name="path"/> already exists, this function does nothing and no exception is thrown.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadStream(System.IO.Stream,System.String)">
+            <summary>
+            Uploads the contents of the specified stream to the file system.
+            </summary>
+            <param name="stream">The stream with the data to upload.</param>
+            <param name="targetPath">The path of the file on the file system to write the data to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadStream(System.IO.Stream,System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Uploads the contents of the specified stream to the file system.
+            </summary>
+            <param name="stream">The stream with the data to upload.</param>
+            <param name="targetPath">The path of the file on the file system to write the data to.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadFile(System.String,System.String)">
+            <summary>
+            Uploads a file to the file system.
+            </summary>
+            <param name="localSourcePath">The path of the file to upload.</param>
+            <param name="targetPath">The path on the file system to store the file. If this is the name of an existing directory, the file
+            will be stored in that directory.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadFile(System.String,System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Uploads a file to the file system.
+            </summary>
+            <param name="localSourcePath">The path of the file to upload.</param>
+            <param name="targetPath">The path on the file system to store the file. If this is the name of an existing directory, the file
+            will be stored in that directory.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadDirectory(System.String,System.String)">
+            <summary>
+            Uploads the files in the specified directory to the file system.
+            </summary>
+            <param name="localSourcePath">The path of the directory on the local file system containing the files to upload.</param>
+            <param name="targetPath">The path of the directory on the file system where the files should be stored. This path must not
+            refer to an existing directory.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.UploadDirectory(System.String,System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Uploads the files in the specified directory to the file system.
+            </summary>
+            <param name="localSourcePath">The path of the directory on the local file system containing the files to upload.</param>
+            <param name="targetPath">The path of the directory on the file system where the files should be stored. This path must not
+            refer to an existing directory.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadStream(System.String,System.IO.Stream)">
+            <summary>
+            Downloads the specified file from the file system, saving it to the specified stream.
+            </summary>
+            <param name="sourcePath">The path of the file on the file system to download.</param>
+            <param name="stream">The stream to save the file to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadStream(System.String,System.IO.Stream,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Downloads the specified file from the file system, saving it to the specified stream.
+            </summary>
+            <param name="sourcePath">The path of the file on the file system to download.</param>
+            <param name="stream">The stream to save the file to.</param>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadFile(System.String,System.String)">
+            <summary>
+            Downloads the specified file from the file system to the specified local file.
+            </summary>
+            <param name="sourcePath">The path of the file on the file system to download.</param>
+            <param name="localTargetPath">The path of the file on the local file system to save the file to. If this is the
+            name of an existing directory, the file will be downloaded to that directory.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadFile(System.String,System.String,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Downloads the specified file from the file system to the specified local file.
+            </summary>
+            <param name="sourcePath">The path of the file on the file system to download.</param>
+            <param name="localTargetPath">The path of the file on the local file system to save the file to. If this is the
+            name of an existing directory, the file will be downloaded to that directory.</param>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadDirectory(System.String,System.String)">
+            <summary>
+            Downloads the files in the specified directory on the file system.
+            </summary>
+            <param name="sourcePath">The directory on the file system to download.</param>
+            <param name="localTargetPath">The local directory to store the files.</param>
+            <remarks>
+            This function is not recursive; it will only download the files that are direct children of the
+            specified directory.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.DownloadDirectory(System.String,System.String,Ookii.Jumbo.Dfs.ProgressCallback)">
+            <summary>
+            Downloads the files in the specified directory on the file system.
+            </summary>
+            <param name="sourcePath">The directory on the file system to download.</param>
+            <param name="localTargetPath">The local directory to store the files.</param>
+            <remarks>
+            This function is not recursive; it will only download the files that are direct children of the
+            specified directory.
+            </remarks>
+            <param name="progressCallback">The <see cref="T:Ookii.Jumbo.Dfs.ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.OpenFile(System.String)">
+            <summary>
+            Opens the specified file on the file system for reading.
+            </summary>
+            <param name="path">The path of the file.</param>
+            <returns>A <see cref="T:System.IO.Stream"/> that can be used to read the contents of the file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.CreateFile(System.String)">
+            <summary>
+            Creates a new file with the specified path on the file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <returns>A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.CreateFile(System.String,System.Int32,System.Int32)">
+            <summary>
+            Creates a new file with the specified path on the file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.CreateFile(System.String,System.Int32,System.Int32,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Creates a new file with the specified path on the file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <param name="recordOptions">The record options for the file. This parameter will be ignored if the file system doesn't support record options.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.CreateFile(System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Creates a new file with the specified path on the file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <param name="blockSize">The block size of the file, or zero to use the file system default block size. This parameter will be ignored if the file system doesn't support blocks.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the file system cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
+            <param name="recordOptions">The record options for the file. This parameter will be ignored if the file system doesn't support record options.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes the specified file or directory.
+            </summary>
+            <param name="path">The path of the file or directory to delete.</param>
+            <param name="recursive"><see langword="true"/> to delete all children if <paramref name="path"/> refers to a directory; otherwise <see langword="false"/>.</param>
+            <returns><see langword="true"/> if the file was deleted; <see langword="false"/> if it doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient.Move(System.String,System.String)">
+            <summary>
+            Moves the specified file or directory.
+            </summary>
+            <param name="source">The path of the file or directory to move.</param>
+            <param name="destination">The path to move the entry to.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility">
+            <summary>
+            Provides helper methods for manipulating paths.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility.DirectorySeparator">
+            <summary>
+            Gets the character that separates directory names in a path.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility.IsPathRooted(System.String)">
+            <summary>
+            Determines if the specified path is rooted.
+            </summary>
+            <param name="path">The path to check.</param>
+            <returns><see langword="true"/> if the path is rooted; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility.Combine(System.String,System.String)">
+            <summary>
+            Combines two paths.
+            </summary>
+            <param name="path1">The first path.</param>
+            <param name="path2">The second path.</param>
+            <returns>The combined path.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility.GetFileName(System.String)">
+            <summary>
+            Returns the file name and extension of the specified path string.
+            </summary>
+            <param name="path">The path string from which to obtain the file name and extension.</param>
+            <returns>The characters after the last directory character in path.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility.GetDirectoryName(System.String)">
+            <summary>
+            Returns the directory information for the specified path string.
+            </summary>
+            <param name="path">The path of a file or directory.</param>
+            <returns>Directory information for <paramref name="path"/>, or <see langword="null"/> if <paramref name="path"/> denotes a root directory. return <see cref="F:System.String.Empty"/> if <paramref name="path"/> does
+            not contain directory information.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.IFileSystemWithLocality">
+            <summary>
+            Represents a file system that incorporates knowledge about the locations of file splits.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.IFileSystemWithLocality.GetLocationsForOffset(Ookii.Jumbo.Dfs.FileSystem.JumboFile,System.Int64)">
+            <summary>
+            Gets the locations where the part of the file beginning with the specified offset is stored.
+            </summary>
+            <param name="file">The file.</param>
+            <param name="offset">The offset.</param>
+            <returns>The host names of the location.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory">
+            <summary>
+            Provides information about a directory on a file system accessible using a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/>.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.#ctor(System.String,System.String,System.DateTime,System.Collections.Generic.IEnumerable{Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> class.
+            </summary>
+            <param name="fullPath">The full path or the directory.</param>
+            <param name="name">The name of the directory.</param>
+            <param name="dateCreated">The date the directory was created.</param>
+            <param name="children">The children of the directory. May be <see langword="null"/>.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.Children">
+            <summary>
+            Gets the files and directories contained in this directory.
+            </summary>
+            <value>
+            A list of <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> instances for the children of the directory.
+            </value>
+            <remarks>
+            Depending on how this <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> instance was obtained, this collection may not be filled.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.FromDirectoryInfo(System.IO.DirectoryInfo,System.String)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> instance for a local directory from a <see cref="T:System.IO.DirectoryInfo"/>.
+            </summary>
+            <param name="directory">The <see cref="T:System.IO.DirectoryInfo"/>.</param>
+            <param name="rootPath">The root path of the file system.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> instance for the local directory.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.FromDirectoryInfo(System.IO.DirectoryInfo,System.String,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> instance for a local directory from a <see cref="T:System.IO.DirectoryInfo"/>.
+            </summary>
+            <param name="directory">The <see cref="T:System.IO.DirectoryInfo"/>.</param>
+            <param name="rootPath">The root path of the file system.</param>
+            <param name="includeChildren">If set to <see langword="true"/>, the children of the directory are included.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> instance for the local directory.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.GetChild(System.String)">
+            <summary>
+            Gets the child with the specified name.
+            </summary>
+            <param name="name">The name of the child.</param>
+            <returns>The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> for the child, or <see langword="null"/> if it doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.ToString">
+            <summary>
+            Gets a string representation of this directory.
+            </summary>
+            <returns>A string representation of this directory.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory.PrintListing(System.IO.TextWriter)">
+            <summary>
+            Prints a listing of the directory.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> </param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile">
+            <summary>
+            Provides information about a file on a file system accessible via the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/> class.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFile.#ctor(System.String,System.String,System.DateTime,System.Int64,System.Int64,System.Int32,Ookii.Jumbo.IO.RecordStreamOptions,System.Boolean,System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> class.
+            </summary>
+            <param name="fullPath">The full path of the file.</param>
+            <param name="name">The name of the file.</param>
+            <param name="dateCreated">The date and time the file was created.</param>
+            <param name="size">The size of the file.</param>
+            <param name="blockSize">The block size of the file.</param>
+            <param name="replicationFactor">The number of replicas.</param>
+            <param name="recordOptions">The record options.</param>
+            <param name="isOpenForWriting">if set to <see langword="true"/> the file is open for writing.</param>
+            <param name="blocks">The blocks that make up this file. May be <see langword="null"/>.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.Size">
+            <summary>
+            Gets the size of the file.
+            </summary>
+            <value>
+            The size of the file.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.BlockSize">
+            <summary>
+            Gets the size of the blocks that the file was divided into.
+            </summary>
+            <value>
+            The size of the blocks, or the size of the file if the file system doesn't support blocks.
+            </value>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.ReplicationFactor">
+            <summary>
+            Gets the number of replicas of this file.
+            </summary>
+            <value>
+            The number of replicas of this file. If the file system doesn't support replication, this value will be 1.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.RecordOptions">
+            <summary>
+            Gets the record options applied to this file.
+            </summary>
+            <value>
+            The record options. If the file system doesn't support record options, this value will be <see langword="RecordStreamOptions.None"/>
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.IsOpenForWriting">
+            <summary>
+            Gets a value indicating whether this file is open for writing.
+            </summary>
+            <value>
+            	<see langword="true"/> if this file is open for writing; otherwise, <see langword="false"/>. If the
+            	file system doesn't support reporting this information, the value will always be <see langword="false"/>.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFile.Blocks">
+            <summary>
+            Gets the IDs of the blocks of this file.
+            </summary>
+            <value>
+            A list of block IDs, or a list containing <see cref="F:System.Guid.Empty"/> if this file system doesn't support blocks.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFile.FromFileInfo(System.IO.FileInfo,System.String)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> instance for a local file from the specified <see cref="T:System.IO.FileInfo"/>.
+            </summary>
+            <param name="file">The <see cref="T:System.IO.FileInfo"/>.</param>
+            <param name="rootPath">The root path of the file system.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> instance for the local file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFile.ToString">
+            <summary>
+            Gets a string representation of this file.
+            </summary>
+            <returns>A string representation of this file.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFile.PrintFileInfo(System.IO.TextWriter)">
+            <summary>
+            Prints information about the file.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> to write the information to.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry">
+            <summary>
+            Provides information about a file accessible from a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/>
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.ListingEntryFormat">
+            <summary>
+            The format string for printing entries in a directory listing.
+            </summary>
+            <remarks>
+            The parameters should be, in order: creation date, size (or a string saying &lt;DIR&gt; for
+            directories), name.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.#ctor(System.String,System.String,System.DateTime)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> class.
+            </summary>
+            <param name="fullPath">The full path.</param>
+            <param name="name">The name.</param>
+            <param name="dateCreated">The date the entry was created.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.FullPath">
+            <summary>
+            Gets the absolute path to the file system entry.
+            </summary>
+            <value>
+            The absolute path to the file system entry.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.Name">
+            <summary>
+            Gets the name of the file system entry.
+            </summary>
+            <value>
+            The name of the file system entry.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.DateCreated">
+            <summary>
+            Gets the date and time the file system entry was created.
+            </summary>
+            <value>
+            The date and time the file system entry was created.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.FromFileSystemInfo(System.IO.FileSystemInfo,System.String)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> instance for a local file or directory from a <see cref="T:System.IO.FileSystemInfo"/>.
+            </summary>
+            <param name="info">The <see cref="T:System.IO.FileSystemInfo"/>.</param>
+            <param name="rootPath">The root path of the file system.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> instance for the local file or directory.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry.FromFileSystemInfo(System.IO.FileSystemInfo,System.String,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> instance for a local file or directory from a <see cref="T:System.IO.FileSystemInfo"/>.
+            </summary>
+            <param name="info">The <see cref="T:System.IO.FileSystemInfo"/>.</param>
+            <param name="rootPath">The root path of the file system.</param>
+            <param name="includeChildren">If set to <see langword="true"/>, include the children if this is a directory.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> instance for the local file or directory.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient">
+            <summary>
+            Provides access to the local file system.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient"/> class.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient"/> class with the specified root path.
+            </summary>
+            <param name="rootPath">The root path.</param>
+            <remarks>
+            <para>
+              In this configuration, all absolute paths (even if they contain a drive specifier on Windows) passed to the members of this class will be made relative to the
+              specified root path. Note that the <see cref="P:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.Path"/> property doesn't consider the root path.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.RootPath">
+            <summary>
+            Gets the root path of the file system.
+            </summary>
+            <value>
+            The root path of the file system, or <see langword="null"/> if absolute paths are accepted as-is.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.Path">
+            <summary>
+            Gets the path utility for this file system.
+            </summary>
+            <value>
+            The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.IFileSystemPathUtility"/> implementation for this file system.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.DefaultBlockSize">
+            <summary>
+            Gets the default block size for the file system.
+            </summary>
+            <value>
+            Always returns <see langword="null"/>, because the local file system doesn't support blocks.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.GetDirectoryInfo(System.String)">
+            <summary>
+            Gets information about a directory in the file system.
+            </summary>
+            <param name="path">The full path of the directory.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> object representing the directory.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.GetFileInfo(System.String)">
+            <summary>
+            Gets information about a file.
+            </summary>
+            <param name="path">The full path of the file.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> object referring to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.GetFileSystemEntryInfo(System.String)">
+            <summary>
+            Gets information about a file or directory.
+            </summary>
+            <param name="path">The full path of the file or directory.</param>
+            <returns>
+            A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null"/> if the .
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.CreateDirectory(System.String)">
+            <summary>
+            Creates the specified directory in the file system.
+            </summary>
+            <param name="path">The path of the directory to create.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.OpenFile(System.String)">
+            <summary>
+            Opens the specified file on the file system for reading.
+            </summary>
+            <param name="path">The path of the file.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to read the contents of the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.CreateFile(System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Creates a new file with the specified path on the file system.
+            </summary>
+            <param name="path">The path containing the directory and name of the file to create.</param>
+            <param name="blockSize">Ignored.</param>
+            <param name="replicationFactor">Ignored.</param>
+            <param name="useLocalReplica">Ignored.</param>
+            <param name="recordOptions">Ignored.</param>
+            <returns>
+            A <see cref="T:System.IO.Stream"/> that can be used to write data to the file.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes the specified file or directory.
+            </summary>
+            <param name="path">The path of the file or directory to delete.</param>
+            <param name="recursive"><see langword="true"/> to delete all children if <paramref name="path"/> refers to a directory; otherwise <see langword="false"/>.</param>
+            <returns>
+              <see langword="true"/> if the file was deleted; <see langword="false"/> if it doesn't exist.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.FileSystem.LocalFileSystemClient.Move(System.String,System.String)">
+            <summary>
+            Moves the specified file or directory.
+            </summary>
+            <param name="source">The path of the file or directory to move.</param>
+            <param name="destination">The path to move the entry to.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.HeartbeatData">
+            <summary>
+            Abstract base class for the data sent by a DataServer to a NameServer during a heartbeat
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.HeartbeatResponse">
+            <summary>
+            Represents the response sent by the NameServer to a Heartbeat message from the DataServer.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.HeartbeatResponse.#ctor(System.Guid,Ookii.Jumbo.Dfs.DataServerHeartbeatCommand)">
+            <summary>
+            Initializes a new innstance of the <see cref="T:Ookii.Jumbo.Dfs.HeartbeatResponse" /> class with the specified command.
+            </summary>
+            <param name="fileSystemId">The file system id.</param>
+            <param name="command">The <see cref="T:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand" /> to send to the server.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.HeartbeatResponse.Command">
+            <summary>
+            Gets the command that the NameServer is giving to the DataServer.
+            </summary>
+            <value>
+            A <see cref="T:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand"/> value that indicates the command issued to the DataServer.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.HeartbeatResponse.FileSystemId">
+            <summary>
+            Gets the file system ID.
+            </summary>
+            <value>
+            A <see cref="T:System.Guid"/> that uniquely identifies this file system.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.INameServerClientProtocol">
+            <summary>
+            Defines the interface used by clients to communicate with the NameServer.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.CreateDirectory(System.String)">
+            <summary>
+            Creates the specified directory in the distributed file system.
+            </summary>
+            <param name="path">The path of the directory to create.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetDirectoryInfo(System.String)">
+            <summary>
+            Gets information about a directory in the file system.
+            </summary>
+            <param name="path">The full path of the directory.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.CreateFile(System.String,System.Int32,System.Int32,System.Boolean,Ookii.Jumbo.IO.RecordStreamOptions)">
+            <summary>
+            Creates a new file in the specified directory.
+            </summary>
+            <param name="path">The full path of the new file.</param>
+            <param name="blockSize">The size of the blocks in the file, or zero to use the file system default block size.</param>
+            <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor.</param>
+            <param name="localReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>.</param>
+            <param name="recordOptions">The record options for the file.</param>
+            <returns>
+            The <see cref="T:Ookii.Jumbo.Dfs.BlockAssignment"/> for the first block of the file.
+            </returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, contains a file name, or refers to an existing file or directory.</exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">Part of the path specified in <paramref name="path"/> does not exist.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.Delete(System.String,System.Boolean)">
+            <summary>
+            Deletes the specified file or directory.
+            </summary>
+            <param name="path">The path of the file or directory to delete.</param>
+            <param name="recursive"><see langword="true"/> to delete all children if <paramref name="path"/> refers to a directory; otherwise <see langword="false"/>.</param>
+            <returns><see langword="true"/> if the file was deleted; <see langword="false"/> if it doesn't exist.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.Move(System.String,System.String)">
+            <summary>
+            Moves the specified file or directory.
+            </summary>
+            <param name="source">The path of the file or directory to move.</param>
+            <param name="destination">The path to move the entry to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetFileInfo(System.String)">
+            <summary>
+            Gets information about a file.
+            </summary>
+            <param name="path">The full path of the file.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFile"/> object referring to the file, or <see langword="null"/> if the file doesn't exist.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetFileSystemEntryInfo(System.String)">
+            <summary>
+            Gets information about a file or directory.
+            </summary>
+            <param name="path">The full path of the file or directory.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Dfs.FileSystem.JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null" /> if the entry doesn't exist.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.AppendBlock(System.String,System.Boolean)">
+            <summary>
+            Appends a new block to a file.
+            </summary>
+            <param name="path">The full path of the file to which to append a block.</param>
+            <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's appending the block if it's part of the DFS cluster; otherwise, <see langword="false"/>.</param>
+            <returns>Information about the new block.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="path"/> is <see langword="null" /> an empty string.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, contains a file name, or refers to an existing file or directory.</exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">Part of <paramref name="path"/> does not exist.</exception>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.CloseFile(System.String)">
+            <summary>
+            Closes a file that is open for writing.
+            </summary>
+            <param name="path">The path of the file to close.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetDataServersForBlock(System.Guid)">
+            <summary>
+            Gets the list of data servers that have the specified block.
+            </summary>
+            <param name="blockId">The <see cref="T:System.Guid"/> identifying the block.</param>
+            <returns>A list of <see cref="T:Ookii.Jumbo.ServerAddress"/> objects that give the addresses of the servers that have this block.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetFileForBlock(System.Guid)">
+            <summary>
+            Gets the file that the specified block belongs to.
+            </summary>
+            <param name="blockId">The block id.</param>
+            <returns>The path of the file that the block belongs to, or <see langword="null"/> if the specified block ID isn't known to the DFS.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetBlocks(Ookii.Jumbo.Dfs.BlockKind)">
+            <summary>
+            Gets the blocks known to the DFS.
+            </summary>
+            <param name="kind">The kind of blocks to include in the results.</param>
+            <returns>A list of blocks.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetMetrics">
+            <summary>
+            Gets current metrics for the distributed file system.
+            </summary>
+            <returns>An object holding the metrics for the name server.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetDataServerBlockCount(Ookii.Jumbo.ServerAddress,System.Guid[])">
+            <summary>
+            Gets the number of blocks from the specified block list that the data server has.
+            </summary>
+            <param name="dataServer">The data server whose blocks to check.</param>
+            <param name="blocks">The blocks to check for.</param>
+            <returns>The number of blocks.</returns>
+            <remarks>
+            This function returns the number of items in the intersection of <paramref name="blocks"/>
+            and the block list for the specified server.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetDataServerBlocks(Ookii.Jumbo.ServerAddress)">
+            <summary>
+            Gets the list of blocks that a particular data server has.
+            </summary>
+            <param name="dataServer">The data server whose blocks to return.</param>
+            <returns>The block IDs of all the blocks on that server.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetDataServerBlocksFromList(Ookii.Jumbo.ServerAddress,System.Guid[])">
+            <summary>
+            Gets the list of blocks, out of the specified blocks, that a particular data server has.
+            </summary>
+            <param name="dataServer">The data server whose blocks to return.</param>
+            <param name="blocks">The list of blocks to filter by.</param>
+            <returns>The block IDs of all the blocks on that server.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.GetLogFileContents(Ookii.Jumbo.LogFileKind,System.Int32)">
+            <summary>
+            Gets the contents of the diagnostic log file.
+            </summary>
+            <param name="kind">The kind of log file to return.</param>
+            <param name="maxSize">The maximum number of bytes to return.</param>
+            <returns>The contents of the diagnostic log file.</returns>
+            <remarks>
+            If the log file is larger than <paramref name="maxSize"/>, the tail of the file up to the
+            specified size is returned.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.RemoveDataServer(Ookii.Jumbo.ServerAddress)">
+            <summary>
+            Removes the specified data server from the name server's list of known data servers.
+            </summary>
+            <param name="dataServer">The address of the data server to remove.</param>
+            <remarks>
+            <para>
+              If a data server has been shutdown, and is known not to restart soon, you can use this function to remove it
+              immediately rather than waiting for the timeout to expire. The name server will remove all information regarding
+              to the data server and force an immediate replication check.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerClientProtocol.CreateCheckpoint">
+            <summary>
+            Immediately creates a checkpoint of the file system namespace.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.INameServerClientProtocol.SafeMode">
+            <summary>
+            Gets or sets a value that indicates whether safe mode is on or off.
+            </summary>
+            <value>
+            <see langword="true" /> if safe mode is on; otherwise, <see langword="false" />.
+            </value>
+            <remarks>
+            Disabling safe mode before full replication is achieved will cause an immediate replication check.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.INameServerClientProtocol.BlockSize">
+            <summary>
+            Gets the default size of a single block in a file.
+            </summary>
+            <value>
+            The default size of a single block in a file.
+            </value>
+            <remarks>
+            All blocks in a file except the last one will be exactly the block size. Individual files may override the
+            default block size.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.INameServerHeartbeatProtocol">
+            <summary>
+            The protocol used by the DataServers to send heartbeat messages to the DataServers.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.INameServerHeartbeatProtocol.Heartbeat(Ookii.Jumbo.ServerAddress,Ookii.Jumbo.Dfs.HeartbeatData[])">
+            <summary>
+            Sends a heartbeat to the name server.
+            </summary>
+            <param name="address">The <see cref="T:Ookii.Jumbo.ServerAddress"/> of the server sending the heartbeat.</param>
+            <param name="data">The data for the heartbeat.</param>
+            <returns>An array of <see cref="T:Ookii.Jumbo.Dfs.HeartbeatResponse"/> for the heartbeat.</returns>
+            <remarks>
+            The <paramref name="address"/> parameter is necessary because data servers are identified by their
+            host name and the port number they use to listen for clients, not their host name alone, so the
+            name server cannot rely on <see cref="P:Ookii.Jumbo.Rpc.ServerContext.ClientHostName"/>.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.InitialHeartbeatData">
+            <summary>
+            Heartbeat data sent by the name server the first time it sends a heartbeat to the server.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.InitialHeartbeatData.#ctor(System.Guid)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.InitialHeartbeatData"/> class.
+            </summary>
+            <param name="fileSystemId">The file system id.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.InitialHeartbeatData.FileSystemId">
+            <summary>
+            Gets the file system id.
+            </summary>
+            <value>
+            The file system id.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.InvalidPacketException">
+            <summary>
+            Exception that is thrown when a <see cref="T:Ookii.Jumbo.Dfs.Packet"/>'s data does not match its checksum.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.InvalidPacketException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> class. 
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.InvalidPacketException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.InvalidPacketException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> class with a specified error message and a reference to the inner <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> that is the cause of this <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/>. 
+            </summary>
+            <param name="message">The error message that explains the reason for the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/>.</param>
+            <param name="inner">The <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> that is the cause of the current <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/>, or a null reference (Nothing in Visual Basic) if no inner <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> is specified.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.InvalidPacketException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> class with serialized data. 
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the <see cref="T:Ookii.Jumbo.Dfs.InvalidPacketException"/> being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.NameServerConfigurationElement">
+            <summary>
+            Provides configuration information about the name server.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.BlockSize">
+            <summary>
+            Gets or sets the default size of a block in a file.
+            </summary>
+            <value>
+            The default block size, in bytes. The default value is 64 megabytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.ReplicationFactor">
+            <summary>
+            Gets or sets the number of replicas to maintain of each block.
+            </summary>
+            <value>
+            The number of replicas to maintain of each block. The default value is 1.
+            </value>
+            <remarks>
+            The recommended value is 3 unless you have fewer than 3 data servers.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.ListenIPv4AndIPv6">
+            <summary>
+            Gets or sets a value that indicates whether the server should listen on both IPv6 and IPv4.
+            </summary>
+            <value>
+            <see langword="true"/> if the server should listen on both IPv6 and IPv4; <see langword="false"/>
+            if the server should listen only on IPv6 if it's available, and otherwise on IPv4.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.ImageDirectory">
+            <summary>
+            Gets or sets the directory in which the file system image and edit log are stored.
+            </summary>
+            <value>
+            The directory in which the file system image and edit log are stored.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.DataServerTimeout">
+            <summary>
+            Gets or sets the minimum amount of time that a data server must be unresponsive before
+            it is considered dead.
+            </summary>
+            <value>
+            The minimum amount of time, in seconds, that a data server must be unresponsive before
+            it is considered dead. The default value is 300.
+            </value>
+            <remarks>
+            Depending on circumstances, it can be up to twice as long before a data server is actually considered dead.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NameServerConfigurationElement.DataServerFreeSpaceThreshold">
+            <summary>
+            Gets or sets the minimum amount of space that a data server must have available in order to be eligible
+            for new blocks.
+            </summary>
+            <value>
+            The minimum amount of space that a data server must have available in order to be eligible
+            for new blocks. The default value is 1 gigabyte.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.NewBlockHeartbeatData">
+            <summary>
+            Represents the data sent by a data server during a heartbeat when it informs the name server
+            it has received a new block.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NewBlockHeartbeatData.BlockId">
+            <summary>
+            Gets or sets the block ID.
+            </summary>
+            <value>
+            A <see cref="T:System.Guid"/> that uniquely identifies the block.
+            </value>
+            
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.NewBlockHeartbeatData.Size">
+            <summary>
+            Gets or sets the size of the block.
+            </summary>
+            <value>
+            The size of the block, in bytes.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.Packet">
+            <summary>
+            Represents a part of a block.
+            </summary>
+            <remarks>
+            Packets are the unit in which block data is stored and transferred over the network. Checksums are
+            computed and stored on a per-packet basis, and each write or read request to a data server must always
+            involve a whole number of packets. All packets except the last must equal <see cref="F:Ookii.Jumbo.Dfs.Packet.PacketSize"/>.
+            </remarks>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.Packet.PacketSize">
+            <summary>
+            The size of a single packet.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.Packet"/> class with no data.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.#ctor(System.Byte[],System.Int32,System.Int64,System.Boolean)">
+            <summary>
+            Initailizes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.Packet"/> class with the specified data.
+            </summary>
+            <param name="data">The data to store in the packet.</param>
+            <param name="size">The size of the data to store in the packet.</param>
+            <param name="sequenceNumber">The sequence number.</param>
+            <param name="isLastPacket"><see langword="true"/> if this is the last packet being sent; otherwise <see langword="false"/>.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.Packet.IsLastPacket">
+            <summary>
+            Gets or sets a value that indicates whether this packet is the last packet being sent.
+            </summary>
+            <value>
+            <see langword="true" /> if this packs is the last packet being sent; otherwise, <see langword="false" />.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.Packet.Size">
+            <summary>
+            Gets or sets the size of the packet.
+            </summary>
+            <value>
+            The size of the packet, in bytes.
+            </value>
+            <remarks>
+            This value will always be less than or equal to <see cref="F:Ookii.Jumbo.Dfs.Packet.PacketSize" />. If
+            <see cref="P:Ookii.Jumbo.Dfs.Packet.IsLastPacket" /> is <see langword="false" />, it will be equal to
+            <see cref="F:Ookii.Jumbo.Dfs.Packet.PacketSize" />.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.Packet.SequenceNumber">
+            <summary>
+            Gets or sets the sequence number of the packet.
+            </summary>
+            <value>
+            The sequence number.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.Packet.Checksum">
+            <summary>
+            Gets or sets the checksum for the data in this packet.
+            </summary>
+            <value>
+            The checksum for the data in this packet, or 0 if checksums are disabled.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.CopyFrom(System.Byte[],System.Int32,System.Int64,System.Boolean)">
+            <summary>
+            Resets the data in the packet using the specified data.
+            </summary>
+            <param name="data">The data to store in the packet.</param>
+            <param name="size">The size of the data to store in the packet.</param>
+            <param name="sequenceNumber">The sequence number.</param>
+            <param name="isLastPacket"><see langword="true"/> if this is the last packet being sent; otherwise <see langword="false"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.CopyFrom(System.IO.Stream,System.Int64,System.Boolean)">
+            <summary>
+            Resets the data in the packet using the specified stream.
+            </summary>
+            <param name="stream">The stream containing the data..</param>
+            <param name="sequenceNumber">The sequence number.</param>
+            <param name="isLastPacket"><see langword="true"/> if this is the last packet being sent; otherwise <see langword="false"/>.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.CopyFrom(Ookii.Jumbo.Dfs.Packet)">
+            <summary>
+            Resets the data in the packet using the data from the specified packet.
+            </summary>
+            <param name="packet">The packet whose data to copy.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.CopyTo(System.Int32,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Copies the packet's data to the specified buffer.
+            </summary>
+            <param name="sourceOffset">The offset in the packet to start copying the data from.</param>
+            <param name="buffer">The buffer to copy the data to.</param>
+            <param name="destinationOffset">The offset in <paramref name="buffer"/> to start writing the data to.</param>
+            <param name="count">The maximum number of bytes to copy into the buffer.</param>
+            <returns>The actual number of bytes written into the buffer.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.Read(System.IO.BinaryReader,Ookii.Jumbo.Dfs.PacketFormatOption,System.Boolean)">
+            <summary>
+            Reads packet data from a <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.BinaryReader"/> to read the packe data from.</param>
+            <param name="format">The format.</param>
+            <param name="verifyChecksum"><see langword="true"/> to verify the checksum read from the data source against
+            the actual checksum of the data; <see langword="false"/> to skip verifying the checksum.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.Write(System.IO.BinaryWriter,Ookii.Jumbo.Dfs.PacketFormatOption)">
+            <summary>
+            Writes the packet to the specified <see cref="T:System.IO.BinaryWriter"/>.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.BinaryWriter"/> to write the packet to.</param>
+            <param name="format">The format.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.WriteDataOnly(System.IO.Stream)">
+            <summary>
+            Writes the packet data, without any header, to the specified <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to write the packet data to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.Equals(System.Object)">
+            <summary>
+            Compares this <see cref="T:Ookii.Jumbo.Dfs.Packet"/> with another object.
+            </summary>
+            <param name="obj">The object to compare with.</param>
+            <returns><see langword="true"/> if the object equals this instance; otherwise, false.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.GetHashCode">
+            <summary>
+            Gets a hash code for this object.
+            </summary>
+            <returns>A hash code for this packet.</returns>
+            <remarks>
+            No factual implementation of this method is prevented, the method is only overridden to prevent the
+            compiler warning against overriding <see cref="M:Ookii.Jumbo.Dfs.Packet.Equals(System.Object)"/> but not <see cref="M:Ookii.Jumbo.Dfs.Packet.GetHashCode"/>.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.Packet.Clear">
+            <summary>
+            Clears this instance.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.PacketFormatOption">
+            <summary>
+            Indicates how to read or write a <see cref="T:Ookii.Jumbo.Dfs.Packet"/>.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.PacketFormatOption.Default">
+            <summary>
+            Reads or writes all fields.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.PacketFormatOption.NoSequenceNumber">
+            <summary>
+            Reads or writes all fields except the sequence number.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Dfs.PacketFormatOption.ChecksumOnly">
+            <summary>
+            Reads or writes only the checksum and the data.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.ProgressCallback">
+            <summary>
+            Delegate used by <see cref="T:Ookii.Jumbo.Dfs.FileSystem.DfsClient"/> to report progress on various operations.
+            </summary>
+            <param name="fileName">The DFS file name to which the progress applies.</param>
+            <param name="progressPercentage">The progress percentage, between 0 and 100.</param>
+            <param name="progressBytes">The amount of bytes processed so far.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.ReplicateBlockHeartbeatResponse">
+            <summary>
+            Provides data for a <see cref="F:Ookii.Jumbo.Dfs.DataServerHeartbeatCommand.ReplicateBlock"/> command.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.ReplicateBlockHeartbeatResponse.#ctor(System.Guid,Ookii.Jumbo.Dfs.BlockAssignment)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.ReplicateBlockHeartbeatResponse" /> class.
+            </summary>
+            <param name="fileSystemId">The file system id.</param>
+            <param name="blockAssignment">The assignment information for the block to replicate.</param>
+            <exception cref="T:System.ArgumentNullException">blockAssignment</exception>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.ReplicateBlockHeartbeatResponse.BlockAssignment">
+            <summary>
+            Gets the new assignment information for the block to be replicated.
+            </summary>
+            <value>
+            The <see cref="P:Ookii.Jumbo.Dfs.ReplicateBlockHeartbeatResponse.BlockAssignment"/> that contains the new assignment information for the block to be replicated.
+            </value>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.SafeModeException">
+            <summary>
+            Exception that is thrown if the name server is accessed while still in safe mode.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.SafeModeException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> class. 
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.SafeModeException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.SafeModeException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> class with a specified error message and a reference to the inner <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> that is the cause of this <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/>. 
+            </summary>
+            <param name="message">The error message that explains the reason for the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/>.</param>
+            <param name="inner">The <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> that is the cause of the current <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/>, or a null reference (Nothing in Visual Basic) if no inner <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> is specified.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Dfs.SafeModeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> class with serialized data. 
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the <see cref="T:Ookii.Jumbo.Dfs.SafeModeException"/> being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Dfs.StatusHeartbeatData">
+            <summary>
+            Provides some general status data about the data server.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.StatusHeartbeatData.DiskSpaceUsed">
+            <summary>
+            Gets or sets the total amount of disk space used by the blocks on this server.
+            </summary>
+            <value>
+            The total amount of disk space used by the blocks on this server, in bytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.StatusHeartbeatData.DiskSpaceFree">
+            <summary>
+            Gets or sets the amount of free space on the disk holding the blocks.
+            </summary>
+            <value>
+            The amount of free space on the disk holding the blocks, in bytes.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Dfs.StatusHeartbeatData.DiskSpaceTotal">
+            <summary>
+            Gets or sets the total size of the disk(s) holding the servers blocks.
+            </summary>
+            <value>
+            The total size of the disk(s) holding the servers blocks, in bytes.
+            </value>
+        </member>
+    </members>
+</doc>
