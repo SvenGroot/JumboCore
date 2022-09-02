@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:doc="http://www.ookii.org/documentation" doc:title="Jumbo configuration (dfs.config)" xmlns:h="http://www.w3.org/1999/xhtml">
+  <xs:annotation>
+    <xs:documentation>
+      The <h:code>dfs.config</h:code> configuration file provides configuration for the Jumbo Distributed Filesystem.
+    </xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="DfsConfiguration">
+    <xs:all>
+      <xs:element name="fileSystem" type="FileSystemConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;fileSystem&gt;</h:code> element provides information for clients on how to access the file system. For client configuration, this is the
+            only element that needs to be specified.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="nameServer" type="NameServerConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;nameServer&gt;</h:code> element configures the Jumbo DFS NameServer.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dataServer" type="DataServerConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;dataServer&gt;</h:code> element configures the Jumbo DFS DataServers.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="checksum" type="ChecksumConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;checksum&gt;</h:code> element configures the CRC checksums used by the Jumbo DFS.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="FileSystemConfigurationElement">
+    <xs:attribute name="url" type="xs:anyURI" use="optional" default="jdfs://localhost:9000">
+      <xs:annotation>
+        <xs:documentation>
+          A URL indicating how to connect to the file system. Jumbo DFS URLs take the form "jdfs://nameserver:port". If the
+          URL uses the "file://" scheme, the DFS will not be used and path indicated by the URL will be the root of the file system from the point
+          of view of the <h:code>FileSystemClient</h:code> class. You cannot start the Jumbo DFS unless this is a jdfs:// URL.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="NameServerConfigurationElement">
+    <xs:attribute name="imageDirectory" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The local directory where the file system image and edit log are stored. This directory must
+          be formatted using "NameServer.exe format" before use.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="blockSize" type="BinarySize" use="optional" default="64MB">
+      <xs:annotation>
+        <xs:documentation>
+          The default size of blocks for new files on the file system. Individual files can override this value.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="replicationFactor" type="xs:int" use="optional" default="1">
+      <xs:annotation>
+        <xs:documentation>
+          The default number of replicas created of the blocks for new files on the file system. Individual files can override
+          this value. The recommended value is 3, unless you have fewer than 3 data servers.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dataServerTimeout" type="xs:int" use="optional" default="300">
+      <xs:annotation>
+        <xs:documentation>
+          The time in seconds after which a DataServer is considered dead if it hasn't sent a heartbeat.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dataServerFreeSpaceThreshold" type="BinarySize" use="optional" default="1GB">
+      <xs:annotation>
+        <xs:documentation>
+          The minimum amount of free space for a DataServer to be eligable to receive new blocks.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="listenIPv4AndIPv6" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether the NameServer's RPC service should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="BinarySize">
+    <xs:annotation>
+      <xs:documentation>
+        A quantity expressed using a binary scale suffix such as B, KB, MB, GB, TB or PB. The B is optional.
+        Also allows IEC suffixes (e.g. KiB, MiB). Examples of valid values include "5KB", "7.5M" and "9GiB".
+        Suffixes are not case sensitive. Scale is based on powers of 2, so K = 1024, M = 1048576, G = 1073741824,
+        and so forth.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9\.]+([kKmMgGtTpP][iI]?)?[bB]?" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="DataServerConfigurationElement">
+    <xs:attribute name="blockStorageDirectory" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The local directory where the DataServer stores block files.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="port" type="xs:int" use="optional" default="9001">
+      <xs:annotation>
+        <xs:documentation>
+          The port on which the DataServer listens for incoming data transfer connections.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="statusUpdateInterval" type="xs:int" use="optional" default="60">
+      <xs:annotation>
+        <xs:documentation>
+          The interval in seconds at which the data server should include a full status report (including disk space) with a heartbeat.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="writeBufferSize" type="BinarySize" use="optional" default="128KB">
+      <xs:annotation>
+        <xs:documentation>
+          The size of the buffer used when the DataServer writes block files.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="readBufferSize" type="BinarySize" use="optional" default="128KB">
+      <xs:annotation>
+        <xs:documentation>
+          The size of the buffer used when the DataServer reads block files.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="listenIPv4AndIPv6" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether the DataServer should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ChecksumConfigurationElement">
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether checksum computation is enabled.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="ookii.jumbo.dfs" type="DfsConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        The <h:code>&lt;ookii.jumbo.dfs&gt;</h:code> element provides configuration for Jumbo clients that need to connect
+        to a filesystem, and for the Jumbo DFS NameServer and DataServers.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

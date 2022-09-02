@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:doc="http://www.ookii.org/documentation" doc:title="Jumbo configuration (common.config)">
+  <xs:annotation>
+    <xs:documentation>
+      The <h:code>jumbo.config</h:code> configuration file provides configuration that is common to the Jumbo DFS and Jumbo Jet.
+    </xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="JumboConfiguration">
+    <xs:all>
+      <xs:element name="networkTopology" type="NetworkTopologyConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;networkTopology&gt;</h:code> element configures network topology support (rack-awareness).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="patternTopologyResolver" type="PatternTopologyResolverConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            <h:p>
+              The <h:code>&lt;patternTopologyResolver&gt;</h:code> configures the network topology support using the <h:code>PatternTopologyResolver</h:code> class.
+            </h:p>
+            <h:p>
+              This configuration element is only used if the <h:code>resolver</h:code> attribute of the <h:a href="#ookii.jumbo_networkTopology"><h:code>&lt;networkTopology&gt;</h:code></h:a> element
+              is set to "Ookii.Jumbo.Topology.PatternTopologyResolver, Ookii.Jumbo".
+            </h:p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="log" type="LogConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;log&gt;</h:code> element provides configuration for Jumbo's logging system.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="NetworkTopologyConfigurationElement">
+    <xs:attribute name="resolver" type="xs:string" use="optional" default="Ookii.Jumbo.Topology.PatternTopologyResolver, Ookii.Jumbo">
+      <xs:annotation>
+        <xs:documentation>
+          Specifies the type of a class implementing <h:code>ITopologyResolver</h:code> that is used to resolve the rack that a node belongs to.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="PatternTopologyResolverConfigurationElement">
+    <xs:all>
+      <xs:element name="racks" type="RackConfigurationElementCollection" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;racks&gt;</h:code> element provides a collection of racks defined by the <h:code>PatternTopologyResolver</h:code>.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="patternType" type="PatternType" use="optional" default="RegularExpression">
+      <xs:annotation>
+        <xs:documentation>
+          Specifies the type of pattern used by the <h:code>PatternTopologyResolver</h:code>.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="PatternType">
+    <xs:annotation>
+      <xs:documentation>
+        The type of pattern used by the <h:code>PatternTopologyResolver</h:code>.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="RegularExpression">
+        <xs:annotation>
+          <xs:documentation>
+            The patterns are regular expressions.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="RangeExpression">
+        <xs:annotation>
+          <xs:documentation>
+            <xs:documentation>
+              The patterns are range expressions (see the <h:code>Ookii.Jumbo.Topology.RangeExpression</h:code> class).
+            </xs:documentation>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="LogConfigurationElement">
+    <xs:attribute name="directory" type="xs:string" use="optional" default="./log/">
+      <xs:annotation>
+        <xs:documentation>
+          Specifies the directory containing the Jumbo assemblies. If this a relative path, it is relative to the directory containing Jumbo's assemblies.
+          If you change this value, you should also change the corresponsing value in <h:code>Jumbo-Config.ps1</h:code> or <h:code>jumbo-config.sh</h:code>.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="RackConfigurationElementCollection">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="rack" type="RackConfigurationElement">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;rack&gt;</h:code> element adds a rack to the <h:a href="#ookii.jumbo_patternTopologyResolver_racks"><h:code>&lt;racks&gt;</h:code></h:a> collection.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="remove" type="RackConfigurationElementCollectionKey">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;remove&gt;</h:code> element removes a rack from the <h:a href="#ookii.jumbo_patternTopologyResolver_racks"><h:code>&lt;racks&gt;</h:code></h:a> collection.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="clear">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;clear&gt;</h:code> element removes all racks from the <h:a href="#ookii.jumbo_patternTopologyResolver_racks"><h:code>&lt;racks&gt;</h:code></h:a> collection.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType />
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="RackConfigurationElementCollectionKey">
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          A string value that uniquely identifies the rack.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="RackConfigurationElement">
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          A string value that uniquely identifies the rack.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="pattern" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The pattern that matches the names of the nodes in this rack. Depending on the <h:code>patternType</h:code> attribute of
+          the <h:a href="#ookii.jumbo_patternTopologyResolver"><h:code>&lt;patternTopologyResolver&gt;</h:code></h:a> element, this pattern
+          is either a regular expression or a range expression.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="ookii.jumbo" type="JumboConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        The <h:code>&lt;ookii.jumbo&gt;</h:code> element contains global configuration for Jumbo.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

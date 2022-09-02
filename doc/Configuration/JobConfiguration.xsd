@@ -1,0 +1,448 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.ookii.org/schema/Jumbo/JobConfiguration"
+           elementFormDefault="qualified"
+           xmlns="http://www.ookii.org/schema/Jumbo/JobConfiguration"
+           xmlns:mstns="http://www.ookii.org/schema/Jumbo/JobConfiguration"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:doc="http://www.ookii.org/documentation"
+           doc:title="Jumbo job configuration"
+           xmlns:h="http://www.w3.org/1999/xhtml">
+  <xs:annotation>
+    <xs:documentation>
+      <h:p>
+        Job configuration XML files are used for each job to specify the stages, tasks, and channels for the job, including inputs and outputs and
+        other assorted settings related to a job.
+      </h:p>
+      <h:p>
+        It is almost never necessary to manually create or modify a job configuration XML file, as it is preferable to use the <h:code>JobBuilder</h:code>
+        or <h:code>JobConfiguration</h:code> classes.
+      </h:p>
+      <h:p>
+        Job configuration files are created by serializing the <h:code>JobConfiguration</h:code> class to XML, and read by deserializing.
+      </h:p>
+    </xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="JobConfiguration">
+    <xs:sequence minOccurs="1" maxOccurs="1">
+      <xs:element name="AssemblyFileNames" type="StringCollection" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;AssemblyFileNames&gt;</h:code> element contains a collection of assembly file names that must be loaded for the job's tasks.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Stages" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;Stages&gt;</h:code> element contains a collection of all the stages (except child stages) in the job. The
+            definition order of the stages does not matter, as they will be ordered by dependencies for scheduling.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Stage" type="StageConfiguration">
+              <xs:annotation>
+                <xs:documentation>
+                  The <h:code>&lt;Stage&gt;</h:code> element specifies a processing stage in a Jumbo Jet job.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AdditionalProgressCounters" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;AdditionalProgressCounters&gt;</h:code> element contains a collection of additional progress counters for the job.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="AdditionalProgressCounter" type="AdditionalProgressCounter">
+              <xs:annotation>
+                <xs:documentation>
+                  The <h:code>&lt;AdditionalProgressCounter&gt;</h:code> element specifies a friendly name for an additional progress counter used by the job.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SchedulerOptions" type="SchedulerOptions" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;SchedulerOptions&gt;</h:code> element specifies custom scheduler settings for a job. Custom schedulers are not required
+            to obey these settings (the default scheduler does).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="JobSettings" type="SettingsDictionary" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;JobSettings&gt;</h:code> element specifies arbitrary settings available during task execution that apply to the job as a whole.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" use="optional" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>
+          A friendly name for the job.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="StageConfiguration">
+    <xs:sequence minOccurs="1" maxOccurs="1">
+      <xs:element name="TaskType" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;TaskType&gt;</h:code> element specifies the assembly qualified type name of a type implementing the <h:code>ITask&lt;TInput, TOutput&gt;</h:code>
+            interface that provides the data processing operation for this stage.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DataInputType" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;DataInputType&gt;</h:code> element specifies the assembly qualified type name of a type implementing the <h:code>IDataInput</h:code> interface
+            that determines the input for the task, such as a DFS file. This element is not used for stages that have an input channel or have no input.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DataOutputType" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;DataOutputType&gt;</h:code> element specifies the assembly qualified type name of a type implementing the <h:code>IDataOutput</h:code> interface
+            that determines the output for the task, such as a DFS file. This element is not used for stages that have an output channel or have no output.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ChildStage" type="StageConfiguration" minOccurs="0" maxOccurs="1" doc:ref="Job_Stages_Stage" doc:refName="Stage">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;ChildStage&gt;</h:code> element specifies a child stage for the current stage; that is, a stage connected to the current stage using a pipeline channel.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ChildStagePartitionerType" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;ChildStagePartitionerType&gt;</h:code> element specifies the assembly qualified type name of a type implementing the <h:code>IPartitioner&lt;T&gt;</h:code>
+            interface that is used to partition records for the child stage of this stage. This element is not used if the stage has no child stage or the <h:code>taskCount</h:code>
+            attribute of the <h:a href="#Job_Stages_Stage_ChildStage"><h:code>&lt;ChildStage&gt;</h:code></h:a> element is 1, in which case no partitioning occurs. Note that
+            partitioning may happen only once in a compound task.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StageSettings" type="SettingsDictionary" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;StageSettings&gt;</h:code> element specifies arbitrary settings that are available during task execution that apply only to the current stage.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OutputChannel" type="ChannelConfiguration" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;OutputChannel&gt;</h:code> element specifies a file or TCP output channel for the stage. This element is not used if the stage has data output
+            or no output, or if the stage has a pipeline output channel (in which case the <h:a href="#Job_Stages_Stage_ChildStage"><h:code>&lt;ChildStage&gt;</h:code></h:a> element
+            is used instead.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MultiInputRecordReaderType" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;MultiInputRecordReaderType&gt;</h:code> element specifies the assembly qualified type name of a type that derives from the
+            <h:code>MultiInputRecordReader&lt;T&gt;</h:code> class that is used as the stage multi-input record reader to combine input from multiple channels.
+            This element is only used if the stage has more than one input channel.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DependentStages" type="StageIdCollection" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;DependentStages&gt;</h:code> element specifies a collection of stage IDs of stages that may not be scheduled until all tasks in this
+            stage have completed. This is used to specify stages that depend on the output of this stage but are not directly or indirectly connected to this stage
+            via a channel. The specified stages may not be child stages (so the ID may not be a compound stage ID).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" use="required" type="StageId">
+      <xs:annotation>
+        <xs:documentation>
+          The identifier of this stage. For root stages, this must be unique within the job. For child stages, this value does not need to be unique.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="taskCount" use="required" type="xs:int">
+      <xs:annotation>
+        <xs:documentation>
+          The number of tasks in this stage. For stages with data input this attribute is informational, since the number of splits defined by the data input
+          determines the actual number of tasks.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="StringCollection">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="string" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;string&gt;</h:code> element for the <h:code>&lt;AssemblyFileNames&gt;</h:code> element specifies the file name (without path information)
+            of an assembly that should be loaded for the tasks in this job.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="StageIdCollection">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="string" type="StageId">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;string&gt;</h:code> element for the <h:code>&lt;DependentStages&gt;</h:code> element specifies the ID of a stage that may not be scheduled
+            until all the tasks in this stage have completed.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="AdditionalProgressCounter">
+    <xs:sequence minOccurs="1" maxOccurs="1">
+      <xs:element name="TypeName" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;TypeName&gt;</h:code> element specifies the assembly qualified type name of a type implementing the <h:code>IHasAdditionalProgress</h:code>
+            interface that provides additional progress information about the tasks in this job.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DisplayName" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;DisplayName&gt;</h:code> element specifies a friendly name for the additional progress counter used by the Jet web portal.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SchedulerOptions">
+    <xs:attribute name="maximumDataDistance" type="xs:int" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum allowed distance between a task and its input data. The value 0 means the data must be local, 1 allows rack-local data, and 2 or higher allows any distance.
+          This attribute only applies to stages with data input that is provided by a file system that supports locality (such as the Jumbo DFS).
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dfsInputSchedulingMode" type="SchedulingMode" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The scheduling mode for tasks with data input.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="nonInputSchedulingMode" type="SchedulingMode" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The scheduling mode for tasks without data input.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="SettingsDictionary">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Setting">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;Setting&gt;</h:code> element specifies a setting.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:attribute name="key" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>
+                The key that can be used to retrieve the setting.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="value" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>
+                The value of the setting.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="ChannelConfiguration">
+    <xs:sequence>
+      <xs:element name="MultiInputRecordReaderType" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;MultiInputRecordReaderType&gt;</h:code> element specifies the assembly qualified name of a type that derives from
+            <h:code>MultiInputRecordReader&lt;T&gt;</h:code> that is used as the multi-input record reader to combine input data from multiple
+            tasks in the tasks of the receiving stage.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OutputStage" type="StageId" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;OutputStage&gt;</h:code> element specifies the ID of the receiving stage of this channel. This may not be a compound stage ID.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PartitionerType" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;PartitionerType&gt;</h:code> element specifies the assembly qualified type name of a type that implements the
+            <h:code>IPartitioner&lt;T&gt;</h:code> interface that is used to partition records across tasks in the receiving stage.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" type="ChannelType" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The type of the channel: file or TCP.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="partitionsPerTask" type="xs:int" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The number of partitions that each task in the receiving stage will process (setting this higher than 1 will create a stage with more partitions than tasks, allowing for the
+          use of dynamic partition assignment for load balancing).
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="disableDynamicPartitionAssignment" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to disable dynamic partition assignment if the <h:code>partitionsPerTask</h:code> attribute is higher than 1. Use for debugging purposes.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="partitionAssignmentMethod" type="PartitionAssignmentMethod" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Specifies the partition assignment method to use if the <h:code>partitionsPerTask</h:code> attribute is higher than 1.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="forceFileDownload" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to force file download even for local files with a file channel. Use for debugging purposes.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="SchedulingMode">
+    <xs:annotation>
+      <xs:documentation>
+        Indicates the scheduling strategy to use by a task scheduler.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Default">
+        <xs:annotation>
+          <xs:documentation>
+            Use the strategy specified in the <h:code>jet.config</h:code> file.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MoreServers">
+        <xs:annotation>
+          <xs:documentation>
+            Favor TaskServers with a large amount of free task slots, spreading a job over as many nodes as possible.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FewerServers">
+        <xs:annotation>
+          <xs:documentation>
+            Favor TaskServers with a small amount of free task slots, spreading the job over as few nodes as possible.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OptimalLocality">
+        <xs:annotation>
+          <xs:documentation>
+            Do not schedule non-local tasks on a TaskServer even if there are no other tasks that could be assigned to that TaskServer.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ChannelType">
+    <xs:annotation>
+      <xs:documentation>
+        Indicates the type of a channel between stages.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="File">
+        <xs:annotation>
+          <xs:documentation>
+            Intermediate data is materialized in local files which are shuffled over the network.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Tcp">
+        <xs:annotation>
+          <xs:documentation>
+            Data is transfered directly between tasks via TCP connection without materializing it. It must be possible to run all tasks in the receiving
+            stage simultaneously, and task level fault tolerance will not be available for this job.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PartitionAssignmentMethod">
+    <xs:annotation>
+      <xs:documentation>
+        Indicates how to assign partitions to tasks during initial partition assignment if the stage uses more than one partition per task.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Linear">
+        <xs:annotation>
+          <xs:documentation>
+            Each task gets a linear sequence of partitions, e.g. task 1 gets partitions 1, 2 and 3, task 2 gets partitions 4, 5 and 6, and so forth.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Striped">
+        <xs:annotation>
+          <xs:documentation>
+            The partitions are striped across the tasks, e.g. task 1 gets partitions 1, 3, and 5, and task 2 gets partitions 2, 4, and 6.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="StageId">
+    <xs:annotation>
+      <xs:documentation>
+        A string defining a non-compound stage ID. May not contain the characters '.', '_' or '-'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\._-]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Job" type="JobConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        The <h:code>&lt;Job&gt;</h:code> element specifies the configuration of a job. This is the root element of a job configuration XML file.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

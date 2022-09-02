@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><title>Jumbo configuration (dfs.config)</title><style type="text/css">
+html,
+body {
+  font-size: 100%; }
+
+body {
+  background: white;
+  color: #222222;
+  margin: 2em;
+  font-family: "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  max-width: 62.5em; }
+
+a:focus {
+  outline: none; }
+
+/* Typography resets */
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  direction: ltr; }
+
+/* Default Link Styles */
+a {
+  color: #2ba6cb;
+  text-decoration: none;
+  line-height: inherit; }
+  a:hover, a:focus {
+    color: #2795b6; }
+  a img {
+    border: none; }
+
+/* Default paragraph styles */
+p {
+  font-family: inherit;
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  text-rendering: optimizeLegibility; }
+  p aside {
+    font-size: 0.875em;
+    line-height: 1.35;
+    font-style: italic; }
+
+/* Default header styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI Light", "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: lighter;
+  font-style: normal;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.2125em; }
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+    font-size: 60%;
+    color: #6f6f6f;
+    line-height: 0; }
+
+h1 {
+  font-size: 2.125em; }
+
+h2 {
+  font-size: 1.6875em; }
+
+h3 {
+  font-size: 1.375em; }
+
+h4 {
+  font-size: 1.125em; }
+
+h5 {
+  font-size: 1.125em; }
+
+h6 {
+  font-size: 1em; }
+
+pre {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 1em 0;
+}
+
+code {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+ul,
+ol,
+dl {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  list-style-position: outside;
+  font-family: inherit; }
+ul,
+ol {
+    margin-left: 1.25em;
+}
+/* Unordered Lists */
+ul li ul,
+ul li ol {
+  margin-left: 1.25em;
+  margin-bottom: 0;
+  font-size: 1em;
+  /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul {
+  list-style: inherit; }
+ul.square {
+  list-style-type: square; }
+ul.circle {
+  list-style-type: circle; }
+ul.disc {
+  list-style-type: disc; }
+ul.no-bullet {
+  list-style: none; }
+
+/* Tables */
+table {
+  background: white;
+  margin-bottom: 1.25em;
+  border: solid 1px #dddddd; }
+  table thead,
+  table tfoot {
+    background: whitesmoke;
+    font-weight: bold; }
+    table thead tr th,
+    table thead tr td,
+    table tfoot tr th,
+    table tfoot tr td {
+      padding: 0.5em 0.625em 0.625em;
+      font-size: 0.875em;
+      color: #222222;
+      text-align: left; }
+  table tr th,
+  table tr td {
+    padding: 0.5625em 0.625em;
+    font-size: 0.875em;
+    color: #222222;
+    vertical-align: top;
+    text-align: left }
+  table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background: #f9f9f9; }
+  table thead tr th,
+  table tfoot tr th,
+  table tbody tr td,
+  table tr td,
+  table tfoot tr td {
+    display: table-cell;
+    line-height: 1.125em; }
+    table tr th p, table tr td p {
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+    font-size: inherit;
+  }
+
+.code {
+    background-color: #fafafa;
+    border: solid 1px black;
+    padding: 5px;
+    overflow: auto;
+    font-family: Consolas, monospace;
+}
+    .code .tagDelimiter, .code .attributeDelimiter {
+        color: #00F;
+    }
+    .code .tagName {
+        color: #A31515;
+    }
+    .code .attributeName {
+        color: #F00;
+    }
+    .code .attributeValue {
+        color: #00F;
+    }
+@media print
+{
+    * {
+        background: transparent !important;
+        color: black !important;
+    }
+    body
+    {
+        margin: 0;
+        max-width: auto;
+    }
+    p,
+    h2,
+    h3 {
+      orphans: 3;
+      widows: 3; }
+
+    h1,
+    h2,
+    h3 {
+      page-break-after: avoid; }
+
+    a,
+    a:visited {
+      text-decoration: underline; }
+}
+</style></head><body><h1>Jumbo configuration (dfs.config)</h1><p>
+      The <code>dfs.config</code> configuration file provides configuration for the Jumbo Distributed Filesystem.
+    </p><h2>Contents</h2><ul><li><a href="#ookii.jumbo.dfs">The <code>ookii.jumbo.dfs</code> element</a></li><li><a href="#ookii.jumbo.dfs_fileSystem">The <code>ookii.jumbo.dfs/​fileSystem</code> element</a></li><li><a href="#ookii.jumbo.dfs_nameServer">The <code>ookii.jumbo.dfs/​nameServer</code> element</a></li><li><a href="#ookii.jumbo.dfs_dataServer">The <code>ookii.jumbo.dfs/​dataServer</code> element</a></li><li><a href="#ookii.jumbo.dfs_checksum">The <code>ookii.jumbo.dfs/​checksum</code> element</a></li><li><a href="#BinarySize">The <code>BinarySize</code> type</a></li></ul><h2 id="ookii.jumbo.dfs">The <code>ookii.jumbo.dfs</code> element</h2><p>
+        The <code>&lt;ookii.jumbo.dfs&gt;</code> element provides configuration for Jumbo clients that need to connect
+        to a filesystem, and for the Jumbo DFS NameServer and DataServers.
+      </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">ookii.jumbo.dfs</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">ookii.jumbo.dfs</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#ookii.jumbo.dfs_fileSystem">&lt;fileSystem&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.dfs_nameServer">&lt;nameServer&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.dfs_dataServer">&lt;dataServer&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.dfs_checksum">&lt;checksum&gt;</a></td><td>0</td><td>1</td></tr></tbody></table><h2 id="ookii.jumbo.dfs_fileSystem">The <code>ookii.jumbo.dfs/​fileSystem</code> element</h2><p>
+            The <code>&lt;fileSystem&gt;</code> element provides information for clients on how to access the file system. For client configuration, this is the
+            only element that needs to be specified.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">fileSystem</span>
+    <span class="attributeName">url</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:anyURI</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>url</th><td>optional</td><td><span>
+          A URL indicating how to connect to the file system. Jumbo DFS URLs take the form "jdfs://nameserver:port". If the
+          URL uses the "file://" scheme, the DFS will not be used and path indicated by the URL will be the root of the file system from the point
+          of view of the <code>FileSystemClient</code> class. You cannot start the Jumbo DFS unless this is a jdfs:// URL.
+        </span><span>The default value is "jdfs://localhost:9000".</span></td></tr></tbody></table><h2 id="ookii.jumbo.dfs_nameServer">The <code>ookii.jumbo.dfs/​nameServer</code> element</h2><p>
+            The <code>&lt;nameServer&gt;</code> element configures the Jumbo DFS NameServer.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">nameServer</span>
+    <span class="attributeName">imageDirectory</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">blockSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">replicationFactor</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">dataServerTimeout</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">dataServerFreeSpaceThreshold</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">listenIPv4AndIPv6</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>imageDirectory</th><td>required</td><td><span>
+          The local directory where the file system image and edit log are stored. This directory must
+          be formatted using "NameServer.exe format" before use.
+        </span></td></tr><tr><th>blockSize</th><td>optional</td><td><span>
+          The default size of blocks for new files on the file system. Individual files can override this value.
+        </span><span>The default value is "64MB".</span></td></tr><tr><th>replicationFactor</th><td>optional</td><td><span>
+          The default number of replicas created of the blocks for new files on the file system. Individual files can override
+          this value. The recommended value is 3, unless you have fewer than 3 data servers.
+        </span><span>The default value is "1".</span></td></tr><tr><th>dataServerTimeout</th><td>optional</td><td><span>
+          The time in seconds after which a DataServer is considered dead if it hasn't sent a heartbeat.
+        </span><span>The default value is "300".</span></td></tr><tr><th>dataServerFreeSpaceThreshold</th><td>optional</td><td><span>
+          The minimum amount of free space for a DataServer to be eligable to receive new blocks.
+        </span><span>The default value is "1GB".</span></td></tr><tr><th>listenIPv4AndIPv6</th><td>optional</td><td><span>
+          Indicates whether the NameServer's RPC service should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo.dfs_dataServer">The <code>ookii.jumbo.dfs/​dataServer</code> element</h2><p>
+            The <code>&lt;dataServer&gt;</code> element configures the Jumbo DFS DataServers.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">dataServer</span>
+    <span class="attributeName">blockStorageDirectory</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">port</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">statusUpdateInterval</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">writeBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">readBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">listenIPv4AndIPv6</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>blockStorageDirectory</th><td>required</td><td><span>
+          The local directory where the DataServer stores block files.
+        </span></td></tr><tr><th>port</th><td>optional</td><td><span>
+          The port on which the DataServer listens for incoming data transfer connections.
+        </span><span>The default value is "9001".</span></td></tr><tr><th>statusUpdateInterval</th><td>optional</td><td><span>
+          The interval in seconds at which the data server should include a full status report (including disk space) with a heartbeat.
+        </span><span>The default value is "60".</span></td></tr><tr><th>writeBufferSize</th><td>optional</td><td><span>
+          The size of the buffer used when the DataServer writes block files.
+        </span><span>The default value is "128KB".</span></td></tr><tr><th>readBufferSize</th><td>optional</td><td><span>
+          The size of the buffer used when the DataServer reads block files.
+        </span><span>The default value is "128KB".</span></td></tr><tr><th>listenIPv4AndIPv6</th><td>optional</td><td><span>
+          Indicates whether the DataServer should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo.dfs_checksum">The <code>ookii.jumbo.dfs/​checksum</code> element</h2><p>
+            The <code>&lt;checksum&gt;</code> element configures the CRC checksums used by the Jumbo DFS.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">checksum</span>
+    <span class="attributeName">enabled</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>enabled</th><td>optional</td><td><span>
+          Indicates whether checksum computation is enabled.
+        </span><span>The default value is "true".</span></td></tr></tbody></table><h2 id="BinarySize">The <code>BinarySize</code> type</h2><p>
+        A quantity expressed using a binary scale suffix such as B, KB, MB, GB, TB or PB. The B is optional.
+        Also allows IEC suffixes (e.g. KiB, MiB). Examples of valid values include "5KB", "7.5M" and "9GiB".
+        Suffixes are not case sensitive. Scale is based on powers of 2, so K = 1024, M = 1048576, G = 1073741824,
+        and so forth.
+      </p></body></html>

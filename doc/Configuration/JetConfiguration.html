@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><title>Jumbo configuration (jet.config)</title><style type="text/css">
+html,
+body {
+  font-size: 100%; }
+
+body {
+  background: white;
+  color: #222222;
+  margin: 2em;
+  font-family: "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  max-width: 62.5em; }
+
+a:focus {
+  outline: none; }
+
+/* Typography resets */
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  direction: ltr; }
+
+/* Default Link Styles */
+a {
+  color: #2ba6cb;
+  text-decoration: none;
+  line-height: inherit; }
+  a:hover, a:focus {
+    color: #2795b6; }
+  a img {
+    border: none; }
+
+/* Default paragraph styles */
+p {
+  font-family: inherit;
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  text-rendering: optimizeLegibility; }
+  p aside {
+    font-size: 0.875em;
+    line-height: 1.35;
+    font-style: italic; }
+
+/* Default header styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI Light", "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: lighter;
+  font-style: normal;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.2125em; }
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+    font-size: 60%;
+    color: #6f6f6f;
+    line-height: 0; }
+
+h1 {
+  font-size: 2.125em; }
+
+h2 {
+  font-size: 1.6875em; }
+
+h3 {
+  font-size: 1.375em; }
+
+h4 {
+  font-size: 1.125em; }
+
+h5 {
+  font-size: 1.125em; }
+
+h6 {
+  font-size: 1em; }
+
+pre {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 1em 0;
+}
+
+code {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+ul,
+ol,
+dl {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  list-style-position: outside;
+  font-family: inherit; }
+ul,
+ol {
+    margin-left: 1.25em;
+}
+/* Unordered Lists */
+ul li ul,
+ul li ol {
+  margin-left: 1.25em;
+  margin-bottom: 0;
+  font-size: 1em;
+  /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul {
+  list-style: inherit; }
+ul.square {
+  list-style-type: square; }
+ul.circle {
+  list-style-type: circle; }
+ul.disc {
+  list-style-type: disc; }
+ul.no-bullet {
+  list-style: none; }
+
+/* Tables */
+table {
+  background: white;
+  margin-bottom: 1.25em;
+  border: solid 1px #dddddd; }
+  table thead,
+  table tfoot {
+    background: whitesmoke;
+    font-weight: bold; }
+    table thead tr th,
+    table thead tr td,
+    table tfoot tr th,
+    table tfoot tr td {
+      padding: 0.5em 0.625em 0.625em;
+      font-size: 0.875em;
+      color: #222222;
+      text-align: left; }
+  table tr th,
+  table tr td {
+    padding: 0.5625em 0.625em;
+    font-size: 0.875em;
+    color: #222222;
+    vertical-align: top;
+    text-align: left }
+  table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background: #f9f9f9; }
+  table thead tr th,
+  table tfoot tr th,
+  table tbody tr td,
+  table tr td,
+  table tfoot tr td {
+    display: table-cell;
+    line-height: 1.125em; }
+    table tr th p, table tr td p {
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+    font-size: inherit;
+  }
+
+.code {
+    background-color: #fafafa;
+    border: solid 1px black;
+    padding: 5px;
+    overflow: auto;
+    font-family: Consolas, monospace;
+}
+    .code .tagDelimiter, .code .attributeDelimiter {
+        color: #00F;
+    }
+    .code .tagName {
+        color: #A31515;
+    }
+    .code .attributeName {
+        color: #F00;
+    }
+    .code .attributeValue {
+        color: #00F;
+    }
+@media print
+{
+    * {
+        background: transparent !important;
+        color: black !important;
+    }
+    body
+    {
+        margin: 0;
+        max-width: auto;
+    }
+    p,
+    h2,
+    h3 {
+      orphans: 3;
+      widows: 3; }
+
+    h1,
+    h2,
+    h3 {
+      page-break-after: avoid; }
+
+    a,
+    a:visited {
+      text-decoration: underline; }
+}
+</style></head><body><h1>Jumbo configuration (jet.config)</h1><p>
+      The <code>jet.config</code> configuration file provides configuration for the Jumbo Jet distributed execution engine.
+    </p><h2>Contents</h2><ul><li><a href="#ookii.jumbo.jet">The <code>ookii.jumbo.jet</code> element</a></li><li><a href="#ookii.jumbo.jet_jobServer">The <code>ookii.jumbo.jet/​jobServer</code> element</a></li><li><a href="#ookii.jumbo.jet_taskServer">The <code>ookii.jumbo.jet/​taskServer</code> element</a></li><li><a href="#ookii.jumbo.jet_fileChannel">The <code>ookii.jumbo.jet/​fileChannel</code> element</a></li><li><a href="#ookii.jumbo.jet_tcpChannel">The <code>ookii.jumbo.jet/​tcpChannel</code> element</a></li><li><a href="#ookii.jumbo.jet_mergeRecordReader">The <code>ookii.jumbo.jet/​mergeRecordReader</code> element</a></li><li><a href="#SchedulingMode">The <code>SchedulingMode</code> type</a></li><li><a href="#BinarySize">The <code>BinarySize</code> type</a></li><li><a href="#CompressionType">The <code>CompressionType</code> type</a></li></ul><h2 id="ookii.jumbo.jet">The <code>ookii.jumbo.jet</code> element</h2><p>
+        The <code>&lt;ookii.jumbo.jet&gt;</code> element provides configuration for Jumbo clients that need to connect to
+        the Jumbo Jet distributed execution engine, for the Jumbo Jet JobServer and TaskServers, and for Jumbo Jet jobs.
+      </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">ookii.jumbo.jet</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">ookii.jumbo.jet</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#ookii.jumbo.jet_jobServer">&lt;jobServer&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.jet_taskServer">&lt;taskServer&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.jet_fileChannel">&lt;fileChannel&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.jet_tcpChannel">&lt;tcpChannel&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo.jet_mergeRecordReader">&lt;mergeRecordReader&gt;</a></td><td>0</td><td>1</td></tr></tbody></table><h2 id="ookii.jumbo.jet_jobServer">The <code>ookii.jumbo.jet/​jobServer</code> element</h2><p>
+            The <code>&lt;jobServer&gt;</code> element provides information for clients to access the Jumbo Jet execution engine, and configuration for the Jumbo Jet JobServer.
+            For client applications, only the <code>hostName</code> and <code>port</code> attributes of this element are used.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">jobServer</span>
+    <span class="attributeName">hostName</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">port</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">jetDfsPath</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">archiveDirectory</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">scheduler</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">maxTaskAttempts</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">maxTaskFailures</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">taskServerTimeout</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">taskServerSoftTimeout</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">dataInputSchedulingMode</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#SchedulingMode">SchedulingMode</a></span>
+    <span class="attributeName">nonDataInputSchedulingMode</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#SchedulingMode">SchedulingMode</a></span>
+    <span class="attributeName">schedulingThreshold</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:float</span>
+    <span class="attributeName">broadcastAddress</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">broadcastPort</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">listenIPv4AndIPv6</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>hostName</th><td>optional</td><td><span>
+          The host name of the Jumbo Jet JobServer.
+        </span><span>The default value is "localhost".</span></td></tr><tr><th>port</th><td>optional</td><td><span>
+          The port number for the Jumbo Jet JobServer's RPC service.
+        </span><span>The default value is "9500".</span></td></tr><tr><th>jetDfsPath</th><td>optional</td><td><span>
+          The path on the Jumbo DFS (or other file system configured in <code>dfs.config</code>)
+          where files related to Jumbo Jet jobs are stored.
+        </span><span>The default value is "/JumboJet".</span></td></tr><tr><th>archiveDirectory</th><td>optional</td><td><span>
+          The local directory where job configuration and statistics are archived for future retrieval
+          via the Jumbo Jet web portal. If not specified, jobs are not archived and their information cannot
+          be retrieved after they are removed from the current list of completed jobs.
+        </span></td></tr><tr><th>scheduler</th><td>optional</td><td><span>
+          The assembly qualified type name of a type that implements <code>Ookii.Jumbo.Jet.Scheduling.ITaskScheduler</code> that will
+          be used to schedule task execution on the Jumbo Jet cluster.
+        </span><span>The default value is "Ookii.Jumbo.Jet.Scheduling.DefaultScheduler, Ookii.Jumbo.Jet".</span></td></tr><tr><th>maxTaskAttempts</th><td>optional</td><td><span>
+          The maximum number of times a single task may be re-executed before the job that contains the task is failed.
+        </span><span>The default value is "5".</span></td></tr><tr><th>maxTaskFailures</th><td>optional</td><td><span>
+          The maximum number of failures across all tasks that a job may experience before the job is failed.
+        </span><span>The default value is "20".</span></td></tr><tr><th>taskServerTimeout</th><td>optional</td><td><span>
+          The time in milliseconds after which a TaskServer is considered dead if it has not sent a heartbeat.
+        </span><span>The default value is "600000".</span></td></tr><tr><th>taskServerSoftTimeout</th><td>optional</td><td><span>
+          The time in milliseconds after which a TaskServer will no longer be considered for new tasks during scheduling if it has not sent a heartbeat.
+        </span><span>The default value is "60000".</span></td></tr><tr><th>dataInputSchedulingMode</th><td>optional</td><td><span>
+          The scheduling mode to use for tasks that have data input (e.g. a DFS file). This setting may not be used
+          by all schedulers (the default scheduler does use it).
+        </span><span>The default value is "MoreServers".</span></td></tr><tr><th>nonDataInputSchedulingMode</th><td>optional</td><td><span>
+          The scheduling mode to use for tasks that do not have data input (no input or channel input). This setting
+          may not be used by all schedulers (the default scheduler does use it). The <code>OptimalLocality</code>
+          value is not applicable to this setting.
+        </span><span>The default value is "MoreServers".</span></td></tr><tr><th>schedulingThreshold</th><td>optional</td><td><span>
+          The fraction of tasks (between 0 and 1) of a stage using a file output channel that must be finished before tasks of the receiving stage of the channel
+          are eligible to be scheduled. This setting is likely to only have significant impact if the stage has a number of tasks close
+          to or less than the cluster's capacity.
+        </span><span>The default value is "0.4".</span></td></tr><tr><th>broadcastAddress</th><td>optional</td><td><span>
+          The UDP broadcast address for task completion notification. This should be set to your network's UDP multicast address
+          if task completion notification broadcasts are enabled. For example, if your network address is 192.168.1.x with a network
+          mask of 255.255.255.0, your multicast address is 192.168.1.255.
+        </span><span>The default value is "255.255.255.255".</span></td></tr><tr><th>broadcastPort</th><td>optional</td><td><span>
+          The port number to use for UDP broadcast for task completion notification. If this value is set to 0, task completion
+          notification broadcasts are disabled. The standard Jumbo port number to use for this is 9550.
+        </span><span>The default value is "0".</span></td></tr><tr><th>listenIPv4AndIPv6</th><td>optional</td><td><span>
+          Indicates whether the JobServer's RPC service should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo.jet_taskServer">The <code>ookii.jumbo.jet/​taskServer</code> element</h2><p>
+            The <code>&lt;taskServer&gt;</code> element configures the Jumbo Jet TaskServers.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">taskServer</span>
+    <span class="attributeName">taskDirectory</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">taskSlots</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">port</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">fileServerPort</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">fileServerMaxConnections</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">fileServerMaxIndexCacheSize</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">processCreationDelay</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">runTaskHostInAppDomain</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span>
+    <span class="attributeName">logSystemStatus</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span>
+    <span class="attributeName">progressInterval</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">heartbeatInterval</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">taskTimeout</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">immediateCompletedTaskNotification</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span>
+    <span class="attributeName">listenIPv4AndIPv6</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>taskDirectory</th><td>required</td><td><span>
+          The local directory where temporary and intermediate data files for tasks of running jobs are stored on a TaskServer.
+        </span></td></tr><tr><th>taskSlots</th><td>optional</td><td><span>
+          The maximum number of simultaneous tasks to execute per TaskServer.
+        </span><span>The default value is "2".</span></td></tr><tr><th>port</th><td>optional</td><td><span>
+          The port number for the TaskServer's RPC service (used for clients and the task umbilical protocol).
+        </span><span>The default value is "9501".</span></td></tr><tr><th>fileServerPort</th><td>optional</td><td><span>
+          The port number for the file server used for file channel shuffling operations.
+        </span><span>The default value is "9502".</span></td></tr><tr><th>fileServerMaxConnections</th><td>optional</td><td><span>
+          The maximum number of connections that the file server will accept. If a task attempts to connect to the
+          file server while there are already the indicated maximum number of connections, the connection is refused
+          so the task knows to connect to a different server first. This helps balance the load of the shuffling operation
+          by preventing all tasks from reading data from the same TaskServer simultaneously. A reasonable guideline for this
+          value is twice the number of task slots.
+        </span><span>The default value is "10".</span></td></tr><tr><th>fileServerMaxIndexCacheSize</th><td>optional</td><td><span>
+          The maximum number of entries in the file channel server's index cache before entries get evicted by new entries.
+        </span><span>The default value is "25".</span></td></tr><tr><th>processCreationDelay</th><td>optional</td><td><span>
+          The delay, in milliseconds, to apply before creating a new TaskHost process. This setting was used to work around a bug with rapid
+          process creation in older versions of Mono, and should be left at 0 unless you are experiencing problems.
+        </span><span>The default value is "0".</span></td></tr><tr><th>runTaskHostInAppDomain</th><td>optional</td><td><span>
+          Indicates whether to use an AppDomain rather than a process for running tasks. This is not recommended except
+          for debugging purposes. Tasks will always execute in an AppDomain regardless of this setting if a debugger is
+          attached to the TaskServer.
+        </span><span>The default value is "false".</span></td></tr><tr><th>logSystemStatus</th><td>optional</td><td><span>
+          Indicates whether tasks should periodically log processor and memory status information to the task log file. System status
+          is logged based on the progress interval.
+        </span><span>The default value is "false".</span></td></tr><tr><th>progressInterval</th><td>optional</td><td><span>
+          The interval in milliseconds at which tasks report progress to the TaskServer.
+        </span><span>The default value is "3000".</span></td></tr><tr><th>heartbeatInterval</th><td>optional</td><td><span>
+          The interval in milliseconds at which the TaskServer sends heartbeats to the JobServer.
+        </span><span>The default value is "3000".</span></td></tr><tr><th>taskTimeout</th><td>optional</td><td><span>
+          The time in milliseconds after which a task is failed and scheduled for re-execution if it has not reported progress.
+        </span><span>The default value is "600000".</span></td></tr><tr><th>immediateCompletedTaskNotification</th><td>optional</td><td><span>
+          Indicates whether to send immediate out-of-band heartbeats to the JobServer when a task completes. If set to false,
+          the JobServer is not notified of task completion until the next heartbeat interval.
+        </span><span>The default value is "true".</span></td></tr><tr><th>listenIPv4AndIPv6</th><td>optional</td><td><span>
+          Indicates whether the TaskServer's RPC service and file channel server should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo.jet_fileChannel">The <code>ookii.jumbo.jet/​fileChannel</code> element</h2><p>
+            The <code>&lt;fileChannel&gt;</code> element configures default settings for file channels between stages in a Jumbo Jet job.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">fileChannel</span>
+    <span class="attributeName">readBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">writeBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">deleteIntermediateFiles</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span>
+    <span class="attributeName">memoryStorageSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">memoryStorageWaitTimeout</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">compressionType</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#CompressionType">CompressionType</a></span>
+    <span class="attributeName">spillBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">spillBufferLimit</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:float</span>
+    <span class="attributeName">spillSortMinSpillsForCombineDuringMerge</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">enableChecksum</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>readBufferSize</th><td>optional</td><td><span>
+          The buffer size to use when reading intermediate files.
+        </span><span>The default value is "64KB".</span></td></tr><tr><th>writeBufferSize</th><td>optional</td><td><span>
+          The buffer size to use when writing intermediate files.
+        </span><span>The default value is "64KB".</span></td></tr><tr><th>deleteIntermediateFiles</th><td>optional</td><td><span>
+          Indicates whether to delete intermediate files after they are no longer needed or when the job finishes or fails.
+          Set this to false to preserve the files to debug a failing job.
+        </span><span>The default value is "true".</span></td></tr><tr><th>memoryStorageSize</th><td>optional</td><td><span>
+          The maximum size of the in-memory storage to use for shuffled segments. Setting this to a high value can improve performance,
+          but may lead to problems if the task itself uses a lot of memory. When using the <code>MergeRecordReader</code> on a file
+          channel and the <code>purgeMemoryBeforeFinalPass</code> setting on the <a href="#ookii.jumbo.jet_mergeRecordReader"><code>&lt;mergeRecordReader</code></a>
+          element is set to true, you can use a high value even if the task uses a large amount of memory. Because this value is task dependent,
+          it can be more useful to override it using the job settings.
+        </span><span>The default value is "100MB".</span></td></tr><tr><th>memoryStorageWaitTimeout</th><td>optional</td><td><span>
+          The time in milliseconds to wait for memory storage to become available for a shuffled segment before falling back to disk storage.
+        </span><span>The default value is "60000".</span></td></tr><tr><th>compressionType</th><td>optional</td><td><span>
+          The type of compression to apply to the file channel's intermediate data files. Enabling file channel compression will
+          reduce intermediate file size and network load, but may significantly increase the CPU load of the tasks. Only use this
+          if your data is highly compressable, the network is slow, or disk space for intermediate files is low.
+        </span><span>The default value is "None".</span></td></tr><tr><th>spillBufferSize</th><td>optional</td><td><span>
+          The size of the in-memory buffer in which to collect intermediate data produced by a task with a file output channel.
+        </span><span>The default value is "100MB".</span></td></tr><tr><th>spillBufferLimit</th><td>optional</td><td><span>
+          The threshold (between 0 and 1) at which a spill is triggered (the contents of the in-memory buffer holding intermediate output data are written to disk).
+        </span><span>The default value is "0.8".</span></td></tr><tr><th>spillSortMinSpillsForCombineDuringMerge</th><td>optional</td><td><span>
+          If using a <code>SpillSort</code> operation with a combiner for the channel, the minimum number of spills that must have occurred in order to re-apply
+          the combiner during merging.
+        </span><span>The default value is "3".</span></td></tr><tr><th>enableChecksum</th><td>optional</td><td><span>
+          Indicates whether to compute and verify checksums for intermediate data.
+        </span><span>The default value is "true".</span></td></tr></tbody></table><h2 id="ookii.jumbo.jet_tcpChannel">The <code>ookii.jumbo.jet/​tcpChannel</code> element</h2><p>
+            The <code>&lt;tcpChannel&gt;</code> element configures default settings for TCP channels between stages in a Jumbo Jet job.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">tcpChannel</span>
+    <span class="attributeName">spillBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">spillBufferLimit</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:float</span>
+    <span class="attributeName">reuseConnections</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>spillBufferSize</th><td>optional</td><td><span>
+          The size of the in-memory buffer in which intermediate data is collected before sending it to the receiving stage's tasks.
+        </span><span>The default value is "20MB".</span></td></tr><tr><th>spillBufferLimit</th><td>optional</td><td><span>
+          The threshold (between 0 and 1) at which the contents of the intermediate data buffer are sent to the receiving stage's tasks.
+        </span><span>The default value is "0.6".</span></td></tr><tr><th>reuseConnections</th><td>optional</td><td><span>Indicates whether the TCP channel keeps the connections to the receiving stage's tasks open in between spills.</span><span>The default value is "false".</span></td></tr></tbody></table><h2 id="ookii.jumbo.jet_mergeRecordReader">The <code>ookii.jumbo.jet/​mergeRecordReader</code> element</h2><p>
+            The <code>&lt;mergeRecordReader&gt;</code> element configures default settings for the <code>Ookii.Jumbo.Jet.MergeRecordReader&lt;T&gt;</code> class,
+            which is used when sorting using e.g. the <code>JobBuilder.SpillSort</code> method.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">mergeRecordReader</span>
+    <span class="attributeName">maxFileInputs</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">memoryStorageTriggerLevel</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:float</span>
+    <span class="attributeName">mergeStreamReadBufferSize</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#BinarySize">BinarySize</a></span>
+    <span class="attributeName">purgeMemoryBeforeFinalPass</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>maxFileInputs</th><td>optional</td><td><span>
+          The maximum number of on-disk segments that may be merged in a single merge pass. The merge record reader will merge the input data in multiple passes
+          until the remaining number of on-disk segments is below this value. During shuffling, a background disk merge is triggered if the number of on-disk
+          segments exceeds twice this value.
+        </span><span>The default value is "100".</span></td></tr><tr><th>memoryStorageTriggerLevel</th><td>optional</td><td><span>
+          The threshold (between 0 and 1) of memory storage usage at which a background merge is started to merge all current in-memory segments to disk.
+        </span><span>The default value is "0.6".</span></td></tr><tr><th>mergeStreamReadBufferSize</th><td>optional</td><td><span>
+          The buffer size to use per segment for reading on-disk segments during a merge.
+        </span><span>The default value is "1MB".</span></td></tr><tr><th>purgeMemoryBeforeFinalPass</th><td>optional</td><td><span>
+          Indicates whether to merge all in-memory segments to disk before the final pass (the final pass will use only on-disk segments). This is
+          useful if the task that is consuming the merged records requires a lot of memory.
+        </span><span>The default value is "false".</span></td></tr></tbody></table><h2 id="SchedulingMode">The <code>SchedulingMode</code> type</h2><p>
+        Indicates the scheduling strategy to use by a task scheduler.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>Default</th><th><p>
+            Use the default strategy, which is <code>MoreServers</code>.
+          </p></th></tr><tr><th>MoreServers</th><th><p>
+            Favor TaskServers with a large amount of free task slots, spreading a job over as many nodes as possible.
+          </p></th></tr><tr><th>FewerServers</th><th><p>
+            Favor TaskServers with a small amount of free task slots, spreading the job over as few nodes as possible.
+          </p></th></tr><tr><th>OptimalLocality</th><th><p>
+            Do not schedule non-local tasks on a TaskServer even if there are no other tasks that could be assigned to that TaskServer.
+          </p></th></tr></tbody></table><h2 id="BinarySize">The <code>BinarySize</code> type</h2><p>
+        A quantity expressed using a binary scale suffix such as B, KB, MB, GB, TB or PB. The B is optional.
+        Also allows IEC suffixes (e.g. KiB, MiB). Examples of valid values include "5KB", "7.5M" and "9GiB".
+        Suffixes are not case sensitive. Scale is based on powers of 2, so K = 1024, M = 1048576, G = 1073741824,
+        and so forth.
+      </p><h2 id="CompressionType">The <code>CompressionType</code> type</h2><p>
+        The type of compression to use.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>None</th><th><p>
+            The data will not be compressed.
+          </p></th></tr><tr><th>GZip</th><th><p>
+            The data will be compressed using the gzip compression algorithm.
+          </p></th></tr></tbody></table></body></html>

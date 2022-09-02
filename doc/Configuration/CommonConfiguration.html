@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><title>Jumbo configuration (common.config)</title><style type="text/css">
+html,
+body {
+  font-size: 100%; }
+
+body {
+  background: white;
+  color: #222222;
+  margin: 2em;
+  font-family: "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  max-width: 62.5em; }
+
+a:focus {
+  outline: none; }
+
+/* Typography resets */
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  direction: ltr; }
+
+/* Default Link Styles */
+a {
+  color: #2ba6cb;
+  text-decoration: none;
+  line-height: inherit; }
+  a:hover, a:focus {
+    color: #2795b6; }
+  a img {
+    border: none; }
+
+/* Default paragraph styles */
+p {
+  font-family: inherit;
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  text-rendering: optimizeLegibility; }
+  p aside {
+    font-size: 0.875em;
+    line-height: 1.35;
+    font-style: italic; }
+
+/* Default header styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI Light", "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: lighter;
+  font-style: normal;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.2125em; }
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+    font-size: 60%;
+    color: #6f6f6f;
+    line-height: 0; }
+
+h1 {
+  font-size: 2.125em; }
+
+h2 {
+  font-size: 1.6875em; }
+
+h3 {
+  font-size: 1.375em; }
+
+h4 {
+  font-size: 1.125em; }
+
+h5 {
+  font-size: 1.125em; }
+
+h6 {
+  font-size: 1em; }
+
+pre {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 1em 0;
+}
+
+code {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+ul,
+ol,
+dl {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  list-style-position: outside;
+  font-family: inherit; }
+ul,
+ol {
+    margin-left: 1.25em;
+}
+/* Unordered Lists */
+ul li ul,
+ul li ol {
+  margin-left: 1.25em;
+  margin-bottom: 0;
+  font-size: 1em;
+  /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul {
+  list-style: inherit; }
+ul.square {
+  list-style-type: square; }
+ul.circle {
+  list-style-type: circle; }
+ul.disc {
+  list-style-type: disc; }
+ul.no-bullet {
+  list-style: none; }
+
+/* Tables */
+table {
+  background: white;
+  margin-bottom: 1.25em;
+  border: solid 1px #dddddd; }
+  table thead,
+  table tfoot {
+    background: whitesmoke;
+    font-weight: bold; }
+    table thead tr th,
+    table thead tr td,
+    table tfoot tr th,
+    table tfoot tr td {
+      padding: 0.5em 0.625em 0.625em;
+      font-size: 0.875em;
+      color: #222222;
+      text-align: left; }
+  table tr th,
+  table tr td {
+    padding: 0.5625em 0.625em;
+    font-size: 0.875em;
+    color: #222222;
+    vertical-align: top;
+    text-align: left }
+  table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background: #f9f9f9; }
+  table thead tr th,
+  table tfoot tr th,
+  table tbody tr td,
+  table tr td,
+  table tfoot tr td {
+    display: table-cell;
+    line-height: 1.125em; }
+    table tr th p, table tr td p {
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+    font-size: inherit;
+  }
+
+.code {
+    background-color: #fafafa;
+    border: solid 1px black;
+    padding: 5px;
+    overflow: auto;
+    font-family: Consolas, monospace;
+}
+    .code .tagDelimiter, .code .attributeDelimiter {
+        color: #00F;
+    }
+    .code .tagName {
+        color: #A31515;
+    }
+    .code .attributeName {
+        color: #F00;
+    }
+    .code .attributeValue {
+        color: #00F;
+    }
+@media print
+{
+    * {
+        background: transparent !important;
+        color: black !important;
+    }
+    body
+    {
+        margin: 0;
+        max-width: auto;
+    }
+    p,
+    h2,
+    h3 {
+      orphans: 3;
+      widows: 3; }
+
+    h1,
+    h2,
+    h3 {
+      page-break-after: avoid; }
+
+    a,
+    a:visited {
+      text-decoration: underline; }
+}
+</style></head><body><h1>Jumbo configuration (common.config)</h1><p>
+      The <code>jumbo.config</code> configuration file provides configuration that is common to the Jumbo DFS and Jumbo Jet.
+    </p><h2>Contents</h2><ul><li><a href="#ookii.jumbo">The <code>ookii.jumbo</code> element</a></li><li><a href="#ookii.jumbo_networkTopology">The <code>ookii.jumbo/​networkTopology</code> element</a></li><li><a href="#ookii.jumbo_patternTopologyResolver">The <code>ookii.jumbo/​patternTopologyResolver</code> element</a></li><li><a href="#ookii.jumbo_patternTopologyResolver_racks">The <code>ookii.jumbo/​patternTopologyResolver/​racks</code> element</a></li><li><a href="#ookii.jumbo_patternTopologyResolver_racks_rack">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​rack</code> element</a></li><li><a href="#ookii.jumbo_patternTopologyResolver_racks_remove">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​remove</code> element</a></li><li><a href="#ookii.jumbo_patternTopologyResolver_racks_clear">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​clear</code> element</a></li><li><a href="#ookii.jumbo_log">The <code>ookii.jumbo/​log</code> element</a></li><li><a href="#PatternType">The <code>PatternType</code> type</a></li></ul><h2 id="ookii.jumbo">The <code>ookii.jumbo</code> element</h2><p>
+        The <code>&lt;ookii.jumbo&gt;</code> element contains global configuration for Jumbo.
+      </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">ookii.jumbo</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">ookii.jumbo</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#ookii.jumbo_networkTopology">&lt;networkTopology&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo_patternTopologyResolver">&lt;patternTopologyResolver&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#ookii.jumbo_log">&lt;log&gt;</a></td><td>0</td><td>1</td></tr></tbody></table><h2 id="ookii.jumbo_networkTopology">The <code>ookii.jumbo/​networkTopology</code> element</h2><p>
+            The <code>&lt;networkTopology&gt;</code> element configures network topology support (rack-awareness).
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">networkTopology</span>
+    <span class="attributeName">resolver</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>resolver</th><td>optional</td><td><span>
+          Specifies the type of a class implementing <code>ITopologyResolver</code> that is used to resolve the rack that a node belongs to.
+        </span><span>The default value is "Ookii.Jumbo.Topology.PatternTopologyResolver, Ookii.Jumbo".</span></td></tr></tbody></table><h2 id="ookii.jumbo_patternTopologyResolver">The <code>ookii.jumbo/​patternTopologyResolver</code> element</h2><div>
+            <p>
+              The <code>&lt;patternTopologyResolver&gt;</code> configures the network topology support using the <code>PatternTopologyResolver</code> class.
+            </p>
+            <p>
+              This configuration element is only used if the <code>resolver</code> attribute of the <a href="#ookii.jumbo_networkTopology"><code>&lt;networkTopology&gt;</code></a> element
+              is set to "Ookii.Jumbo.Topology.PatternTopologyResolver, Ookii.Jumbo".
+            </p>
+          </div><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">patternTopologyResolver</span>
+    <span class="attributeName">patternType</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#PatternType">PatternType</a></span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">patternTopologyResolver</span><span class="tagDelimiter">&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>patternType</th><td>optional</td><td><span>
+          Specifies the type of pattern used by the <code>PatternTopologyResolver</code>.
+        </span><span>The default value is "RegularExpression".</span></td></tr></tbody></table><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#ookii.jumbo_patternTopologyResolver_racks">&lt;racks&gt;</a></td><td>1</td><td>1</td></tr></tbody></table><h2 id="ookii.jumbo_patternTopologyResolver_racks">The <code>ookii.jumbo/​patternTopologyResolver/​racks</code> element</h2><p>
+            The <code>&lt;racks&gt;</code> element provides a collection of racks defined by the <code>PatternTopologyResolver</code>.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">racks</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">racks</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#ookii.jumbo_patternTopologyResolver_racks_rack">&lt;rack&gt;</a></td><td>0</td><td>unbounded</td></tr><tr><td><a href="#ookii.jumbo_patternTopologyResolver_racks_remove">&lt;remove&gt;</a></td><td>0</td><td>unbounded</td></tr><tr><td><a href="#ookii.jumbo_patternTopologyResolver_racks_clear">&lt;clear&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="ookii.jumbo_patternTopologyResolver_racks_rack">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​rack</code> element</h2><p>
+            The <code>&lt;rack&gt;</code> element adds a rack to the <a href="#ookii.jumbo_patternTopologyResolver_racks"><code>&lt;racks&gt;</code></a> collection.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">rack</span>
+    <span class="attributeName">id</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">pattern</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>id</th><td>required</td><td><span>
+          A string value that uniquely identifies the rack.
+        </span></td></tr><tr><th>pattern</th><td>required</td><td><span>
+          The pattern that matches the names of the nodes in this rack. Depending on the <code>patternType</code> attribute of
+          the <a href="#ookii.jumbo_patternTopologyResolver"><code>&lt;patternTopologyResolver&gt;</code></a> element, this pattern
+          is either a regular expression or a range expression.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo_patternTopologyResolver_racks_remove">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​remove</code> element</h2><p>
+            The <code>&lt;remove&gt;</code> element removes a rack from the <a href="#ookii.jumbo_patternTopologyResolver_racks"><code>&lt;racks&gt;</code></a> collection.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">remove</span>
+    <span class="attributeName">id</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>id</th><td>required</td><td><span>
+          A string value that uniquely identifies the rack.
+        </span></td></tr></tbody></table><h2 id="ookii.jumbo_patternTopologyResolver_racks_clear">The <code>ookii.jumbo/​patternTopologyResolver/​racks/​clear</code> element</h2><p>
+            The <code>&lt;clear&gt;</code> element removes all racks from the <a href="#ookii.jumbo_patternTopologyResolver_racks"><code>&lt;racks&gt;</code></a> collection.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">clear</span><span class="tagDelimiter"> /&gt;</span></pre><h2 id="ookii.jumbo_log">The <code>ookii.jumbo/​log</code> element</h2><p>
+            The <code>&lt;log&gt;</code> element provides configuration for Jumbo's logging system.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">log</span>
+    <span class="attributeName">directory</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>directory</th><td>optional</td><td><span>
+          Specifies the directory containing the Jumbo assemblies. If this a relative path, it is relative to the directory containing Jumbo's assemblies.
+          If you change this value, you should also change the corresponsing value in <code>Jumbo-Config.ps1</code> or <code>jumbo-config.sh</code>.
+        </span><span>The default value is "./log/".</span></td></tr></tbody></table><h2 id="PatternType">The <code>PatternType</code> type</h2><p>
+        The type of pattern used by the <code>PatternTopologyResolver</code>.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>RegularExpression</th><th><p>
+            The patterns are regular expressions.
+          </p></th></tr><tr><th>RangeExpression</th><th><p>
+            <p>
+              The patterns are range expressions (see the <code>Ookii.Jumbo.Topology.RangeExpression</code> class).
+            </p>
+          </p></th></tr></tbody></table></body></html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><title>Jumbo job configuration</title><style type="text/css">
+html,
+body {
+  font-size: 100%; }
+
+body {
+  background: white;
+  color: #222222;
+  margin: 2em;
+  font-family: "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  max-width: 62.5em; }
+
+a:focus {
+  outline: none; }
+
+/* Typography resets */
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  direction: ltr; }
+
+/* Default Link Styles */
+a {
+  color: #2ba6cb;
+  text-decoration: none;
+  line-height: inherit; }
+  a:hover, a:focus {
+    color: #2795b6; }
+  a img {
+    border: none; }
+
+/* Default paragraph styles */
+p {
+  font-family: inherit;
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  text-rendering: optimizeLegibility; }
+  p aside {
+    font-size: 0.875em;
+    line-height: 1.35;
+    font-style: italic; }
+
+/* Default header styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI Light", "Segoe UI", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif, "Meiryo UI", "Meiryo";
+  font-weight: lighter;
+  font-style: normal;
+  color: #222222;
+  text-rendering: optimizeLegibility;
+  margin-top: 0.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.2125em; }
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+    font-size: 60%;
+    color: #6f6f6f;
+    line-height: 0; }
+
+h1 {
+  font-size: 2.125em; }
+
+h2 {
+  font-size: 1.6875em; }
+
+h3 {
+  font-size: 1.375em; }
+
+h4 {
+  font-size: 1.125em; }
+
+h5 {
+  font-size: 1.125em; }
+
+h6 {
+  font-size: 1em; }
+
+pre {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 1em 0;
+}
+
+code {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+ul,
+ol,
+dl {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 1.25em;
+  list-style-position: outside;
+  font-family: inherit; }
+ul,
+ol {
+    margin-left: 1.25em;
+}
+/* Unordered Lists */
+ul li ul,
+ul li ol {
+  margin-left: 1.25em;
+  margin-bottom: 0;
+  font-size: 1em;
+  /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul {
+  list-style: inherit; }
+ul.square {
+  list-style-type: square; }
+ul.circle {
+  list-style-type: circle; }
+ul.disc {
+  list-style-type: disc; }
+ul.no-bullet {
+  list-style: none; }
+
+/* Tables */
+table {
+  background: white;
+  margin-bottom: 1.25em;
+  border: solid 1px #dddddd; }
+  table thead,
+  table tfoot {
+    background: whitesmoke;
+    font-weight: bold; }
+    table thead tr th,
+    table thead tr td,
+    table tfoot tr th,
+    table tfoot tr td {
+      padding: 0.5em 0.625em 0.625em;
+      font-size: 0.875em;
+      color: #222222;
+      text-align: left; }
+  table tr th,
+  table tr td {
+    padding: 0.5625em 0.625em;
+    font-size: 0.875em;
+    color: #222222;
+    vertical-align: top;
+    text-align: left }
+  table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    background: #f9f9f9; }
+  table thead tr th,
+  table tfoot tr th,
+  table tbody tr td,
+  table tr td,
+  table tfoot tr td {
+    display: table-cell;
+    line-height: 1.125em; }
+    table tr th p, table tr td p {
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+    font-size: inherit;
+  }
+
+.code {
+    background-color: #fafafa;
+    border: solid 1px black;
+    padding: 5px;
+    overflow: auto;
+    font-family: Consolas, monospace;
+}
+    .code .tagDelimiter, .code .attributeDelimiter {
+        color: #00F;
+    }
+    .code .tagName {
+        color: #A31515;
+    }
+    .code .attributeName {
+        color: #F00;
+    }
+    .code .attributeValue {
+        color: #00F;
+    }
+@media print
+{
+    * {
+        background: transparent !important;
+        color: black !important;
+    }
+    body
+    {
+        margin: 0;
+        max-width: auto;
+    }
+    p,
+    h2,
+    h3 {
+      orphans: 3;
+      widows: 3; }
+
+    h1,
+    h2,
+    h3 {
+      page-break-after: avoid; }
+
+    a,
+    a:visited {
+      text-decoration: underline; }
+}
+</style></head><body><h1>Jumbo job configuration</h1><div>
+      <p>
+        Job configuration XML files are used for each job to specify the stages, tasks, and channels for the job, including inputs and outputs and
+        other assorted settings related to a job.
+      </p>
+      <p>
+        It is almost never necessary to manually create or modify a job configuration XML file, as it is preferable to use the <code>JobBuilder</code>
+        or <code>JobConfiguration</code> classes.
+      </p>
+      <p>
+        Job configuration files are created by serializing the <code>JobConfiguration</code> class to XML, and read by deserializing.
+      </p>
+    </div><h2>Contents</h2><ul><li><a href="#Job">The <code>Job</code> element</a></li><li><a href="#Job_AssemblyFileNames">The <code>Job/​AssemblyFileNames</code> element</a></li><li><a href="#Job_AssemblyFileNames_string">The <code>Job/​AssemblyFileNames/​string</code> element</a></li><li><a href="#Job_Stages">The <code>Job/​Stages</code> element</a></li><li><a href="#Job_Stages_Stage">The <code>Job/​Stages/​Stage</code> element</a></li><li><a href="#Job_Stages_Stage_TaskType">The <code>Job/​Stages/​Stage/​TaskType</code> element</a></li><li><a href="#Job_Stages_Stage_DataInputType">The <code>Job/​Stages/​Stage/​DataInputType</code> element</a></li><li><a href="#Job_Stages_Stage_DataOutputType">The <code>Job/​Stages/​Stage/​DataOutputType</code> element</a></li><li><a href="#Job_Stages_Stage_ChildStage">The <code>Job/​Stages/​Stage/​ChildStage</code> element</a></li><li><a href="#Job_Stages_Stage_ChildStagePartitionerType">The <code>Job/​Stages/​Stage/​ChildStagePartitionerType</code> element</a></li><li><a href="#Job_Stages_Stage_StageSettings">The <code>Job/​Stages/​Stage/​StageSettings</code> element</a></li><li><a href="#Job_Stages_Stage_StageSettings_Setting">The <code>Job/​Stages/​Stage/​StageSettings/​Setting</code> element</a></li><li><a href="#Job_Stages_Stage_OutputChannel">The <code>Job/​Stages/​Stage/​OutputChannel</code> element</a></li><li><a href="#Job_Stages_Stage_OutputChannel_MultiInputRecordReaderType">The <code>Job/​Stages/​Stage/​OutputChannel/​MultiInputRecordReaderType</code> element</a></li><li><a href="#Job_Stages_Stage_OutputChannel_OutputStage">The <code>Job/​Stages/​Stage/​OutputChannel/​OutputStage</code> element</a></li><li><a href="#Job_Stages_Stage_OutputChannel_PartitionerType">The <code>Job/​Stages/​Stage/​OutputChannel/​PartitionerType</code> element</a></li><li><a href="#Job_Stages_Stage_MultiInputRecordReaderType">The <code>Job/​Stages/​Stage/​MultiInputRecordReaderType</code> element</a></li><li><a href="#Job_Stages_Stage_DependentStages">The <code>Job/​Stages/​Stage/​DependentStages</code> element</a></li><li><a href="#Job_Stages_Stage_DependentStages_string">The <code>Job/​Stages/​Stage/​DependentStages/​string</code> element</a></li><li><a href="#Job_AdditionalProgressCounters">The <code>Job/​AdditionalProgressCounters</code> element</a></li><li><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter</code> element</a></li><li><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter_TypeName">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter/​TypeName</code> element</a></li><li><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter_DisplayName">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter/​DisplayName</code> element</a></li><li><a href="#Job_SchedulerOptions">The <code>Job/​SchedulerOptions</code> element</a></li><li><a href="#Job_JobSettings">The <code>Job/​JobSettings</code> element</a></li><li><a href="#Job_JobSettings_Setting">The <code>Job/​JobSettings/​Setting</code> element</a></li><li><a href="#SchedulingMode">The <code>SchedulingMode</code> type</a></li><li><a href="#ChannelType">The <code>ChannelType</code> type</a></li><li><a href="#PartitionAssignmentMethod">The <code>PartitionAssignmentMethod</code> type</a></li><li><a href="#StageId">The <code>StageId</code> type</a></li></ul><h2 id="Job">The <code>Job</code> element</h2><p>
+        The <code>&lt;Job&gt;</code> element specifies the configuration of a job. This is the root element of a job configuration XML file.
+      </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">Job</span>
+    <span class="attributeName">name</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">Job</span><span class="tagDelimiter">&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>name</th><td>optional</td><td><span>
+          A friendly name for the job.
+        </span></td></tr></tbody></table><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_AssemblyFileNames">&lt;AssemblyFileNames&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_Stages">&lt;Stages&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_AdditionalProgressCounters">&lt;AdditionalProgressCounters&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_SchedulerOptions">&lt;SchedulerOptions&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_JobSettings">&lt;JobSettings&gt;</a></td><td>0</td><td>1</td></tr></tbody></table><h2 id="Job_AssemblyFileNames">The <code>Job/​AssemblyFileNames</code> element</h2><p>
+            The <code>&lt;AssemblyFileNames&gt;</code> element contains a collection of assembly file names that must be loaded for the job's tasks.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">AssemblyFileNames</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">AssemblyFileNames</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_AssemblyFileNames_string">&lt;string&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_AssemblyFileNames_string">The <code>Job/​AssemblyFileNames/​string</code> element</h2><p>
+            The <code>&lt;string&gt;</code> element for the <code>&lt;AssemblyFileNames&gt;</code> element specifies the file name (without path information)
+            of an assembly that should be loaded for the tasks in this job.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">string</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">string</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages">The <code>Job/​Stages</code> element</h2><p>
+            The <code>&lt;Stages&gt;</code> element contains a collection of all the stages (except child stages) in the job. The
+            definition order of the stages does not matter, as they will be ordered by dependencies for scheduling.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">Stages</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">Stages</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_Stages_Stage">&lt;Stage&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_Stages_Stage">The <code>Job/​Stages/​Stage</code> element</h2><p>
+                  The <code>&lt;Stage&gt;</code> element specifies a processing stage in a Jumbo Jet job.
+                </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">Stage</span>
+    <span class="attributeName">id</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#StageId">StageId</a></span>
+    <span class="attributeName">taskCount</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">Stage</span><span class="tagDelimiter">&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>id</th><td>required</td><td><span>
+          The identifier of this stage. For root stages, this must be unique within the job. For child stages, this value does not need to be unique.
+        </span></td></tr><tr><th>taskCount</th><td>required</td><td><span>
+          The number of tasks in this stage. For stages with data input this attribute is informational, since the number of splits defined by the data input
+          determines the actual number of tasks.
+        </span></td></tr></tbody></table><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_Stages_Stage_TaskType">&lt;TaskType&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_DataInputType">&lt;DataInputType&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_DataOutputType">&lt;DataOutputType&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_ChildStage">&lt;ChildStage&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_ChildStagePartitionerType">&lt;ChildStagePartitionerType&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_StageSettings">&lt;StageSettings&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_OutputChannel">&lt;OutputChannel&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_MultiInputRecordReaderType">&lt;MultiInputRecordReaderType&gt;</a></td><td>0</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_DependentStages">&lt;DependentStages&gt;</a></td><td>0</td><td>1</td></tr></tbody></table><h2 id="Job_Stages_Stage_TaskType">The <code>Job/​Stages/​Stage/​TaskType</code> element</h2><p>
+            The <code>&lt;TaskType&gt;</code> element specifies the assembly qualified type name of a type implementing the <code>ITask&lt;TInput, TOutput&gt;</code>
+            interface that provides the data processing operation for this stage.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">TaskType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">TaskType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_DataInputType">The <code>Job/​Stages/​Stage/​DataInputType</code> element</h2><p>
+            The <code>&lt;DataInputType&gt;</code> element specifies the assembly qualified type name of a type implementing the <code>IDataInput</code> interface
+            that determines the input for the task, such as a DFS file. This element is not used for stages that have an input channel or have no input.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">DataInputType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">DataInputType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_DataOutputType">The <code>Job/​Stages/​Stage/​DataOutputType</code> element</h2><p>
+            The <code>&lt;DataOutputType&gt;</code> element specifies the assembly qualified type name of a type implementing the <code>IDataOutput</code> interface
+            that determines the output for the task, such as a DFS file. This element is not used for stages that have an output channel or have no output.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">DataOutputType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">DataOutputType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_ChildStage">The <code>Job/​Stages/​Stage/​ChildStage</code> element</h2><p>
+            The <code>&lt;ChildStage&gt;</code> element specifies a child stage for the current stage; that is, a stage connected to the current stage using a pipeline channel.
+          </p><p>
+          See the <a href="#Job_Stages_Stage">&lt;Stage&gt;</a> element.
+        </p><h2 id="Job_Stages_Stage_ChildStagePartitionerType">The <code>Job/​Stages/​Stage/​ChildStagePartitionerType</code> element</h2><p>
+            The <code>&lt;ChildStagePartitionerType&gt;</code> element specifies the assembly qualified type name of a type implementing the <code>IPartitioner&lt;T&gt;</code>
+            interface that is used to partition records for the child stage of this stage. This element is not used if the stage has no child stage or the <code>taskCount</code>
+            attribute of the <a href="#Job_Stages_Stage_ChildStage"><code>&lt;ChildStage&gt;</code></a> element is 1, in which case no partitioning occurs. Note that
+            partitioning may happen only once in a compound task.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">ChildStagePartitionerType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">ChildStagePartitionerType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_StageSettings">The <code>Job/​Stages/​Stage/​StageSettings</code> element</h2><p>
+            The <code>&lt;StageSettings&gt;</code> element specifies arbitrary settings that are available during task execution that apply only to the current stage.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">StageSettings</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">StageSettings</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_Stages_Stage_StageSettings_Setting">&lt;Setting&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_Stages_Stage_StageSettings_Setting">The <code>Job/​Stages/​Stage/​StageSettings/​Setting</code> element</h2><p>
+            The <code>&lt;Setting&gt;</code> element specifies a setting.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">Setting</span>
+    <span class="attributeName">key</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">value</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>key</th><td>required</td><td><span>
+                The key that can be used to retrieve the setting.
+              </span></td></tr><tr><th>value</th><td>required</td><td><span>
+                The value of the setting.
+              </span></td></tr></tbody></table><h2 id="Job_Stages_Stage_OutputChannel">The <code>Job/​Stages/​Stage/​OutputChannel</code> element</h2><p>
+            The <code>&lt;OutputChannel&gt;</code> element specifies a file or TCP output channel for the stage. This element is not used if the stage has data output
+            or no output, or if the stage has a pipeline output channel (in which case the <a href="#Job_Stages_Stage_ChildStage"><code>&lt;ChildStage&gt;</code></a> element
+            is used instead.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">OutputChannel</span>
+    <span class="attributeName">type</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#ChannelType">ChannelType</a></span>
+    <span class="attributeName">partitionsPerTask</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">disableDynamicPartitionAssignment</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span>
+    <span class="attributeName">partitionAssignmentMethod</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#PartitionAssignmentMethod">PartitionAssignmentMethod</a></span>
+    <span class="attributeName">forceFileDownload</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:boolean</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">OutputChannel</span><span class="tagDelimiter">&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>type</th><td>required</td><td><span>
+          The type of the channel: file or TCP.
+        </span></td></tr><tr><th>partitionsPerTask</th><td>required</td><td><span>
+          The number of partitions that each task in the receiving stage will process (setting this higher than 1 will create a stage with more partitions than tasks, allowing for the
+          use of dynamic partition assignment for load balancing).
+        </span></td></tr><tr><th>disableDynamicPartitionAssignment</th><td>required</td><td><span>
+          Indicates whether to disable dynamic partition assignment if the <code>partitionsPerTask</code> attribute is higher than 1. Use for debugging purposes.
+        </span></td></tr><tr><th>partitionAssignmentMethod</th><td>required</td><td><span>
+          Specifies the partition assignment method to use if the <code>partitionsPerTask</code> attribute is higher than 1.
+        </span></td></tr><tr><th>forceFileDownload</th><td>required</td><td><span>
+          Indicates whether to force file download even for local files with a file channel. Use for debugging purposes.
+        </span></td></tr></tbody></table><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_Stages_Stage_OutputChannel_MultiInputRecordReaderType">&lt;MultiInputRecordReaderType&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_OutputChannel_OutputStage">&lt;OutputStage&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_Stages_Stage_OutputChannel_PartitionerType">&lt;PartitionerType&gt;</a></td><td>1</td><td>1</td></tr></tbody></table><h2 id="Job_Stages_Stage_OutputChannel_MultiInputRecordReaderType">The <code>Job/​Stages/​Stage/​OutputChannel/​MultiInputRecordReaderType</code> element</h2><p>
+            The <code>&lt;MultiInputRecordReaderType&gt;</code> element specifies the assembly qualified name of a type that derives from
+            <code>MultiInputRecordReader&lt;T&gt;</code> that is used as the multi-input record reader to combine input data from multiple
+            tasks in the tasks of the receiving stage.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">MultiInputRecordReaderType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">MultiInputRecordReaderType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_OutputChannel_OutputStage">The <code>Job/​Stages/​Stage/​OutputChannel/​OutputStage</code> element</h2><p>
+            The <code>&lt;OutputStage&gt;</code> element specifies the ID of the receiving stage of this channel. This may not be a compound stage ID.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">OutputStage</span><span class="tagDelimiter">&gt;</span><a href="#StageId">StageId</a><span class="tagDelimiter">&lt;</span><span class="tagName">OutputStage</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_OutputChannel_PartitionerType">The <code>Job/​Stages/​Stage/​OutputChannel/​PartitionerType</code> element</h2><p>
+            The <code>&lt;PartitionerType&gt;</code> element specifies the assembly qualified type name of a type that implements the
+            <code>IPartitioner&lt;T&gt;</code> interface that is used to partition records across tasks in the receiving stage.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">PartitionerType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">PartitionerType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_MultiInputRecordReaderType">The <code>Job/​Stages/​Stage/​MultiInputRecordReaderType</code> element</h2><p>
+            The <code>&lt;MultiInputRecordReaderType&gt;</code> element specifies the assembly qualified type name of a type that derives from the
+            <code>MultiInputRecordReader&lt;T&gt;</code> class that is used as the stage multi-input record reader to combine input from multiple channels.
+            This element is only used if the stage has more than one input channel.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">MultiInputRecordReaderType</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">MultiInputRecordReaderType</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_Stages_Stage_DependentStages">The <code>Job/​Stages/​Stage/​DependentStages</code> element</h2><p>
+            The <code>&lt;DependentStages&gt;</code> element specifies a collection of stage IDs of stages that may not be scheduled until all tasks in this
+            stage have completed. This is used to specify stages that depend on the output of this stage but are not directly or indirectly connected to this stage
+            via a channel. The specified stages may not be child stages (so the ID may not be a compound stage ID).
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">DependentStages</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">DependentStages</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_Stages_Stage_DependentStages_string">&lt;string&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_Stages_Stage_DependentStages_string">The <code>Job/​Stages/​Stage/​DependentStages/​string</code> element</h2><p>
+            The <code>&lt;string&gt;</code> element for the <code>&lt;DependentStages&gt;</code> element specifies the ID of a stage that may not be scheduled
+            until all the tasks in this stage have completed.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">string</span><span class="tagDelimiter">&gt;</span><a href="#StageId">StageId</a><span class="tagDelimiter">&lt;</span><span class="tagName">string</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_AdditionalProgressCounters">The <code>Job/​AdditionalProgressCounters</code> element</h2><p>
+            The <code>&lt;AdditionalProgressCounters&gt;</code> element contains a collection of additional progress counters for the job.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">AdditionalProgressCounters</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">AdditionalProgressCounters</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter">&lt;AdditionalProgressCounter&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_AdditionalProgressCounters_AdditionalProgressCounter">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter</code> element</h2><p>
+                  The <code>&lt;AdditionalProgressCounter&gt;</code> element specifies a friendly name for an additional progress counter used by the job.
+                </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">AdditionalProgressCounter</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">AdditionalProgressCounter</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter_TypeName">&lt;TypeName&gt;</a></td><td>1</td><td>1</td></tr><tr><td><a href="#Job_AdditionalProgressCounters_AdditionalProgressCounter_DisplayName">&lt;DisplayName&gt;</a></td><td>1</td><td>1</td></tr></tbody></table><h2 id="Job_AdditionalProgressCounters_AdditionalProgressCounter_TypeName">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter/​TypeName</code> element</h2><p>
+            The <code>&lt;TypeName&gt;</code> element specifies the assembly qualified type name of a type implementing the <code>IHasAdditionalProgress</code>
+            interface that provides additional progress information about the tasks in this job.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">TypeName</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">TypeName</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_AdditionalProgressCounters_AdditionalProgressCounter_DisplayName">The <code>Job/​AdditionalProgressCounters/​AdditionalProgressCounter/​DisplayName</code> element</h2><p>
+            The <code>&lt;DisplayName&gt;</code> element specifies a friendly name for the additional progress counter used by the Jet web portal.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">DisplayName</span><span class="tagDelimiter">&gt;</span>xs:string<span class="tagDelimiter">&lt;</span><span class="tagName">DisplayName</span><span class="tagDelimiter">&gt;</span></pre><h2 id="Job_SchedulerOptions">The <code>Job/​SchedulerOptions</code> element</h2><p>
+            The <code>&lt;SchedulerOptions&gt;</code> element specifies custom scheduler settings for a job. Custom schedulers are not required
+            to obey these settings (the default scheduler does).
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">SchedulerOptions</span>
+    <span class="attributeName">maximumDataDistance</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:int</span>
+    <span class="attributeName">dfsInputSchedulingMode</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#SchedulingMode">SchedulingMode</a></span>
+    <span class="attributeName">nonInputSchedulingMode</span><span class="attributeDelimiter">=</span><span class="attributeValue"><a href="#SchedulingMode">SchedulingMode</a></span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>maximumDataDistance</th><td>required</td><td><span>
+          The maximum allowed distance between a task and its input data. The value 0 means the data must be local, 1 allows rack-local data, and 2 or higher allows any distance.
+          This attribute only applies to stages with data input that is provided by a file system that supports locality (such as the Jumbo DFS).
+        </span></td></tr><tr><th>dfsInputSchedulingMode</th><td>required</td><td><span>
+          The scheduling mode for tasks with data input.
+        </span></td></tr><tr><th>nonInputSchedulingMode</th><td>required</td><td><span>
+          The scheduling mode for tasks without data input.
+        </span></td></tr></tbody></table><h2 id="Job_JobSettings">The <code>Job/​JobSettings</code> element</h2><p>
+            The <code>&lt;JobSettings&gt;</code> element specifies arbitrary settings available during task execution that apply to the job as a whole.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">JobSettings</span><span class="tagDelimiter">&gt;</span>
+<span class="tagDelimiter">&lt;/</span><span class="tagName">JobSettings</span><span class="tagDelimiter">&gt;</span></pre><h3>Child elements</h3><table><thead><tr><th>Element</th><th>Min occurs</th><th>Max occurs</th></tr></thead><tbody><tr><td><a href="#Job_JobSettings_Setting">&lt;Setting&gt;</a></td><td>0</td><td>unbounded</td></tr></tbody></table><h2 id="Job_JobSettings_Setting">The <code>Job/​JobSettings/​Setting</code> element</h2><p>
+            The <code>&lt;Setting&gt;</code> element specifies a setting.
+          </p><pre class="code"><span class="tagDelimiter">&lt;</span><span class="tagName">Setting</span>
+    <span class="attributeName">key</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span>
+    <span class="attributeName">value</span><span class="attributeDelimiter">=</span><span class="attributeValue">xs:string</span><span class="tagDelimiter"> /&gt;</span></pre><h3>Attributes</h3><table><thead><tr><th>Attribute</th><th>Use</th><th>Description</th></tr></thead><tbody><tr><th>key</th><td>required</td><td><span>
+                The key that can be used to retrieve the setting.
+              </span></td></tr><tr><th>value</th><td>required</td><td><span>
+                The value of the setting.
+              </span></td></tr></tbody></table><h2 id="SchedulingMode">The <code>SchedulingMode</code> type</h2><p>
+        Indicates the scheduling strategy to use by a task scheduler.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>Default</th><th><p>
+            Use the strategy specified in the <code>jet.config</code> file.
+          </p></th></tr><tr><th>MoreServers</th><th><p>
+            Favor TaskServers with a large amount of free task slots, spreading a job over as many nodes as possible.
+          </p></th></tr><tr><th>FewerServers</th><th><p>
+            Favor TaskServers with a small amount of free task slots, spreading the job over as few nodes as possible.
+          </p></th></tr><tr><th>OptimalLocality</th><th><p>
+            Do not schedule non-local tasks on a TaskServer even if there are no other tasks that could be assigned to that TaskServer.
+          </p></th></tr></tbody></table><h2 id="ChannelType">The <code>ChannelType</code> type</h2><p>
+        Indicates the type of a channel between stages.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>File</th><th><p>
+            Intermediate data is materialized in local files which are shuffled over the network.
+          </p></th></tr><tr><th>Tcp</th><th><p>
+            Data is transfered directly between tasks via TCP connection without materializing it. It must be possible to run all tasks in the receiving
+            stage simultaneously, and task level fault tolerance will not be available for this job.
+          </p></th></tr></tbody></table><h2 id="PartitionAssignmentMethod">The <code>PartitionAssignmentMethod</code> type</h2><p>
+        Indicates how to assign partitions to tasks during initial partition assignment if the stage uses more than one partition per task.
+      </p><h3>Enumeration values</h3><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody><tr><th>Linear</th><th><p>
+            Each task gets a linear sequence of partitions, e.g. task 1 gets partitions 1, 2 and 3, task 2 gets partitions 4, 5 and 6, and so forth.
+          </p></th></tr><tr><th>Striped</th><th><p>
+            The partitions are striped across the tasks, e.g. task 1 gets partitions 1, 3, and 5, and task 2 gets partitions 2, 4, and 6.
+          </p></th></tr></tbody></table><h2 id="StageId">The <code>StageId</code> type</h2><p>
+        A string defining a non-compound stage ID. May not contain the characters '.', '_' or '-'.
+      </p></body></html>

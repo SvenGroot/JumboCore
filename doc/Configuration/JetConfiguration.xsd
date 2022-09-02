@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:doc="http://www.ookii.org/documentation" doc:title="Jumbo configuration (jet.config)" xmlns:h="http://www.w3.org/1999/xhtml">
+  <xs:annotation>
+    <xs:documentation>
+      The <h:code>jet.config</h:code> configuration file provides configuration for the Jumbo Jet distributed execution engine.
+    </xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="JetConfiguration">
+    <xs:all>
+      <xs:element name="jobServer" type="JobServerConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;jobServer&gt;</h:code> element provides information for clients to access the Jumbo Jet execution engine, and configuration for the Jumbo Jet JobServer.
+            For client applications, only the <h:code>hostName</h:code> and <h:code>port</h:code> attributes of this element are used.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taskServer" type="TaskServerConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;taskServer&gt;</h:code> element configures the Jumbo Jet TaskServers.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fileChannel" type="FileChannelConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;fileChannel&gt;</h:code> element configures default settings for file channels between stages in a Jumbo Jet job.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="tcpChannel" type="TcpChannelConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;tcpChannel&gt;</h:code> element configures default settings for TCP channels between stages in a Jumbo Jet job.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="mergeRecordReader" type="MergeRecordReaderConfigurationElement" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            The <h:code>&lt;mergeRecordReader&gt;</h:code> element configures default settings for the <h:code>Ookii.Jumbo.Jet.MergeRecordReader&lt;T&gt;</h:code> class,
+            which is used when sorting using e.g. the <h:code>JobBuilder.SpillSort</h:code> method.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="JobServerConfigurationElement">
+    <xs:attribute name="hostName" type="xs:string" use="optional" default="localhost">
+      <xs:annotation>
+        <xs:documentation>
+          The host name of the Jumbo Jet JobServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="port" type="xs:int" use="optional" default="9500">
+      <xs:annotation>
+        <xs:documentation>
+          The port number for the Jumbo Jet JobServer's RPC service.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="jetDfsPath" type="xs:string" use="optional" default="/JumboJet">
+      <xs:annotation>
+        <xs:documentation>
+          The path on the Jumbo DFS (or other file system configured in <h:code>dfs.config</h:code>)
+          where files related to Jumbo Jet jobs are stored.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="archiveDirectory" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The local directory where job configuration and statistics are archived for future retrieval
+          via the Jumbo Jet web portal. If not specified, jobs are not archived and their information cannot
+          be retrieved after they are removed from the current list of completed jobs.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="scheduler" type="xs:string" use="optional" default="Ookii.Jumbo.Jet.Scheduling.DefaultScheduler, Ookii.Jumbo.Jet">
+      <xs:annotation>
+        <xs:documentation>
+          The assembly qualified type name of a type that implements <h:code>Ookii.Jumbo.Jet.Scheduling.ITaskScheduler</h:code> that will
+          be used to schedule task execution on the Jumbo Jet cluster.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="maxTaskAttempts" type="xs:int" use="optional" default="5">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of times a single task may be re-executed before the job that contains the task is failed.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="maxTaskFailures" type="xs:int" use="optional" default="20">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of failures across all tasks that a job may experience before the job is failed.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="taskServerTimeout" type="xs:int" use="optional" default="600000">
+      <xs:annotation>
+        <xs:documentation>
+          The time in milliseconds after which a TaskServer is considered dead if it has not sent a heartbeat.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="taskServerSoftTimeout" type="xs:int" use="optional" default="60000">
+      <xs:annotation>
+        <xs:documentation>
+          The time in milliseconds after which a TaskServer will no longer be considered for new tasks during scheduling if it has not sent a heartbeat.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dataInputSchedulingMode" type="SchedulingMode" use="optional" default="MoreServers">
+      <xs:annotation>
+        <xs:documentation>
+          The scheduling mode to use for tasks that have data input (e.g. a DFS file). This setting may not be used
+          by all schedulers (the default scheduler does use it).
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="nonDataInputSchedulingMode" type="SchedulingMode" use="optional" default="MoreServers">
+      <xs:annotation>
+        <xs:documentation>
+          The scheduling mode to use for tasks that do not have data input (no input or channel input). This setting
+          may not be used by all schedulers (the default scheduler does use it). The <h:code>OptimalLocality</h:code>
+          value is not applicable to this setting.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="schedulingThreshold" type="xs:float" use="optional" default="0.4">
+      <xs:annotation>
+        <xs:documentation>
+          The fraction of tasks (between 0 and 1) of a stage using a file output channel that must be finished before tasks of the receiving stage of the channel
+          are eligible to be scheduled. This setting is likely to only have significant impact if the stage has a number of tasks close
+          to or less than the cluster's capacity.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="broadcastAddress" type="xs:string" use="optional" default="255.255.255.255">
+      <xs:annotation>
+        <xs:documentation>
+          The UDP broadcast address for task completion notification. This should be set to your network's UDP multicast address
+          if task completion notification broadcasts are enabled. For example, if your network address is 192.168.1.x with a network
+          mask of 255.255.255.0, your multicast address is 192.168.1.255.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="broadcastPort" type="xs:int" use="optional" default="0">
+      <xs:annotation>
+        <xs:documentation>
+          The port number to use for UDP broadcast for task completion notification. If this value is set to 0, task completion
+          notification broadcasts are disabled. The standard Jumbo port number to use for this is 9550.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="listenIPv4AndIPv6" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether the JobServer's RPC service should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="SchedulingMode">
+    <xs:annotation>
+      <xs:documentation>
+        Indicates the scheduling strategy to use by a task scheduler.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Default">
+        <xs:annotation>
+          <xs:documentation>
+            Use the default strategy, which is <h:code>MoreServers</h:code>.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MoreServers">
+        <xs:annotation>
+          <xs:documentation>
+            Favor TaskServers with a large amount of free task slots, spreading a job over as many nodes as possible.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FewerServers">
+        <xs:annotation>
+          <xs:documentation>
+            Favor TaskServers with a small amount of free task slots, spreading the job over as few nodes as possible.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OptimalLocality">
+        <xs:annotation>
+          <xs:documentation>
+            Do not schedule non-local tasks on a TaskServer even if there are no other tasks that could be assigned to that TaskServer.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TaskServerConfigurationElement">
+    <xs:attribute name="taskDirectory" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The local directory where temporary and intermediate data files for tasks of running jobs are stored on a TaskServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="taskSlots" type="xs:int" use="optional" default="2">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of simultaneous tasks to execute per TaskServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="port" type="xs:int" use="optional" default="9501">
+      <xs:annotation>
+        <xs:documentation>
+          The port number for the TaskServer's RPC service (used for clients and the task umbilical protocol).
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="fileServerPort" type="xs:int" use="optional" default="9502">
+      <xs:annotation>
+        <xs:documentation>
+          The port number for the file server used for file channel shuffling operations.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="fileServerMaxConnections" type="xs:int" use="optional" default="10">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of connections that the file server will accept. If a task attempts to connect to the
+          file server while there are already the indicated maximum number of connections, the connection is refused
+          so the task knows to connect to a different server first. This helps balance the load of the shuffling operation
+          by preventing all tasks from reading data from the same TaskServer simultaneously. A reasonable guideline for this
+          value is twice the number of task slots.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="fileServerMaxIndexCacheSize" type="xs:int" use="optional" default="25">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of entries in the file channel server's index cache before entries get evicted by new entries.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="processCreationDelay" type="xs:int" use="optional" default="0">
+      <xs:annotation>
+        <xs:documentation>
+          The delay, in milliseconds, to apply before creating a new TaskHost process. This setting was used to work around a bug with rapid
+          process creation in older versions of Mono, and should be left at 0 unless you are experiencing problems.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="runTaskHostInAppDomain" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to use an AppDomain rather than a process for running tasks. This is not recommended except
+          for debugging purposes. Tasks will always execute in an AppDomain regardless of this setting if a debugger is
+          attached to the TaskServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="logSystemStatus" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether tasks should periodically log processor and memory status information to the task log file. System status
+          is logged based on the progress interval.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="progressInterval" type="xs:int" use="optional" default="3000">
+      <xs:annotation>
+        <xs:documentation>
+          The interval in milliseconds at which tasks report progress to the TaskServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="heartbeatInterval" type="xs:int" use="optional" default="3000">
+      <xs:annotation>
+        <xs:documentation>
+          The interval in milliseconds at which the TaskServer sends heartbeats to the JobServer.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="taskTimeout" type="xs:int" use="optional" default="600000">
+      <xs:annotation>
+        <xs:documentation>
+          The time in milliseconds after which a task is failed and scheduled for re-execution if it has not reported progress.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="immediateCompletedTaskNotification" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to send immediate out-of-band heartbeats to the JobServer when a task completes. If set to false,
+          the JobServer is not notified of task completion until the next heartbeat interval.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="listenIPv4AndIPv6" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether the TaskServer's RPC service and file channel server should listen on both IPv6 and IPv4 addresses. On Windows, it is
+          required to explicitly listen on both addresses if both are supported; on Linux, listening on IPv6 will automatically
+          listen on the corresponding IPv4 address, so attempting to manually bind to that address will fail. If this
+          setting is not specified, it defaults to "true" on Windows and "false" on Unix (which is correct for Linux, but
+          you may need to manually set it for other Unix variants like FreeBSD). If either IPv6 or IPv4 connectivity
+          is not available on the system, this setting has no effect.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="FileChannelConfigurationElement">
+    <xs:attribute name="readBufferSize" type="BinarySize" use="optional" default="64KB">
+      <xs:annotation>
+        <xs:documentation>
+          The buffer size to use when reading intermediate files.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="writeBufferSize" type="BinarySize" use="optional" default="64KB">
+      <xs:annotation>
+        <xs:documentation>
+          The buffer size to use when writing intermediate files.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="deleteIntermediateFiles" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to delete intermediate files after they are no longer needed or when the job finishes or fails.
+          Set this to false to preserve the files to debug a failing job.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="memoryStorageSize" type="BinarySize" use="optional" default="100MB">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum size of the in-memory storage to use for shuffled segments. Setting this to a high value can improve performance,
+          but may lead to problems if the task itself uses a lot of memory. When using the <h:code>MergeRecordReader</h:code> on a file
+          channel and the <h:code>purgeMemoryBeforeFinalPass</h:code> setting on the <h:a href="#ookii.jumbo.jet_mergeRecordReader"><h:code>&lt;mergeRecordReader</h:code></h:a>
+          element is set to true, you can use a high value even if the task uses a large amount of memory. Because this value is task dependent,
+          it can be more useful to override it using the job settings.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="memoryStorageWaitTimeout" type="xs:int" use="optional" default="60000">
+      <xs:annotation>
+        <xs:documentation>
+          The time in milliseconds to wait for memory storage to become available for a shuffled segment before falling back to disk storage.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compressionType" type="CompressionType" use="optional" default="None">
+      <xs:annotation>
+        <xs:documentation>
+          The type of compression to apply to the file channel's intermediate data files. Enabling file channel compression will
+          reduce intermediate file size and network load, but may significantly increase the CPU load of the tasks. Only use this
+          if your data is highly compressable, the network is slow, or disk space for intermediate files is low.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="spillBufferSize" type="BinarySize" use="optional" default="100MB">
+      <xs:annotation>
+        <xs:documentation>
+          The size of the in-memory buffer in which to collect intermediate data produced by a task with a file output channel.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="spillBufferLimit" type="xs:float" use="optional" default="0.8">
+      <xs:annotation>
+        <xs:documentation>
+          The threshold (between 0 and 1) at which a spill is triggered (the contents of the in-memory buffer holding intermediate output data are written to disk).
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="spillSortMinSpillsForCombineDuringMerge" type="xs:int" use="optional" default="3">
+      <xs:annotation>
+        <xs:documentation>
+          If using a <h:code>SpillSort</h:code> operation with a combiner for the channel, the minimum number of spills that must have occurred in order to re-apply
+          the combiner during merging.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="enableChecksum" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to compute and verify checksums for intermediate data.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="BinarySize">
+    <xs:annotation>
+      <xs:documentation>
+        A quantity expressed using a binary scale suffix such as B, KB, MB, GB, TB or PB. The B is optional.
+        Also allows IEC suffixes (e.g. KiB, MiB). Examples of valid values include "5KB", "7.5M" and "9GiB".
+        Suffixes are not case sensitive. Scale is based on powers of 2, so K = 1024, M = 1048576, G = 1073741824,
+        and so forth.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9\.]+([kKmMgGtTpP][iI]?)?[bB]?" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CompressionType">
+    <xs:annotation>
+      <xs:documentation>
+        The type of compression to use.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None">
+        <xs:annotation>
+          <xs:documentation>
+            The data will not be compressed.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="GZip">
+        <xs:annotation>
+          <xs:documentation>
+            The data will be compressed using the gzip compression algorithm.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TcpChannelConfigurationElement">
+    <xs:attribute name="spillBufferSize" type="BinarySize" use="optional" default="20MB">
+      <xs:annotation>
+        <xs:documentation>
+          The size of the in-memory buffer in which intermediate data is collected before sending it to the receiving stage's tasks.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="spillBufferLimit" type="xs:float" use="optional" default="0.6">
+      <xs:annotation>
+        <xs:documentation>
+          The threshold (between 0 and 1) at which the contents of the intermediate data buffer are sent to the receiving stage's tasks.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="reuseConnections" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>Indicates whether the TCP channel keeps the connections to the receiving stage's tasks open in between spills.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="MergeRecordReaderConfigurationElement">
+    <xs:attribute name="maxFileInputs" type="xs:int" use="optional" default="100">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum number of on-disk segments that may be merged in a single merge pass. The merge record reader will merge the input data in multiple passes
+          until the remaining number of on-disk segments is below this value. During shuffling, a background disk merge is triggered if the number of on-disk
+          segments exceeds twice this value.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="memoryStorageTriggerLevel" type="xs:float" use="optional" default="0.6">
+      <xs:annotation>
+        <xs:documentation>
+          The threshold (between 0 and 1) of memory storage usage at which a background merge is started to merge all current in-memory segments to disk.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="mergeStreamReadBufferSize" type="BinarySize" use="optional" default="1MB">
+      <xs:annotation>
+        <xs:documentation>
+          The buffer size to use per segment for reading on-disk segments during a merge.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="purgeMemoryBeforeFinalPass" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>
+          Indicates whether to merge all in-memory segments to disk before the final pass (the final pass will use only on-disk segments). This is
+          useful if the task that is consuming the merged records requires a lot of memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="ookii.jumbo.jet" type="JetConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        The <h:code>&lt;ookii.jumbo.jet&gt;</h:code> element provides configuration for Jumbo clients that need to connect to
+        the Jumbo Jet distributed execution engine, for the Jumbo Jet JobServer and TaskServers, and for Jumbo Jet jobs.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>
