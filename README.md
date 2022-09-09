@@ -25,6 +25,10 @@ Jumbo was originally created between 2008 and 2013 for Mono (to run on Linux clu
 .Net Core, and now .Net 6+. If you want to play around with Jumbo, this is the version you want;
 it's much easier to run than the original.
 
+If you're interested, there is a repository for the [original Jumbo](https://github.com/SvenGroot/Jumbo).
+It's only provided to preserve the history of the project, since this repository only contains
+the history of the port. There's no reason to try and use that version.
+
 Because this is a port of an older project, it mostly does not use any fancy new C# language
 features that were introduced after .Net Framework 4.0, except for the few places where I may have
 randomly updated some stuff. I'm sure the code could be improved in a lot of ways, but that's not
