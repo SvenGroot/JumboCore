@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// Reads a value from the specified reader.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        /// <returns></returns>
+        /// <returns>The deserialized value.</returns>
         public UInt128 Read(System.IO.BinaryReader reader)
         {
             ulong high64 = reader.ReadUInt64();

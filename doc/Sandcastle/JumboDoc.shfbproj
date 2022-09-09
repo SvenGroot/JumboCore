@@ -47,7 +47,7 @@
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
     <HelpTitle>Ookii.Jumbo Data Processing</HelpTitle>
     <HelpFileVersion>2.0.0.0</HelpFileVersion>
-    <NamingMethod>Guid</NamingMethod>
+    <NamingMethod>MemberName</NamingMethod>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <NamespaceGrouping>False</NamespaceGrouping>
@@ -62,10 +62,10 @@
 <NamespaceSummaryItem name="Ookii.Jumbo.Dfs.FileSystem" isDocumented="True">Provides types used to access the Jumbo Distributed File System.</NamespaceSummaryItem>
 <NamespaceSummaryItem name="Ookii.Jumbo.IO" isDocumented="True">Provides types related to reading and writing input, output and intermediate records in Jumbo.
 
-&lt;see cref="T:Ookii.Jumbo.IO.RecordReader{T}" /&gt; is the base class for all types that can read input or channel data. &lt;see cref="T:Ookii.Jumbo.IO.RecordWriter{T}" /&gt; is the base class for all types that can write output or channel data.
+&lt;see cref="T:Ookii.Jumbo.IO.RecordReader`1" /&gt; is the base class for all types that can read input or channel data. &lt;see cref="T:Ookii.Jumbo.IO.RecordWriter`1" /&gt; is the base class for all types that can write output or channel data.
 
-&lt;see cref="T:Ookii.Jumbo.IO.IWritable" /&gt; and &lt;see cref="T:Ookii.Jumbo.IO.IValueWriter{T}" /&gt; provide the serialization infrastructure used for Jumbo Jet record types.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet" isDocumented="True">Provides types used in the implementation of the Jumbo Jet data processing engine, and basic types related to job operation such as &lt;see cref="T:Ookii.Jumbo.Jet.ITask{TInput,TOutput}" /&gt;, &lt;see cref="T:Ookii.Jumbo.Jet.Configurable" /&gt; and &lt;see cref="T:Ookii.Jumbo.Jet.TaskContext" /&gt;.</NamespaceSummaryItem>
+&lt;see cref="T:Ookii.Jumbo.IO.IWritable" /&gt; and &lt;see cref="T:Ookii.Jumbo.IO.IValueWriter`1" /&gt; provide the serialization infrastructure used for Jumbo Jet intermediate record types.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Ookii.Jumbo.Jet" isDocumented="True">Provides types used in the implementation of the Jumbo Jet data processing engine, and basic types related to job operation such as &lt;see cref="T:Ookii.Jumbo.Jet.ITask`2" /&gt;, &lt;see cref="T:Ookii.Jumbo.Jet.Configurable" /&gt; and &lt;see cref="T:Ookii.Jumbo.Jet.TaskContext" /&gt;.</NamespaceSummaryItem>
 <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Channels" isDocumented="True">Provides the implementation of File, Pipeline and TCP channels, as well as the sorting implementation used by channels using SpillSort.</NamespaceSummaryItem>
 <NamespaceSummaryItem name="Ookii.Jumbo.Jet.IO" isDocumented="True">Provides types that define the input and output of stages and tasks in a job configuration.</NamespaceSummaryItem>
 <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Jobs" isDocumented="True">Provides types for creating and reading job configurations, as well as the base types used for JobRunners in JetShell.</NamespaceSummaryItem>
@@ -100,8 +100,21 @@
     <Folder Include="Content\" />
     <Folder Include="icons" />
     <Folder Include="media" />
+    <Folder Include="html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Configuration\CommonConfiguration.html">
+      <Link>html\CommonConfiguration.html</Link>
+    </Content>
+    <Content Include="..\Configuration\DfsConfiguration.html">
+      <Link>html\DfsConfiguration.html</Link>
+    </Content>
+    <Content Include="..\Configuration\JetConfiguration.html">
+      <Link>html\JetConfiguration.html</Link>
+    </Content>
+    <Content Include="..\Configuration\JobConfiguration.html">
+      <Link>html\JobConfiguration.html</Link>
+    </Content>
     <Content Include="icons\Help.png" />
   </ItemGroup>
   <ItemGroup>

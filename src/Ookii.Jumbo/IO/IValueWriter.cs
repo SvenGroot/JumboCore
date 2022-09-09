@@ -48,7 +48,7 @@ namespace Ookii.Jumbo.IO
         /// Reads a value from the specified reader.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        /// <returns></returns>
+        /// <returns>The deserialized value.</returns>
         T Read(BinaryReader reader);
     }
 }

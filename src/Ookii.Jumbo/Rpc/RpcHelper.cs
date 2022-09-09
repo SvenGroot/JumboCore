@@ -41,6 +41,7 @@ namespace Ookii.Jumbo.Rpc
         /// <summary>
         /// Unregisters the server channels.
         /// </summary>
+        /// <param name="port">The port on which the server channels were registered.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void UnregisterServerChannels(int port)
         {

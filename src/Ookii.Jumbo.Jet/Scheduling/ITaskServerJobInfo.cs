@@ -46,7 +46,8 @@ namespace Ookii.Jumbo.Jet.Scheduling
         /// </summary>
         /// <param name="stage">The stage containing the tasks to schedule.</param>
         /// <param name="distance">The distance of the input data: 0 for local data, 1 for rack-local data, and 2 for non-local data.</param>
-        /// <returns></returns>
+        /// <returns>The <see cref="ITaskInfo"/> for the task to schedule, or <see langword="null" /> if there is no task
+        /// that can be scheduled.</returns>
         ITaskInfo FindDataInputTaskToSchedule(IStageInfo stage, int distance);
 
         /// <summary>

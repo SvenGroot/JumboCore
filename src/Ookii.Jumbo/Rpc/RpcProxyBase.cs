@@ -37,9 +37,9 @@ namespace Ookii.Jumbo.Rpc
         /// <summary>
         /// Sends an RPC request. This class is for internal Jumbo use only and should not be used from your code.
         /// </summary>
-        /// <param name="operationName"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="operationName">The name of the operation to invoke.</param>
+        /// <param name="parameters">The parameters of the operation.</param>
+        /// <returns>The result of the operation.</returns>
         protected object SendRequest(string operationName, object[] parameters)
         {
             return RpcClient.SendRequest(_hostName, _port, _objectName, _interfaceName, operationName, parameters);

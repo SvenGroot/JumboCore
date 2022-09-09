@@ -14,6 +14,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="innerJoinRecordReaderType">Type of the inner join record reader.</param>
         /// <param name="outerComparerType">Type of the comparer used to sort the outer relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> are supported, but using <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> is strongly recommended.</param>
         /// <param name="innerComparerType">Type of the comparer used to sort the inner relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> are supported, but using <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> is strongly recommended.</param>
+        /// <returns>An <see cref="InnerJoinOperation"/> instance that can be used to further customize the operation.</returns>
         /// <remarks>
         /// <para>
         ///   This operation joins two inputs by first sorting them (by using a spill sort on the input channel for each input) and

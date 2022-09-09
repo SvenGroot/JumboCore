@@ -1,0 +1,1427 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ookii.Jumbo.Jet.Samples</name>
+    </assembly>
+    <members>
+        <member name="T:Ookii.Jumbo.Jet.Samples.AdvancedWordCount">
+            <summary>
+            JobBuilder for the advanced version of WordCount.
+            </summary>
+            <remarks>
+            This sample is a more advanced version of <see cref="T:Ookii.Jumbo.Jet.Samples.WordCount"/> that demonstrates some
+            more advanced features.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.CaseInsensitive">
+            <summary>
+            Gets or sets a value indicating whether to use a case-insensitive comparison for the words.
+            </summary>
+            <value>
+            <see langword="true" /> if a case-insensitive comparison should be used; otherwise, <see langword="false" />.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.IgnorePatternsFile">
+            <summary>
+            Gets or sets the path of the ignore patterns file.
+            </summary>
+            <value>
+            The path of the ignore patterns file.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.Partitions">
+            <summary>
+            Gets or sets the number of partitions for aggregation.
+            </summary>
+            <value>
+            The number of partitions.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder" /> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.MapWords(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{System.String,System.Int32}},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Maps the words.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.AggregateCounts(System.String,System.Int32,System.Int32)">
+            <summary>
+            Aggregates the counts.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="oldValue">The old value.</param>
+            <param name="newValue">The new value.</param>
+            <returns>The sum of the old and new value.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.ReversePairs``2(Ookii.Jumbo.IO.Pair{``0,``1},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{``1,``0}})">
+            <summary>
+            Reverses the key and value of a pair.
+            </summary>
+            <typeparam name="TKey">The type of the key.</typeparam>
+            <typeparam name="TValue">The type of the value.</typeparam>
+            <param name="record">The record.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureFilterTask">
+            <summary>
+            Task that filters out features with too low support.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureFilterTask.ProcessRecord(Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32}})">
+            <summary>
+            Processes the record.
+            </summary>
+            <param name="record">The record.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureFilterTask.Finish(Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32}})">
+            <summary>
+            Finishes processing. Does nothing on this task.
+            </summary>
+            <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureFilterTask.NotifyConfigurationChanged">
+            <summary>
+            Indicates the configuration has been changed. <see cref="M:Ookii.Jumbo.Jet.JetActivator.ApplyConfiguration(System.Object,Ookii.Jumbo.Dfs.DfsConfiguration,Ookii.Jumbo.Jet.JetConfiguration,Ookii.Jumbo.Jet.TaskContext)"/> calls this method
+            after setting the configuration.
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureGroupTask">
+            <summary>
+            Sorts the feature list and divides them into groups. You should never have more than one of these in a stage.
+            </summary>
+            <remarks>
+            Does not support record reuse.
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureGroupTask.ProcessRecord(Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem})">
+            <summary>
+            Processes the record.
+            </summary>
+            <param name="record">The record.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureGroupTask.Finish(Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem})">
+            <summary>
+            Finishes the task.
+            </summary>
+            <param name="output">The output.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem">
+            <summary>
+            Item in the feature and group list.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem.Feature">
+            <summary>
+            Gets or sets the feature.
+            </summary>
+            <value>The feature.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem.Support">
+            <summary>
+            Gets or sets the support.
+            </summary>
+            <value>The support.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem.GroupId">
+            <summary>
+            Gets or sets the group id.
+            </summary>
+            <value>The group id.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem.CompareTo(Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem)">
+            <summary>
+            Compares to another <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FGListItem"/>.
+            </summary>
+            <param name="other">The other.</param>
+            <returns>The comparison result.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern">
+            <summary>
+            A frequent pattern found by the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth"/> job.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.#ctor(System.Collections.Generic.IEnumerable{Ookii.Jumbo.IO.Utf8String},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern"/> class.
+            </summary>
+            <param name="items">The items. May be <see langword="null" />.</param>
+            <param name="support">The support.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.Items">
+            <summary>
+            Gets the items of the pattern.
+            </summary>
+            <value>The items.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.Support">
+            <summary>
+            Gets or sets the support of the pattern.
+            </summary>
+            <value>The support.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the object to the specified writer.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.BinaryWriter"/> to serialize the object to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the object from the specified reader.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.BinaryReader"/> to deserialize the object from.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.ITransaction">
+            <summary>
+            Interface for transactions used by the FP-growth algorithm.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.ITransaction.Items">
+            <summary>
+            Gets the items.
+            </summary>
+            <value>The items.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.ITransaction.Count">
+            <summary>
+            Gets the number of times this transaction occurs in the database.
+            </summary>
+            <value>The number of times this transaction occurs in the database.</value>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern">
+            <summary>
+            A frequent pattern consisting of sorted item IDs. Used as intermediate data format.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.#ctor(System.Collections.Generic.IEnumerable{System.Int32},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> class.
+            </summary>
+            <param name="items">The items of the patterns; must be sorted by item ID.</param>
+            <param name="support">The support of the pattern.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Items">
+            <summary>
+            Gets the items.
+            </summary>
+            <value>The items.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Support">
+            <summary>
+            Gets or sets the support.
+            </summary>
+            <value>The support.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.CompareTo(Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern)">
+            <summary>
+            Compares this instance to another <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> instance.
+            </summary>
+            <param name="other">The <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> to compare to..</param>
+            <returns>Less than 0 if this instance is less than <paramref name="other"/>, 0 if they are equal, or 1 if this instance is greater than <paramref name="other"/>.</returns>
+            <remarks>
+            <para>
+              The comparison is done based on the support and then number of items. The values of the items are not considered.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+            	<see langword="true"/> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Equals(Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern)">
+            <summary>
+            Determines whether the specified <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> is equal to this instance.
+            </summary>
+            <param name="other">The <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> to compare with this instance.</param>
+            <returns>
+            	<see langword="true"/> if the specified <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern"/> is equal to this instance; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the object to the specified writer.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.BinaryWriter"/> to serialize the object to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the object from the specified reader.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.BinaryReader"/> to deserialize the object from.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth">
+            <summary>
+            JobRunner for the Parallel FP-growth algorithm.
+            </summary>
+            <remarks>
+            <para>
+              This job is an implementation of the Parallel FP Growth algorithm described in the paper
+              "PFP: Parallel FP-Growth for Query Recommendation" by Li et al., 2008.
+            </para>
+            <para>
+              This algorithm calculates the top-K frequent patterns for each item in the database, only
+              regarding patterns that have the specified minimum support.
+            </para>
+            <para>
+              The algorithm has three steps: first, it counts how often each item occurs in the input database,
+              filters out the infrequent features, and divides the resulting feature list into groups. Next,
+              it generates group-dependent transactions from the input and runs the FP-Growth algorithm on
+              each group. Finally, the results from each group are aggregated to form the final result.
+            </para>
+            <para>
+              The number of groups should be carefully selected so that the number of items per group it
+              not too large. Ideally, each group should have 5-10 items at most for a large database.
+            </para>
+            <para>
+              The input for this job should be a plain text file (or files) where each line represents
+              a transaction containing a space-delimited list of transactions.
+            </para>
+            <para>
+              This example demonstrates a more complicated Jumbo job, with several stages including
+              more than one stage with file input. It uses scheduling dependencies, group aggregation,
+              partition-based grouping using multiple partitions per task, dynamic partition assignment,
+              and custom progress providers.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.MinSupport">
+            <summary>
+            Gets or sets the min support.
+            </summary>
+            <value>The min support.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.Groups">
+            <summary>
+            Gets or sets the number of groups.
+            </summary>
+            <value>The number of groups.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.AccumulatorTaskCount">
+            <summary>
+            Gets or sets the number of feature count accumulator tasks.
+            </summary>
+            <value>The number of accumulator tasks.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.FPGrowthTaskCount">
+            <summary>
+            Gets or sets the FP growth task count.
+            </summary>
+            <value>The FP growth task count.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.PatternCount">
+            <summary>
+            Gets or sets the pattern count.
+            </summary>
+            <value>The pattern count.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.AggregateTaskCount">
+            <summary>
+            Gets or sets the aggregate task count.
+            </summary>
+            <value>The aggregate task count.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.PartitionsPerTask">
+            <summary>
+            Gets or sets a value indicating the number of partitions per task for the MineTransactions stage.
+            </summary>
+            <value>The partitions per task.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.BinaryOutput">
+            <summary>
+            Gets or sets a value indicating whether the output format is binary.
+            </summary>
+            <value>
+            	<see langword="true"/> if the output format is binary; otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.CountFeatures(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32}},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Counts the features.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="config">The configuration</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.AccumulateFeatureCounts(Ookii.Jumbo.IO.Utf8String,System.Int32,System.Int32)">
+            <summary>
+            Accumulates the feature counts.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="currentValue">The current value.</param>
+            <param name="newValue">The new value.</param>
+            <returns>The updated value.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.GenerateGroupTransactions(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction}},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Generates the group transactions.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="config">The config.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.MineTransactions(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction}},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.IO.WritableCollection{Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern}}},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Mines the transactions.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="config">The config.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.AggregatePatterns(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.IO.WritableCollection{Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern}}},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,Ookii.Jumbo.IO.WritableCollection{Ookii.Jumbo.Jet.Samples.FPGrowth.FrequentPattern}}},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Aggregates the patterns.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="config">The config.</param>
+            <remarks>
+            Does not allow record reuse (technically it could because WritableCollection doesn't reuse item instances
+            but because that might change in the future we don't set the option here).
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction">
+            <summary>
+            Used as intermediate type for the PFP growth job.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction.Items">
+            <summary>
+            Gets or sets the items.
+            </summary>
+            <value>The items.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction.Length">
+            <summary>
+            Gets or sets the length.
+            </summary>
+            <value>The length.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the object to the specified writer.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.BinaryWriter"/> to serialize the object to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the object from the specified reader.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.BinaryReader"/> to deserialize the object from.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.TransactionMiningTask">
+            <summary>
+            Task for PFP growth transaction mining.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.TransactionMiningTask.Run(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction}},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{System.Int32,Ookii.Jumbo.IO.WritableCollection{Ookii.Jumbo.Jet.Samples.FPGrowth.MappedFrequentPattern}}})">
+            <summary>
+            Runs the task.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.TransactionMiningTask.AdditionalProgress">
+            <summary>
+            Gets the additional progress value.
+            </summary>
+            <value>The additional progress value.</value>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.WeightedTransaction">
+            <summary>
+            Transaction with count.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.WeightedTransaction.Count">
+            <summary>
+            Gets or sets the count.
+            </summary>
+            <value>The count.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.FPGrowth.WeightedTransaction.Items">
+            <summary>
+            Gets or sets the items.
+            </summary>
+            <value>The items.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.WeightedTransaction.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.GenerateText">
+            <summary>
+            Generates random text data.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenerateText.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenerateText.TaskCount">
+            <summary>
+            Gets or sets the task count.
+            </summary>
+            <value>
+            The task count.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenerateText.SizePerTask">
+            <summary>
+            Gets or sets the size per task.
+            </summary>
+            <value>
+            The size per task.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenerateText.WordsPerLine">
+            <summary>
+            Gets or sets the number of words per line.
+            </summary>
+            <value>
+            The words per line.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenerateText.WordsPerLineRandomization">
+            <summary>
+            Gets or sets the amount by which the number of words by line can be varied.
+            </summary>
+            <value>
+            The words per line randomization.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.Generate(Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.Jet.Tasks.ProgressContext)">
+            <summary>
+            Generates the text.
+            </summary>
+            <param name="output">The output.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.GenSort">
+            <summary>
+            Job runner for GenSort, which generates input records for various sort benchmarks.
+            </summary>
+            <remarks>
+            <para>
+              The GenSort job produces a deterministic range of input records in the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> format.
+            </para>
+            <para>
+              The output of the GenSort job is byte-for-byte identical to that of the ASCII records created by the
+              2009 version of the official gensort data generator provided for the graysort sort benchmark. The original
+              C version can be found at http://www.ordinal.com/gensort.html.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenSort.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenSort.RecordCount">
+            <summary>
+            Gets or sets the record count.
+            </summary>
+            <value>
+            The record count.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenSort.TaskCount">
+            <summary>
+            Gets or sets the task count.
+            </summary>
+            <value>
+            The task count.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.GenSort.StartRecord">
+            <summary>
+            Gets or sets the start record.
+            </summary>
+            <value>
+            The start record.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.Generate(Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.Jet.Samples.IO.GenSortRecord},Ookii.Jumbo.Jet.Tasks.ProgressContext)">
+            <summary>
+            Generates records.
+            </summary>
+            <param name="output">The output.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord">
+            <summary>
+            Represents a record created by the gensort program as provided for the GraySort benchmark.
+            </summary>
+            <remarks>
+            <para>
+              Records for GraySort are 100 bytes in length, of which 10 bytes are the key and the remaining 90 bytes contain the record number and some
+              filler data. Because the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> class is only used for sorting, it makes no attempt to parse any of the data except
+              the key.
+            </para>
+            <para>
+              The records can contain either ASCII data, or arbitrary binary data.
+            </para>
+            <para>
+              See http://www.hpl.hp.com/hosted/sortbenchmark/ for more details.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.RecordSize">
+            <summary>
+            The size of each record, in bytes.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.KeySize">
+            <summary>
+            The size of the key of the record, in bytes.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.RecordBuffer">
+            <summary>
+            Gets the 100 byte buffer containing the entire record.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.ExtractKey">
+            <summary>
+            Extracts the key from the record and converts it to a string.
+            </summary>
+            <returns>A string representing the key.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.ExtractKeyBytes">
+            <summary>
+            Extract the key from the record and copies it to a new byte array.
+            </summary>
+            <returns>A byte array, of size <see cref="F:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.KeySize"/>, containing the key.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.CompareKeys(System.Byte[],System.Byte[])">
+            <summary>
+            Compares two specified keys and returns an integer that indicates their relationship to one another in the sort order.
+            </summary>
+            <param name="left">The first key. If the array contains more than <see cref="F:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.KeySize"/> bytes, the remaining bytes are ignored.</param>
+            <param name="right">The second key. If the array contains more than <see cref="F:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.KeySize"/> bytes, the remaining bytes are ignored.</param>
+            <returns>Zero if the keys are identical; less than zero if <paramref name="left"/> is less than <paramref name="right"/>;
+            greater than zero if <paramref name="left"/> is greater than <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.ComparePartialKeys(System.Byte[],System.Byte[])">
+            <summary>
+            Compares two specified partial keys and returns an integer that indicates their relationship to one another in the sort order.
+            </summary>
+            <param name="left">The first key. The array must contain only the key, and no further data.</param>
+            <param name="right">The second key. The array must contain only the key, and no further data.</param>
+            <returns>Zero if the keys are identical; less than zero if <paramref name="left"/> is less than <paramref name="right"/>;
+            greater than zero if <paramref name="left"/> is greater than <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> to the specified writer.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.BinaryWriter"/> to serialize the object to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> from the specified reader.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.BinaryReader"/> to deserialize the object from.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord.CompareTo(Ookii.Jumbo.Jet.Samples.IO.GenSortRecord)">
+            <summary>
+            Compares this instance with a specified other <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> and returns an integer that indicates whether this
+            instance precedes, follows, or appears in the same position in the sort order as the specified <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/>.
+            </summary>
+            <param name="other">The <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> to compare to.</param>
+            <returns>Zero if this instance is equal to <paramref name="other"/>; less than zero if this instance precedes <paramref name="other"/>;
+            greater than zero if this instance follows <paramref name="other"/>.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordRawComparer">
+            <summary>
+            Raw comparer for the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> class.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordRawComparer.Compare(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Compares the binary representation of two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            </summary>
+            <param name="x">The buffer containing the first object.</param>
+            <param name="xOffset">The offset into <paramref name="x"/> where the first object starts.</param>
+            <param name="xCount">The number of bytes in <paramref name="x"/> used by the first object.</param>
+            <param name="y">The buffer containing the second object.</param>
+            <param name="yOffset">The offset into <paramref name="y"/> where the second object starts.</param>
+            <param name="yCount">The number of bytes in <paramref name="y"/> used by the second object.</param>
+            <returns>
+            A signed integer that indicates the relative values of the first and second object.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordRawComparer.Compare(Ookii.Jumbo.Jet.Samples.IO.GenSortRecord,Ookii.Jumbo.Jet.Samples.IO.GenSortRecord)">
+            <summary>
+            Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            </summary>
+            <param name="x">The first object to compare.</param>
+            <param name="y">The second object to compare.</param>
+            <returns>
+            A signed integer that indicates the relative values of the first and second object.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader">
+            <summary>
+            Reads records of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> type from a stream.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader.#ctor(System.IO.Stream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader"/> class that reads from the specified stream.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to read from.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader.#ctor(System.IO.Stream,System.Int64,System.Int64,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader"/> class that reads the specified range of the specified stream.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to read from.</param>
+            <param name="offset">The offset, in bytes, at which to start reading in the stream.</param>
+            <param name="size">The number of bytes to read from the stream.</param>
+            <param name="allowRecordReuse"><see langword="true"/> if the record reader may re-use the same record instance for every
+            record; <see langword="false"/> if it must create a new instance for every record.</param>
+            <remarks>
+            <para>
+              If <paramref name="offset"/> is not on a record boundary, the reader will seek ahead to the start of the next record.
+            </para>
+            <para>
+              The reader will read a whole number of records until the start of the next record falls
+              after <paramref name="offset"/> + <paramref name="size"/>. Because of this, the reader can
+              read more than <paramref name="size"/> bytes.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordReader.ReadRecordInternal">
+            <summary>
+            Reads a record.
+            </summary>
+            <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordWriter">
+            <summary>
+            Writes <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> records to a stream.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordWriter.#ctor(System.IO.Stream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordWriter"/> class that writes to the specified stream.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to write to.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.GenSortRecordWriter.WriteRecordInternal(Ookii.Jumbo.Jet.Samples.IO.GenSortRecord)">
+            <summary>
+            Writes a record.
+            </summary>
+            <param name="record">The record to write.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.Random128">
+            <summary>
+            A 128-bit random generator based on the one included with gensort, see http://www.hpl.hp.com/hosted/sortbenchmark/
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.RangePartitioner">
+            <summary>
+            Partitioner that partitions a range into a number of parts.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.IO.RangePartitioner.SplitFileName">
+            <summary>
+            The name of the partition split file.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.RangePartitioner.Partitions">
+            <summary>
+            Gets or sets the number of partitions.
+            </summary>        
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.RangePartitioner.GetPartition(Ookii.Jumbo.Jet.Samples.IO.GenSortRecord)">
+            <summary>
+            Gets the partition for the specified value.
+            </summary>
+            <param name="value">The value to be partitioned.</param>
+            <returns>The partition number for the specified value.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.RangePartitioner.CreatePartitionFile(Ookii.Jumbo.Dfs.FileSystem.FileSystemClient,System.String,Ookii.Jumbo.Jet.IO.IDataInput,System.Int32,System.Int32)">
+            <summary>
+            Creates a file defining the partitioning split points by sampling the input data.
+            </summary>
+            <param name="fileSystemClient">The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/> used to access the DFS.</param>
+            <param name="partitionFilePath">The path on the DFS where the partitioning data should be stored.</param>
+            <param name="input">The input of the job.</param>
+            <param name="partitions">The number of partitions.</param>
+            <param name="sampleSize">The total number of records to sample.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.UInt128">
+            <summary>
+            A 128 bit unsigned integer, based on the code provided with gensort, see http://www.hpl.hp.com/hosted/sortbenchmark/.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.IO.UInt128.Zero">
+            <summary>
+            A <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> with the value zero.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.#ctor(System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> struct with the specified high and low bits.
+            </summary>
+            <param name="high64">The high 64 bits of the value.</param>
+            <param name="low64">The low 64 bits of the value.</param>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.UInt128.High64">
+            <summary>
+            Gets the high 64 bits of the value.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.UInt128.Low64">
+            <summary>
+            Gets the low 64 bits of the value.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.Equals(System.Object)">
+            <summary>
+            Tests this instance for equality with the specified object.
+            </summary>
+            <param name="obj">The object to test for equality.</param>
+            <returns><see langword="true"/> if this instance is equal to <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.ToString">
+            <summary>
+            Returns a decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            </summary>
+            <returns>A decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.ToHexString">
+            <summary>
+            Returns a hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            </summary>
+            <returns>A hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.GetHashCode">
+            <summary>
+            Returns a 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            </summary>
+            <returns>A 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Equality(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+            <summary>
+            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> for equality
+            </summary>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <returns><see langword="true"/> if the two instances are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Inequality(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+            <summary>
+            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> for inequality
+            </summary>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <returns><see langword="true"/> if the two instances are not equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Increment(Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+            <summary>
+            Increments the value of the specified instance by one.
+            </summary>
+            <param name="value">The <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> to increment.</param>
+            <returns>The incremented value.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Addition(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+            <summary>
+            Adds two <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> values.
+            </summary>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <returns>The result of the addition.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Multiply(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+            <summary>
+            Multiplies two <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> values.
+            </summary>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <returns>The result of the multiplication.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer">
+            <summary>
+            Value writer for <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer.Write(Ookii.Jumbo.Jet.Samples.IO.UInt128,System.IO.BinaryWriter)">
+            <summary>
+            Writes the specified value to the specified writer.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="writer">The writer.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads a value from the specified reader.
+            </summary>
+            <param name="reader">The reader.</param>
+            <returns>The deserialized value.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord">
+            <summary>
+            Represents an intermediate record used by the ValSort job.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.InputId">
+            <summary>
+            Gets or sets a string that identifies the fragments of the input 
+            that this record represents. These IDs together with <see cref="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.InputOffset"/> must sort according to the order
+            of the input fragments.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.InputOffset">
+            <summary>
+            Gets or sets the input offset.
+            </summary>
+            <value>
+            The input offset.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.FirstKey">
+            <summary>
+            Gets or sets the first key in the input range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.LastKey">
+            <summary>
+            Gets or sets the last key in the input range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.Records">
+            <summary>
+            Gets or sets the number of records in the input range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.FirstUnsorted">
+            <summary>
+            Gets or sets the number of the first unsorted record in the input range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.Checksum">
+            <summary>
+            Gets or sets the infinite-precision sum of the CRC32 checksums of all the records in the input range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.UnsortedRecords">
+            <summary>
+            Gets or sets the number of unsorted records in the range.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.Duplicates">
+            <summary>
+            Gets or sets the number of duplicate keys in the range. Only valid if the range is completely sorted.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord.CompareTo(Ookii.Jumbo.Jet.Samples.IO.ValSortRecord)">
+            <summary>
+            Compares this instance with a specified other <see cref="T:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord"/> and returns an integer that indicates whether this
+            instance precedes, follows, or appears in the same position in the sort order as the specified <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/>.
+            </summary>
+            <param name="other">The <see cref="T:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord"/> to compare to.</param>
+            <returns>Zero if this instance is equal to <paramref name="other"/>; less than zero if this instance precedes <paramref name="other"/>;
+            greater than zero if this instance follows <paramref name="other"/>.</returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.IO.ValSortRecordRawComparer">
+            <summary>
+            Raw comparer for the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.ValSortRecord"/> class.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.ValSortRecordRawComparer.Compare(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Compares the binary representation of two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            </summary>
+            <param name="buffer1">The buffer containing the first object.</param>
+            <param name="offset1">The offset into <paramref name="buffer1"/> where the first object starts.</param>
+            <param name="count1">The number of bytes in <paramref name="buffer1"/> used by the first object.</param>
+            <param name="buffer2">The buffer containing the second object.</param>
+            <param name="offset2">The offset into <paramref name="buffer2"/> where the second object starts.</param>
+            <param name="count2">The number of bytes in <paramref name="buffer2"/> used by the second object.</param>
+            <returns>A signed integer that indicates the relative values of the first and second object.</returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.IO.ValSortRecordRawComparer.Compare(Ookii.Jumbo.Jet.Samples.IO.ValSortRecord,Ookii.Jumbo.Jet.Samples.IO.ValSortRecord)">
+            <summary>
+            Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            </summary>
+            <param name="x">The first object to compare.</param>
+            <param name="y">The second object to compare.</param>
+            <returns>
+            A signed integer that indicates the relative values of the first and second object.
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.LineCount">
+            <summary>
+            Job runner for line count.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.LineCount.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.LineCount.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.CountLines(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.IO.RecordWriter{System.Int64})">
+            <summary>
+            Counts the number of lines.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.SumLineCount(Ookii.Jumbo.IO.RecordReader{System.Int64},Ookii.Jumbo.IO.RecordWriter{System.Int64})">
+            <summary>
+            Sums the line count.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.OrdinalIgnoreCaseStringComparer">
+            <summary>
+            A wrapper around the <see cref="P:System.StringComparer.OrdinalIgnoreCase"/>, so it can be used with <see langword="typeof"/>.
+            </summary>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.OrdinalIgnoreCaseStringComparer.Compare(System.String,System.String)">
+            <summary>
+            When overridden in a derived class, compares two strings and returns an indication of their relative sort order.
+            </summary>
+            <param name="x">A string to compare to <paramref name="y" />.</param>
+            <param name="y">A string to compare to <paramref name="x" />.</param>
+            <returns>
+            A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.ValueMeaningLess than zero<paramref name="x" /> is less than <paramref name="y" />.-or-<paramref name="x" /> is null.Zero<paramref name="x" /> is equal to <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.-or-<paramref name="y" /> is null.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.OrdinalIgnoreCaseStringComparer.Equals(System.String,System.String)">
+            <summary>
+            When overridden in a derived class, indicates whether two strings are equal.
+            </summary>
+            <param name="x">A string to compare to <paramref name="y" />.</param>
+            <param name="y">A string to compare to <paramref name="x" />.</param>
+            <returns>
+            <see langword="true"/> if <paramref name="x" /> and <paramref name="y" /> refer to the same object, or <paramref name="x" /> and <paramref name="y" /> are equal; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.OrdinalIgnoreCaseStringComparer.GetHashCode(System.String)">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <param name="obj">The obj.</param>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.Properties.Resources.Words">
+             <summary>
+               Looks up a localized string similar to diurnalness
+            Homoiousian
+            spiranthic
+            tetragynian
+            silverhead
+            ungreat
+            lithograph
+            exploiter
+            physiologian
+            by
+            hellbender
+            Filipendula
+            undeterring
+            antiscolic
+            pentagamist
+            hypoid
+            cacuminal
+            sertularian
+            schoolmasterism
+            nonuple
+            gallybeggar
+            phytonic
+            swearingly
+            nebular
+            Confervales
+            thermochemically
+            characinoid
+            cocksuredom
+            fallacious
+            feasibleness
+            debromination
+            playfellowship
+            tramplike
+            testa
+            participatingly
+            unaccessible
+            bromate
+            experientialist
+            roughcast
+            docimastical
+            choralcelo
+            blightbi [rest of string was truncated]&quot;;.
+             </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.TeraSort">
+            <summary>
+            Job runner for GraySort, which sorts <see cref="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord"/> records in the input.
+            </summary>
+            <remarks>
+            <para>
+              This is a sort implementation according to the rules for the GraySort benchmark, see http://sortbenchmark.org/.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.MergeTasks">
+            <summary>
+            Gets or sets the merge tasks.
+            </summary>
+            <value>
+            The merge tasks.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.SampleSize">
+            <summary>
+            Gets or sets the sample size used to determine the partitioner's split points.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.MaxMergeInputs">
+            <summary>
+            Gets or sets the maximum number of merge inputs for a single merge pass.
+            </summary>
+            <value>The maximum number of file merge inputs.</value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.TeraSort.PartitionsPerTask">
+            <summary>
+            Gets or sets the number of partitions per merge task.
+            </summary>
+            <value>The number of partitions per task.</value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.OnJobCreated(Ookii.Jumbo.Jet.Job,Ookii.Jumbo.Jet.Jobs.JobConfiguration)">
+            <summary>
+            Called when the job has been created on the job server, but before running it.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Job"/> instance describing the job.</param>
+            <param name="jobConfiguration">The <see cref="T:Ookii.Jumbo.Jet.Jobs.JobConfiguration"/> that will be used when the job is started.</param>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.ValSort">
+            <summary>
+            Job runner for ValSort, which validates the sort order of its input.
+            </summary>
+            <remarks>
+            <para>
+              The ValSort job checks if its entire input is correctly sorted, and calculates the infinite-precision sum of the
+              CRC32 checksum of each record and the number of duplicate records.
+            </para>
+            <para>
+              The output of this job is a file containing a diagnostic message indicating whether the output was sorted,
+              identical to the one given by the original C version of valsort (see http://www.ordinal.com/gensort.html). For
+              convenience, the job runner will print this message to the console.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.ValSort.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.ValSort.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.ValSort.VerboseLogging">
+            <summary>
+            Gets or sets a value indicating whether verbose logging of unsorted record locations is enabled in the combiner task.
+            </summary>
+            <value>
+            	<see langword="true"/> if verbose logging is enabled in the combiner task; otherwise, <see langword="false"/>. The default value is <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            Constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.OnJobCreated(Ookii.Jumbo.Jet.Job,Ookii.Jumbo.Jet.Jobs.JobConfiguration)">
+            <summary>
+            Overrides <see cref="M:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilderJob.OnJobCreated(Ookii.Jumbo.Jet.Job,Ookii.Jumbo.Jet.Jobs.JobConfiguration)"/>.
+            </summary>
+            <param name="job"></param>
+            <param name="jobConfiguration"></param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.FinishJob(System.Boolean)">
+            <summary>
+            Called after the job finishes.
+            </summary>
+            <param name="success"><see langword="true"/> if the job completed successfully; <see langword="false"/> if the job failed.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.ValidateRecords(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.Jet.Samples.IO.GenSortRecord},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.Jet.Samples.IO.ValSortRecord},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Validates the records.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.ValidateResults(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.Jet.Samples.IO.ValSortRecord},Ookii.Jumbo.IO.RecordWriter{System.String},Ookii.Jumbo.Jet.TaskContext)">
+            <summary>
+            Validates the results.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+            <param name="context">The context.</param>
+            <remarks>
+              Does not allow record reuse; the function stores the previous instance.
+            </remarks>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.WordCountKind">
+            <summary>
+            The type of WordCount implementation to use.
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.WordCountKind.Optimized">
+            <summary>
+            Optimized version
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.WordCountKind.Lambda">
+            <summary>
+            Implementation using lambdas
+            </summary>
+        </member>
+        <member name="F:Ookii.Jumbo.Jet.Samples.WordCountKind.MapReduce">
+            <summary>
+            MapReduce implementation
+            </summary>
+        </member>
+        <member name="T:Ookii.Jumbo.Jet.Samples.WordCount">
+            <summary>
+            Job runner for word count.
+            </summary>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.WordCount.InputPath">
+            <summary>
+            Gets or sets the input path.
+            </summary>
+            <value>
+            The input path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.WordCount.OutputPath">
+            <summary>
+            Gets or sets the output path.
+            </summary>
+            <value>
+            The output path.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.WordCount.Partitions">
+            <summary>
+            Gets or sets the partitions.
+            </summary>
+            <value>
+            The partitions.
+            </value>
+        </member>
+        <member name="P:Ookii.Jumbo.Jet.Samples.WordCount.Kind">
+            <summary>
+            Gets or sets the kind.
+            </summary>
+            <value>
+            The kind.
+            </value>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.BuildJob(Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder)">
+            <summary>
+            When implemented in a derived class, constructs the job configuration using the specified job builder.
+            </summary>
+            <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder"/> used to create the job.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.SplitLines(Ookii.Jumbo.IO.RecordReader{Ookii.Jumbo.IO.Utf8String},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32}})">
+            <summary>
+            Splits the lines.
+            </summary>
+            <param name="input">The input.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.ReduceWordCount(Ookii.Jumbo.IO.Utf8String,System.Collections.Generic.IEnumerable{System.Int32},Ookii.Jumbo.IO.RecordWriter{Ookii.Jumbo.IO.Pair{Ookii.Jumbo.IO.Utf8String,System.Int32}})">
+            <summary>
+            Reduces the word count.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="values">The values.</param>
+            <param name="output">The output.</param>
+        </member>
+    </members>
+</doc>

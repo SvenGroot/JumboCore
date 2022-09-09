@@ -6,6 +6,12 @@ namespace Ookii.Jumbo
     /// <summary>
     /// Provides configuration that may be shared between the Dfs and Jumbo Jet.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///   Jumbo's shared configuration is specified in the file <c>common.config</c>.
+    /// </para>
+    /// </remarks>
+    /// <seealso href="CommonConfiguration.html">common.config XML documentation</seealso>
     public class JumboConfiguration : ConfigurationSection
     {
         /// <summary>

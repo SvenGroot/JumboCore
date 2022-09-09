@@ -131,7 +131,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="key">The key.</param>
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
-        /// <returns></returns>
+        /// <returns>The sum of the old and new value.</returns>
         [AllowRecordReuse]
         public static int AggregateCounts(string key, int oldValue, int newValue)
         {

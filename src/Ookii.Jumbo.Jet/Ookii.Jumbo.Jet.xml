@@ -717,7 +717,7 @@
         </member>
         <member name="M:Ookii.Jumbo.Jet.Channels.InputChannel.OnMemoryStorageFull(Ookii.Jumbo.Jet.Channels.MemoryStorageFullEventArgs)">
             <summary>
-            Raises the <see cref="E:MemoryStorageFull" /> event.
+            Raises the <see cref="E:Ookii.Jumbo.Jet.Channels.InputChannel.MemoryStorageFull" /> event.
             </summary>
             <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
         </member>
@@ -2587,6 +2587,12 @@
             <summary>
             Provides configuration for the Jumbo distributed execution environment.
             </summary>
+            <remarks>
+            <para>
+              Jumbo Jet configuration is specified in the file <c>jet.config</c>.
+            </para>
+            </remarks>
+            <seealso href="JetConfiguration.html">jet.config XML documentation</seealso>
         </member>
         <member name="P:Ookii.Jumbo.Jet.JetConfiguration.JobServer">
             <summary>
@@ -2739,6 +2745,8 @@
             <summary>
             Gets the path, including file name, of the job configuration file.
             </summary>
+            <param name="client">The <see cref="T:Ookii.Jumbo.Dfs.FileSystem.FileSystemClient"/> to use to combine paths.</param>
+            <returns>The full path of the job configuration file.</returns>
         </member>
         <member name="M:Ookii.Jumbo.Jet.Job.CreateFullTaskId(System.Guid,Ookii.Jumbo.Jet.TaskAttemptId)">
             <summary>
@@ -3444,7 +3452,7 @@
             Deserializes a delegate. This method is for internal Jumbo use only.
             </summary>
             <param name="context">The task context.</param>
-            <returns></returns>
+            <returns>The deserialized delegate.</returns>
         </member>
         <member name="T:Ookii.Jumbo.Jet.Jobs.Builder.FileInput">
             <summary>
@@ -3492,7 +3500,7 @@
             Creates an <see cref="T:Ookii.Jumbo.Jet.IO.IDataInput"/> for this input.
             </summary>
             <param name="fileSystem">The file system.</param>
-            <returns></returns>
+            <returns>The <see cref="T:Ookii.Jumbo.Jet.IO.IDataInput"/>.</returns>
         </member>
         <member name="T:Ookii.Jumbo.Jet.Jobs.Builder.FileOutput">
             <summary>
@@ -3940,6 +3948,7 @@
             <param name="accumulatorTaskType">The type of the accumulator task used to collect the aggregated values. May be a generic type definition with one or two generic parameters.</param>
             <param name="keyComparerType">Type of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> to use to compare the aggregation keys, 
             or <see langword="null" /> to use <see cref="P:System.Collections.Generic.EqualityComparer`1.Default"/>. May be a generic type definition with one type parameter, which will be set to the key type.</param>
+            <returns>A <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.TwoStepOperation"/> instance that can be used to further customize the operation.</returns>
         </member>
         <member name="M:Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder.GroupAggregate``2(Ookii.Jumbo.Jet.Jobs.Builder.IOperationInput,System.Func{``0,``1,``1,Ookii.Jumbo.Jet.TaskContext,``1},System.Type,Ookii.Jumbo.Jet.Jobs.Builder.RecordReuseMode)">
             <summary>
@@ -4016,6 +4025,7 @@
             <param name="innerJoinRecordReaderType">Type of the inner join record reader.</param>
             <param name="outerComparerType">Type of the comparer used to sort the outer relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="T:System.Collections.Generic.IComparer`1"/> and <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> are supported, but using <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> is strongly recommended.</param>
             <param name="innerComparerType">Type of the comparer used to sort the inner relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="T:System.Collections.Generic.IComparer`1"/> and <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> are supported, but using <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> is strongly recommended.</param>
+            <returns>An <see cref="T:Ookii.Jumbo.Jet.Jobs.Builder.InnerJoinOperation"/> instance that can be used to further customize the operation.</returns>
             <remarks>
             <para>
               This operation joins two inputs by first sorting them (by using a spill sort on the input channel for each input) and
@@ -4745,6 +4755,7 @@
             <summary>
             Provides configuration information for a specific job.
             </summary>
+            <seealso href="JobConfiguration.html">Job configuration XML documentation</seealso>
         </member>
         <member name="F:Ookii.Jumbo.Jet.Jobs.JobConfiguration.XmlNamespace">
             <summary>
@@ -6004,6 +6015,7 @@
             <summary>
             Contains the result of a merge operation.
             </summary>
+            <typeparam name="T">The type of the record.</typeparam>
         </member>
         <member name="P:Ookii.Jumbo.Jet.MergeResult`1.Progress">
             <summary>
@@ -6611,7 +6623,8 @@
             </summary>
             <param name="stage">The stage containing the tasks to schedule.</param>
             <param name="distance">The distance of the input data: 0 for local data, 1 for rack-local data, and 2 for non-local data.</param>
-            <returns></returns>
+            <returns>The <see cref="T:Ookii.Jumbo.Jet.Scheduling.ITaskInfo"/> for the task to schedule, or <see langword="null" /> if there is no task
+            that can be scheduled.</returns>
         </member>
         <member name="M:Ookii.Jumbo.Jet.Scheduling.ITaskServerJobInfo.AssignTask(Ookii.Jumbo.Jet.Scheduling.ITaskInfo,System.Nullable{System.Int32})">
             <summary>
@@ -7033,6 +7046,9 @@
             <summary>
             Runs the task.
             </summary>
+            <returns>
+            The metrics for the task.
+            </returns>
         </member>
         <member name="M:Ookii.Jumbo.Jet.TaskExecutionUtility.Dispose">
             <summary>
@@ -7079,6 +7095,7 @@
             <summary>
             Calculates metrics, closes the output stream and moves any DFS output to its final location, for this task and all associated tasks.
             </summary>
+            <param name="metrics">The <see cref="T:Ookii.Jumbo.Jet.TaskMetrics"/> that will be updated with the metrics for this task.</param>
         </member>
         <member name="M:Ookii.Jumbo.Jet.TaskExecutionUtility.RunTaskFinishMethod">
             <summary>

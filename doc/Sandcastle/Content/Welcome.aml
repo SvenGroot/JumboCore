@@ -1,22 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="7a77c3db-28a1-43b0-9545-6d45ce4e067f" revisionNumber="1">
-  <developerConceptualDocument
-    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <developerConceptualDocument
+      xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
 
-    <introduction>
-      <para>Jumbo is a large-scale clustered data processing system, similar in concept to
-      Google's DFS and MapReduce. It was created with the intent to study the operation of Hadoop 1.0,
-      and as such borrows greatly from its design.</para>
-      <para>Jumbo is not production quality software, and should not be used for data storage
-      and processing in production environments.</para>
-    </introduction>
-    <relatedTopics>
-      <externalLink>
-          <linkText>Jumbo on GitHub</linkText>
-          <linkAlternateText>Go to GitHub</linkAlternateText>
-          <linkUri>https://www.github.com/SvenGroot/JumboCore</linkUri>
-      </externalLink>
-    </relatedTopics>
-  </developerConceptualDocument>
+        <introduction>
+            <para>
+                Jumbo is a large-scale clustered data processing system, similar in concept to
+                Google's DFS and MapReduce. It was created with the intent to study the operation of Hadoop 1.0,
+                and as such borrows greatly from its design.
+            </para>
+            <para>
+                Jumbo is not production quality software, and should not be used for data storage
+                and processing in production environments.
+            </para>
+        </introduction>
+        <relatedTopics>
+            <externalLink>
+                <linkText>Jumbo on GitHub</linkText>
+                <linkAlternateText>Go to GitHub</linkAlternateText>
+                <linkUri>https://www.github.com/SvenGroot/JumboCore</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>common.config XML documentation</linkText>
+                <linkUri>CommonConfiguration.html</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>dfs.config XML documentation</linkText>
+                <linkUri>DfsConfiguration.html</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>jet.config XML documentation</linkText>
+                <linkUri>JetConfiguration.html</linkUri>
+            </externalLink>
+            <externalLink>
+                <linkText>Job configuration XML documentation</linkText>
+                <linkUri>JobConfiguration.html</linkUri>
+            </externalLink>
+        </relatedTopics>
+    </developerConceptualDocument>
 </topic>

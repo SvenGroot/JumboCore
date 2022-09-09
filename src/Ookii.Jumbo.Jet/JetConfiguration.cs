@@ -7,6 +7,12 @@ namespace Ookii.Jumbo.Jet
     /// <summary>
     /// Provides configuration for the Jumbo distributed execution environment.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///   Jumbo Jet configuration is specified in the file <c>jet.config</c>.
+    /// </para>
+    /// </remarks>
+    /// <seealso href="JetConfiguration.html">jet.config XML documentation</seealso>
     public class JetConfiguration : ConfigurationSection
     {
         /// <summary>

@@ -16,6 +16,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="accumulatorTaskType">The type of the accumulator task used to collect the aggregated values. May be a generic type definition with one or two generic parameters.</param>
         /// <param name="keyComparerType">Type of the <see cref="IEqualityComparer{T}"/> to use to compare the aggregation keys, 
         /// or <see langword="null" /> to use <see cref="EqualityComparer{T}.Default"/>. May be a generic type definition with one type parameter, which will be set to the key type.</param>
+        /// <returns>A <see cref="TwoStepOperation"/> instance that can be used to further customize the operation.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive.")]
         public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type keyComparerType = null)
         {

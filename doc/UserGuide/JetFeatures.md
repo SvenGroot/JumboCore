@@ -25,6 +25,8 @@ Here's what the job configuration for a WordCount job looks like in JetWeb.
 
 [View raw XML.](SampleJobConfiguration.xml)
 
+There is also [documentation for the XML format used](../Configuration/JobConfiguration.html).
+
 ## Stages
 
 A stage defines a data processing operation to run over a certain set of input data. Stages are

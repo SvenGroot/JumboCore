@@ -38,10 +38,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         }
 
         /// <summary>
-        /// Compares to.
+        /// Compares to another <see cref="FGListItem"/>.
         /// </summary>
         /// <param name="other">The other.</param>
-        /// <returns></returns>
+        /// <returns>The comparison result.</returns>
         public int CompareTo(FGListItem other)
         {
             if (other == null)

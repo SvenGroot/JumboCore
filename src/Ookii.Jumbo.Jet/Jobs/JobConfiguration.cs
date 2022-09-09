@@ -16,6 +16,7 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// <summary>
     /// Provides configuration information for a specific job.
     /// </summary>
+    /// <seealso href="JobConfiguration.html">Job configuration XML documentation</seealso>
     [XmlRoot("Job", Namespace = JobConfiguration.XmlNamespace)]
     public class JobConfiguration
     {

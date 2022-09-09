@@ -40,9 +40,10 @@ namespace Ookii.Jumbo.IO
     /// <summary>
     /// Provides access to <see cref="IValueWriter{T}"/> implementations for various basic framework types and types that specify the <see cref="ValueWriterAttribute"/> attribute.
     /// </summary>
+    /// <typeparam name="T">The type of the object whose <see cref="IWritable"/> or <see cref="IValueWriter{T}"/> implementation to use.</typeparam>
     /// <remarks>
     /// <para>
-    ///   If you attempt to access this class for a type <typeparam name="T" /> that does not implement <see cref="IWritable"/> and that does not have a implementation of <see cref="IValueWriter{T}"/>,
+    ///   If you attempt to access this class for a type <typeparamref name="T" /> that does not implement <see cref="IWritable"/> and that does not have a implementation of <see cref="IValueWriter{T}"/>,
     ///   an <see cref="NotSupportedException"/> is thrown by the static type initializer of the <see cref="ValueWriter{T}"/> class.
     /// </para>
     /// <para>

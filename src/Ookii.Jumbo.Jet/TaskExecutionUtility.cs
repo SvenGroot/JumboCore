@@ -401,6 +401,9 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Runs the task.
         /// </summary>
+        /// <returns>
+        /// The metrics for the task.
+        /// </returns>
         public abstract TaskMetrics RunTask();
 
         /// <summary>
@@ -629,6 +632,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Calculates metrics, closes the output stream and moves any DFS output to its final location, for this task and all associated tasks.
         /// </summary>
+        /// <param name="metrics">The <see cref="TaskMetrics"/> that will be updated with the metrics for this task.</param>
         protected void FinalizeTask(TaskMetrics metrics)
         {
             ArgumentNullException.ThrowIfNull(metrics);

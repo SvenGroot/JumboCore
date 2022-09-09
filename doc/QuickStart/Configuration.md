@@ -113,7 +113,7 @@ There are four values that you must specify in `bin/dfs.config` to use the DFS:
 4. Set the DataServer block directory to a local directory where the file data for each node will be
    stored.
 
-See the [configuration file documentation](../Configuration/DfsConfiguration.html) for information
+See the [configuration file documentation](https://www.ookii.org/Link/JumboDocDfsConfig) for information
 on the other options that are available.
 
 The below is an example of a typical `bin/dfs.config`:
@@ -149,7 +149,7 @@ There are two values that you must specify in `bin/jet.config`:
 2. Set the TaskServer task directory to a local directory where configuration, task log and
    intermediate data files will be stored on each node.
 
-See the [configuration file documentation](../Configuration/JetConfiguration.html) for information
+See the [configuration file documentation](https://www.ookii.org/Link/JumboDocJetConfig) for information
 on the other options that are available.
 
 The below is an example of a typical `bin/jet.config`:
@@ -176,5 +176,5 @@ The below is an example of a typical `bin/jet.config`:
 
 ## Common configuration
 
-Additional configuration is available in `common.config`, which is [documented here](../Configuration/CommonConfiguration.html).
+Additional configuration is available in `common.config`, which is [documented here](https://www.ookii.org/Link/JumboDocCommonConfig).
 This file allows configuration of network topology and log file locations.

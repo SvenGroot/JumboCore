@@ -7,6 +7,12 @@ namespace Ookii.Jumbo.Dfs
     /// <summary>
     /// Provides configuration for the distributed file system.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///   Jumbo's DFS configuration is specified in the file <c>dfs.config</c>.
+    /// </para>
+    /// </remarks>
+    /// <seealso href="DfsConfiguration.html">dfs.config XML documentation</seealso>
     public class DfsConfiguration : ConfigurationSection
     {
         /// <summary>

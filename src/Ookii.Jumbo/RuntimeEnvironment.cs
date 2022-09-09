@@ -127,7 +127,7 @@ namespace Ookii.Jumbo
         }
 
         /// <summary>
-        /// Writes environemnt information to the specified log.
+        /// Writes environment information to the specified log.
         /// </summary>
         /// <param name="log">The log to write the information to.</param>
         public static void LogEnvironmentInformation(this log4net.ILog log)

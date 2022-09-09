@@ -199,7 +199,7 @@ namespace Ookii.Jumbo.Jet.Channels
         }
 
         /// <summary>
-        /// Raises the <see cref="E:MemoryStorageFull" /> event.
+        /// Raises the <see cref="MemoryStorageFull" /> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected virtual void OnMemoryStorageFull(MemoryStorageFullEventArgs e)

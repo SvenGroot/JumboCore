@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// Creates an <see cref="IDataInput"/> for this input.
         /// </summary>
         /// <param name="fileSystem">The file system.</param>
-        /// <returns></returns>
+        /// <returns>The <see cref="IDataInput"/>.</returns>
         public IO.IDataInput CreateStageInput(FileSystemClient fileSystem)
         {
             ArgumentNullException.ThrowIfNull(fileSystem);

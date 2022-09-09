@@ -203,7 +203,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// Deserializes a delegate. This method is for internal Jumbo use only.
         /// </summary>
         /// <param name="context">The task context.</param>
-        /// <returns></returns>
+        /// <returns>The deserialized delegate.</returns>
         public static object DeserializeDelegate(TaskContext context)
         {
             if (context != null)

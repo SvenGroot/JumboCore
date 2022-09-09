@@ -1230,6 +1230,7 @@
             <summary>
             Interface for record writers that use partitioning.
             </summary>
+            <typeparam name="T">The type of the records.</typeparam>
         </member>
         <member name="P:Ookii.Jumbo.IO.IMultiRecordWriter`1.Partitioner">
             <summary>
@@ -1249,6 +1250,7 @@
             <param name="index">The index.</param>
             <param name="buffer">The buffer containing the data.</param>
             <param name="comparer">The <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> for the records in the buffer.</param>
+            <typeparam name="T">The type of the records in the buffer.</typeparam>
         </member>
         <member name="M:Ookii.Jumbo.IO.IndexedQuicksort.Sort``1(Ookii.Jumbo.IO.RecordIndexEntry[],System.Byte[],Ookii.Jumbo.IO.IRawComparer{``0},System.Int32,System.Int32)">
             <summary>
@@ -1259,6 +1261,7 @@
             <param name="comparer">The <see cref="T:Ookii.Jumbo.IO.IRawComparer`1"/> for the records in the buffer.</param>
             <param name="offset">The offset into <paramref name="index"/> of the first item to sort.</param>
             <param name="count">The number of items in <paramref name="index"/> starting at <paramref name="offset"/> to sort.</param>
+            <typeparam name="T">The type of the records in the buffer.</typeparam>
         </member>
         <member name="T:Ookii.Jumbo.IO.InnerJoinRecordReader`3">
             <summary>
@@ -1417,6 +1420,7 @@
             <summary>
             Defines a method that a type implements to compare the raw binary representation of two objects.
             </summary>
+            <typeparam name="T">The type of the objects whose binary represenation can be compared.</typeparam>
         </member>
         <member name="M:Ookii.Jumbo.IO.IRawComparer`1.Compare(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -1768,7 +1772,7 @@
             Reads a value from the specified reader.
             </summary>
             <param name="reader">The reader.</param>
-            <returns></returns>
+            <returns>The deserialized value.</returns>
         </member>
         <member name="T:Ookii.Jumbo.IO.IWritable">
             <summary>
@@ -2720,6 +2724,7 @@
             <returns>
             A signed integer that indicates the relative values of the first and second object.
             </returns>
+            <typeparam name="T">The type of the objects to compare.</typeparam>
         </member>
         <member name="M:Ookii.Jumbo.IO.RawComparerHelper.CompareBytes(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -4149,9 +4154,10 @@
             <summary>
             Provides access to <see cref="T:Ookii.Jumbo.IO.IValueWriter`1"/> implementations for various basic framework types and types that specify the <see cref="T:Ookii.Jumbo.IO.ValueWriterAttribute"/> attribute.
             </summary>
+            <typeparam name="T">The type of the object whose <see cref="T:Ookii.Jumbo.IO.IWritable"/> or <see cref="T:Ookii.Jumbo.IO.IValueWriter`1"/> implementation to use.</typeparam>
             <remarks>
             <para>
-              If you attempt to access this class for a type <typeparam name="T" /> that does not implement <see cref="T:Ookii.Jumbo.IO.IWritable"/> and that does not have a implementation of <see cref="T:Ookii.Jumbo.IO.IValueWriter`1"/>,
+              If you attempt to access this class for a type <typeparamref name="T" /> that does not implement <see cref="T:Ookii.Jumbo.IO.IWritable"/> and that does not have a implementation of <see cref="T:Ookii.Jumbo.IO.IValueWriter`1"/>,
               an <see cref="T:System.NotSupportedException"/> is thrown by the static type initializer of the <see cref="T:Ookii.Jumbo.IO.ValueWriter`1"/> class.
             </para>
             <para>
@@ -4737,6 +4743,12 @@
             <summary>
             Provides configuration that may be shared between the Dfs and Jumbo Jet.
             </summary>
+            <remarks>
+            <para>
+              Jumbo's shared configuration is specified in the file <c>common.config</c>.
+            </para>
+            </remarks>
+            <seealso href="CommonConfiguration.html">common.config XML documentation</seealso>
         </member>
         <member name="P:Ookii.Jumbo.JumboConfiguration.NetworkTopology">
             <summary>
@@ -5723,6 +5735,7 @@
             <summary>
             Unregisters the server channels.
             </summary>
+            <param name="port">The port on which the server channels were registered.</param>
         </member>
         <member name="M:Ookii.Jumbo.Rpc.RpcHelper.RegisterService(System.String,System.Object)">
             <summary>
@@ -5781,9 +5794,9 @@
             <summary>
             Sends an RPC request. This class is for internal Jumbo use only and should not be used from your code.
             </summary>
-            <param name="operationName"></param>
-            <param name="parameters"></param>
-            <returns></returns>
+            <param name="operationName">The name of the operation to invoke.</param>
+            <param name="parameters">The parameters of the operation.</param>
+            <returns>The result of the operation.</returns>
         </member>
         <member name="T:Ookii.Jumbo.Rpc.ServerContext">
             <summary>

@@ -50,6 +50,8 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets the path, including file name, of the job configuration file.
         /// </summary>
+        /// <param name="client">The <see cref="FileSystemClient"/> to use to combine paths.</param>
+        /// <returns>The full path of the job configuration file.</returns>
         public string GetJobConfigurationFilePath(FileSystemClient client)
         {
             ArgumentNullException.ThrowIfNull(client);
