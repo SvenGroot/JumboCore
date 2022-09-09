@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lokad.ILPack" Version="0.1.7" />
-    <PackageReference Include="Ookii.CommandLine" Version="2.3.0" />
+    <PackageReference Include="Lokad.ILPack" Version="0.2.0" />
+    <PackageReference Include="Ookii.CommandLine" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
