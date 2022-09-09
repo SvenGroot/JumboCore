@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="config.xslt"?>
+<Job xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WordCount" xmlns="http://www.ookii.org/schema/Jumbo/JobConfiguration">
+  <AssemblyFileNames>
+    <string>Ookii.Jumbo.Jet.Samples.dll</string>
+    <string>Ookii.Jumbo.Jet.Generated.00d86e54b9c3434cb05b5c0f6ec49ac9.dll</string>
+  </AssemblyFileNames>
+  <Stages>
+    <Stage id="WordCount" taskCount="10">
+      <TaskType>Ookii.Jumbo.Jet.Generated.00d86e54b9c3434cb05b5c0f6ec49ac9.SplitLinesTask, Ookii.Jumbo.Jet.Generated.00d86e54b9c3434cb05b5c0f6ec49ac9, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TaskType>
+      <DataInputType>Ookii.Jumbo.Jet.IO.FileDataInput, Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</DataInputType>
+      <DataOutputType />
+      <ChildStage id="LocalWordCountAggregation" taskCount="1">
+        <TaskType>Ookii.Jumbo.Jet.Tasks.SumTask`1[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</TaskType>
+        <DataInputType />
+        <DataOutputType />
+        <ChildStagePartitionerType />
+        <StageSettings />
+        <OutputChannel type="File" partitionsPerTask="1" disableDynamicPartitionAssignment="false" partitionAssignmentMethod="Linear" forceFileDownload="false">
+          <MultiInputRecordReaderType>Ookii.Jumbo.IO.MultiRecordReader`1[[Ookii.Jumbo.IO.Pair`2[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Int32, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</MultiInputRecordReaderType>
+          <OutputStage>WordCountAggregation</OutputStage>
+          <PartitionerType>Ookii.Jumbo.Jet.HashPartitioner`1[[Ookii.Jumbo.IO.Pair`2[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Int32, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</PartitionerType>
+        </OutputChannel>
+        <MultiInputRecordReaderType />
+        <DependentStages />
+      </ChildStage>
+      <ChildStagePartitionerType>Ookii.Jumbo.Jet.HashPartitioner`1[[Ookii.Jumbo.IO.Pair`2[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Int32, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</ChildStagePartitionerType>
+      <StageSettings>
+        <Setting key="FileDataInput.RecordReader" value="Ookii.Jumbo.IO.LineRecordReader, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        <Setting key="FileDataInput.InputPath" value="/text" />
+      </StageSettings>
+      <MultiInputRecordReaderType />
+      <DependentStages />
+    </Stage>
+    <Stage id="WordCountAggregation" taskCount="2">
+      <TaskType>Ookii.Jumbo.Jet.Tasks.SumTask`1[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</TaskType>
+      <DataInputType />
+      <DataOutputType>Ookii.Jumbo.Jet.IO.FileDataOutput, Ookii.Jumbo.Jet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null</DataOutputType>
+      <ChildStagePartitionerType />
+      <StageSettings>
+        <Setting key="FileDataOutput.RecordWriterType" value="Ookii.Jumbo.IO.TextRecordWriter`1[[Ookii.Jumbo.IO.Pair`2[[Ookii.Jumbo.IO.Utf8String, Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null],[System.Int32, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]], Ookii.Jumbo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        <Setting key="FileDataOutput.OutputPathFormat" value="/wcoutput/WordCountAggregation-{0:00000}" />
+      </StageSettings>
+      <MultiInputRecordReaderType />
+      <DependentStages />
+    </Stage>
+  </Stages>
+  <AdditionalProgressCounters>
+    <AdditionalProgressCounter>
+      <TypeName>Ookii.Jumbo.Jet.Channels.FileInputChannel</TypeName>
+      <DisplayName>Shuffle</DisplayName>
+    </AdditionalProgressCounter>
+  </AdditionalProgressCounters>
+  <SchedulerOptions maximumDataDistance="2" dataInputSchedulingMode="Default" nonDataInputSchedulingMode="Default" />
+</Job>

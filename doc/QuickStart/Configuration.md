@@ -173,3 +173,8 @@ The below is an example of a typical `bin/jet.config`:
   <mergeRecordReader maxFileInputs="10"/>
 </ookii.jumbo.jet>
 ```
+
+## Common configuration
+
+Additional configuration is available in `common.config`, which is [documented here](../Configuration/CommonConfiguration.html).
+This file allows configuration of network topology and log file locations.

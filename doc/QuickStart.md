@@ -7,6 +7,8 @@ general.
 It will help you configure Jumbo for local testing (on a single node) or on a cluster, and walk you
 through uploading some data and running your first data processing job.
 
+## Contents
+
 - [Building Jumbo](QuickStart/Building.md)
 - [Configuration](QuickStart/Configuration.md)
 - [Running Jumbo](QuickStart/Running.md)

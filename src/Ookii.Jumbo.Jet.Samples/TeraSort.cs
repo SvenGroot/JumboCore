@@ -13,7 +13,7 @@ namespace Ookii.Jumbo.Jet.Samples
     /// </summary>
     /// <remarks>
     /// <para>
-    ///   This is a sort implementation according to the rules for the GraySort benchmark, see http://www.hpl.hp.com/hosted/sortbenchmark/.
+    ///   This is a sort implementation according to the rules for the GraySort benchmark, see http://sortbenchmark.org/.
     /// </para>
     /// </remarks>
     [Description("Sorts the input file or files containing data in the gensort format.")]

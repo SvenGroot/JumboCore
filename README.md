@@ -79,4 +79,7 @@ As for Jumbo Jet, that was an obvious pun that I couldn't resist once the name J
 ## Getting started
 
 Want to give Jumbo a try? Head over to the [Quick Start Guide](doc/QuickStart.md)! Or if you're
-eager to learn how it all works, skip straight to the [User Guide](doc/UserGuide.md).
+eager to learn how it all works, skip straight to the [User Guide](doc/UserGuide.md). You can
+also check out the [class library documentation](http://www.ookii.org/Link/JumboDoc).
+
+If you have any questions, contact me [using the discussions tab](https://github.com/SvenGroot/JumboCore/discussions).
