@@ -82,7 +82,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
             var aggregated = job.GroupAggregate<string, int>(words, AggregateCounts, comparerType);
             aggregated.InputChannel.PartitionCount = Partitions;
-            words.StageId = "WordCountAggregation";
+            aggregated.StageId = "WordCountAggregation";
 
             var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePairs<string, int>);
             reversed.InputChannel.ChannelType = ChannelType.Pipeline;

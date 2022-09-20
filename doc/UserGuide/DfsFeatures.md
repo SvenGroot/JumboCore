@@ -8,7 +8,7 @@ The NameServer stores the entire file system namespace in memory. When the names
 (file/directory created/deleted/moved, a block appended, etc.) the NameServer writes an entry to
 its edit log describing the operation, before comitting the change to the in-memory namespace.
 
-When the NameServer starts, it replays all the entries in the log to recreate the namespace when
+When the NameServer starts, it replays all the entries in the log to recreate the namespace from when
 the NameServer was last stopped.
 
 Because the log file can get quite large, this increases the startup time for the NameServer. To
@@ -18,7 +18,7 @@ load the snapshot before replaying the log.
 
 ## DFS safe mode
 
-When the NameServer first starts, it starts in something called "safe mode." While in this mode,
+When the NameServer starts, it starts in something called "safe mode." While in this mode,
 it will not try to create new replicas for underreplicated blocks. This prevents additional replicas
 from being created while the NameServer is waiting for all the DataServers to start and report in.
 
@@ -51,15 +51,20 @@ data from disk. In addition, a small amount at the start of the block may be rea
 while looking for the start of a record.
 
 To avoid this, Jumbo DFS can indicate that a file is record-aware, which is done by specifying
-`RecordStreamOptions.DoNotCrossBoundary` when the file is created. The `DfsOutputStream` that is
-used to write files implements `IRecordOutputStream`, which lets a `StreamRecordWriter` indicate
-where records start. In this case, `DfsOutputStream` makes sure that records never cross a block
-boundary, switching to the next block if a record doesn't fit in the current block.
+[`RecordStreamOptions.DoNotCrossBoundary`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordStreamOptions.htm)
+when the file is created. The [`DfsOutputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm)
+that is used to write files implements [`IRecordOutputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordOutputStream.htm),
+which lets a [`StreamRecordWriter`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordWriter_1.htm)
+indicate where records start. In this case, `DfsOutputStream` makes sure that records never cross a
+block boundary, switching to the next block if a record doesn't fit in the current block.
 
-In this case, all blocks in a file will have slightly different sizes up to the file's block size.
+In this case, all blocks in a file will have slightly different sizes, up to the file's specified
+block size.
 
-When record-aware streams are used, the `RecordReader` knows it doesn't need to continue reading
-past a block boundary, preventing any non-local data from being read.
+When record-aware streams are used, the [`StreamRecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordReader_1.htm)
+uses [`IRecordInputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordInputStream.htm)
+to determine that it doesn't need to continue reading past a block boundary, preventing any
+non-local data from being read.
 
 ## DfsShell
 
@@ -117,7 +122,7 @@ The following commands are available:
         Shows version information.
 
     waitsafemode
-        Waits until the name server leaves safe mode.`
+        Waits until the name server leaves safe mode.
 ```
 
 ## DfsWeb

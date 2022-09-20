@@ -1,12 +1,12 @@
 # User Guide
 
-If you’ve gone through the [quick start guide](QuickStart.md), by this point you will have installed
+If you’ve gone through the [quick start guide](QuickStart.md), by this point you will have deployed
 Jumbo and run some jobs using the provided samples.
 
-In this document we will look at how to create your own data processing jobs. First, we will give a
+In this guide we will look at how to create your own data processing jobs. First, we will give a
 basic overview of Jumbo DFS and Jet. Then, a sample will be used to introduce the basic programming
-concepts. Then, the features of Jumbo Jet are explained in more detail. Finally, a more advanced
-sample is given that demonstrates some of these features.
+concepts, before the features of Jumbo are explained in more detail. Finally, a more advanced
+tutorial is given that demonstrates some of these features.
 
 ## Contents
 

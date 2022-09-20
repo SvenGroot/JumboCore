@@ -5,8 +5,10 @@ a way for me to learn more about MapReduce and [Apache Hadoop](https://hadoop.ap
 my time as a Ph.D. candidate at [Kitsuregawa Lab](http://www.tkl.iis.u-tokyo.ac.jp/new/?lang=en) at
 the University of Tokyo's Institute of Industrial Science.
 
-Jumbo offers a similar Distributed File System and distributed data processing engine, and its
-design sometimes heavily borrows from Hadoop 1.0.
+Jumbo offers a similar Distributed File System and distributed data processing engine as Hadoop, and
+its design sometimes heavily borrows from Hadoop (pre-1.0).
+
+It was created as a research and learning project, and is not intended for production use.
 
 ## Overview
 
@@ -66,16 +68,16 @@ I hope you enjoy looking at this project. Despite its age and shortcomings, I'm 
 of it. It's still by far the largest project I've done where all of the work was done by me
 individually.
 
-If you have any questions, feel free to ask them here. I will try to help you if I can, but please
-understand that I’m not officially supporting this project.
+If you have any questions or feedback, feel free to [use the discussions tab](https://github.com/SvenGroot/JumboCore/discussions).
+I will try to help you if I can, but please understand that I’m not officially supporting this project.
 
 ## Why is it called Jumbo?
 
-Hadoop is named after the stuffed elephant of one of the original developer's children. Jumbo is a
-real elephant, made famous by P.T. Barnum, and since his name has become synonymous with things that
-are huge, it seemed appropriate for *large* scale data processing.
+Hadoop, in case you didn't know, is named after the stuffed elephant of one of the original developer's
+children. Jumbo is a real elephant, made famous by P.T. Barnum, and since his name has become
+synonymous with things that are huge, it seemed appropriate for *large* scale data processing.
 
-Additionally, it was consistent with my penchant for using words meaning big (my last name is "big"
+Additionally, it was consistent with my penchant for using words meaning "big" (my last name is "big"
 in Dutch, and my website is [Ookii.org](https://www.ookii.org), "big" in Japanese).
 
 As for Jumbo Jet, that was an obvious pun that I couldn't resist once the name Jumbo was selected.
@@ -85,5 +87,3 @@ As for Jumbo Jet, that was an obvious pun that I couldn't resist once the name J
 Want to give Jumbo a try? Head over to the [Quick Start Guide](doc/QuickStart.md)! Or if you're
 eager to learn how it all works, skip straight to the [User Guide](doc/UserGuide.md). You can
 also check out the [class library documentation](http://www.ookii.org/Link/JumboDoc).
-
-If you have any questions, contact me [using the discussions tab](https://github.com/SvenGroot/JumboCore/discussions).

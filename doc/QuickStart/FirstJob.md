@@ -2,8 +2,9 @@
 
 Once Jumbo is [up and running](Running.md), you can start using Jumbo Jet to run data processing jobs.
 
-To help you get started, this guide demonstrates how to upload a text file to the DFS and run
-the WordCount job on the file.
+To help you get started, this article demonstrates how to upload a text file to the DFS and run
+the WordCount job on the file. WordCount is an included sample job that counts the frequency of
+each word in the input.
 
 To run this job, you need some utf-8 plain text files to use as input. You can generate some random
 text using another Jumbo sample job (which we’ll do below), but if you want some non-random text,
@@ -46,8 +47,8 @@ directory. Do not use  the root in this case; use `./DfsShell.ps1 mkdir` to crea
 ## Running the job
 
 Where DfsShell is used to interact with the DFS, you use JetShell to use Jumbo Jet. Let's use it
-to run the WordCount job (one of the provided sample jobs) on the file uploaded above (change the
-frist path if your file is not called mobydick.txt).
+to run the WordCount job on the file uploaded above (change the first path if your file is not
+called mobydick.txt).
 
 ```text
 > ./JetShell.ps1 job bin/Ookii.Jumbo.Jet.Samples.dll wordcount /mobydick.txt /wcoutput
@@ -65,7 +66,7 @@ Duration:   00:00:01.6193970 (1.619397s)
 ```
 
 Let’s examine what we did here. JetShell has multiple functions, but the main one is to launch jobs,
-which is done with the `job` command. The first argument to that command specified the local (not DFS)
+which is done with the `job` command. The first argument to that command specifies the local (not DFS)
 path to the assembly file containing the job (in this case, the included assembly with sample jobs),
 followed by the name of the job. The remaining arguments are specific to the job; the WordCount job
 expects at least the input and output DFS paths (as indeed do most sample jobs). We tell it to read
@@ -90,8 +91,8 @@ Directory listing for /
 ```
 
 You can see there are two new directories. `JumboJet` is a working directory for the Jet execution
-engine; it’s not important for the user. The `wcoutput` directory contains the output. Let’s check
-it out:
+engine; it’s not important for the user. The `wcoutput` directory contains the output of the job.
+Let’s check it out:
 
 ```text
 > ./DfsShell.ps1 ls /wcoutput
@@ -134,7 +135,7 @@ often each word occurred in your text file.
 > [user guide](../UserGuide.md) will introduce a more advanced version of WordCount that overcomes
 > some of these limitations.
 
-Don’t forget to go to the Jet administration website (<http://localhost:36000> by default). You can
+Don’t forget to go to the Jet administration website (http://localhost:36000 by default). You can
 see lots of cool statistics about your job there.
 
 And that’s your very first job! But wait a second? Isn’t Jumbo for distributed processing? But
@@ -167,7 +168,7 @@ Duration:   00:00:09.7494140 (9.749414s)
 ```
 
 The parameters for this job indicate the output path (`/bigtext`), the number of generator tasks (64),
-and the size to generate per task (256MB).
+and the size of the data to generate per task (256MB).
 
 In total, this job generated 16GB of random text, using 64 tasks each generating 256MB. I’m running
 this example on 32 nodes; if you’re using a smaller cluster, you may want to scale down the size

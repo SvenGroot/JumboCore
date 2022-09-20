@@ -1,7 +1,7 @@
 # Jumbo Components
 
-In this section, we'll take a look at the components that make up Jumbo and how they work. Jumbo
-consists of a distributed file system and the Jumbo Jet data processing engine.
+In this section, we'll take a look at the components that make up Jumbo and the basics of how they
+work. Jumbo consists of a distributed file system and the Jumbo Jet data processing engine.
 
 ## Jumbo assemblies
 
@@ -22,7 +22,7 @@ Jumbo is spread over a number of class libraries and applications.
 - **TaskHost:** Host application used by the TaskServer to run tasks out-of-process.
 - **DfsShell:** Client application to interact with the DFS (list directories, upload/download files,
   query DFS status, etc.).
-- **JetShell:** Client application to interace with Jumbo Jet (submit jobs, query job status, etc.).
+- **JetShell:** Client application to interace with Jumbo Jet (submit jobs, query cluster status, etc.).
 - **DfsWeb:** Administration web portal for the DFS, allowing you to view the DFS health and status,
   browse the namespace, and view server logs.
 - **JetWeb:** Administration web portal for Jumbo Jet, allowing to view the Jet cluster health and
@@ -30,7 +30,7 @@ Jumbo is spread over a number of class libraries and applications.
 - **Ookii.Jumbo.Test:** Unit and functional tests for Jumbo.
 - **Ookii.Jumbo.Test.Tasks:** Task types used by Ookii.Jumbo.Test when testing Jumbo Jet.
 
-For more details, you can view the [class library documentation](https://www.ookii.org/Link/JumboDoc).
+For more details about the class libraries, you can view [their documentation](https://www.ookii.org/Link/JumboDoc).
 
 ## Jumbo DFS
 
@@ -79,15 +79,16 @@ Jumbo Jet's TaskServers and tasks often run on the same nodes as the DataServers
 to place the first replica on the same node as the client (unless the client request's otherwise).
 
 When the NameServer returns the list of replicas to the client, it orders them by the _distance_
-from the client. Since the client will only write to the first server in the list, this will be the
-closest server, allowing for maximum performance. Per the above, there are three possible distances:
+from the client. Since the client will only write directly to the first server in the list, this
+will be the closest server, allowing for maximum performance. Per the above, there are three
+possible distances:
 
 - Data local: the DataServer is on the same node as the client.
 - Rack local: the DataServer is in the same rack as the client.
 - Non-local: the DataServer is in a different rack.
 
-Using rack locality requires configuring a network topology using common.config. That way, Jumbo
-can know which nodes are in a rack.
+Using rack locality requires configuring a network topology using `common.config`. That way, Jumbo
+can know which nodes are in which rack.
 
 When reading a file, the process is simpler:
 
@@ -96,14 +97,15 @@ When reading a file, the process is simpler:
 3. For each block, the client asks the NameServer for a list of DataServers that have this block.
 4. The NameServer orders the list by distance from the client, and sends it to the client.
 5. The client connects to a DataServer to read the block (typically the closest one).
-6. During reading, the client verifies the CRC of each packet. If it's wrong, it'll move on to the
+6. During reading, the client verifies the CRC of each packet. If it's corrupt, it'll move on to the
    next DataServer (there is currently no mechanism to remove the corrupted block and re-replicate
    it; see, this is why Jumbo is not production quality code).
 
-Client applications interact with the DFS using the `Ookii.Jumbo.Dfs.Filesystem.FileSystemClient`,
+Client applications interact with the DFS using the [`Ookii.Jumbo.Dfs.Filesystem.FileSystemClient`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm),
 which provides an API for performing these operations. Using it, a client simply creates a file,
-gets a Stream for it, and writes to that stream like any normal file. All the steps above are
-taken care of under the hood.
+gets a [Stream](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm) for
+it, and writes to that stream like any normal file. All the steps above are taken care of under the
+hood.
 
 It's probably rare that you'll ever write a DFS client application yourself. If you write Jumbo Jet
 jobs, most of this is abstracted through its data input and output models. And as an end user, you
@@ -131,20 +133,22 @@ A stage can also have multiple channels as input, for example to perform a join.
 
 Stages are divided into _tasks_, where each task processes a part of the stage's input data. Tasks
 are run in parallel on multiple systems in a cluster. For stages reading a data input (file), the
-input is split linearly to divide it across tasks. For stages reading a channel input, the channel
-partitions the data across the tasks.
+input is divided linearly across tasks (these are called _splits_). For stages reading a channel
+input, the channel _partitions_ the data across the tasks.
 
 Tasks run a user-defined piece of code to do their processing. This code doesn’t need to be aware
 of most of the details. Regardless of whether the task is reading from or writing to a file or a
-channel, the code is the same. Input is provided via a `RecordReader` and output is written to a
-`RecordWriter`, which take care of the details. Since partitioning (and optionally, things like
-sorting) are handled by the Jumbo Jet infrastructure, you don’t have to worry about how to perform
-those operations; you simply need to specify you want them to happen.
+channel, the code is the same. Input is provided via a [`RecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm)
+and output is written to a [`RecordWriter`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm),
+which take care of the details. Since partitioning (and optionally, things like sorting) are handled
+by the Jumbo Jet infrastructure, you don’t have to worry about how to perform those operations; you
+simply need to specify you want them to happen.
 
-The typical way to create a job in Jumbo is to use the `JobBuilder`, which allows you to specify a
-sequence of operations which are then translated into a job configuration of stages and channels.
-This means you can create jobs without worrying too much about their actual structure during
-execution (although of course this is available if you want to do more complex processing).
+The typical way to create a job in Jumbo is to use the [`JobBuilder`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm),
+which allows you to specify a sequence of operations which are then translated into a job
+configuration of stages and channels. This means you can create jobs without worrying too much
+about their actual structure during execution (although of course this is available if you want to
+do more complex processing).
 
 We will go into more details about how jobs are executed [later](JobExecution.md). First, it's time
-to learn how you [write your own jobs for Jumbo Jet](Tutorial1.md).
+to learn how to [write your own jobs for Jumbo Jet](Tutorial1.md).

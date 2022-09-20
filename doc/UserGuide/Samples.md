@@ -8,9 +8,9 @@ assembly. The following samples are provided:
 A simple job that counts the frequency of each word in the input file(s). This is similar to the
 WordCount job created in [the first tutorial](Tutorial1.md).
 
-This job lets you choose between the "optimized" version (identical to the tutorial), a version
-implemented using lambdas (which is less efficient because it needs to use delegates to call the
-lambdas), and a version using MapReduce.
+This job lets you choose between the "optimized" version (basically identical to the [first tutorial](Tutorial1.md)
+except for record reuse), a version implemented using lambdas (which is less efficient because it
+needs to use delegates to call the lambdas), and a version using MapReduce.
 
 ## AdvancedWordCount
 
@@ -36,12 +36,15 @@ data and writes the result directly to the output, without any actual "stages" s
 causes the `JobBuilder` to generate two no-op stages using the `EmptyTask<T>` utility type.
 
 This job also provides a custom record type (`GenSortRecord`), raw comparer
-(`GenSortRecordRawComparer`), and record reader and writer (`GenSortRecordReader` and
-`GenSortRecordWriter`).
+(`GenSortRecordRawComparer`), record reader and writer (`GenSortRecordReader` and
+`GenSortRecordWriter`), and partitioner (`RangePartitioner`).
 
 ## GenSort
 
 A job that generates random data that can be used with the TeraSort job.
+
+This job uses a generation algorithm that is based on the original C version of
+[gensort](http://www.ordinal.com/gensort.html).
 
 ## ValSort
 
@@ -53,7 +56,7 @@ to perform additional steps in JetShell after job completion.
 A job that implements the Parallel FP-Growth algorithm described in the paper "PFP: Parallel
 FP-Growth for Query Recommendation" by Li et al., 2008.
 
-This algorithm calculates the top-K frequent patterns for each item in the database, only
+This algorithm calculates the top-K frequent patterns for each item in the input, only
 regarding patterns that have the specified minimum support.
 
 The algorithm has three steps: first, it counts how often each item occurs in the input database,
@@ -61,11 +64,11 @@ filters out the infrequent features, and divides the resulting feature list into
 it generates group-dependent transactions from the input and runs the FP-Growth algorithm on
 each group. Finally, the results from each group are aggregated to form the final result.
 
-The number of groups should be carefully selected so that the number of items per group it
+The number of groups should be carefully selected so that the number of items per group is
 not too large. Ideally, each group should have 5-10 items at most for a large database.
 
 The input for this job should be a plain text file (or files) where each line represents
-a transaction containing a space-delimited list of transactions.
+a transaction containing a space-delimited list of items.
 
 This example demonstrates a more complicated Jumbo job, with several stages including
 more than one stage with file input. Several of its tasks are implemented as task type classes,

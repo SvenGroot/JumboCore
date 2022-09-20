@@ -1,23 +1,34 @@
 # Configuration
 
-After you have [create a distribution of Jumbo](Building.md), you must configure it before you can
-use it.
+After you have [create a distribution of Jumbo](Building.md) or [downloaded one](https://github.com/SvenGroot/JumboCore/releases),
+you must configure it before you can use it.
 
 Jumbo uses several files for configuration. Some configuration needed to start Jumbo is set in
 PowerShell scripts, but most of the configuration is done using XML files (Jumbo predates the
 proliferation of JSON for this purpose, unfortunately).
 
-The most important configuration files in your distribution's directory are `support/Get-JumboConfig.ps`,
+The most important configuration files in your distribution's directory are `support/Get-JumboConfig.ps1`,
 `bin/common.config`, `bin/dfs.config`, and `bin/jet.config`. These files are pre-created with some
 defaults, but you must always edit at least some of them before you can run Jumbo.
+
+All of Jumbo's servers need a local directory on the node they are running on to store some of their
+data. These directories must meet the following criteria:
+
+- They must not be the directory of your Jumbo distribution.
+- All servers must use a different directory; they cannot share the same one.
+- The directories should be empty before you first run Jumbo. If they don't exist, Jumbo will create
+  them.
+- The directory paths must be the same for every node sharing a particular configuration file (see
+  deployment [below](#basic-configuration-and-deployment)).
+- For the data server block storage directory, this is where the file data for files on the DFS is
+  stored, so these should preferably be on volumes with a lot of space.
 
 ## Quick configuration for one node
 
 Want to simply try Jumbo on one node? Here’s what you do:
 
 1. In `bin/dfs.config`, set the NameServer image directory and the DataServer block directory to
-   local directories (they cannot be the same directory, and they should be empty before you first
-   use Jumbo).
+   local directories.
 2. In `bin/jet.config`, set the JobServer archive directory and TaskServer task directory.
 
 Here's an example of what these files would look like for local running.
@@ -30,9 +41,9 @@ Here's an example of what these files would look like for local running.
   <fileSystem url="jdfs://localhost:9000" />
   <nameServer blockSize="64MB"
               replicationFactor="1"
-              imageDirectory="/jumbo/name" />
+              imageDirectory="/jumbo/nameserver" />
   <dataServer port="9001"
-              blockStorageDirectory="/jumbo/data" />
+              blockStorageDirectory="/jumbo/dataserver" />
 </ookii.jumbo.dfs>
 ```
 
@@ -43,8 +54,8 @@ Here's an example of what these files would look like for local running.
 <ookii.jumbo.jet>
   <jobServer hostName="localhost"
              port="9500"
-             archiveDirectory="/jumbo/job" />
-  <taskServer taskDirectory="/jumbo/task"
+             archiveDirectory="/jumbo/jobarchive" />
+  <taskServer taskDirectory="/jumbo/taskserver"
               port="9501"
               taskSlots="2"
               fileServerPort="9502" />
@@ -53,7 +64,7 @@ Here's an example of what these files would look like for local running.
 
 In this example, `/jumbo` is used as the base directory for all of Jumbo's paths. Replace them with
 your own directories as desired. These should all be absolute paths, and on Windows should include
-a drive letter (e.g. `D:\jumbo\name`).
+a drive letter (e.g. `D:\jumbo\nameserver`).
 
 That’s it, you can now run Jumbo on one node, so you can skip ahead to [running Jumbo](Running.md).
 
@@ -61,13 +72,15 @@ That’s it, you can now run Jumbo on one node, so you can skip ahead to [runnin
 
 If you want to run Jumbo on a cluster, more configuration is needed.
 
-First, you must configure some values in `support/Get-JumboConfig.ps1`. You must set the `$JUMBO_HOME`
-directory to the directory where Jumbo is installed (this path must be the same on all nodes). If
-you change the `$JUMBO_LOG` directory, also make the corresponding modifications in `bin/common.config`.
-Check the comments in the file for further available configuration options.
+First, you must configure some values in [`support/Get-JumboConfig.ps1`](../../src/scripts/support/Get-JumboConfig.ps1).
+You must set the `$JUMBO_HOME` variable to the directory where Jumbo's binaries are to be deployed
+(this path must be the same on all nodes). If you change the `$JUMBO_LOG` directory, also make the
+corresponding modifications in `bin/common.config`. Check the comments in the file for further available configuration options.
 
-Using `bin/common.config`, you can modify the log directory and configure rack-awareness (used by
-the task scheduler to get data locality).
+Using [`bin/common.config`](../../src/common.config), you can modify the log directory and configure
+rack-awareness (used by the task scheduler to get data locality). If you don't need either of these
+things, you don't need to touch this file. See the [common.config XML documentation](https://www.ookii.org/Link/JumboDocCommonConfig)
+for all the options.
 
 In order to start Jumbo using the provided scripts, you must also specify which nodes it will run
 on. Jumbo uses a two-level configuration system for this: the `deploy/groups` file specifies groups
@@ -83,7 +96,7 @@ The `masters` group is special and is only used during deployment. You only need
 `masters` file if you intend to use the deployment script (see below). This group should contain
 the node(s) that run the NameServer and JobServer. The contents of the `masters` file are skipped
 when running Jumbo; the `Get-JumboConfig.ps1` file specifies which node should run the NameServer,
-and which node the JobServer.
+and which node the JobServer, and that is what's used when starting Jumbo.
 
 Specify all nodes that should run DataServers and TaskServers in the `nodes` file. Alternatively,
 you can define your own groups. If you only wish to evaluate Jumbo on a single node, you can leave
@@ -93,13 +106,15 @@ You can deploy Jumbo to multiple nodes using the `Deploy-Jumbo.ps1` script, whic
 Jumbo files including the configuration to `$JUMBO_HOME` on all the nodes. This way, `$JUMBO_HOME`
 does not need to be a network path available on all the nodes.
 
-When deploying, you can use different configuration files for each group (this is the purpose of
-groups). To do this, create files names `common.groupname.config`, `dfs.groupname.config` and
-`jet.groupname.config` (replace groupname with the name of the group) in the same directory as
-`Deploy-Jumbo.ps1`. If any of those files does not exist for a group, that group uses the default
-configuration.
+When deploying, you can use different configuration files for each group. To do this, create files
+named `common.<groupname>.config`, `dfs.<groupname>.config` and `jet.<groupname>.config` (replace
+`<groupname>` with the name of the group) in the same directory as `Deploy-Jumbo.ps1`. If any of
+those files does not exist for a group, that group uses the default configuration file.
 
 ## Configuring the Jumbo file system
+
+Jumbo can use the provided DFS (recommended), or can be configured to use the local file system
+for storage (for testing purposes).
 
 ### Configuring the DFS
 
@@ -113,7 +128,7 @@ There are four values that you must specify in `bin/dfs.config` to use the DFS:
 4. Set the DataServer block directory to a local directory where the file data for each node will be
    stored.
 
-See the [configuration file documentation](https://www.ookii.org/Link/JumboDocDfsConfig) for information
+See the [dfs.config XML documentation](https://www.ookii.org/Link/JumboDocDfsConfig) for information
 on the other options that are available.
 
 The below is an example of a typical `bin/dfs.config`:
@@ -121,7 +136,7 @@ The below is an example of a typical `bin/dfs.config`:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <ookii.jumbo.dfs>
-  <fileSystem url="jdfs://somenode:9000"/>
+  <fileSystem url="jdfs://nameservernodename:9000"/>
   <nameServer blockSize="128MB"
               replicationFactor="3"
               imageDirectory="/jumbo/nameserver" />
@@ -146,10 +161,12 @@ the Jumbo DFS instead of the local file system except for debugging purposes.
 There are two values that you must specify in `bin/jet.config`:
 
 1. Set the JobServer host name and port.
-2. Set the TaskServer task directory to a local directory where configuration, task log and
+2. Set the JobServer's job archive directory to a local directory where information about completed
+   jobs is archived so it can be accessed after the Jumbo Jet server restarts.
+3. Set the TaskServer task directory to a local directory where configuration, task log and
    intermediate data files will be stored on each node.
 
-See the [configuration file documentation](https://www.ookii.org/Link/JumboDocJetConfig) for information
+See the [jet.config XML documentation](https://www.ookii.org/Link/JumboDocJetConfig) for information
 on the other options that are available.
 
 The below is an example of a typical `bin/jet.config`:
@@ -157,7 +174,7 @@ The below is an example of a typical `bin/jet.config`:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <ookii.jumbo.jet>
-  <jobServer hostName="somenode"
+  <jobServer hostName="jobserverhostname"
              port="9500"
              archiveDirectory="/jumbo/jobarchive"
              broadcastAddress="192.168.0.255"
@@ -174,7 +191,4 @@ The below is an example of a typical `bin/jet.config`:
 </ookii.jumbo.jet>
 ```
 
-## Common configuration
-
-Additional configuration is available in `common.config`, which is [documented here](https://www.ookii.org/Link/JumboDocCommonConfig).
-This file allows configuration of network topology and log file locations.
+Now, you are ready to [run Jumbo](Running.md) on your cluster.

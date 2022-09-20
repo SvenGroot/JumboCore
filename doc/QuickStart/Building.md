@@ -6,15 +6,16 @@ Jumbo is designed to run on Windows and Linux using Microsoft .Net Core. The
 following are the minimum requirements:
 
 - Microsoft .Net 6.0
-- Microsoft PowerShell Core 7.2.2
+- Microsoft PowerShell Core 7.2
 
 Jumbo was tested using these versions; newer versions are expected to work but
 have not been tested.
 
-This is a port of Jumbo to .Net Core; Jumbo was originally written to use both
-Microsoft .Net and Mono. Most of the scale and performance testing was done on
-Linux using Mono; Windows support was used mainly for debugging. No large-scale
-performance testing using .Net Core has been done.
+This is a port of the original [Jumbo](https://github.com/SvenGroot/Jumbo) to
+.Net Core; Jumbo was originally written to use both Microsoft .Net and Mono.
+Most of the scale and performance testing was done on Linux using Mono; Windows
+support was used mainly for debugging. No large-scale performance testing using
+.Net 6 has been done.
 
 Jumbo includes two administration websites (DfsWeb and JetWeb). These will run
 using the Kestrel web server included with .Net Core.
@@ -41,6 +42,8 @@ distribution.
 
 You can create a distribution of Jumbo, with all the required binaries and
 scripts to run it, by running `./Publish-Release.ps1 <path>`, e.g.
-`./Publish-Release.ps1 /jumbodist`.
+`./Publish-Release.ps1 /jumbo_home`.
+
+You can also get a [pre-built release](https://github.com/SvenGroot/JumboCore/releases).
 
 After doing that, you're ready to [configure Jumbo](Configuration.md).
