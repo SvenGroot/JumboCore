@@ -1,6 +1,6 @@
 # Configuration
 
-After you have [create a distribution of Jumbo](Building.md) or [downloaded one](https://github.com/SvenGroot/JumboCore/releases),
+After you have [created a distribution of Jumbo](Building.md) or [downloaded one](https://github.com/SvenGroot/JumboCore/releases),
 you must configure it before you can use it.
 
 Jumbo uses several files for configuration. Some configuration needed to start Jumbo is set in

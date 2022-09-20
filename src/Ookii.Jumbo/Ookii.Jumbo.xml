@@ -5877,7 +5877,7 @@
         </member>
         <member name="M:Ookii.Jumbo.RuntimeEnvironment.LogEnvironmentInformation(log4net.ILog)">
             <summary>
-            Writes environemnt information to the specified log.
+            Writes environment information to the specified log.
             </summary>
             <param name="log">The log to write the information to.</param>
         </member>
