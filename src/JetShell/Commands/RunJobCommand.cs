@@ -71,7 +71,7 @@ namespace JetShell.Commands
             WriteColor(options.UsageWriter.UsagePrefixColor, writer, support);
             writer.Write("Usage:");
             WriteColor(options.UsageWriter.ColorReset, writer, support);
-            writer.Write($" {CommandLineParser.GetExecutableName()} job {Path.GetFileName(assembly?.Location) ?? "<assembly>"} [job arguments...]");
+            writer.Write($" {CommandLineParser.GetExecutableName()} job {Path.GetFileName(assembly?.Location) ?? "<assembly>"} [<job>] [job arguments...]");
             writer.WriteLine();
             if (assembly != null) 
             {
