@@ -5,88 +5,104 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
+using Ookii.CommandLine.Terminal;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Jobs;
 
 namespace JetShell.Commands
 {
     // Note: this class needs special handling, don't create it using CommandLineParser.
-    [ShellCommand("job", CustomArgumentParsing = true), Description("Runs a job on the Jumbo Jet cluster.")]
-    class RunJobCommand : JetShellCommand
+    [Command("job"), Description("Runs a job on the Jumbo Jet cluster.")]
+    class RunJobCommand : JetShellCommand, ICommandWithCustomParsing
     {
-        private readonly string[] _args;
-        private readonly int _argIndex;
-        private readonly CreateShellCommandOptions _options;
+        private IJobRunner _jobRunner;
 
-        public RunJobCommand(string[] args, int argIndex, CreateShellCommandOptions options)
+        public void Parse(string[] args, int index, CommandOptions options)
         {
-            _args = args;
-            _argIndex = argIndex;
-            _options = options;
+            if (args.Length - index == 0)
+            {
+                WriteUsage(null, options);
+                return;
+            }
+
+            var assemblyFileName = args[index];
+            var assembly = Assembly.LoadFrom(assemblyFileName);
+            if (args.Length - index == 1)
+            {
+                WriteUsage(assembly, options);
+                return;
+            }
+
+            var jobName = args[index + 1];
+            var jobRunnerInfo = JobRunnerInfo.GetJobRunner(assembly, jobName);
+            if (jobRunnerInfo == null)
+            {
+                WriteUsage(assembly, options);
+                return;
+            }
+
+            options.UsageWriter.CommandName += $" {Path.GetFileName(assemblyFileName)} {jobRunnerInfo.Name}";
+            _jobRunner = jobRunnerInfo.CreateInstance(args, index + 2, options);
         }
 
-        public override void Run()
+        public override int Run()
         {
-            ExitCode = 1; // Assume failure unless we can successfully run a job.
-            if (_args.Length - _argIndex == 0)
-                _options.Out.WriteLine(_options.UsageOptions.UsagePrefix + " job <assemblyName> <jobName> [job arguments...]");
-            else
+            if (_jobRunner == null)
             {
-                var assemblyFileName = _args[_argIndex];
-                var assembly = Assembly.LoadFrom(assemblyFileName);
-                if (_args.Length - _argIndex == 1)
-                {
-                    _options.Out.WriteLine(_options.UsageOptions.UsagePrefix + " job <assemblyName> <jobName> [job arguments...]");
-                    _options.Out.WriteLine();
-                    PrintAssemblyJobList(_options.Out, assembly);
-                }
-                else
-                {
-                    var jobName = _args[_argIndex + 1];
-                    var jobRunnerInfo = JobRunnerInfo.GetJobRunner(assembly, jobName);
-                    if (jobRunnerInfo == null)
-                    {
-                        _options.Error.WriteLine("Job {0} does not exist in the assembly {1}.", jobName, Path.GetFileName(assemblyFileName));
-                        PrintAssemblyJobList(_options.Out, assembly);
-                    }
-                    else
-                    {
-                        var jobRunner = jobRunnerInfo.CreateInstance(_args, _argIndex + 2);
-                        if (jobRunner == null)
-                        {
-                            _options.UsageOptions.UsagePrefix = string.Format(CultureInfo.InvariantCulture, "{0} job {1} {2} ", _options.UsageOptions.UsagePrefix, Path.GetFileName(assemblyFileName), jobRunnerInfo.Name);
-                            jobRunnerInfo.CommandLineParser.WriteUsageToConsole(_options.UsageOptions);
-                        }
-                        else
-                        {
-                            var jobId = jobRunner.RunJob();
-                            if (jobId != Guid.Empty)
-                            {
-                                var success = JetClient.WaitForJobCompletion(jobId);
-                                jobRunner.FinishJob(success);
-                                ExitCode = success ? 0 : 1;
-                            }
-                            else
-                                ExitCode = 2;
-                        }
-                    }
-                }
+                return 1;
+            }
+
+            var jobId = _jobRunner.RunJob();
+            if (jobId == Guid.Empty)
+            {
+                return 2;
+            }
+
+            var success = JetClient.WaitForJobCompletion(jobId);
+            _jobRunner.FinishJob(success);
+            return success ? 0 : 1;
+        }
+
+        private void WriteUsage(Assembly assembly, CommandOptions options)
+        {
+            using var writer = LineWrappingTextWriter.ForConsoleOut();
+            using var support = VirtualTerminal.EnableColor(StandardStream.Output);
+            WriteColor(options.UsageWriter.UsagePrefixColor, writer, support);
+            writer.Write("Usage:");
+            WriteColor(options.UsageWriter.ColorReset, writer, support);
+            writer.Write($" {CommandLineParser.GetExecutableName()} job {Path.GetFileName(assembly?.Location) ?? "<assembly>"} [job arguments...]");
+            writer.WriteLine();
+            if (assembly != null) 
+            {
+                PrintAssemblyJobList(writer, support, assembly, options);
             }
         }
 
-        private void PrintAssemblyJobList(TextWriter writer, Assembly assembly)
+        private static void WriteColor(string color, TextWriter writer, VirtualTerminalSupport support)
         {
-            var lineWriter = writer as LineWrappingTextWriter;
+            if (support.IsSupported)
+            {
+                writer.Write(color);
+            }
+        }
+
+        private void PrintAssemblyJobList(LineWrappingTextWriter writer, VirtualTerminalSupport support, Assembly assembly, CommandOptions options)
+        {
             var jobs = JobRunnerInfo.GetJobRunners(assembly);
+            writer.WriteLine();
             writer.WriteLine("The assembly {0} defines the following jobs:", assembly.GetName().Name);
             writer.WriteLine();
-            if (lineWriter != null)
-                lineWriter.Indent = _options.CommandDescriptionIndent;
+            writer.Indent = options.UsageWriter.CommandDescriptionIndent;
             foreach (var job in jobs)
             {
-                if (lineWriter != null)
-                    lineWriter.ResetIndent();
-                writer.WriteLine(_options.CommandDescriptionFormat, job.Name, job.Description);
+                writer.ResetIndent();
+                WriteColor(options.UsageWriter.CommandDescriptionColor, writer, support);
+                writer.Write($"    {job.Name}");
+                WriteColor(options.UsageWriter.ColorReset, writer, support);
+                writer.WriteLine();
+                writer.WriteLine(job.Description);
+                writer.WriteLine();
             }
         }
     }

@@ -3,12 +3,13 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("blocks"), Description("Prints a list of blocks.")]
+    [Command("blocks"), Description("Prints a list of blocks.")]
     sealed class PrintBlocksCommand : DfsShellCommand
     {
         private readonly BlockKind _kind;
@@ -21,7 +22,7 @@ namespace DfsShell.Commands
         [CommandLineArgument, Description("Show the path of the file that each block belongs to.")]
         public bool ShowFiles { get; set; }
 
-        public override void Run()
+        public override int Run()
         {
             var dfsClient = Client as DfsClient;
             if (dfsClient == null)
@@ -36,7 +37,11 @@ namespace DfsShell.Commands
                     else
                         Console.WriteLine(blockId.ToString("B", CultureInfo.CurrentCulture));
                 }
+
+                return 0;
             }
+
+            return 1;
         }
     }
 }

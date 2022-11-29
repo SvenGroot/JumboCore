@@ -3,13 +3,14 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("put"), Description("Stores a file or directory on the DFS.")]
+    [Command("put"), Description("Stores a file or directory on the DFS.")]
     class PutCommand : DfsShellCommandWithProgress
     {
         private readonly string _localPath;
@@ -49,7 +50,7 @@ namespace DfsShell.Commands
         [CommandLineArgument, Description("The first replica should not be put on the local node if that node is part of the DFS. Note that the first replica might still be placed on the local node; it is just no longer guaranteed.")]
         public bool NoLocalReplica { get; set; }
 
-        public override void Run()
+        public override int Run()
         {
             if (!File.Exists(_localPath) && !Directory.Exists(_localPath))
                 Console.Error.WriteLine("Local path {0} does not exist.", _localPath);
@@ -88,6 +89,8 @@ namespace DfsShell.Commands
                     }
                     if (!Quiet)
                         Console.WriteLine();
+
+                    return 0;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
@@ -100,6 +103,8 @@ namespace DfsShell.Commands
                     Console.Error.WriteLine(ex.Message);
                 }
             }
+
+            return 1;
         }
 
         private void UploadFileRecords(string localPath, string dfsPath, Type recordReaderType, Type recordWriterType)

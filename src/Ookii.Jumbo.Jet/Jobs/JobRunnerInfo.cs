@@ -19,7 +19,6 @@ namespace Ookii.Jumbo.Jet.Jobs
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(JobRunnerInfo));
 
         private readonly Type _jobRunnerType;
-        private CommandLineParser _parser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobRunnerInfo"/> class.
@@ -51,18 +50,6 @@ namespace Ookii.Jumbo.Jet.Jobs
             {
                 var description = (DescriptionAttribute)Attribute.GetCustomAttribute(_jobRunnerType, typeof(DescriptionAttribute));
                 return description == null ? "" : description.Description;
-            }
-        }
-
-        /// <summary>
-        /// Gets the command line parser for this job runner.
-        /// </summary>
-        public CommandLineParser CommandLineParser
-        {
-            get
-            {
-                // DFS paths can start with / so we always use - as the argument switch.
-                return _parser ?? (_parser = new CommandLineParser(_jobRunnerType, new[] { "-" }));
             }
         }
 
@@ -106,21 +93,28 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="jetConfiguration">The Jumbo Jet configuration for the job.</param>
         /// <param name="args">The arguments for the job.</param>
         /// <param name="index">The index of the first argument to parse.</param>
+        /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index)
+        public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index, ParseOptions parseOptions)
         {
             ArgumentNullException.ThrowIfNull(dfsConfiguration);
             ArgumentNullException.ThrowIfNull(jetConfiguration);
             ArgumentNullException.ThrowIfNull(args);
 
+            var parser = new CommandLineParser(_jobRunnerType, parseOptions);
             IJobRunner jobRunner = null;
             try
             {
-                jobRunner = (IJobRunner)CommandLineParser.Parse(args, index);
+                jobRunner = (IJobRunner)parser.Parse(args, index);
             }
             catch (CommandLineArgumentException ex)
             {
                 Console.Error.WriteLine(ex.Message);
+            }
+
+            if (parser.HelpRequested)
+            {
+                parser.WriteUsage();
             }
 
             if (jobRunner != null)
@@ -130,7 +124,7 @@ namespace Ookii.Jumbo.Jet.Jobs
 
                 if (_log.IsInfoEnabled)
                 {
-                    foreach (var argument in CommandLineParser.Arguments)
+                    foreach (var argument in parser.Arguments)
                     {
                         if (argument.HasValue)
                         {
@@ -160,10 +154,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </summary>
         /// <param name="args">The arguments for the job.</param>
         /// <param name="index">The index of the first argument to parse.</param>
+        /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(string[] args, int index)
+        public IJobRunner CreateInstance(string[] args, int index, ParseOptions parseOptions = null)
         {
-            return CreateInstance(DfsConfiguration.GetConfiguration(), JetConfiguration.GetConfiguration(), args, index);
+            return CreateInstance(DfsConfiguration.GetConfiguration(), JetConfiguration.GetConfiguration(), args, index, parseOptions);
         }
 
         private static void AppendDictionayArgument(StringBuilder logMessage, IDictionary values)

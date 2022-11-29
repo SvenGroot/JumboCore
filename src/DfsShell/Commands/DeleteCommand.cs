@@ -2,10 +2,11 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("rm"), Description("Deletes a file or directory from the DFS.")]
+    [Command("rm"), Description("Deletes a file or directory from the DFS.")]
     class DeleteCommand : DfsShellCommand
     {
         private readonly string _path;
@@ -20,10 +21,15 @@ namespace DfsShell.Commands
         [CommandLineArgument, Description("Recursively delete all children of a directory.")]
         public bool Recursive { get; set; }
 
-        public override void Run()
+        public override int Run()
         {
             if (!Client.Delete(_path, Recursive))
+            {
                 Console.Error.WriteLine("Path did not exist.");
+                return 1;
+            }
+
+            return 0;
         }
     }
 }

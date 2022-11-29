@@ -2,10 +2,11 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("ls"), Description("Displays the contents of the specified DFS directory.")]
+    [Command("ls"), Description("Displays the contents of the specified DFS directory.")]
     class ListDirectoryCommand : DfsShellCommand
     {
         private readonly string _path;
@@ -16,13 +17,17 @@ namespace DfsShell.Commands
             _path = path;
         }
 
-        public override void Run()
+        public override int Run()
         {
             var dir = Client.GetDirectoryInfo(_path);
             if (dir == null)
+            {
                 Console.WriteLine("Directory not found.");
-            else
-                dir.PrintListing(Console.Out);
+                return 1;
+            }
+
+            dir.PrintListing(Console.Out);
+            return 0;
         }
     }
 }

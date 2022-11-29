@@ -2,11 +2,12 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("blockinfo"), Description("Prints the data server list for the specified block.")]
+    [Command("blockinfo"), Description("Prints the data server list for the specified block.")]
     class PrintBlockInfoCommand : DfsShellCommand
     {
         private readonly Guid _blockId;
@@ -16,7 +17,7 @@ namespace DfsShell.Commands
             _blockId = blockId;
         }
 
-        public override void Run()
+        public override int Run()
         {
             var dfsClient = Client as DfsClient;
             if (dfsClient == null)
@@ -34,8 +35,12 @@ namespace DfsShell.Commands
                     Console.WriteLine("Data server list for block {0:B}:", _blockId);
                     foreach (var server in servers)
                         Console.WriteLine(server);
+
+                    return 0;
                 }
             }
+
+            return 1;
         }
     }
 }

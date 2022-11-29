@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("get"), Description("Retrieves a file or directory from the DFS.")]
+    [Command("get"), Description("Retrieves a file or directory from the DFS.")]
     class GetCommand : DfsShellCommandWithProgress
     {
         private readonly string _localPath;
@@ -28,13 +29,13 @@ namespace DfsShell.Commands
         [CommandLineArgument, Description("Suppress progress information output.")]
         public bool Quiet { get; set; }
 
-        public override void Run()
+        public override int Run()
         {
             var entry = Client.GetFileSystemEntryInfo(_dfsPath);
             if (entry == null)
             {
                 Console.Error.WriteLine("Path {0} does not exist on the DFS.", _dfsPath);
-                return;
+                return 1;
             }
 
             var localPath = _localPath == "." ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _localPath);
@@ -66,12 +67,16 @@ namespace DfsShell.Commands
             {
                 Console.Error.WriteLine("Unable to open local file:");
                 Console.Error.WriteLine(ex.Message);
+                return 1;
             }
             catch (IOException ex)
             {
                 Console.Error.WriteLine("Unable to get file:");
                 Console.Error.WriteLine(ex.Message);
+                return 1;
             }
+
+            return 0;
         }
     }
 }

@@ -2,14 +2,15 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Jet;
 
 namespace JetShell.Commands
 {
-    [ShellCommand("metrics"), Description("Displays generic information about the Jumbo Jet cluster.")]
+    [Command("metrics"), Description("Displays generic information about the Jumbo Jet cluster.")]
     class PrintMetricsCommand : JetShellCommand
     {
-        public override void Run()
+        public override int Run()
         {
             var metrics = JetClient.JobServer.GetMetrics();
             if (RunningJobs)
@@ -19,6 +20,8 @@ namespace JetShell.Commands
             }
             else
                 metrics.PrintMetrics(Console.Out);
+
+            return 0;
         }
 
         [CommandLineArgument, Description("Print a list of running jobs.")]

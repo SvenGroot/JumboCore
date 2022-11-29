@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Jet;
 
 namespace JetShell.Commands
 {
-    abstract class JetShellCommand : ShellCommand
+    abstract class JetShellCommand : ICommand
     {
         private readonly JetClient _jetClient = new JetClient();
 
@@ -12,5 +12,7 @@ namespace JetShell.Commands
         {
             get { return _jetClient; }
         }
+
+        public abstract int Run();
     }
 }

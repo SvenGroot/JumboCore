@@ -5,6 +5,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Rpc;
 
@@ -20,22 +21,15 @@ namespace DfsShell
                 new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath));
 
             repository.Threshold = log4net.Core.Level.Info;
-            var options = new CreateShellCommandOptions()
+            var options = new CommandOptions()
             {
                 ArgumentNamePrefixes = new[] { "-" }, // DFS paths use / as the directory separator, so use - even on Windows.
-                CommandDescriptionFormat = "    {0}\n{1}\n",
-                CommandDescriptionIndent = 8,
-                UsageOptions = new WriteUsageOptions()
-                {
-                    UsagePrefix = "Usage: DfsShell",
-                    ArgumentDescriptionFormat = "    {3}{0} {2}\n{1}\n",
-                    ArgumentDescriptionIndent = 8
-                }
             };
 
             try
             {
-                return ShellCommand.RunShellCommand(Assembly.GetExecutingAssembly(), args, 0, options);
+                var manager = new CommandManager(options);
+                return manager.RunCommand(args) ?? 1;
             }
             catch (SocketException ex)
             {
@@ -66,18 +60,6 @@ namespace DfsShell
 
             return 1;
 
-        }
-
-        private static void PrintUsage()
-        {
-            using (var writer = LineWrappingTextWriter.ForConsoleOut())
-            {
-                writer.WriteLine("Usage: DfsShell <command> [args...]");
-                writer.WriteLine();
-                writer.WriteLine("The following commands are available:");
-                writer.WriteLine();
-                ShellCommand.WriteAssemblyCommandList(writer, Assembly.GetExecutingAssembly());
-            }
         }
 
         private static void WriteError(string errorType, string message)

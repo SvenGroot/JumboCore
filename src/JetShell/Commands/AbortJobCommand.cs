@@ -2,10 +2,11 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace JetShell.Commands
 {
-    [ShellCommand("abort"), Description("Aborts a running job.")]
+    [Command("abort"), Description("Aborts a running job.")]
     class AbortJobCommand : JetShellCommand
     {
         private readonly Guid _jobId;
@@ -15,16 +16,17 @@ namespace JetShell.Commands
             _jobId = jobId;
         }
 
-        public override void Run()
+        public override int Run()
         {
             if (JetClient.JobServer.AbortJob(_jobId))
             {
                 Console.WriteLine("Aborted job {0:B}.", _jobId);
+                return 0;
             }
             else
             {
                 Console.WriteLine("Job {0:B} was not found or not running.", _jobId);
-                ExitCode = 1;
+                return 1;
             }
         }
     }

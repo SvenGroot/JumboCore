@@ -3,12 +3,13 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 using Ookii.Jumbo;
 using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("cat"), Description("Prints a text file.")]
+    [Command("cat"), Description("Prints a text file.")]
     class PrintFileCommand : DfsShellCommand
     {
         #region Nested types
@@ -136,10 +137,10 @@ namespace DfsShell.Commands
         [CommandLineArgument, Description("Specified the type of record reader to use to read the contents of the file. This must be the assembly-qualified mangled name.")]
         public string RecordReaderType { get; set; }
 
-        public override void Run()
+        public override int Run()
         {
             if (RecordReaderType != null)
-                PrintRecordReader();
+                return PrintRecordReader();
             else
             {
                 var encoding = System.Text.Encoding.GetEncoding(Encoding);
@@ -161,23 +162,25 @@ namespace DfsShell.Commands
                             writer.WriteLine(line);
                     }
                 }
+
+                return 0;
             }
         }
 
-        private void PrintRecordReader()
+        private int PrintRecordReader()
         {
             var recordReaderType = Type.GetType(RecordReaderType);
             if (recordReaderType == null)
             {
                 Console.Error.WriteLine("Could not load the record reader type.");
-                return;
+                return 1;
             }
 
             var recordReaderBaseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), false);
             if (recordReaderBaseType == null)
             {
                 Console.Error.WriteLine("The specified type is not a record reader.");
-                return;
+                return 1;
             }
 
             using (var stream = Client.OpenFile(_path))
@@ -188,7 +191,7 @@ namespace DfsShell.Commands
                     if (recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(long), typeof(long), typeof(bool) }) == null)
                     {
                         Console.Error.WriteLine("No constructor found on the specified record reader type that could be used when the size argument is specified (need constructor with arguments (Stream input, long offset, long size, bool allowRecordReuse)).");
-                        return;
+                        return 1;
                     }
 
                     var offset = Tail ? 0 : stream.Length - (long)Size;
@@ -209,7 +212,7 @@ namespace DfsShell.Commands
                     else
                     {
                         Console.Error.WriteLine("No suitable constructor found on the specified record reader type (need constructor with Stream argument).");
-                        return;
+                        return 1;
                     }
                 }
 
@@ -218,6 +221,8 @@ namespace DfsShell.Commands
                     Console.WriteLine(reader.CurrentRecord);
                 }
             }
+
+            return 0;
         }
     }
 }

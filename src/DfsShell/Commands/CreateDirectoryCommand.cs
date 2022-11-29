@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("mkdir"), Description("Creates a new directory on the DFS.")]
+    [Command("mkdir"), Description("Creates a new directory on the DFS.")]
     class CreateDirectoryCommand : DfsShellCommand
     {
         private readonly string _path;
@@ -14,9 +15,10 @@ namespace DfsShell.Commands
             _path = path;
         }
 
-        public override void Run()
+        public override int Run()
         {
             Client.CreateDirectory(_path);
+            return 0;
         }
     }
 }

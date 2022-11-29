@@ -2,10 +2,11 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("fileinfo"), Description("Prints information about the specified file.")]
+    [Command("fileinfo"), Description("Prints information about the specified file.")]
     class PrintFileInfoCommand : DfsShellCommand
     {
         private readonly string _path;
@@ -17,13 +18,17 @@ namespace DfsShell.Commands
             _path = path;
         }
 
-        public override void Run()
+        public override int Run()
         {
             var file = Client.GetFileInfo(_path);
             if (file == null)
+            {
                 Console.WriteLine("File not found.");
-            else
-                file.PrintFileInfo(Console.Out);
+                return 1;
+            }
+
+            file.PrintFileInfo(Console.Out);
+            return 0;
         }
     }
 }

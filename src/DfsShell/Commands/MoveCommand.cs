@@ -2,10 +2,11 @@
 using System;
 using System.ComponentModel;
 using Ookii.CommandLine;
+using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
-    [ShellCommand("mv"), Description("Moves a file or directory on the DFS.")]
+    [Command("mv"), Description("Moves a file or directory on the DFS.")]
     class MoveCommand : DfsShellCommand
     {
         private readonly string _sourcePath;
@@ -21,9 +22,10 @@ namespace DfsShell.Commands
             _destinationPath = destination;
         }
 
-        public override void Run()
+        public override int Run()
         {
             Client.Move(_sourcePath, _destinationPath);
+            return 0;
         }
     }
 }
