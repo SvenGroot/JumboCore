@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ookii.CommandLine" Version="3.0.0-preview" />
+    <PackageReference Include="Ookii.CommandLine" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
