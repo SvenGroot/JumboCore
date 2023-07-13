@@ -85,6 +85,25 @@ namespace Ookii.Jumbo
         }
 
         /// <summary>
+        /// Gets the version of Jumbo as a string.
+        /// </summary>
+        /// <value>
+        /// A string value for the Jumbo version.
+        /// </value>
+        /// <remarks>
+        /// The value returned is actually the informational version of the Ookii.Jumbo assembly.
+        /// </remarks>
+        public static string JumboVersion
+        {
+            get
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                return version?.InformationalVersion ?? assembly.GetName().Version.ToString();
+            }
+        }
+
+        /// <summary>
         /// Gets the version of Jumbo.
         /// </summary>
         /// <value>
@@ -93,17 +112,7 @@ namespace Ookii.Jumbo
         /// <remarks>
         /// The value returned is actually the version of the Ookii.Jumbo assembly.
         /// </remarks>
-        public static Version JumboVersion
-        {
-            get
-            {
-                var config = (AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute));
-                if (config != null)
-                    return new Version(config.Version);
-                else
-                    return Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
+        public static Version JumboAssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version;
 
         /// <summary>
         /// Gets the Jumbo build configuration, typically the branch name.

@@ -5855,6 +5855,17 @@
         </member>
         <member name="P:Ookii.Jumbo.RuntimeEnvironment.JumboVersion">
             <summary>
+            Gets the version of Jumbo as a string.
+            </summary>
+            <value>
+            A string value for the Jumbo version.
+            </value>
+            <remarks>
+            The value returned is actually the informational version of the Ookii.Jumbo assembly.
+            </remarks>
+        </member>
+        <member name="P:Ookii.Jumbo.RuntimeEnvironment.JumboAssemblyVersion">
+            <summary>
             Gets the version of Jumbo.
             </summary>
             <value>

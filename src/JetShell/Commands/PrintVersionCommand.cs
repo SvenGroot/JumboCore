@@ -17,7 +17,7 @@ namespace JetShell.Commands
         public override int Run()
         {
             if (Revision)
-                Console.WriteLine(RuntimeEnvironment.JumboVersion.Revision);
+                Console.WriteLine(RuntimeEnvironment.JumboAssemblyVersion.Revision);
             else
                 Console.WriteLine("Jumbo {0} ({1})", RuntimeEnvironment.JumboVersion, RuntimeEnvironment.JumboConfiguration);
 
