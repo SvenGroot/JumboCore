@@ -100,21 +100,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             ArgumentNullException.ThrowIfNull(jetConfiguration);
 
             var parser = new CommandLineParser(_jobRunnerType, parseOptions);
-            IJobRunner jobRunner = null;
-            try
-            {
-                jobRunner = (IJobRunner)parser.Parse(args);
-            }
-            catch (CommandLineArgumentException ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-            }
-
-            if (parser.HelpRequested)
-            {
-                parser.WriteUsage();
-            }
-
+            var jobRunner = (IJobRunner)parser.ParseWithErrorHandling(args);
             if (jobRunner != null)
             {
                 var logMessage = new StringBuilder("Created job runner for job ");
