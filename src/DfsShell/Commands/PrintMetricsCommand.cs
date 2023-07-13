@@ -7,8 +7,9 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("metrics"), Description("Prints general information about the DFS.")]
-    class PrintMetricsCommand : DfsShellCommand
+    partial class PrintMetricsCommand : DfsShellCommand
     {
         public override int Run()
         {

@@ -5058,23 +5058,21 @@
             <param name="name">The name of the job runner.</param>
             <returns>The <see cref="T:Ookii.Jumbo.Jet.Jobs.JobRunnerInfo"/> for the specified job runner, or <see langword="null" /> if it was not found.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Jobs.JobRunnerInfo.CreateInstance(Ookii.Jumbo.Dfs.DfsConfiguration,Ookii.Jumbo.Jet.JetConfiguration,System.String[],System.Int32,Ookii.CommandLine.ParseOptions)">
+        <member name="M:Ookii.Jumbo.Jet.Jobs.JobRunnerInfo.CreateInstance(Ookii.Jumbo.Dfs.DfsConfiguration,Ookii.Jumbo.Jet.JetConfiguration,System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
             <summary>
             Creates an instance of the job runner.
             </summary>
             <param name="dfsConfiguration">The Jumbo DFS configuration for the job.</param>
             <param name="jetConfiguration">The Jumbo Jet configuration for the job.</param>
             <param name="args">The arguments for the job.</param>
-            <param name="index">The index of the first argument to parse.</param>
             <param name="parseOptions">The options that control parsing.</param>
             <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Jobs.JobRunnerInfo.CreateInstance(System.String[],System.Int32,Ookii.CommandLine.ParseOptions)">
+        <member name="M:Ookii.Jumbo.Jet.Jobs.JobRunnerInfo.CreateInstance(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
             <summary>
             Creates an instance of the job runner with the configuration from the app.config file.
             </summary>
             <param name="args">The arguments for the job.</param>
-            <param name="index">The index of the first argument to parse.</param>
             <param name="parseOptions">The options that control parsing.</param>
             <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
         </member>

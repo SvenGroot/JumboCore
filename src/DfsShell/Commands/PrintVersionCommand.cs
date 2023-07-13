@@ -7,8 +7,9 @@ using Ookii.Jumbo;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("version"), Description("Shows version information.")]
-    class PrintVersionCommand : DfsShellCommand
+    partial class PrintVersionCommand : DfsShellCommand
     {
         [CommandLineArgument, Description("Display only the revision number rather than the full version.")]
         public bool Revision { get; set; }

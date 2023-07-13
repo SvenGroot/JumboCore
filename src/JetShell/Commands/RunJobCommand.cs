@@ -43,8 +43,7 @@ namespace JetShell.Commands
             }
 
             manager.Options.UsageWriter.CommandName += $" {Path.GetFileName(assemblyFileName)} {jobRunnerInfo.Name}";
-            // TODO: Don't create array.
-            _jobRunner = jobRunnerInfo.CreateInstance(args[2..].ToArray(), 0, manager.Options);
+            _jobRunner = jobRunnerInfo.CreateInstance(args[2..], manager.Options);
         }
 
         public override int Run()
@@ -65,7 +64,7 @@ namespace JetShell.Commands
             return success ? 0 : 1;
         }
 
-        private void WriteUsage(Assembly assembly, CommandOptions options)
+        private static void WriteUsage(Assembly assembly, CommandOptions options)
         {
             using var writer = LineWrappingTextWriter.ForConsoleOut();
             using var support = VirtualTerminal.EnableColor(StandardStream.Output);
@@ -88,7 +87,7 @@ namespace JetShell.Commands
             }
         }
 
-        private void PrintAssemblyJobList(LineWrappingTextWriter writer, VirtualTerminalSupport support, Assembly assembly, CommandOptions options)
+        private static void PrintAssemblyJobList(LineWrappingTextWriter writer, VirtualTerminalSupport support, Assembly assembly, CommandOptions options)
         {
             var jobs = JobRunnerInfo.GetJobRunners(assembly);
             writer.WriteLine();

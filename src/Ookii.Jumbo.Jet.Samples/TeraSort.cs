@@ -16,8 +16,9 @@ namespace Ookii.Jumbo.Jet.Samples
     ///   This is a sort implementation according to the rules for the GraySort benchmark, see http://sortbenchmark.org/.
     /// </para>
     /// </remarks>
+    [GeneratedParser]
     [Description("Sorts the input file or files containing data in the gensort format.")]
-    public class TeraSort : JobBuilderJob
+    public partial class TeraSort : JobBuilderJob
     {
         /// <summary>
         /// Gets or sets the input path.

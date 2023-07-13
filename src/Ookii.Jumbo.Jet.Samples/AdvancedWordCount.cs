@@ -19,8 +19,9 @@ namespace Ookii.Jumbo.Jet.Samples
     /// This sample is a more advanced version of <see cref="WordCount"/> that demonstrates some
     /// more advanced features.
     /// </remarks>
+    [GeneratedParser]
     [Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
-    public class AdvancedWordCount : JobBuilderJob
+    public partial class AdvancedWordCount : JobBuilderJob
     {
         /// <summary>
         /// Gets or sets the input path.

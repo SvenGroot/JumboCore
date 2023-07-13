@@ -10,8 +10,9 @@ namespace Ookii.Jumbo.Jet.Samples
     /// <summary>
     /// Job runner for line count.
     /// </summary>
+    [GeneratedParser]
     [Description("Counts the number of lines in the input file or files.")]
-    public class LineCount : JobBuilderJob
+    public partial class LineCount : JobBuilderJob
     {
         /// <summary>
         /// Gets or sets the input path.

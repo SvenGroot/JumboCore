@@ -22,8 +22,9 @@ namespace Ookii.Jumbo.Jet.Samples
     ///   C version can be found at http://www.ordinal.com/gensort.html.
     /// </para>
     /// </remarks>
+    [GeneratedParser]
     [Description("Generates input records for the TeraSort job.")]
-    public class GenSort : JobBuilderJob
+    public partial class GenSort : JobBuilderJob
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(GenSort));
 

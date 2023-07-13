@@ -7,8 +7,9 @@ using Ookii.Jumbo.Jet;
 
 namespace JetShell.Commands
 {
+    [GeneratedParser]
     [Command("metrics"), Description("Displays generic information about the Jumbo Jet cluster.")]
-    class PrintMetricsCommand : JetShellCommand
+    partial class PrintMetricsCommand : JetShellCommand
     {
         public override int Run()
         {

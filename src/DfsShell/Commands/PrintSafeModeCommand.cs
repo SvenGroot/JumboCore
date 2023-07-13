@@ -7,8 +7,9 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("safemode"), Description("Checks whether safemode is on or off.")]
-    class PrintSafeModeCommand : DfsShellCommand
+    partial class PrintSafeModeCommand : DfsShellCommand
     {
         public override int Run()
         {

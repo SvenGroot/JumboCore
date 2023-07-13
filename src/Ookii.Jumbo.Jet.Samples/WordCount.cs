@@ -31,8 +31,9 @@ namespace Ookii.Jumbo.Jet.Samples
     /// <summary>
     /// Job runner for word count.
     /// </summary>
+    [GeneratedParser]
     [Description("Counts the number of occurrences of each word in the input file or files.")]
-    public sealed class WordCount : JobBuilderJob
+    public sealed partial class WordCount : JobBuilderJob
     {
         /// <summary>
         /// Gets or sets the input path.

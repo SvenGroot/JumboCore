@@ -7,8 +7,9 @@ using Ookii.Jumbo;
 
 namespace JetShell.Commands
 {
+    [GeneratedParser]
     [Command("version"), Description("Shows version information.")]
-    class PrintVersionCommand : JetShellCommand
+    partial class PrintVersionCommand : JetShellCommand
     {
         [CommandLineArgument, Description("Display only the revision number rather than the full version.")]
         public bool Revision { get; set; }

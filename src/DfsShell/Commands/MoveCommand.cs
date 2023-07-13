@@ -6,8 +6,9 @@ using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("mv"), Description("Moves a file or directory on the DFS.")]
-    class MoveCommand : DfsShellCommand
+    partial class MoveCommand : DfsShellCommand
     {
         [CommandLineArgument(IsPositional = true, IsRequired = true)]
         [Description("The path of the file or directory on the DFS to move.")]

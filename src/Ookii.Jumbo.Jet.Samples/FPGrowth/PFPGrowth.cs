@@ -45,8 +45,9 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
     ///   and custom progress providers.
     /// </para>
     /// </remarks>
+    [GeneratedParser]
     [Description("Runs the parallel FP-growth algorithm against a database of transactions.")]
-    public class PFPGrowth : JobBuilderJob
+    public partial class PFPGrowth : JobBuilderJob
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(PFPGrowth));
 

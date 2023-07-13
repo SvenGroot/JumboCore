@@ -92,20 +92,18 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="dfsConfiguration">The Jumbo DFS configuration for the job.</param>
         /// <param name="jetConfiguration">The Jumbo Jet configuration for the job.</param>
         /// <param name="args">The arguments for the job.</param>
-        /// <param name="index">The index of the first argument to parse.</param>
         /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, string[] args, int index, ParseOptions parseOptions)
+        public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, ReadOnlyMemory<string> args, ParseOptions parseOptions)
         {
             ArgumentNullException.ThrowIfNull(dfsConfiguration);
             ArgumentNullException.ThrowIfNull(jetConfiguration);
-            ArgumentNullException.ThrowIfNull(args);
 
             var parser = new CommandLineParser(_jobRunnerType, parseOptions);
             IJobRunner jobRunner = null;
             try
             {
-                jobRunner = (IJobRunner)parser.Parse(args, index);
+                jobRunner = (IJobRunner)parser.Parse(args);
             }
             catch (CommandLineArgumentException ex)
             {
@@ -153,12 +151,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Creates an instance of the job runner with the configuration from the app.config file.
         /// </summary>
         /// <param name="args">The arguments for the job.</param>
-        /// <param name="index">The index of the first argument to parse.</param>
         /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(string[] args, int index, ParseOptions parseOptions = null)
+        public IJobRunner CreateInstance(ReadOnlyMemory<string> args, ParseOptions parseOptions = null)
         {
-            return CreateInstance(DfsConfiguration.GetConfiguration(), JetConfiguration.GetConfiguration(), args, index, parseOptions);
+            return CreateInstance(DfsConfiguration.GetConfiguration(), JetConfiguration.GetConfiguration(), args, parseOptions);
         }
 
         private static void AppendDictionayArgument(StringBuilder logMessage, IDictionary values)

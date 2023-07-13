@@ -12,8 +12,9 @@ namespace Ookii.Jumbo.Jet.Samples
     /// <summary>
     /// Generates random text data.
     /// </summary>
+    [GeneratedParser]
     [Description("Generates random text data of the specified size.")]
-    public class GenerateText : JobBuilderJob
+    public partial class GenerateText : JobBuilderJob
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(GenerateText));
 
