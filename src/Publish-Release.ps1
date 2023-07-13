@@ -5,5 +5,6 @@ param(
 
 $OutputPath = [System.IO.Path]::GetFullPath($OutputPath)
 $binPath = (Join-Path $OutputPath "bin")
-dotnet publish -c $Configuration -o $binPath
+dotnet build -c $Configuration
+dotnet publish --no-build -c $Configuration --property:PublishDir=$binPath
 Copy-Item (Join-Path $PSScriptRoot "scripts" "*") $OutputPath -Recurse -Force
