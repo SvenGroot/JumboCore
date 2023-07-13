@@ -28,7 +28,7 @@ namespace DfsShell
 
             try
             {
-                var manager = new CommandManager(options);
+                var manager = new GeneratedManager(options);
                 return manager.RunCommand(args) ?? 1;
             }
             catch (SocketException ex)
