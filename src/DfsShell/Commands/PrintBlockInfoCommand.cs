@@ -7,15 +7,13 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("blockinfo"), Description("Prints the data server list for the specified block.")]
-    class PrintBlockInfoCommand : DfsShellCommand
+    partial class PrintBlockInfoCommand : DfsShellCommand
     {
-        private readonly Guid _blockId;
-
-        public PrintBlockInfoCommand([Description("The block ID."), ArgumentName("BlockId")] Guid blockId)
-        {
-            _blockId = blockId;
-        }
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the new directory to create.")]
+        public Guid BlockId { get; set; }
 
         public override int Run()
         {
@@ -24,15 +22,15 @@ namespace DfsShell.Commands
                 Console.WriteLine("The configured file system doesn't support blocks.");
             else
             {
-                var file = dfsClient.NameServer.GetFileForBlock(_blockId);
+                var file = dfsClient.NameServer.GetFileForBlock(BlockId);
                 if (file == null)
                     Console.Error.WriteLine("Unknown block ID.");
                 else
                 {
-                    Console.WriteLine("Block ID: {0:B}", _blockId);
+                    Console.WriteLine("Block ID: {0:B}", BlockId);
                     Console.WriteLine("File: {0}", file);
-                    var servers = dfsClient.NameServer.GetDataServersForBlock(_blockId);
-                    Console.WriteLine("Data server list for block {0:B}:", _blockId);
+                    var servers = dfsClient.NameServer.GetDataServersForBlock(BlockId);
+                    Console.WriteLine("Data server list for block {0:B}:", BlockId);
                     foreach (var server in servers)
                         Console.WriteLine(server);
 

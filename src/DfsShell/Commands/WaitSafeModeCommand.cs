@@ -8,20 +8,18 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("waitsafemode"), Description("Waits until the name server leaves safe mode.")]
-    class WaitSafeModeCommand : DfsShellCommand
+    partial class WaitSafeModeCommand : DfsShellCommand
     {
-        private readonly int _timeout;
-
-        public WaitSafeModeCommand([Description("The timeout of the wait operation in milliseconds. The default is to wait indefinitely."), ArgumentName("Timeout")] int timeout = Timeout.Infinite)
-        {
-            _timeout = timeout;
-        }
+        [CommandLineArgument(IsPositional = true, IncludeDefaultInUsageHelp = false)]
+        [Description("The timeout of the wait operation in milliseconds. The default is to wait indefinitely.")]
+        public int Timeout { get; set; } = System.Threading.Timeout.Infinite;
 
         public override int Run()
         {
             var dfsClient = Client as DfsClient;
-            if (dfsClient == null || dfsClient.WaitForSafeModeOff(_timeout))
+            if (dfsClient == null || dfsClient.WaitForSafeModeOff(Timeout))
             {
                 Console.WriteLine("Safe mode is OFF.");
                 return 0;

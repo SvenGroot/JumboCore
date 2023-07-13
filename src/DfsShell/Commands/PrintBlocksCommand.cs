@@ -9,15 +9,13 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("blocks"), Description("Prints a list of blocks.")]
-    sealed class PrintBlocksCommand : DfsShellCommand
+    sealed partial class PrintBlocksCommand : DfsShellCommand
     {
-        private readonly BlockKind _kind;
-
-        public PrintBlocksCommand([Description("The kind of blocks to include in the results: Normal, Pending, or UnderReplicated. The default is Normal."), ArgumentName("Kind")] BlockKind kind = BlockKind.Normal)
-        {
-            _kind = kind;
-        }
+        [CommandLineArgument(IsPositional = true)]
+        [Description("The kind of blocks to include in the results: Normal, Pending, or UnderReplicated.")]
+        public BlockKind Kind { get; set; } = BlockKind.Normal;
 
         [CommandLineArgument, Description("Show the path of the file that each block belongs to.")]
         public bool ShowFiles { get; set; }
@@ -29,7 +27,7 @@ namespace DfsShell.Commands
                 Console.WriteLine("The configured file system doesn't support blocks.");
             else
             {
-                var blocks = dfsClient.NameServer.GetBlocks(_kind);
+                var blocks = dfsClient.NameServer.GetBlocks(Kind);
                 foreach (var blockId in blocks)
                 {
                     if (ShowFiles)

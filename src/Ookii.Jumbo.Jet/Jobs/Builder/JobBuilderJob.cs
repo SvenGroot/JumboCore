@@ -19,7 +19,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// 	<see langword="true"/> if the job runner will only create the configuration; otherwise, <see langword="false"/>.
         /// </value>
-        [CommandLineArgument(ValueDescription = "FileName"), Description("Don't run the job, but only create the configuration and write it to the specified file. Use this to test if your job builder job is creating the correct configuration without running the job. Note there can still be side-effects such as output directories on the file system being created. If the OverwriteOutput switch is specified, the output directory will still be erased!")]
+        [CommandLineArgument, Description("Don't run the job, but only create the configuration and write it to the specified file. Use this to test if your job builder job is creating the correct configuration without running the job. Note there can still be side-effects such as output directories on the file system being created. If the OverwriteOutput switch is specified, the output directory will still be erased!")]
+        [ValueDescription("FileName")]
         public string ConfigOnly { get; set; }
 
         /// <summary>

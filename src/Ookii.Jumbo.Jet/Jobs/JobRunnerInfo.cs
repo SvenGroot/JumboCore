@@ -131,9 +131,9 @@ namespace Ookii.Jumbo.Jet.Jobs
                             logMessage.Append(", ");
                             logMessage.Append(argument.MemberName);
                             logMessage.Append(" = ");
-                            if (argument.IsDictionary)
+                            if (argument.Kind == ArgumentKind.Dictionary)
                                 AppendDictionayArgument(logMessage, (IDictionary)argument.Value);
-                            else if (argument.IsMultiValue)
+                            else if (argument.Kind == ArgumentKind.MultiValue)
                                 AppendMultiValueArgument(logMessage, (IEnumerable)argument.Value);
                             else
                                 logMessage.Append(argument.Value);

@@ -18,32 +18,33 @@ namespace JetShell.Commands
     {
         private IJobRunner _jobRunner;
 
-        public void Parse(string[] args, int index, CommandOptions options)
+        public void Parse(ReadOnlyMemory<string> args, CommandManager manager)
         {
-            if (args.Length - index == 0)
+            if (args.Length == 0)
             {
-                WriteUsage(null, options);
+                WriteUsage(null, manager.Options);
                 return;
             }
 
-            var assemblyFileName = args[index];
+            var assemblyFileName = args.Span[0];
             var assembly = Assembly.LoadFrom(assemblyFileName);
-            if (args.Length - index == 1)
+            if (args.Length == 1)
             {
-                WriteUsage(assembly, options);
+                WriteUsage(assembly, manager.Options);
                 return;
             }
 
-            var jobName = args[index + 1];
+            var jobName = args.Span[1];
             var jobRunnerInfo = JobRunnerInfo.GetJobRunner(assembly, jobName);
             if (jobRunnerInfo == null)
             {
-                WriteUsage(assembly, options);
+                WriteUsage(assembly, manager.Options);
                 return;
             }
 
-            options.UsageWriter.CommandName += $" {Path.GetFileName(assemblyFileName)} {jobRunnerInfo.Name}";
-            _jobRunner = jobRunnerInfo.CreateInstance(args, index + 2, options);
+            manager.Options.UsageWriter.CommandName += $" {Path.GetFileName(assemblyFileName)} {jobRunnerInfo.Name}";
+            // TODO: Don't create array.
+            _jobRunner = jobRunnerInfo.CreateInstance(args[2..].ToArray(), 0, manager.Options);
         }
 
         public override int Run()
@@ -79,7 +80,7 @@ namespace JetShell.Commands
             }
         }
 
-        private static void WriteColor(string color, TextWriter writer, VirtualTerminalSupport support)
+        private static void WriteColor(TextFormat color, TextWriter writer, VirtualTerminalSupport support)
         {
             if (support.IsSupported)
             {

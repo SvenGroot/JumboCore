@@ -10,35 +10,31 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("get"), Description("Retrieves a file or directory from the DFS.")]
-    class GetCommand : DfsShellCommandWithProgress
+    partial class GetCommand : DfsShellCommandWithProgress
     {
-        private readonly string _localPath;
-        private readonly string _dfsPath;
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the DFS file or directory to retrieve.")]
+        public string DfsPath { get; set; }
 
-        public GetCommand([Description("The path of the DFS file or directory to retrieve."), ArgumentName("DfsPath")] string dfsPath,
-                          [Optional, DefaultParameterValue("."), Description("The local path where the file should be stored. The default value is the current directory."), ArgumentName("LocalPath")] string localPath)
-        {
-            ArgumentNullException.ThrowIfNull(dfsPath);
-            ArgumentNullException.ThrowIfNull(localPath);
-
-            _dfsPath = dfsPath;
-            _localPath = localPath;
-        }
+        [CommandLineArgument(IsPositional = true)]
+        [Description("The local path where the file should be stored. The default value is the current directory.")]
+        public string LocalPath { get; set; } = ".";
 
         [CommandLineArgument, Description("Suppress progress information output.")]
         public bool Quiet { get; set; }
 
         public override int Run()
         {
-            var entry = Client.GetFileSystemEntryInfo(_dfsPath);
+            var entry = Client.GetFileSystemEntryInfo(DfsPath);
             if (entry == null)
             {
-                Console.Error.WriteLine("Path {0} does not exist on the DFS.", _dfsPath);
+                Console.Error.WriteLine("Path {0} does not exist on the DFS.", DfsPath);
                 return 1;
             }
 
-            var localPath = _localPath == "." ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _localPath);
+            var localPath = LocalPath == "." ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, LocalPath);
             var progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
 
             try
@@ -52,13 +48,13 @@ namespace DfsShell.Commands
                     }
                     if (!Quiet)
                         Console.WriteLine("Copying DFS file \"{0}\" to local file \"{1}\"...", entry.FullPath, localPath);
-                    Client.DownloadFile(_dfsPath, localPath, progressCallback);
+                    Client.DownloadFile(DfsPath, localPath, progressCallback);
                 }
                 else
                 {
                     if (!Quiet)
                         Console.WriteLine("Copying DFS directory \"{0}\" to local directory \"{1}\"...", entry.FullPath, localPath);
-                    Client.DownloadDirectory(_dfsPath, localPath, progressCallback);
+                    Client.DownloadDirectory(DfsPath, localPath, progressCallback);
                 }
                 if (!Quiet)
                     Console.WriteLine();

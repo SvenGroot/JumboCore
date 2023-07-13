@@ -9,8 +9,9 @@ using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("cat"), Description("Prints a text file.")]
-    class PrintFileCommand : DfsShellCommand
+    partial class PrintFileCommand : DfsShellCommand
     {
         #region Nested types
 
@@ -116,14 +117,9 @@ namespace DfsShell.Commands
 
         #endregion
 
-        private readonly string _path;
-
-        public PrintFileCommand([Description("The path of the text file on the DFS."), ArgumentName("Path")] string path)
-        {
-            ArgumentNullException.ThrowIfNull(path);
-
-            _path = path;
-        }
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the text file on the DFS.")]
+        public string Path { get; set; }
 
         [CommandLineArgument(DefaultValue = "utf-8"), Description("The text encoding to use. The default value is utf-8.")]
         public string Encoding { get; set; }
@@ -145,7 +141,7 @@ namespace DfsShell.Commands
             {
                 var encoding = System.Text.Encoding.GetEncoding(Encoding);
 
-                using (var stream = Client.OpenFile(_path))
+                using (var stream = Client.OpenFile(Path))
                 {
                     if (Tail)
                     {
@@ -183,7 +179,7 @@ namespace DfsShell.Commands
                 return 1;
             }
 
-            using (var stream = Client.OpenFile(_path))
+            using (var stream = Client.OpenFile(Path))
             {
                 IRecordReader reader = null;
                 if (Size < stream.Length)

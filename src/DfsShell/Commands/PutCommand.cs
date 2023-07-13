@@ -10,21 +10,18 @@ using Ookii.Jumbo.IO;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("put"), Description("Stores a file or directory on the DFS.")]
-    class PutCommand : DfsShellCommandWithProgress
+    partial class PutCommand : DfsShellCommandWithProgress
     {
-        private readonly string _localPath;
-        private readonly string _dfsPath;
 
-        public PutCommand([Description("The path of the local file or directory to upload."), ArgumentName("LocalPath")] string localPath,
-                              [Description("The path of the DFS file or directory to upload to."), ArgumentName("DfsPath")] string dfsPath)
-        {
-            ArgumentNullException.ThrowIfNull(localPath);
-            ArgumentNullException.ThrowIfNull(dfsPath);
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the local file or directory to upload.")]
+        public string LocalPath { get; set; }
 
-            _localPath = localPath;
-            _dfsPath = dfsPath;
-        }
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the DFS file or directory to upload to.")]
+        public string DfsPath { get; set; }
 
         [CommandLineArgument, Description("The block size of the DFS file.")]
         public BinarySize BlockSize { get; set; }
@@ -52,8 +49,8 @@ namespace DfsShell.Commands
 
         public override int Run()
         {
-            if (!File.Exists(_localPath) && !Directory.Exists(_localPath))
-                Console.Error.WriteLine("Local path {0} does not exist.", _localPath);
+            if (!File.Exists(LocalPath) && !Directory.Exists(LocalPath))
+                Console.Error.WriteLine("Local path {0} does not exist.", LocalPath);
             else if (BlockSize.Value < 0 || BlockSize.Value >= Int32.MaxValue)
                 Console.Error.WriteLine("Invalid block size.");
             else if (CheckRecordOptions(out var recordReaderType, out var recordWriterType))
@@ -61,31 +58,31 @@ namespace DfsShell.Commands
                 var progressCallback = Quiet ? null : new ProgressCallback(PrintProgress);
                 try
                 {
-                    var isDirectory = Directory.Exists(_localPath);
+                    var isDirectory = Directory.Exists(LocalPath);
                     if (isDirectory)
                     {
                         if (!Quiet)
-                            Console.WriteLine("Copying local directory \"{0}\" to DFS directory \"{1}\"...", _localPath, _dfsPath);
+                            Console.WriteLine("Copying local directory \"{0}\" to DFS directory \"{1}\"...", LocalPath, DfsPath);
                         if (recordReaderType != null)
-                            UploadDirectoryRecords(_localPath, _dfsPath, recordReaderType, recordWriterType);
+                            UploadDirectoryRecords(LocalPath, DfsPath, recordReaderType, recordWriterType);
                         else
-                            Client.UploadDirectory(_localPath, _dfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, progressCallback);
+                            Client.UploadDirectory(LocalPath, DfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, progressCallback);
                     }
                     else
                     {
-                        var dir = Client.GetDirectoryInfo(_dfsPath);
-                        var dfsPath = _dfsPath;
+                        var dir = Client.GetDirectoryInfo(DfsPath);
+                        var dfsPath = DfsPath;
                         if (dir != null)
                         {
-                            var fileName = Path.GetFileName(_localPath);
+                            var fileName = Path.GetFileName(LocalPath);
                             dfsPath = Client.Path.Combine(dfsPath, fileName);
                         }
                         if (!Quiet)
-                            Console.WriteLine("Copying local file \"{0}\" to DFS file \"{1}\"...", _localPath, dfsPath);
+                            Console.WriteLine("Copying local file \"{0}\" to DFS file \"{1}\"...", LocalPath, dfsPath);
                         if (recordReaderType != null)
-                            UploadFileRecords(_localPath, dfsPath, recordReaderType, recordWriterType);
+                            UploadFileRecords(LocalPath, dfsPath, recordReaderType, recordWriterType);
                         else
-                            Client.UploadFile(_localPath, dfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, progressCallback);
+                            Client.UploadFile(LocalPath, dfsPath, (int)BlockSize.Value, ReplicationFactor, !NoLocalReplica, progressCallback);
                     }
                     if (!Quiet)
                         Console.WriteLine();

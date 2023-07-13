@@ -77,7 +77,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         ///   in a derived class after creating your job configuration.
         /// </para>
         /// </remarks>
-        [CommandLineArgument("Property", ValueDescription = "[Stage:]Property=Value"), AllowDuplicateDictionaryKeys, Description("Modifies the value of one of the properties in the job configuration after the job has been created. Uses the format \"PropertyName=value\" or \"CompoundStageId:PropertyName=value\". You can access properties more than one level deep, e.g. \"MyStage:OutputChannel.PartitionsPerTask=2\". Can be specified more than once.")]
+        [CommandLineArgument("Property"), AllowDuplicateDictionaryKeys, Description("Modifies the value of one of the properties in the job configuration after the job has been created. Uses the format \"PropertyName=value\" or \"CompoundStageId:PropertyName=value\". You can access properties more than one level deep, e.g. \"MyStage:OutputChannel.PartitionsPerTask=2\". Can be specified more than once.")]
+        [ValueDescription("[Stage:]Property=Value")]
         public Dictionary<string, string> JobOrStageProperties
         {
             get { return _jobOrStageProperties ?? (_jobOrStageProperties = new Dictionary<string, string>()); }
@@ -105,7 +106,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         ///   in a derived class after creating your job configuration.
         /// </para>
         /// </remarks>
-        [CommandLineArgument("Setting", ValueDescription = "[Stage:]Setting=Value"), AllowDuplicateDictionaryKeys, Description("Defines or overrides a job or stage setting in the job configuration. Uses the format \"SettingName=value\" or \"CompoundStageId:SettingName=value\". Can be specified more than once.")]
+        [CommandLineArgument("Setting"), AllowDuplicateDictionaryKeys, Description("Defines or overrides a job or stage setting in the job configuration. Uses the format \"SettingName=value\" or \"CompoundStageId:SettingName=value\". Can be specified more than once.")]
+        [ValueDescription("[Stage:]Setting=Value")]
         public Dictionary<string, string> JobOrStageSettings
         {
             get { return _jobOrStageSettings ?? (_jobOrStageSettings = new Dictionary<string, string>()); }

@@ -5,19 +5,17 @@ using Ookii.CommandLine.Commands;
 
 namespace DfsShell.Commands
 {
+    [GeneratedParser]
     [Command("mkdir"), Description("Creates a new directory on the DFS.")]
-    class CreateDirectoryCommand : DfsShellCommand
+    partial class CreateDirectoryCommand : DfsShellCommand
     {
-        private readonly string _path;
-
-        public CreateDirectoryCommand([Description("The path of the new directory to create."), ArgumentName("Path")] string path)
-        {
-            _path = path;
-        }
+        [CommandLineArgument(IsPositional = true, IsRequired = true)]
+        [Description("The path of the new directory to create.")]
+        public string Path { get; set; }
 
         public override int Run()
         {
-            Client.CreateDirectory(_path);
+            Client.CreateDirectory(Path);
             return 0;
         }
     }
