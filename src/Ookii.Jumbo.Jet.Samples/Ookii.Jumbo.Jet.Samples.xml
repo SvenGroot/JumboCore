@@ -85,6 +85,60 @@
             <param name="record">The record.</param>
             <param name="output">The output.</param>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.AdvancedWordCount"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.AdvancedWordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.AdvancedWordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.AdvancedWordCount.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.AdvancedWordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.FeatureFilterTask">
             <summary>
             Task that filters out features with too low support.
@@ -463,6 +517,60 @@
             but because that might change in the future we don't set the option here).
             </remarks>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.FPGrowth.PFPGrowth"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.FPGrowth.Transaction">
             <summary>
             Used as intermediate type for the PFP growth job.
@@ -601,6 +709,60 @@
             <param name="output">The output.</param>
             <param name="context">The context.</param>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.GenerateText"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenerateText"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenerateText"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenerateText.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenerateText"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.GenSort">
             <summary>
             Job runner for GenSort, which generates input records for various sort benchmarks.
@@ -660,6 +822,60 @@
             </summary>
             <param name="output">The output.</param>
             <param name="context">The context.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.GenSort"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.GenSort.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.GenSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
         </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.IO.GenSortRecord">
             <summary>
@@ -1107,6 +1323,60 @@
             <param name="input">The input.</param>
             <param name="output">The output.</param>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.LineCount"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.LineCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.LineCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.LineCount.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.LineCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.OrdinalIgnoreCaseStringComparer">
             <summary>
             A wrapper around the <see cref="P:System.StringComparer.OrdinalIgnoreCase"/>, so it can be used with <see langword="typeof"/>.
@@ -1267,6 +1537,60 @@
             <param name="job">The <see cref="T:Ookii.Jumbo.Jet.Job"/> instance describing the job.</param>
             <param name="jobConfiguration">The <see cref="T:Ookii.Jumbo.Jet.Jobs.JobConfiguration"/> that will be used when the job is started.</param>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.TeraSort"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.TeraSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.TeraSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.TeraSort.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.TeraSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.ValSort">
             <summary>
             Job runner for ValSort, which validates the sort order of its input.
@@ -1345,6 +1669,60 @@
               Does not allow record reuse; the function stores the previous instance.
             </remarks>
         </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.ValSort"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.ValSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.ValSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.ValSort.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.ValSort"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
         <member name="T:Ookii.Jumbo.Jet.Samples.WordCountKind">
             <summary>
             The type of WordCount implementation to use.
@@ -1422,6 +1800,60 @@
             <param name="key">The key.</param>
             <param name="values">The values.</param>
             <param name="output">The output.</param>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.CreateParser(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Creates a <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> instance using the specified options.
+            </summary>
+            <param name="options">
+            The options that control parsing behavior, or <see langword="null"/> to use the
+            default options.
+            </param>
+            <returns>
+            An instance of the <see cref="T:Ookii.CommandLine.CommandLineParser`1"/> class for the <see cref="T:Ookii.Jumbo.Jet.Samples.WordCount"/> class.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.Parse(Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the arguments returned by the <see cref="M:System.Environment.GetCommandLineArgs" qualifyHint="true"/>
+            method, handling errors and showing usage help as required.
+            </summary>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.WordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.Parse(System.String[],Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.WordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
+        </member>
+        <member name="M:Ookii.Jumbo.Jet.Samples.WordCount.Parse(System.ReadOnlyMemory{System.String},Ookii.CommandLine.ParseOptions)">
+            <summary>
+            Parses the specified command line arguments, handling errors and showing usage help as required.
+            </summary>
+            <param name="args">The command line arguments.</param>
+            <param name="options">
+              The options that control parsing behavior and usage help formatting. If
+              <see langword="null" />, the default options are used.
+            </param>
+            <returns>
+              An instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.WordCount"/> class, or <see langword="null"/> if an
+              error occurred or argument parsing was canceled.
+            </returns>
         </member>
     </members>
 </doc>

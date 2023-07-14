@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <value>
         /// The output path.
         /// </value>
-        [CommandLineArgument(Position = 0, IsRequired = true), Description("The output directory where the results will be written.")]
+        [CommandLineArgument(Position = 1, IsRequired = true), Description("The output directory where the results will be written.")]
         public string OutputPath { get; set; }
 
         /// <summary>
