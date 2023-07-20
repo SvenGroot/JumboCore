@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 config.NameServer.ReplicationFactor = replicationFactor;
                 config.NameServer.ImageDirectory = imagePath;
                 if (blockSize != null)
-                    config.NameServer.BlockSize = blockSize.Value;
+                    config.NameServer.BlockSize = (BinarySize)blockSize.Value;
 
                 if (format)
                     FileSystem.Format(config);

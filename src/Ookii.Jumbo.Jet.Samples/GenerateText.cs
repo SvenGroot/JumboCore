@@ -71,11 +71,11 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="job">The <see cref="JobBuilder"/> used to create the job.</param>
         protected override void BuildJob(JobBuilder job)
         {
-            if (SizePerTask == 0)
+            if (SizePerTask == BinarySize.Zero)
             {
                 SizePerTask = BlockSize;
-                if (SizePerTask == 0)
-                    SizePerTask = FileSystemClient.DefaultBlockSize ?? (64 * BinarySize.Megabyte); // Default to 64MB if the file system doesn't support blocks
+                if (SizePerTask == BinarySize.Zero)
+                    SizePerTask = (BinarySize?)FileSystemClient.DefaultBlockSize ?? BinarySize.FromMebi(64); // Default to 64MB if the file system doesn't support blocks
             }
 
             // This is an example of how you can use an instance method of a serializable type to communicate state, instead of using individual settings.

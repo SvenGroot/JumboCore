@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Ookii;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs.FileSystem;
 
@@ -132,7 +133,7 @@ namespace DfsWeb.Pages
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public void OnGet()
         {
-            var maxSize = MaxSize == null ? 100 * BinarySize.Kilobyte : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
+            var maxSize = MaxSize == null ? 100 * BinarySize.Kibi : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);
             HeaderText = string.Format(CultureInfo.InvariantCulture, "File '{0}' contents ({1} {2})", Path, Tail ? "last" : "first", new BinarySize(maxSize));
             try
             {

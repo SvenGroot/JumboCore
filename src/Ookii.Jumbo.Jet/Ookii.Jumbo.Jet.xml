@@ -1331,7 +1331,7 @@
         </member>
         <member name="F:Ookii.Jumbo.Jet.Channels.TcpOutputChannel.SpillBufferSizeSettingKey">
             <summary>
-            The key in the stage or job settings that can be used to specify the size of the spill buffer. The setting should have the type <see cref="T:Ookii.Jumbo.BinarySize"/>,
+            The key in the stage or job settings that can be used to specify the size of the spill buffer. The setting should have the type <see cref="T:Ookii.BinarySize"/>,
             and the default value is the value of <see cref="P:Ookii.Jumbo.Jet.TcpChannelConfigurationElement.SpillBufferSize"/>.
             </summary>
         </member>
@@ -5629,7 +5629,7 @@
         <member name="F:Ookii.Jumbo.Jet.JumboSettings.FileChannel.StageOrJob.WriteBufferSize">
             <summary>
             The key to use in the stage or job settings to override the default write buffer size specified in <see cref="P:Ookii.Jumbo.Jet.FileChannelConfigurationElement.WriteBufferSize"/>.
-            Stage settings take precedence over job settings. The setting should have type <see cref="T:Ookii.Jumbo.BinarySize"/>.
+            Stage settings take precedence over job settings. The setting should have type <see cref="T:Ookii.BinarySize"/>.
             </summary>
         </member>
         <member name="F:Ookii.Jumbo.Jet.JumboSettings.FileChannel.StageOrJob.ChannelOutputType">
@@ -5641,7 +5641,7 @@
         <member name="F:Ookii.Jumbo.Jet.JumboSettings.FileChannel.StageOrJob.SpillBufferSize">
             <summary>
             The key to use in the job or stage settings to override the default spill buffer size specified in <see cref="P:Ookii.Jumbo.Jet.FileChannelConfigurationElement.SpillBufferSize"/>.
-            Stage settings take precedence over job settings. The setting should have type <see cref="T:Ookii.Jumbo.BinarySize"/>.
+            Stage settings take precedence over job settings. The setting should have type <see cref="T:Ookii.BinarySize"/>.
             </summary>
         </member>
         <member name="F:Ookii.Jumbo.Jet.JumboSettings.FileChannel.StageOrJob.SpillBufferLimit">
@@ -5661,7 +5661,7 @@
             <summary>
             The key to use in the job or stage settings to override the global memory storage size setting specified in
             <see cref="P:Ookii.Jumbo.Jet.FileChannelConfigurationElement.MemoryStorageSize"/>. Stage settings take
-            precedence over job settings. The setting should have type <see cref="T:Ookii.Jumbo.BinarySize"/>.
+            precedence over job settings. The setting should have type <see cref="T:Ookii.BinarySize"/>.
             </summary>
         </member>
         <member name="F:Ookii.Jumbo.Jet.JumboSettings.FileChannel.StageOrJob.MemoryStorageWaitTimeout">

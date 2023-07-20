@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public void TestBlockSize()
         {
             NameServerConfigurationElement target = new NameServerConfigurationElement();
-            BinarySize expected = 20 * Packet.PacketSize;
+            BinarySize expected = (BinarySize)(20 * Packet.PacketSize);
             target.BlockSize = expected;
             Assert.AreEqual(expected, target.BlockSize);
         }

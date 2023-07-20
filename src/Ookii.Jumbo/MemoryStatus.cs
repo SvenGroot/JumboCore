@@ -115,9 +115,9 @@ namespace Ookii.Jumbo
         public override string ToString()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available; Page file: {2}M total, {3}M available.", TotalPhysicalMemory / BinarySize.Megabyte, AvailablePhysicalMemory / BinarySize.Megabyte, TotalSwap / BinarySize.Megabyte, AvailableSwap / BinarySize.Megabyte);
+                return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available; Page file: {2}M total, {3}M available.", TotalPhysicalMemory / BinarySize.Mebi, AvailablePhysicalMemory / BinarySize.Mebi, TotalSwap / BinarySize.Mebi, AvailableSwap / BinarySize.Mebi);
             else if (Environment.OSVersion.Platform == PlatformID.Unix)
-                return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available, {2}M buffered, {3}M cached; Swap: {4}M total, {5}M available.", TotalPhysicalMemory / BinarySize.Megabyte, AvailablePhysicalMemory / BinarySize.Megabyte, BufferedMemory / BinarySize.Megabyte, CachedMemory / BinarySize.Megabyte, TotalSwap / BinarySize.Megabyte, AvailableSwap / BinarySize.Megabyte);
+                return string.Format(System.Globalization.CultureInfo.CurrentCulture, "Physical: {0}M total, {1}M available, {2}M buffered, {3}M cached; Swap: {4}M total, {5}M available.", TotalPhysicalMemory / BinarySize.Mebi, AvailablePhysicalMemory / BinarySize.Mebi, BufferedMemory / BinarySize.Mebi, CachedMemory / BinarySize.Mebi, TotalSwap / BinarySize.Mebi, AvailableSwap / BinarySize.Mebi);
             else
                 return "No memory information.";
         }
@@ -138,8 +138,8 @@ namespace Ookii.Jumbo
                 _availableSwap = 0;
                 foreach (var obj in searcher.Get())
                 {
-                    var size = (uint)obj["AllocatedBaseSize"] * BinarySize.Megabyte;
-                    var used = (uint)obj["CurrentUsage"] * BinarySize.Megabyte;
+                    var size = (uint)obj["AllocatedBaseSize"] * BinarySize.Mebi;
+                    var used = (uint)obj["CurrentUsage"] * BinarySize.Mebi;
                     _totalSwap += size;
                     _availableSwap += (size - used);
                 }
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo
             {
                 // Strip the field, the colon, and the kB
                 var valueString = line.Substring(field.Length + 1, line.Length - field.Length - 3);
-                value = long.Parse(valueString, System.Globalization.CultureInfo.InvariantCulture) * BinarySize.Kilobyte;
+                value = long.Parse(valueString, System.Globalization.CultureInfo.InvariantCulture) * BinarySize.Kibi;
                 return true;
             }
             else

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using Ookii;
 using Ookii.CommandLine;
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo;
@@ -182,7 +183,7 @@ namespace DfsShell.Commands
             using (var stream = Client.OpenFile(Path))
             {
                 IRecordReader reader = null;
-                if (Size < stream.Length)
+                if (Size.Value < stream.Length)
                 {
                     if (recordReaderType.GetConstructor(new[] { typeof(Stream), typeof(long), typeof(long), typeof(bool) }) == null)
                     {

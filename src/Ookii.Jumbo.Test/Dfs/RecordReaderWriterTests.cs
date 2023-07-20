@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.Test.Dfs
         private TestDfsCluster _cluster;
         private DfsClient _dfsClient;
         private List<Utf8String> _records;
-        private const int _blockSize = 16 * (int)BinarySize.Megabyte;
+        private const int _blockSize = 16 * (int)BinarySize.Mebi;
 
         [OneTimeSetUp]
         public void Setup()

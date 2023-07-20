@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using Ookii;
 using Ookii.CommandLine;
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo;

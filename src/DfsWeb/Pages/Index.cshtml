@@ -84,7 +84,7 @@
             <td><a asp-page="/BlockList" asp-route-dataServer="@server.Address.HostName" asp-route-port="@server.Address.Port">@server.BlockCount</a></td>
             @{ 
                 style = null;
-                if (server.DiskSpaceFree < DfsConfiguration.GetConfiguration().NameServer.DataServerFreeSpaceThreshold)
+                if (server.DiskSpaceFree < DfsConfiguration.GetConfiguration().NameServer.DataServerFreeSpaceThreshold.Value)
                 {
                     style = "background-color: yellow";
                 }

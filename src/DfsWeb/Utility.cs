@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Html;
+using Ookii;
 using Ookii.Jumbo;
 
 namespace DfsWeb
@@ -7,7 +8,7 @@ namespace DfsWeb
     {
         public static HtmlString FormatSize(long bytes)
         {
-            if (bytes < BinarySize.Kilobyte)
+            if (bytes < BinarySize.Kibi)
             {
                 return new HtmlString($"{bytes:#,0} bytes");
             }
