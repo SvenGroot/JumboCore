@@ -48,7 +48,7 @@ here also assumes it's off.
 We also need to add a single package reference to the project, using the following command:
 
 ```text
-dotnet add package Ookii.CommandLine -v 3.0.0
+dotnet add package Ookii.CommandLine -v 4.0.0
 ```
 
 Finally, we’ll remove the Class1.cs file from the template, and create a new file called
