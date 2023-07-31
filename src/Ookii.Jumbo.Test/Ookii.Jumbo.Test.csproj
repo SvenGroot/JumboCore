@@ -55,8 +55,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet publish --no-build -c $(ConfigurationName) &quot;$(ProjectDir)..\TaskHost\TaskHost.csproj&quot; -o &quot;$(ProjectDir)$(OutDir)&quot;" />
-  </Target>
-
 </Project>
