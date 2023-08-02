@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
+using System;
 using System.IO;
 using System.Threading;
 using JobServerApplication;
@@ -111,7 +112,16 @@ namespace Ookii.Jumbo.Test.Jet
 
         private void TaskServerThread(JetConfiguration jetConfig, DfsConfiguration dfsConfig)
         {
-            TaskServer.Run(jetConfig, dfsConfig);
+            try
+            {
+                TaskServer.Run(jetConfig, dfsConfig);
+            }
+            catch (Exception ex)
+            {
+                _log.Error("TaskServer thread encountered exception.", ex);
+            }
+
+            _log.Debug("TaskServer thread has finished.");
         }
     }
 }

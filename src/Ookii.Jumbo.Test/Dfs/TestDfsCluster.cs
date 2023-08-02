@@ -108,13 +108,22 @@ namespace Ookii.Jumbo.Test.Dfs
 
             private void RunDataServerThread(object parameter)
             {
-                DfsConfiguration config = (DfsConfiguration)parameter;
-                DataServer server = new DataServer(config);
-                lock (_dataServers)
+                try
                 {
-                    _dataServers.Add(new DataServerInfo() { Thread = Thread.CurrentThread, Server = server });
+                    DfsConfiguration config = (DfsConfiguration)parameter;
+                    DataServer server = new DataServer(config);
+                    lock (_dataServers)
+                    {
+                        _dataServers.Add(new DataServerInfo() { Thread = Thread.CurrentThread, Server = server });
+                    }
+                    server.Run();
                 }
-                server.Run();
+                catch (Exception ex)
+                {
+                    _log.Error("DataServer thread encountered exception.", ex);
+                }
+
+                _log.Debug("DataServer thread has finished.");
             }
         }
 
