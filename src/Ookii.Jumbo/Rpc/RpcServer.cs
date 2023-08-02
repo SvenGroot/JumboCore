@@ -45,12 +45,12 @@ namespace Ookii.Jumbo.Rpc
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void AcceptSocketCallback(IAsyncResult ar)
         {
-            var listener = (TcpListener)ar.AsyncState;
+            var listener = (TcpListener)ar.AsyncState!;
             if (_isListening)
                 listener.BeginAcceptSocket(_acceptSocketCallback, listener);
 
-            Socket socket = null;
-            RpcServerConnectionHandler handler = null;
+            Socket? socket = null;
+            RpcServerConnectionHandler? handler = null;
             try
             {
                 socket = listener.EndAcceptSocket(ar);

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -120,16 +121,18 @@ namespace Ookii.Jumbo.IO
         /// Sets the value of this <see cref="Utf8String"/> to the specified <see cref="String"/>.
         /// </summary>
         /// <param name="value">The <see cref="String"/> to set the value to. May be <see langword="null"/>.</param>
+        [MemberNotNull(nameof(_utf8Bytes))]
         public void Set(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
                 _byteLength = 0;
+                _utf8Bytes = Array.Empty<byte>();
             }
             else
             {
                 _byteLength = _encoding.GetByteCount(value);
-                if (Capacity < _byteLength)
+                if (_utf8Bytes == null || Capacity < _byteLength)
                     _utf8Bytes = new byte[GetCapacityNeeded(_byteLength)];
                 _encoding.GetBytes(value, 0, value.Length, _utf8Bytes, 0);
             }
@@ -139,6 +142,7 @@ namespace Ookii.Jumbo.IO
         /// Sets the value of this <see cref="Utf8String"/> to the specified byte array.
         /// </summary>
         /// <param name="value">A byte array containing a utf-8 encoded string.</param>
+        [MemberNotNull(nameof(_utf8Bytes))]
         public void Set(byte[] value)
         {
             ArgumentNullException.ThrowIfNull(value);
@@ -151,6 +155,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="value">A byte array containing a utf-8 encoded string.</param>
         /// <param name="index">The index in <paramref name="value"/> to start copying.</param>
         /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
+        [MemberNotNull(nameof(_utf8Bytes))]
         public void Set(byte[] value, int index, int count)
         {
             ArgumentNullException.ThrowIfNull(value);
@@ -165,6 +170,7 @@ namespace Ookii.Jumbo.IO
         /// Sets the value of this <see cref="Utf8String"/> to the value of the specified <see cref="Utf8String"/>.
         /// </summary>
         /// <param name="value">The <see cref="Utf8String"/> to copy.</param>
+        [MemberNotNull(nameof(_utf8Bytes))]
         public void Set(Utf8String value)
         {
             ArgumentNullException.ThrowIfNull(value);
@@ -262,7 +268,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="obj">The <see cref="Object"/> to test for equality.</param>
         /// <returns><see langword="true"/> if this instance is equal to <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as Utf8String);
         }
@@ -290,7 +296,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is equal to <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(Utf8String left, Utf8String right)
+        public static bool operator ==(Utf8String? left, Utf8String? right)
         {
             return object.Equals(left, right);
         }
@@ -301,7 +307,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is different from <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(Utf8String left, Utf8String right)
+        public static bool operator !=(Utf8String? left, Utf8String? right)
         {
             return !object.Equals(left, right);
         }
@@ -312,7 +318,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <(Utf8String left, Utf8String right)
+        public static bool operator <(Utf8String? left, Utf8String? right)
         {
             return Comparer<Utf8String>.Default.Compare(left, right) < 0;
         }
@@ -323,7 +329,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <=(Utf8String left, Utf8String right)
+        public static bool operator <=(Utf8String? left, Utf8String? right)
         {
             return Comparer<Utf8String>.Default.Compare(left, right) <= 0;
         }
@@ -334,7 +340,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >(Utf8String left, Utf8String right)
+        public static bool operator >(Utf8String? left, Utf8String? right)
         {
             return Comparer<Utf8String>.Default.Compare(left, right) > 0;
         }
@@ -345,7 +351,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Utf8String"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >=(Utf8String left, Utf8String right)
+        public static bool operator >=(Utf8String? left, Utf8String? right)
         {
             return Comparer<Utf8String>.Default.Compare(left, right) >= 0;
         }
@@ -357,11 +363,11 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="other">The <see cref="Utf8String"/> to test for equality.</param>
         /// <returns><see langword="true"/> if this instance is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Utf8String other)
+        public bool Equals(Utf8String? other)
         {
-            if (other == (object)this)
+            if (ReferenceEquals(other, this))
                 return true;
-            if ((object)other == null || other._byteLength != _byteLength)
+            if (other is null || other._byteLength != _byteLength)
                 return false;
 
             return UnsafeCompare(_utf8Bytes, _byteLength, other._utf8Bytes, _byteLength) == 0;
@@ -378,11 +384,11 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(Utf8String other)
+        public int CompareTo(Utf8String? other)
         {
-            if ((object)other == null)
+            if (other is null)
                 return 1;
-            if (other == (object)this)
+            if (ReferenceEquals(other, this))
                 return 0;
 
             return UnsafeCompare(_utf8Bytes, _byteLength, other._utf8Bytes, other._byteLength);
@@ -399,7 +405,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="obj">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             return CompareTo(obj as Utf8String);
         }

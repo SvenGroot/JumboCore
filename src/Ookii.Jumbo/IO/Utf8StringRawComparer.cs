@@ -42,7 +42,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
-        public int Compare(Utf8String x, Utf8String y)
+        public int Compare(Utf8String? x, Utf8String? y)
         {
             return Comparer<Utf8String>.Default.Compare(x, y);
         }

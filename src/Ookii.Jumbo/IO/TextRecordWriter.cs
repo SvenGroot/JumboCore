@@ -10,6 +10,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public class TextRecordWriter<T> : StreamRecordWriter<T>
+        where T : notnull
     {
         private readonly byte[] _recordSeparator;
         private readonly Encoder _encoder = Encoding.UTF8.GetEncoder();
@@ -34,7 +35,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="stream">The stream to write the records to.</param>
         /// <param name="recordSeparator">The character sequence to write between every record. May be <see langword="null"/> to
         /// use the default value of <see cref="Environment.NewLine"/>.</param>
-        public TextRecordWriter(Stream stream, string recordSeparator)
+        public TextRecordWriter(Stream stream, string? recordSeparator)
             : base(stream)
         {
             _recordSeparator = Encoding.UTF8.GetBytes(recordSeparator ?? Environment.NewLine);
@@ -51,11 +52,11 @@ namespace Ookii.Jumbo.IO
             {
                 // Doing (Utf8String)record is not allowed on generic type arguments.
                 // No need to check for null because we already know it must be a Utf8String.
-                (record as Utf8String).Write(Stream);
+                (record as Utf8String)!.Write(Stream);
             }
             else
             {
-                var recordString = record.ToString();
+                var recordString = record.ToString()!;
                 var charsLeft = recordString.Length;
                 var index = 0;
                 while (charsLeft > 0)

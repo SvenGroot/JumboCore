@@ -11,6 +11,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of record.</typeparam>
     public class ListRecordWriter<T> : RecordWriter<T>
+        where T : notnull
     {
         private readonly List<T> _list = new List<T>();
         private readonly bool _cloneRecords;

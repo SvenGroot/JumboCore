@@ -199,7 +199,7 @@ namespace Ookii.Jumbo.IO
                 return RawComparerHelper.CompareBytesWith7BitEncodedLength(buffer1, offset1, count1, buffer2, offset2, count2);
             }
 
-            public int Compare(string x, string y)
+            public int Compare(string? x, string? y)
             {
                 return StringComparer.Ordinal.Compare(x, y);
             }
@@ -207,7 +207,7 @@ namespace Ookii.Jumbo.IO
 
         #endregion
 
-        public static object GetComparer(Type type)
+        public static object? GetComparer(Type type)
         {
             if (type == typeof(SByte))
                 return new SByteComparer();

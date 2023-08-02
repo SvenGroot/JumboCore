@@ -7,11 +7,7 @@ namespace Ookii.Jumbo.Rpc
 {
     static class RpcRequestHandler
     {
-        private class ServerObject
-        {
-            public object Server { get; set; }
-            public Type[] Interfaces { get; set; }
-        }
+        private record class ServerObject(object Server, Type[] Interfaces);
 
         private static readonly Dictionary<string, ServerObject> _registeredObjects = new Dictionary<string, ServerObject>();
 
@@ -20,15 +16,22 @@ namespace Ookii.Jumbo.Rpc
         {
             var server = GetRegisteredObject(objectName);
             if (server == null)
+            {
                 handler.SendError(new RpcException("Unknown server object."));
+                return;
+            }
 
             try
             {
                 var serverType = FindInterface(server, interfaceName);
                 var method = serverType.GetMethod(operationName, BindingFlags.Public | BindingFlags.Instance);
                 if (method == null)
+                {
                     handler.SendError(new RpcException("Unknown operation."));
-                object[] parameters = null;
+                    return;
+                }
+
+                object[]? parameters = null;
                 if (method.GetParameters().Length > 0)
                     parameters = handler.ReadParameters();
                 ServerContext.Current = context; // Set the server context for the current thread.
@@ -39,7 +42,7 @@ namespace Ookii.Jumbo.Rpc
             }
             catch (TargetInvocationException ex)
             {
-                handler.SendError(ex.InnerException);
+                handler.SendError(ex.InnerException!);
             }
             catch (Exception ex)
             {
@@ -51,13 +54,13 @@ namespace Ookii.Jumbo.Rpc
         {
             lock (_registeredObjects)
             {
-                _registeredObjects[objectName] = new ServerObject() { Server = server, Interfaces = server.GetType().GetInterfaces() };
+                _registeredObjects[objectName] = new ServerObject(server, server.GetType().GetInterfaces());
             }
         }
 
-        private static ServerObject GetRegisteredObject(string objectName)
+        private static ServerObject? GetRegisteredObject(string objectName)
         {
-            ServerObject result;
+            ServerObject? result;
             lock (_registeredObjects)
             {
                 _registeredObjects.TryGetValue(objectName, out result);

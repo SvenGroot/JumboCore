@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ookii.Jumbo.IO
 {
@@ -18,7 +19,7 @@ namespace Ookii.Jumbo.IO
         public static Type GetRecordType(Type recordReaderType)
         {
             ArgumentNullException.ThrowIfNull(recordReaderType);
-            var baseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true);
+            var baseType = recordReaderType.FindGenericBaseType(typeof(RecordReader<>), true)!;
             return baseType.GetGenericArguments()[0];
         }
     }
@@ -28,6 +29,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the record</typeparam>
     public abstract class RecordReader<T> : IRecordReader, IDisposable
+        where T : notnull
     {
         private readonly Stopwatch _readTime = new Stopwatch();
         private int _recordsRead;
@@ -37,7 +39,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Occurs when the value of the <see cref="HasRecords"/> property changes.
         /// </summary>
-        public event EventHandler HasRecordsChanged;
+        public event EventHandler? HasRecordsChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordReader{T}"/> class.
@@ -63,7 +65,7 @@ namespace Ookii.Jumbo.IO
         /// This property is used for record readers passed to merge tasks in Jumbo Jet to indicate
         /// the task that this reader's data originates from.
         /// </remarks>
-        public string SourceName { get; set; }
+        public string? SourceName { get; set; }
 
         /// <summary>
         /// Gets the number of records that has been read by this record reader.
@@ -104,7 +106,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets the current record.
         /// </summary>
-        public T CurrentRecord { get; protected set; }
+        public T? CurrentRecord { get; protected set; }
 
         /// <summary>
         /// Gets a value that indicates whether there are records available on the data source that this reader is reading from.
@@ -189,6 +191,7 @@ namespace Ookii.Jumbo.IO
         /// Reads a record.
         /// </summary>
         /// <returns><see langword="true"/> if an object was successfully read; <see langword="false"/> if there are no more records.</returns>
+        [MemberNotNullWhen(true, nameof(CurrentRecord))]
         public bool ReadRecord()
         {
             _readTime.Start();
@@ -236,6 +239,7 @@ namespace Ookii.Jumbo.IO
         /// Reads a record.
         /// </summary>
         /// <returns><see langword="true"/> if an object was successfully read; <see langword="false"/> if there are no more records.</returns>
+        [MemberNotNullWhen(true, nameof(CurrentRecord))]
         protected abstract bool ReadRecordInternal();
 
         /// <summary>
@@ -273,7 +277,7 @@ namespace Ookii.Jumbo.IO
 
         #region Explicit IRecordReader Members
 
-        object IRecordReader.CurrentRecord
+        object? IRecordReader.CurrentRecord
         {
             get { return CurrentRecord; }
         }

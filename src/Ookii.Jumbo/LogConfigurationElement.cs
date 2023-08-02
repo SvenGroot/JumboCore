@@ -35,7 +35,7 @@ namespace Ookii.Jumbo
 
             if (!string.IsNullOrEmpty(dir) && !(dir[dir.Length - 1] == Path.DirectorySeparatorChar || dir[dir.Length - 1] == Path.AltDirectorySeparatorChar))
                 dir += Path.DirectorySeparatorChar;
-            dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), dir);
+            dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, dir);
             log4net.GlobalContext.Properties["LogDirectory"] = dir;
             log4net.GlobalContext.Properties["LocalHostName"] = ServerContext.LocalHostName;
             log4net.Config.XmlConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetEntryAssembly()),

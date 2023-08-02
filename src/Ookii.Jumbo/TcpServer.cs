@@ -16,7 +16,7 @@ namespace Ookii.Jumbo
 
         private readonly TcpListener[] _listeners;
         private volatile bool _running;
-        private Thread[] _listenerThreads;
+        private Thread[]? _listenerThreads;
         private readonly int _maxConnections;
         private int _connections;
         private static readonly byte[] _connectionAccepted = new byte[] { 0, 0, 0, 1 };
@@ -138,9 +138,9 @@ namespace Ookii.Jumbo
         /// connected to the server.</param>
         protected abstract void HandleConnection(TcpClient client);
 
-        private void Run(object parameter)
+        private void Run(object? parameter)
         {
-            var listener = (TcpListener)parameter;
+            var listener = (TcpListener)parameter!;
 
             _running = true;
             listener.Start(Int32.MaxValue);
@@ -195,11 +195,11 @@ namespace Ookii.Jumbo
             }
         }
 
-        private void ConnectionHandlerThread(object parameter)
+        private void ConnectionHandlerThread(object? parameter)
         {
             try
             {
-                using (var client = (TcpClient)parameter)
+                using (var client = (TcpClient)parameter!)
                 {
                     //_log.InfoFormat("Connection accepted from {0}.", client.Client.RemoteEndPoint);
                     HandleConnection(client);

@@ -11,8 +11,8 @@ namespace Ookii.Jumbo
     public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
     {
         private static bool _resolveTypes = true;
-        private string _typeName;
-        private Type _type;
+        private string? _typeName;
+        private Type? _type;
 
         /// <summary>
         /// A <see cref="TypeReference" /> instance that doesn't reference any type.
@@ -23,7 +23,7 @@ namespace Ookii.Jumbo
         /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type.
         /// </summary>
         /// <param name="type">The type this instance should reference. May be <see langword="null"/>.</param>
-        public TypeReference(Type type)
+        public TypeReference(Type? type)
         {
             _type = type;
             _typeName = type == null ? null : type.AssemblyQualifiedName;
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo
         /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type name.
         /// </summary>
         /// <param name="typeName">Name of the type. May be <see langword="null"/>.</param>
-        public TypeReference(string typeName)
+        public TypeReference(string? typeName)
         {
             _type = null;
             _typeName = typeName;
@@ -67,8 +67,7 @@ namespace Ookii.Jumbo
         /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
         /// </value>
         /// <exception cref="System.InvalidOperationException">Resolving type references is disabled.</exception>
-        [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
-        public Type ReferencedType
+        public Type? ReferencedType
         {
             get
             {
@@ -89,7 +88,7 @@ namespace Ookii.Jumbo
         /// <value>
         /// The assembly qualified name of the referenced type.
         /// </value>
-        public string TypeName
+        public string? TypeName
         {
             get
             {
@@ -123,11 +122,10 @@ namespace Ookii.Jumbo
         /// </summary>
         /// <param name="obj">The <see cref="Object"/> to compare to the current <see cref="TypeReference"/>.</param>
         /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals([NotNullWhen(true)] object? obj)
         {
-            if (obj is TypeReference)
+            if (obj is TypeReference right)
             {
-                var right = (TypeReference)obj;
                 return right.ReferencedType == ReferencedType;
             }
             else
@@ -170,7 +168,7 @@ namespace Ookii.Jumbo
 
         #region IXmlSerializable Members
 
-        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema()
+        System.Xml.Schema.XmlSchema? IXmlSerializable.GetSchema()
         {
             return null;
         }
@@ -203,9 +201,9 @@ namespace Ookii.Jumbo
         /// </summary>
         /// <param name="other">The instance to compare to.</param>
         /// <returns><see langword="true" /> if the instances are equal; otherwise, <see langword="false" />.</returns>
-        public bool Equals([AllowNull] TypeReference other)
+        public bool Equals(TypeReference other)
         {
-            return other != null && ReferencedType == other.ReferencedType;
+            return ReferencedType == other.ReferencedType;
         }
 
         #endregion

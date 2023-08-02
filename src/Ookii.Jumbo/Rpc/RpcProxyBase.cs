@@ -40,7 +40,7 @@ namespace Ookii.Jumbo.Rpc
         /// <param name="operationName">The name of the operation to invoke.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <returns>The result of the operation.</returns>
-        protected object SendRequest(string operationName, object[] parameters)
+        protected object? SendRequest(string operationName, object[] parameters)
         {
             return RpcClient.SendRequest(_hostName, _port, _objectName, _interfaceName, operationName, parameters);
         }

@@ -10,8 +10,9 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public sealed class MultiRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter<T>
+        where T : notnull
     {
-        private RecordWriter<T>[] _writers;
+        private RecordWriter<T>[]? _writers;
         private readonly IPartitioner<T> _partitioner;
 
         /// <summary>
@@ -19,7 +20,6 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="writers">The writers to write the values to.</param>
         /// <param name="partitioner">The partitioner used to decide which writer to use for each value.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
         {
             ArgumentNullException.ThrowIfNull(writers);
@@ -40,8 +40,7 @@ namespace Ookii.Jumbo.IO
         ///   Writing directly to any of these writers breaks the partitioning.
         /// </note>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public IEnumerable<RecordWriter<T>> Writers
+        public IEnumerable<RecordWriter<T>>? Writers
         {
             get { return _writers; }
         }
@@ -62,7 +61,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                return Writers.Sum(w => w.OutputBytes);
+                return Writers == null ? 0 : Writers.Sum(w => w.OutputBytes);
             }
         }
 
@@ -73,7 +72,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                return Writers.Sum(w => w.BytesWritten);
+                return Writers == null ? 0 : Writers.Sum(w => w.BytesWritten);
             }
         }
 
@@ -82,6 +81,9 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         public override void FinishWriting()
         {
+            if (_writers == null)
+                throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
+
             base.FinishWriting();
             foreach (var writer in _writers)
                 writer.FinishWriting();
@@ -94,7 +96,7 @@ namespace Ookii.Jumbo.IO
         protected override void WriteRecordInternal(T record)
         {
             if (_writers == null)
-                throw new ObjectDisposedException("MultiRecordWriter");
+                throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
             var partition = _partitioner.GetPartition(record);
             _writers[partition].WriteRecord(record);
         }

@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.IO
         public ValueWriterAttribute(Type valueWriterTypeName)
         {
             ArgumentNullException.ThrowIfNull(valueWriterTypeName);
-            _valueWriterTypeName = valueWriterTypeName.AssemblyQualifiedName;
+            _valueWriterTypeName = valueWriterTypeName.AssemblyQualifiedName!;
         }
 
         /// <summary>

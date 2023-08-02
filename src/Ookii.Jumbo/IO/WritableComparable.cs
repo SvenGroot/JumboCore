@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets or sets the underlying string value.
         /// </summary>
-        public T Value { get; set; }
+        public T? Value { get; set; }
 
         /// <summary>
         /// Gets a comparer to use to compare the values.
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="obj">The <see cref="Object"/> to compare with the current <see cref="WritableComparable{T}"/>.</param>
         /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current 
         /// <see cref="WritableComparable{T}"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as WritableComparable<T>);
         }
@@ -51,9 +51,9 @@ namespace Ookii.Jumbo.IO
         /// Returns a string representation of this <see cref="WritableComparable{T}"/>.
         /// </summary>
         /// <returns>A string representation of this <see cref="WritableComparable{T}"/>.</returns>
-        public override string ToString()
+        public override string? ToString()
         {
-            return Value.ToString();
+            return Value?.ToString();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">The left operand of the comparison.</param>
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if the objects are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator ==(WritableComparable<T>? left, WritableComparable<T>? right)
         {
             return object.Equals(left, right);
         }
@@ -73,7 +73,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">The left operand of the comparison.</param>
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if the objects are not equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator !=(WritableComparable<T>? left, WritableComparable<T>? right)
         {
             return !object.Equals(left, right);
         }
@@ -85,11 +85,11 @@ namespace Ookii.Jumbo.IO
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> comes earlier in
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator <(WritableComparable<T>? left, WritableComparable<T>? right)
         {
-            if (left == null)
+            if (left is null)
             {
-                if (right == null)
+                if (right is null)
                     return false;
                 else
                     return true;
@@ -105,9 +105,9 @@ namespace Ookii.Jumbo.IO
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> comes earlier in
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <=(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator <=(WritableComparable<T>? left, WritableComparable<T>? right)
         {
-            if (left == null)
+            if (left is null)
             {
                 return true;
             }
@@ -122,9 +122,9 @@ namespace Ookii.Jumbo.IO
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> comes later in
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator >(WritableComparable<T>? left, WritableComparable<T>? right)
         {
-            if (left == null)
+            if (left is null)
             {
                 return false;
             }
@@ -139,11 +139,11 @@ namespace Ookii.Jumbo.IO
         /// <param name="right">The right operand of the comparison.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> comes later in
         /// the sort order than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >=(WritableComparable<T> left, WritableComparable<T> right)
+        public static bool operator >=(WritableComparable<T>? left, WritableComparable<T>? right)
         {
-            if (left == null)
+            if (left is null)
             {
-                return right == null;
+                return right is null;
             }
             else
                 return left.CompareTo(right) >= 0;
@@ -174,9 +174,9 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(WritableComparable<T> other)
+        public int CompareTo(WritableComparable<T>? other)
         {
-            if (other == null)
+            if (other is null)
                 return 1;
 
             return Comparer.Compare(Value, other.Value);
@@ -193,7 +193,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="obj">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             return CompareTo(obj as WritableComparable<T>);
         }
@@ -208,9 +208,9 @@ namespace Ookii.Jumbo.IO
         /// <param name="other">The <see cref="WritableComparable{T}"/> to compare with the current <see cref="WritableComparable{T}"/>.</param>
         /// <returns><see langword="true"/> if the specified <see cref="WritableComparable{T}"/> is equal to the current 
         /// <see cref="WritableComparable{T}"/>; otherwise, <see langword="false"/>.</returns>
-        public virtual bool Equals(WritableComparable<T> other)
+        public virtual bool Equals(WritableComparable<T>? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
             return object.Equals(Value, other.Value);
         }

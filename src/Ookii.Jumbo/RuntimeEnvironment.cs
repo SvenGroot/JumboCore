@@ -14,8 +14,8 @@ namespace Ookii.Jumbo
     /// </summary>
     public static class RuntimeEnvironment
     {
-        private static string _operatingSystemDescription;
-        private static string _processorName;
+        private static string? _operatingSystemDescription;
+        private static string? _processorName;
 
         /// <summary>
         /// Gets a description of the runtime environment, including the version number.
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo
             {
                 if (_operatingSystemDescription == null)
                 {
-                    string description = null;
+                    string? description = null;
                     if (OperatingSystem.IsWindows())
                         description = GetOSDescriptionWindows();
                     else if (OperatingSystem.IsLinux())
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo
             {
                 var assembly = Assembly.GetExecutingAssembly();
                 var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-                return version?.InformationalVersion ?? assembly.GetName().Version.ToString();
+                return version?.InformationalVersion ?? assembly.GetName().Version!.ToString();
             }
         }
 
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo
         /// <remarks>
         /// The value returned is actually the version of the Ookii.Jumbo assembly.
         /// </remarks>
-        public static Version JumboAssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version;
+        public static Version JumboAssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version!;
 
         /// <summary>
         /// Gets the Jumbo build configuration, typically the branch name.
@@ -123,11 +123,11 @@ namespace Ookii.Jumbo
         /// <remarks>
         /// This is typically the subversion branch from which Jumbo was built.
         /// </remarks>
-        public static string JumboConfiguration
+        public static string? JumboConfiguration
         {
             get
             {
-                var config = (AssemblyConfigurationAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyConfigurationAttribute));
+                var config = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyConfigurationAttribute>();
                 if (config != null)
                     return config.Configuration;
                 else
@@ -160,10 +160,10 @@ namespace Ookii.Jumbo
         }
 
         [SupportedOSPlatform("windows")]
-        private static string GetOSDescriptionWindows()
+        private static string? GetOSDescriptionWindows()
         {
             // Use WMI to get the OS name.
-            var query = new SelectQuery("Win32_OperatingSystem", null, new[] { "Caption" });
+            var query = new SelectQuery("Win32_OperatingSystem", "", new[] { "Caption" });
             using (var searcher = new ManagementObjectSearcher(query))
             {
 
@@ -176,7 +176,7 @@ namespace Ookii.Jumbo
             return null;
         }
 
-        private static string GetOSDescriptionUnix()
+        private static string? GetOSDescriptionUnix()
         {
             try
             {
@@ -204,9 +204,9 @@ namespace Ookii.Jumbo
         }
 
         [SupportedOSPlatform("windows")]
-        private static string GetProcessorNameWindows()
+        private static string? GetProcessorNameWindows()
         {
-            var query = new SelectQuery("Win32_Processor", null, new[] { "Name" });
+            var query = new SelectQuery("Win32_Processor", "", new[] { "Name" });
             using (var searcher = new ManagementObjectSearcher(query))
             {
 
@@ -219,13 +219,13 @@ namespace Ookii.Jumbo
             return null;
         }
 
-        private static string GetProcessorNameUnix()
+        private static string? GetProcessorNameUnix()
         {
             if (File.Exists("/proc/cpuinfo"))
             {
                 using (var reader = File.OpenText("/proc/cpuinfo"))
                 {
-                    string line;
+                    string? line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         // We assume all CPUs are identical, which should be true in an SMP system.

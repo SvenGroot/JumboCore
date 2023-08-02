@@ -18,7 +18,7 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public sealed class WritableCollection<T> : IList<T>, IWritable, IList
-        where T : IWritable
+        where T : notnull, IWritable
     {
         private List<T> _items;
 
@@ -245,7 +245,7 @@ namespace Ookii.Jumbo.IO
         /// <exception cref="System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null)
                 return false;
@@ -253,8 +253,7 @@ namespace Ookii.Jumbo.IO
             if (obj == this)
                 return true;
 
-            var other = obj as WritableCollection<T>;
-            if (other == null)
+            if (obj is not WritableCollection<T> other)
                 return false;
             else
                 return _items.SequenceEqual(other);
@@ -270,7 +269,7 @@ namespace Ookii.Jumbo.IO
             return ((IEnumerable)_items).GetEnumerator();
         }
 
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             return ((IList)_items).Add(value);
         }
@@ -280,17 +279,17 @@ namespace Ookii.Jumbo.IO
             ((IList)_items).Clear();
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             return ((IList)_items).Contains(value);
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             return ((IList)_items).IndexOf(value);
         }
 
-        void IList.Insert(int index, object value)
+        void IList.Insert(int index, object? value)
         {
             ((IList)_items).Insert(index, value);
         }
@@ -305,7 +304,7 @@ namespace Ookii.Jumbo.IO
             get { return ((IList)_items).IsReadOnly; }
         }
 
-        void IList.Remove(object value)
+        void IList.Remove(object? value)
         {
             ((IList)_items).Remove(value);
         }
@@ -315,7 +314,7 @@ namespace Ookii.Jumbo.IO
             ((IList)_items).RemoveAt(index);
         }
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
             get
             {

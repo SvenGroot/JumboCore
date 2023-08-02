@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace Ookii.Jumbo.IO
@@ -21,15 +22,15 @@ namespace Ookii.Jumbo.IO
         /// <param name="type">The type.</param>
         /// <returns>The <see cref="IValueWriter{T}"/> implementation for the specified type, or <see langword="null"/> if the type implements <see cref="IWritable"/>.</returns>
         /// <exception cref="NotSupportedException">The type has no value writer and does not implement <see cref="IWritable"/>.</exception>
-        public static object GetWriter(Type type)
+        public static object? GetWriter(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
             if (type.GetInterfaces().Contains(typeof(IWritable)))
                 return null;
-            var attribute = (ValueWriterAttribute)Attribute.GetCustomAttribute(type, typeof(ValueWriterAttribute));
+            var attribute = type.GetCustomAttribute<ValueWriterAttribute>();
             if (attribute != null && !string.IsNullOrEmpty(attribute.ValueWriterTypeName))
             {
-                var writerType = Type.GetType(attribute.ValueWriterTypeName, true);
+                var writerType = Type.GetType(attribute.ValueWriterTypeName, true)!;
                 return Activator.CreateInstance(writerType);
             }
 
@@ -66,8 +67,9 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public static class ValueWriter<T>
+        where T : notnull
     {
-        private static readonly IValueWriter<T> _writer = (IValueWriter<T>)ValueWriter.GetWriter(typeof(T));
+        private static readonly IValueWriter<T>? _writer = (IValueWriter<T>?)ValueWriter.GetWriter(typeof(T));
 
         /// <summary>
         /// Gets the writer for the type, or <see langword="null"/> if it implements <see cref="IWritable"/>.
@@ -75,8 +77,7 @@ namespace Ookii.Jumbo.IO
         /// <value>
         /// An implementation of <see cref="IValueWriter{T}"/>, or <see langword="null"/> if it implements <see cref="IWritable"/>.
         /// </value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
-        public static IValueWriter<T> Writer
+        public static IValueWriter<T>? Writer
         {
             get { return _writer; }
         }

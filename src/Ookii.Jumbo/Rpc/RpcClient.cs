@@ -14,7 +14,6 @@ namespace Ookii.Jumbo.Rpc
         private static readonly AutoResetEvent _timeoutEvent;
         private static RegisteredWaitHandle _registeredTimeoutEvent;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static RpcClient()
         {
             _timeoutCallback = new WaitOrTimerCallback(TimeoutConnections);
@@ -22,8 +21,7 @@ namespace Ookii.Jumbo.Rpc
             _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Object is not owned")]
-        public static object SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, object[] parameters)
+        public static object? SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, object[] parameters)
         {
             // This method is public only because the dynamic assemblies must be able to access it.
             var handler = GetConnection(new ServerAddress(hostName, port));
@@ -41,7 +39,7 @@ namespace Ookii.Jumbo.Rpc
 
         private static RpcClientConnectionHandler GetConnection(ServerAddress address)
         {
-            var cache = (ServerConnectionCache)_connectionCache[address];
+            var cache = (ServerConnectionCache)_connectionCache[address]!;
             if (cache == null)
             {
                 cache = new ServerConnectionCache(_connectionTimeout);
@@ -58,14 +56,14 @@ namespace Ookii.Jumbo.Rpc
                 return handler;
         }
 
-        private static void TimeoutConnections(object state, bool wasSignalled)
+        private static void TimeoutConnections(object? state, bool wasSignalled)
         {
             var now = DateTime.UtcNow;
             lock (_connectionCache)
             {
                 foreach (DictionaryEntry connection in _connectionCache)
                 {
-                    ((ServerConnectionCache)connection.Value).TimeoutConnections(now);
+                    ((ServerConnectionCache)connection.Value!).TimeoutConnections(now);
                 }
             }
             _registeredTimeoutEvent.Unregister(null);

@@ -12,7 +12,6 @@ namespace Ookii.Jumbo.Rpc
         private static readonly ModuleBuilder _proxyModule;
         private static readonly Dictionary<Type, Type> _proxies = new Dictionary<Type, Type>();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static RpcProxyBuilder()
         {
             _proxyAssembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("Ookii.Jumbo.Rpc.DynamicProxy"), AssemblyBuilderAccess.Run);
@@ -21,7 +20,7 @@ namespace Ookii.Jumbo.Rpc
 
         public static object GetProxy(Type interfaceType, string hostName, int port, string objectName)
         {
-            Type proxyType;
+            Type? proxyType;
             lock (_proxies)
             {
                 if (!_proxies.TryGetValue(interfaceType, out proxyType))
@@ -31,7 +30,7 @@ namespace Ookii.Jumbo.Rpc
                 }
             }
 
-            return Activator.CreateInstance(proxyType, hostName, port, objectName);
+            return Activator.CreateInstance(proxyType, hostName, port, objectName)!;
         }
 
         // Called inside _proxies lock for thread safety.
@@ -43,7 +42,7 @@ namespace Ookii.Jumbo.Rpc
             if (interfaceType.IsGenericType || interfaceType.IsGenericTypeDefinition)
                 throw new ArgumentException("Generic types are not supported.");
 
-            var proxyType = _proxyModule.DefineType("Ookii.Jumbo.Rpc.DynamicProxy." + interfaceType.FullName.Replace('.', '_').Replace('+', '_'), TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(RpcProxyBase), new[] { interfaceType });
+            var proxyType = _proxyModule.DefineType("Ookii.Jumbo.Rpc.DynamicProxy." + interfaceType.FullName!.Replace('.', '_').Replace('+', '_'), TypeAttributes.Class | TypeAttributes.Sealed | TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(RpcProxyBase), new[] { interfaceType });
 
             CreateConstructor(proxyType, interfaceType);
 
@@ -62,7 +61,7 @@ namespace Ookii.Jumbo.Rpc
                 }
             }
 
-            return proxyType.CreateType();
+            return proxyType.CreateType()!;
         }
 
         private static MethodBuilder CreateMethod(TypeBuilder proxyType, MethodInfo interfaceMethod)
@@ -106,7 +105,7 @@ namespace Ookii.Jumbo.Rpc
 
                 generator.Emit(OpCodes.Ldloc_0); // Load the array
             }
-            var sendRequestMethod = typeof(RpcProxyBase).GetMethod("SendRequest", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sendRequestMethod = typeof(RpcProxyBase).GetMethod("SendRequest", BindingFlags.NonPublic | BindingFlags.Instance)!;
             generator.Emit(OpCodes.Call, sendRequestMethod); // Call the SendRequest method
 
             if (interfaceMethod.ReturnType == typeof(void))
@@ -131,13 +130,13 @@ namespace Ookii.Jumbo.Rpc
 
             if (interfaceProperty.CanRead)
             {
-                var getMethod = CreateMethod(proxyType, interfaceProperty.GetGetMethod());
+                var getMethod = CreateMethod(proxyType, interfaceProperty.GetGetMethod()!);
                 proxyProperty.SetGetMethod(getMethod);
             }
 
             if (interfaceProperty.CanWrite)
             {
-                var setMethod = CreateMethod(proxyType, interfaceProperty.GetSetMethod());
+                var setMethod = CreateMethod(proxyType, interfaceProperty.GetSetMethod()!);
                 proxyProperty.SetSetMethod(setMethod);
             }
         }
@@ -154,8 +153,8 @@ namespace Ookii.Jumbo.Rpc
             generator.Emit(OpCodes.Ldarg_1); // Load hostName argument
             generator.Emit(OpCodes.Ldarg_2); // Load port argument
             generator.Emit(OpCodes.Ldarg_3); // Load objectName argument
-            generator.Emit(OpCodes.Ldstr, interfaceType.AssemblyQualifiedName);
-            generator.Emit(OpCodes.Call, proxyType.BaseType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(string), typeof(int), typeof(string), typeof(string) }, null)); // Call base class constructor
+            generator.Emit(OpCodes.Ldstr, interfaceType.AssemblyQualifiedName!);
+            generator.Emit(OpCodes.Call, proxyType.BaseType!.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(string), typeof(int), typeof(string), typeof(string) }, null)!); // Call base class constructor
             generator.Emit(OpCodes.Ret);
         }
     }

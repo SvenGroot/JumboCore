@@ -7,17 +7,15 @@ namespace Ookii.Jumbo.Rpc
     {
         #region Nested types
 
-        private class CachedConnection
+        private record class CachedConnection(RpcClientConnectionHandler Handler, DateTime LastUsed)
         {
-            public RpcClientConnectionHandler Handler { get; set; }
-            public CachedConnection Next { get; set; }
-            public DateTime LastUsed { get; set; }
+            public CachedConnection? Next { get; set; }
         }
 
         #endregion
 
         private int _connectionCount;
-        private CachedConnection _firstConnection;
+        private CachedConnection? _firstConnection;
         private readonly TimeSpan _connectionTimeout;
 
         public ServerConnectionCache(TimeSpan connectionTimeout)
@@ -25,7 +23,7 @@ namespace Ookii.Jumbo.Rpc
             _connectionTimeout = connectionTimeout;
         }
 
-        public RpcClientConnectionHandler GetConnection()
+        public RpcClientConnectionHandler? GetConnection()
         {
             if (_connectionCount != 0)
             {
@@ -47,7 +45,7 @@ namespace Ookii.Jumbo.Rpc
         {
             lock (this)
             {
-                _firstConnection = new CachedConnection() { Handler = handler, Next = _firstConnection, LastUsed = DateTime.UtcNow };
+                _firstConnection = new CachedConnection(handler, DateTime.UtcNow) { Next = _firstConnection };
                 ++_connectionCount;
             }
         }
@@ -72,7 +70,7 @@ namespace Ookii.Jumbo.Rpc
                 lock (this)
                 {
                     var connection = _firstConnection;
-                    CachedConnection previous = null;
+                    CachedConnection? previous = null;
                     while (connection != null)
                     {
                         if (now - connection.LastUsed > _connectionTimeout)

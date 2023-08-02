@@ -25,6 +25,8 @@ namespace Ookii.Jumbo.IO
         /// </para>
         /// </remarks>
         public static Pair<TKey, TValue> MakePair<TKey, TValue>(TKey key, TValue value)
+            where TKey : notnull
+            where TValue : notnull
         {
             return new Pair<TKey, TValue>(key, value);
         }
@@ -46,10 +48,12 @@ namespace Ookii.Jumbo.IO
     /// </remarks>
     [RawComparer(typeof(PairRawComparer<,>))]
     public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValue>>, IEquatable<Pair<TKey, TValue>>, ICloneable
+        where TKey : notnull
+        where TValue : notnull
     {
         private static readonly IComparer<TKey> _keyComparer = Comparer<TKey>.Default;
-        private static readonly IValueWriter<TKey> _keyWriter = ValueWriter<TKey>.Writer;
-        private static readonly IValueWriter<TValue> _valueWriter = ValueWriter<TValue>.Writer;
+        private static readonly IValueWriter<TKey>? _keyWriter = ValueWriter<TKey>.Writer;
+        private static readonly IValueWriter<TValue>? _valueWriter = ValueWriter<TValue>.Writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Pair{TKey,TValue}"/> class.
@@ -72,12 +76,12 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets or sets the key in the key/value pair.
         /// </summary>
-        public TKey Key { get; set; }
+        public TKey? Key { get; set; }
 
         /// <summary>
         /// Gets or sets the value in the key/value pair.
         /// </summary>
-        public TValue Value { get; set; }
+        public TValue? Value { get; set; }
 
         /// <summary>
         /// Determines whether the specified <see cref="Object"/> is equal to the current <see cref="Pair{TKey, TValue}"/>.
@@ -85,7 +89,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="obj">The <see cref="Object"/> to compare with the current <see cref="Pair{TKey, TValue}"/>.</param>
         /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current 
         /// <see cref="Pair{TKey, TValue}"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as Pair<TKey, TValue>);
         }
@@ -105,7 +109,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is equal to <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator ==(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return object.Equals(left, right);
         }
@@ -116,7 +120,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is different from <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator !=(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return !object.Equals(left, right);
         }
@@ -127,7 +131,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator <(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) < 0;
         }
@@ -138,7 +142,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <=(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator <=(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) <= 0;
         }
@@ -149,7 +153,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator >(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) > 0;
         }
@@ -160,7 +164,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="left">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="Pair{TKey, TValue}"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >=(Pair<TKey, TValue> left, Pair<TKey, TValue> right)
+        public static bool operator >=(Pair<TKey, TValue>? left, Pair<TKey, TValue>? right)
         {
             return Comparer<Pair<TKey, TValue>>.Default.Compare(left, right) >= 0;
         }
@@ -233,9 +237,9 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(Pair<TKey, TValue> other)
+        public int CompareTo(Pair<TKey, TValue>? other)
         {
-            if ((object)other == null)
+            if (other is null)
                 return 1;
             return _keyComparer.Compare(Key, other.Key);
         }
@@ -250,9 +254,9 @@ namespace Ookii.Jumbo.IO
         /// <param name="other">The <see cref="Object"/> to compare with the current <see cref="Pair{TKey, TValue}"/>.</param>
         /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current 
         /// <see cref="Pair{TKey, TValue}"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Pair<TKey, TValue> other)
+        public bool Equals(Pair<TKey, TValue>? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
 
             return object.Equals(Key, other.Key) && object.Equals(Value, other.Value);

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -19,12 +21,14 @@ namespace Ookii.Jumbo.IO
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1005:AvoidExcessiveParametersOnGenericTypes")]
     public abstract class InnerJoinRecordReader<TOuter, TInner, TResult> : MultiInputRecordReader<TResult>
-        where TResult : new()
+        where TResult : notnull, new()
+        where TOuter : notnull
+        where TInner : notnull
     {
-        private RecordReader<TOuter> _outer;
-        private RecordReader<TInner> _inner;
+        private RecordReader<TOuter>? _outer;
+        private RecordReader<TInner>? _inner;
         private bool _hasTempOuterObject;
-        private TOuter _tempOuterObject;
+        private TOuter? _tempOuterObject;
         private readonly List<TInner> _tempInnerList = new List<TInner>();
         private int _tempInnerListIndex;
         private bool _started;
@@ -54,14 +58,7 @@ namespace Ookii.Jumbo.IO
         /// <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
         protected sealed override bool ReadRecordInternal()
         {
-            if (!_started)
-            {
-                WaitForInputs(2, Timeout.Infinite);
-
-                _outer.ReadRecord();
-                _inner.ReadRecord();
-                _started = true;
-            }
+            EnsureStarted();
 
             TOuter outer;
 
@@ -73,8 +70,8 @@ namespace Ookii.Jumbo.IO
                     return false;
                 }
 
-                outer = _outer.CurrentRecord;
-                var inner = _inner.CurrentRecord;
+                outer = _outer.CurrentRecord!;
+                var inner = _inner.CurrentRecord!;
 
                 var compareResult = Compare(outer, inner);
                 if (compareResult < 0)
@@ -114,16 +111,16 @@ namespace Ookii.Jumbo.IO
                 CurrentRecord = new TResult();
             if (_tempInnerList.Count > 0)
             {
-                CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject, _tempInnerList[_tempInnerListIndex]);
+                CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject!, _tempInnerList[_tempInnerListIndex]);
                 ++_tempInnerListIndex;
                 if (_tempInnerList.Count == _tempInnerListIndex)
                 {
                     _tempInnerListIndex = 0;
-                    if (!_outer.HasFinished && Compare(_outer.CurrentRecord, _tempInnerList[0]) == 0)
+                    if (!_outer.HasFinished && Compare(_outer.CurrentRecord!, _tempInnerList[0]) == 0)
                     {
                         _hasTempOuterObject = true;
                         if (AllowRecordReuse)
-                            _tempOuterObject = (TOuter)((ICloneable)_outer.CurrentRecord).Clone();
+                            _tempOuterObject = (TOuter)((ICloneable)_outer.CurrentRecord!).Clone();
                         else
                             _tempOuterObject = _outer.CurrentRecord;
                         _outer.ReadRecord();
@@ -138,14 +135,30 @@ namespace Ookii.Jumbo.IO
             }
             else
             {
-                CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject, _inner.CurrentRecord);
-                if (!(_inner.ReadRecord() && Compare(_tempOuterObject, _inner.CurrentRecord) == 0))
+                CurrentRecord = CreateJoinResult(CurrentRecord, _tempOuterObject!, _inner.CurrentRecord!);
+                if (!(_inner.ReadRecord() && Compare(_tempOuterObject!, _inner.CurrentRecord) == 0))
                 {
                     _tempOuterObject = default(TOuter);
                     _hasTempOuterObject = false;
                 }
             }
             return true;
+        }
+
+        [MemberNotNull(nameof(_outer))]
+        [MemberNotNull(nameof(_inner))]
+        private void EnsureStarted()
+        {
+            if (!_started)
+            {
+                WaitForInputs(2, Timeout.Infinite);
+
+                _outer!.ReadRecord();
+                _inner!.ReadRecord();
+                _started = true;
+            }
+
+            Debug.Assert(_outer != null && _inner != null);
         }
 
         /// <summary>
@@ -173,7 +186,7 @@ namespace Ookii.Jumbo.IO
                 break;
             case 1:
                 _inner = (RecordReader<TInner>)reader;
-                _outer.HasRecordsChanged += new EventHandler(RecordReader_HasRecordsChanged);
+                _outer!.HasRecordsChanged += new EventHandler(RecordReader_HasRecordsChanged);
                 _inner.HasRecordsChanged += new EventHandler(RecordReader_HasRecordsChanged);
                 HasRecords = _outer.HasRecords && _inner.HasRecords;
                 break;
@@ -225,11 +238,11 @@ namespace Ookii.Jumbo.IO
         /// </remarks>
         protected abstract TResult CreateJoinResult(TResult result, TOuter outer, TInner inner);
 
-        private void RecordReader_HasRecordsChanged(object sender, EventArgs e)
+        private void RecordReader_HasRecordsChanged(object? sender, EventArgs e)
         {
             // Although ReadRecord may not need to wait even if one of them is false (because it's in the middle of computing a cross product)
             // that's too difficult to guarantee so we just check both of them.
-            HasRecords = _outer.HasRecords && _inner.HasRecords;
+            HasRecords = _outer!.HasRecords && _inner!.HasRecords;
         }
     }
 }

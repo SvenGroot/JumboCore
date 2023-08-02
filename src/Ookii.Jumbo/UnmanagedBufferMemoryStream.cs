@@ -10,12 +10,12 @@ namespace Ookii.Jumbo
     [CLSCompliant(false)]
     public sealed class UnmanagedBufferMemoryStream : UnmanagedMemoryStream
     {
-        private UnmanagedBuffer _buffer;
+        private UnmanagedBuffer? _buffer;
 
         /// <summary>
         /// Event raised when the stream is disposed
         /// </summary>
-        public event EventHandler Disposed;
+        public event EventHandler? Disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnmanagedBufferMemoryStream"/>.

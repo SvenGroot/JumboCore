@@ -29,8 +29,8 @@ namespace Ookii.Jumbo
         #endregion
 
         private readonly ProcessorStatusData[] _processorData;
-        private ProcessorStatusData[] _previousProcessorData;
-        private StreamReader _procStatReader;
+        private ProcessorStatusData[]? _previousProcessorData;
+        private StreamReader? _procStatReader;
         private readonly List<IndividualProcessorStatus> _processors;
         private readonly ReadOnlyCollection<IndividualProcessorStatus> _processorsReadOnlyWrapper;
         private readonly int _total;
@@ -96,7 +96,7 @@ namespace Ookii.Jumbo
         [SupportedOSPlatform("windows")]
         private void RefreshWindows()
         {
-            var query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", null, new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });
+            var query = new SelectQuery("Win32_PerfRawData_PerfOS_Processor", "", new[] { "Name", "PercentUserTime", "PercentPrivilegedTime", "PercentIdleTime", "PercentInterruptTime", "TimeStamp_Sys100NS" });
             using (var searcher = new ManagementObjectSearcher(query))
             {
 
@@ -142,8 +142,8 @@ namespace Ookii.Jumbo
 
         private void ProcessProcStatLine(int cpuIndex)
         {
-            var line = _procStatReader.ReadLine();
-            if (!line.StartsWith("cpu", StringComparison.Ordinal))
+            var line = _procStatReader!.ReadLine();
+            if (line == null || !line.StartsWith("cpu", StringComparison.Ordinal))
                 throw new FormatException("Unexpected /proc/stat format.");
 
             var items = line.Split(_procStatFieldSeparator, StringSplitOptions.RemoveEmptyEntries);

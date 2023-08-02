@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.IO
         public static Type GetRecordType(Type recordWriterType)
         {
             ArgumentNullException.ThrowIfNull(recordWriterType);
-            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
+            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true)!;
             return baseType.GetGenericArguments()[0];
         }
     }
@@ -34,6 +34,7 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public abstract class RecordWriter<T> : IRecordWriter, IDisposable
+        where T : notnull
     {
         private int _recordsWritten;
         private bool _finishedWriting;

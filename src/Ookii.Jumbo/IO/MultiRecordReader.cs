@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -11,11 +12,12 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public sealed class MultiRecordReader<T> : MultiInputRecordReader<T>
+        where T : notnull
     {
-        private RecordReader<T> _currentReader;
+        private RecordReader<T>? _currentReader;
         private int _currentReaderNumber;
         private readonly Stopwatch _timeWaitingStopwatch = new Stopwatch();
-        private EventHandler _hasRecordsChangedHandler;
+        private EventHandler? _hasRecordsChangedHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiRecordReader{T}"/> class.
@@ -81,6 +83,7 @@ namespace Ookii.Jumbo.IO
             base.OnCurrentPartitionChanged(e);
         }
 
+        [MemberNotNullWhen(true, nameof(_currentReader))]
         private bool WaitForReaders()
         {
             if (_currentReader == null)
@@ -132,10 +135,10 @@ namespace Ookii.Jumbo.IO
             }
         }
 
-        void _currentReader_HasRecordsChanged(object sender, EventArgs e)
+        void _currentReader_HasRecordsChanged(object? sender, EventArgs e)
         {
             // If the reader has finished, HasRecords will be updated by WaitForReaders (or if we're out of readers, by the RecordReader<T> itself).
-            if (!_currentReader.HasFinished)
+            if (!_currentReader!.HasFinished)
                 HasRecords = _currentReader.HasRecords;
             // HACK: This implementation is a bit flimsy, as ReadRecord can still block if we reach the end of the current record reader and the next one isn't available yet.
         }

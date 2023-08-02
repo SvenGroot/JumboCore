@@ -14,16 +14,6 @@ namespace Ookii.Jumbo
         private readonly int _port;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerAddress"/> class.
-        /// </summary>
-        /// <remarks>
-        /// This constructor is used for deserialization purposes only.
-        /// </remarks>
-        public ServerAddress()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ServerAddress"/> class with the specified host name and port number.
         /// </summary>
         /// <param name="hostName">The host name of the server.</param>
@@ -90,7 +80,7 @@ namespace Ookii.Jumbo
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
         /// <returns><see langword="true"/> if this <see cref="ServerAddress"/> is equal to the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var other = obj as ServerAddress;
             return other == null ? false : (HostName == other.HostName && Port == other.Port);
@@ -111,7 +101,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is equal to <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ServerAddress left, ServerAddress right)
+        public static bool operator ==(ServerAddress? left, ServerAddress? right)
         {
             return object.Equals(left, right);
         }
@@ -122,7 +112,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if the value of <paramref name="left"/> is different from <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ServerAddress left, ServerAddress right)
+        public static bool operator !=(ServerAddress? left, ServerAddress? right)
         {
             return !object.Equals(left, right);
         }
@@ -133,7 +123,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <(ServerAddress left, ServerAddress right)
+        public static bool operator <(ServerAddress? left, ServerAddress? right)
         {
             return Comparer<ServerAddress>.Default.Compare(left, right) < 0;
         }
@@ -144,7 +134,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is less than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator <=(ServerAddress left, ServerAddress right)
+        public static bool operator <=(ServerAddress? left, ServerAddress? right)
         {
             return Comparer<ServerAddress>.Default.Compare(left, right) <= 0;
         }
@@ -155,7 +145,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >(ServerAddress left, ServerAddress right)
+        public static bool operator >(ServerAddress? left, ServerAddress? right)
         {
             return Comparer<ServerAddress>.Default.Compare(left, right) > 0;
         }
@@ -167,7 +157,7 @@ namespace Ookii.Jumbo
         /// <param name="left">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <param name="right">A <see cref="ServerAddress"/> or <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >=(ServerAddress left, ServerAddress right)
+        public static bool operator >=(ServerAddress? left, ServerAddress? right)
         {
             return Comparer<ServerAddress>.Default.Compare(left, right) >= 0;
         }
@@ -181,7 +171,7 @@ namespace Ookii.Jumbo
         /// </summary>
         /// <param name="other">An object to compare with this instance.</param>
         /// <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        public int CompareTo(ServerAddress other)
+        public int CompareTo(ServerAddress? other)
         {
             if (other == null)
                 return 1;

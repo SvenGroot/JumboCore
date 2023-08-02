@@ -19,7 +19,7 @@ namespace Ookii.Jumbo
     public sealed class PriorityQueue<T> : IEnumerable<T>, ICollection<T>, System.Collections.ICollection
     {
         private readonly List<T> _heap; // List that stores the binary heap tree.
-        private object _syncRoot;
+        private object? _syncRoot;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PriorityQueue{T}"/> class that is empty, 
@@ -41,7 +41,7 @@ namespace Ookii.Jumbo
         /// </para>
         /// </remarks>
         public PriorityQueue()
-            : this((IComparer<T>)null)
+            : this((IComparer<T>?)null)
         {
         }
 
@@ -69,12 +69,9 @@ namespace Ookii.Jumbo
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>
-        public PriorityQueue(IEnumerable<T> collection, IComparer<T> comparer)
-            : this(null, comparer)
+        public PriorityQueue(IEnumerable<T> collection, IComparer<T>? comparer)
+            : this(new List<T>(collection ?? throw new ArgumentNullException(nameof(collection))), comparer)
         {
-            ArgumentNullException.ThrowIfNull(collection);
-            _heap = new List<T>(collection);
-
             if (_heap.Count > 1)
             {
                 // Starting at the parent of the last element (which is the last non-leaf node in the tree), perform the
@@ -135,7 +132,7 @@ namespace Ookii.Jumbo
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0.</exception>
-        public PriorityQueue(int capacity, IComparer<T> comparer)
+        public PriorityQueue(int capacity, IComparer<T>? comparer)
             : this(new List<T>(capacity), comparer)
         {
         }
@@ -159,12 +156,12 @@ namespace Ookii.Jumbo
         ///   This constructor is an O(1) operation.
         /// </para>
         /// </remarks>
-        public PriorityQueue(IComparer<T> comparer)
+        public PriorityQueue(IComparer<T>? comparer)
             : this(new List<T>(), comparer)
         {
         }
 
-        private PriorityQueue(List<T> heap, IComparer<T> comparer)
+        private PriorityQueue(List<T> heap, IComparer<T>? comparer)
         {
             Comparer = comparer ?? Comparer<T>.Default;
             _heap = heap;

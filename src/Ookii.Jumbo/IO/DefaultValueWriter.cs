@@ -221,9 +221,8 @@ namespace Ookii.Jumbo.IO
             }
         }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes (instantiated by Activator).
-
         private class TupleWriter<T1> : IValueWriter<Tuple<T1>>
+            where T1 : notnull
         {
             public void Write(Tuple<T1> value, BinaryWriter writer)
             {
@@ -238,6 +237,8 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2> : IValueWriter<Tuple<T1, T2>>
+            where T1 : notnull
+            where T2 : notnull
         {
             public void Write(Tuple<T1, T2> value, BinaryWriter writer)
             {
@@ -253,6 +254,9 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3> : IValueWriter<Tuple<T1, T2, T3>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
         {
             public void Write(Tuple<T1, T2, T3> value, BinaryWriter writer)
             {
@@ -269,6 +273,10 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3, T4> : IValueWriter<Tuple<T1, T2, T3, T4>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
         {
             public void Write(Tuple<T1, T2, T3, T4> value, BinaryWriter writer)
             {
@@ -286,6 +294,11 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3, T4, T5> : IValueWriter<Tuple<T1, T2, T3, T4, T5>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
         {
             public void Write(Tuple<T1, T2, T3, T4, T5> value, BinaryWriter writer)
             {
@@ -304,6 +317,12 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3, T4, T5, T6> : IValueWriter<Tuple<T1, T2, T3, T4, T5, T6>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6> value, BinaryWriter writer)
             {
@@ -323,6 +342,13 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3, T4, T5, T6, T7> : IValueWriter<Tuple<T1, T2, T3, T4, T5, T6, T7>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
+            where T7 : notnull
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6, T7> value, BinaryWriter writer)
             {
@@ -343,6 +369,14 @@ namespace Ookii.Jumbo.IO
         }
 
         private class TupleWriter<T1, T2, T3, T4, T5, T6, T7, TRest> : IValueWriter<Tuple<T1, T2, T3, T4, T5, T6, T7, TRest>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
+            where T7 : notnull
+            where TRest : notnull
         {
             public void Write(Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> value, BinaryWriter writer)
             {
@@ -363,11 +397,8 @@ namespace Ookii.Jumbo.IO
             }
         }
 
-#pragma warning restore CA1812
-
         #endregion
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public static object GetWriter(Type type)
         {
             if (type == typeof(int))
@@ -402,21 +433,21 @@ namespace Ookii.Jumbo.IO
             {
                 var definition = type.GetGenericTypeDefinition();
                 if (definition == typeof(Tuple<>))
-                    return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,,,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,,,,,>))
-                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()));
+                    return Activator.CreateInstance(typeof(TupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 else
                     throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));
             }

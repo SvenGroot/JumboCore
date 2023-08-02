@@ -9,6 +9,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of record.</typeparam>
     public class EnumerableRecordReader<T> : RecordReader<T>
+        where T : notnull
     {
         private readonly IEnumerator<T> _enumerator;
         private readonly int _count;

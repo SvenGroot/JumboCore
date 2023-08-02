@@ -87,6 +87,7 @@ namespace Ookii.Jumbo
         /// <param name="list">A list.</param>
         /// <returns>A hash code for the entire sequence.</returns>
         public static int GetSequenceHashCode<T>(this IEnumerable<T> list)
+            where T : notnull
         {
             ArgumentNullException.ThrowIfNull(list);
             var hash = 0x218A9B2C;

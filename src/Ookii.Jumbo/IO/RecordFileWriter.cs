@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Ookii.Jumbo.IO
@@ -14,11 +15,12 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public class RecordFileWriter<T> : StreamRecordWriter<T>
+        where T : notnull
     {
-        private BinaryWriter _writer;
+        private BinaryWriter? _writer;
         private readonly RecordFileHeader _header;
         private long _lastRecordMarkerPosition;
-        private static readonly IValueWriter<T> _valueWriter = ValueWriter<T>.Writer;
+        private static readonly IValueWriter<T>? _valueWriter = ValueWriter<T>.Writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordFileWriter{T}"/> class that writes to the specified stream.
@@ -84,6 +86,7 @@ namespace Ookii.Jumbo.IO
             }
         }
 
+        [MemberNotNull(nameof(_writer))]
         private void CheckDisposed()
         {
             if (_writer == null)
@@ -99,7 +102,7 @@ namespace Ookii.Jumbo.IO
         private void WriteRecordMarker()
         {
             // The record file reader will read the record prefix and see this prefix instead, which tells it to read a record marker.
-            _writer.Write(RecordFile.RecordMarkerPrefix);
+            _writer!.Write(RecordFile.RecordMarkerPrefix);
             _lastRecordMarkerPosition = Stream.Position;
             _writer.Write(_header.RecordMarker);
         }

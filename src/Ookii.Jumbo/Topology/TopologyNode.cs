@@ -32,7 +32,7 @@ namespace Ookii.Jumbo.Topology
         /// <summary>
         /// Gets the rack this node belongs to.
         /// </summary>
-        public Rack Rack { get; internal set; }
+        public Rack? Rack { get; internal set; }
 
 
         /// <summary>
@@ -41,11 +41,11 @@ namespace Ookii.Jumbo.Topology
         /// <param name="hostName">The host name of the other node. May be <see langword="null"/>.</param>
         /// <param name="rackId">The rack ID of the other node. May be <see langword="null"/>.</param>
         /// <returns>0 if the two nodes are identical, 1 if they are in the same rack, or 2 if they are in different racks.</returns>
-        public int DistanceFrom(string hostName, string rackId)
+        public int DistanceFrom(string hostName, string? rackId)
         {
             if (Address.HostName == hostName)
                 return 0;
-            else if (Rack.RackId == rackId)
+            else if (Rack?.RackId == rackId)
                 return 1;
             else
                 return 2;
@@ -60,7 +60,7 @@ namespace Ookii.Jumbo.Topology
         {
             ArgumentNullException.ThrowIfNull(node);
 
-            return DistanceFrom(node.Address.HostName, node.Rack.RackId);
+            return DistanceFrom(node.Address.HostName, node.Rack?.RackId);
         }
     }
 }

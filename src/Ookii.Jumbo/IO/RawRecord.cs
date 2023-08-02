@@ -40,8 +40,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets the buffer containing the raw record.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Doesn't copy the array, and value is not intended to be write-protected.")]
-        public byte[] Buffer { get; private set; }
+        public byte[]? Buffer { get; private set; }
         /// <summary>
         /// Gets the offset in <see cref="Buffer"/> at which the record starts.
         /// </summary>
@@ -67,7 +66,7 @@ namespace Ookii.Jumbo.IO
         ///   is not big enough.
         /// </note>
         /// </remarks>
-        public void Reset(byte[] buffer, int offset, int count)
+        public void Reset(byte[]? buffer, int offset, int count)
         {
             Buffer = buffer;
             Offset = offset;

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Reflection;
 
 namespace Ookii.Jumbo.IO
 {
@@ -21,14 +22,14 @@ namespace Ookii.Jumbo.IO
         public static int Compare<T>(this IRawComparer<T> self, RawRecord record1, RawRecord record2)
         {
             ArgumentNullException.ThrowIfNull(self);
-            if (record1 == null)
+            if (record1?.Buffer == null)
             {
-                if (record2 == null)
+                if (record2?.Buffer == null)
                     return 0;
                 else
                     return -1;
             }
-            else if (record2 == null)
+            else if (record2?.Buffer == null)
                 return 1;
 
             return self.Compare(record1.Buffer, record1.Offset, record1.Count, record2.Buffer, record2.Offset, record2.Count);
@@ -111,19 +112,19 @@ namespace Ookii.Jumbo.IO
             return result;
         }
 
-        internal static IRawComparer<T> GetComparer<T>()
+        internal static IRawComparer<T>? GetComparer<T>()
         {
             var type = typeof(T);
-            var attribute = (RawComparerAttribute)Attribute.GetCustomAttribute(type, typeof(RawComparerAttribute));
+            var attribute = type.GetCustomAttribute<RawComparerAttribute>();
             if (attribute != null && !string.IsNullOrEmpty(attribute.RawComparerTypeName))
             {
-                var comparerType = Type.GetType(attribute.RawComparerTypeName);
+                var comparerType = Type.GetType(attribute.RawComparerTypeName, true)!;
                 if (comparerType.IsGenericTypeDefinition && type.IsGenericType)
                     comparerType = comparerType.MakeGenericType(type.GetGenericArguments());
-                return (IRawComparer<T>)Activator.CreateInstance(comparerType);
+                return (IRawComparer<T>)Activator.CreateInstance(comparerType)!;
             }
 
-            return (IRawComparer<T>)DefaultRawComparer.GetComparer(type);
+            return (IRawComparer<T>?)DefaultRawComparer.GetComparer(type);
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ookii.Jumbo.IO
 {
@@ -8,8 +9,8 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     public abstract class RecordInput : IDisposable
     {
-        private IRecordReader _reader;
-        private RecordReader<RawRecord> _rawReader;
+        private IRecordReader? _reader;
+        private RecordReader<RawRecord>? _rawReader;
         private bool _disposed;
 
         /// <summary>
@@ -55,7 +56,6 @@ namespace Ookii.Jumbo.IO
         ///   If the reader had not yet been created, it will be created by accessing this property.
         /// </para>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive")]
         public IRecordReader Reader
         {
             get
@@ -104,6 +104,7 @@ namespace Ookii.Jumbo.IO
         ///   for the <see cref="RecordReader{T}.HasRecords"/> property.
         /// </para>
         /// </remarks>
+        [MemberNotNullWhen(true, nameof(_reader))]
         public bool IsReaderCreated
         {
             get
@@ -125,6 +126,7 @@ namespace Ookii.Jumbo.IO
         ///   for the <see cref="RecordReader{T}.HasRecords"/> property.
         /// </para>
         /// </remarks>
+        [MemberNotNullWhen(true, nameof(_rawReader))]
         public bool IsRawReaderCreated
         {
             get

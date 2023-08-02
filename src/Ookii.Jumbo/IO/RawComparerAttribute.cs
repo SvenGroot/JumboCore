@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.IO
         public RawComparerAttribute(Type rawComparerTypeName)
         {
             ArgumentNullException.ThrowIfNull(rawComparerTypeName);
-            _rawComparerTypeName = rawComparerTypeName.AssemblyQualifiedName;
+            _rawComparerTypeName = rawComparerTypeName.AssemblyQualifiedName ?? string.Empty;
         }
 
         /// <summary>

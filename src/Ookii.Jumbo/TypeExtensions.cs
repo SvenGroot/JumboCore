@@ -14,7 +14,7 @@ namespace Ookii.Jumbo
         /// <param name="type">The type whose interfaces to check.</param>
         /// <param name="interfaceType">The generic type definition of the interface.</param>
         /// <returns>The instantiated generic interface type.</returns>
-        public static Type FindGenericInterfaceType(this Type type, Type interfaceType)
+        public static Type? FindGenericInterfaceType(this Type type, Type interfaceType)
         {
             return FindGenericInterfaceType(type, interfaceType, true);
         }
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo
         /// <param name="throwOnNotFound"><see langword="true"/> to throw an exception if the specified type doesn't implement the interface;
         /// <see langword="false"/> to return <see langword="null"/> in that case.</param>
         /// <returns>The instantiated generic interface type.</returns>
-        public static Type FindGenericInterfaceType(this Type type, Type interfaceType, bool throwOnNotFound)
+        public static Type? FindGenericInterfaceType(this Type type, Type interfaceType, bool throwOnNotFound)
         {
             ArgumentNullException.ThrowIfNull(type);
             ArgumentNullException.ThrowIfNull(interfaceType);
@@ -58,7 +58,7 @@ namespace Ookii.Jumbo
         /// <param name="throwOnNotFound"><see langword="true"/> to throw an exception if the specified type doesn't inherit from the type;
         /// <see langword="false"/> to return <see langword="null"/> in that case.</param>
         /// <returns>The instantiated generic base type.</returns>
-        public static Type FindGenericBaseType(this Type type, Type baseType, bool throwOnNotFound)
+        public static Type? FindGenericBaseType(this Type type, Type baseType, bool throwOnNotFound)
         {
             ArgumentNullException.ThrowIfNull(type);
             var current = type.BaseType;

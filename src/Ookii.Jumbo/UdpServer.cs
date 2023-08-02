@@ -133,7 +133,7 @@ namespace Ookii.Jumbo
         {
             try
             {
-                var client = (SlimUdpClient)ar.AsyncState;
+                var client = (SlimUdpClient)ar.AsyncState!;
                 byte[] message;
                 message = client.EndReceive(ar, out var remoteEndPoint);
                 client.BeginReceive(_callback, client);

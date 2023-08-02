@@ -65,7 +65,7 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         protected override IRecordReader CreateReader()
         {
-            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, _stream, 0, _stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, _stream, 0, _stream.Length, _allowRecordReuse, _inputContainsRecordSizes)!;
             reader.SourceName = _sourceName;
             return reader;
         }

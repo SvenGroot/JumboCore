@@ -18,7 +18,7 @@ namespace Ookii.Jumbo
         private long _bufferedMemory;
         private long _totalSwap;
         private long _availableSwap;
-        private StreamReader _procMemInfoReader;
+        private StreamReader? _procMemInfoReader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemoryStatus"/> class.
@@ -131,7 +131,7 @@ namespace Ookii.Jumbo
             _totalPhysicalMemory = (long)performanceInfo.PhysicalTotal * (long)performanceInfo.PageSize;
             _availablePhysicalMemory = (long)performanceInfo.PhysicalAvailable * (long)performanceInfo.PageSize;
 
-            var query = new SelectQuery("Win32_PageFileUsage", null, new[] { "CurrentUsage", "AllocatedBaseSize" });
+            var query = new SelectQuery("Win32_PageFileUsage", "", new[] { "CurrentUsage", "AllocatedBaseSize" });
             using (var searcher = new ManagementObjectSearcher(query))
             {
                 _totalSwap = 0;
@@ -154,6 +154,10 @@ namespace Ookii.Jumbo
                 {
                     _procMemInfoReader = File.OpenText("/proc/meminfo");
                 }
+                else
+                {
+                    return;
+                }
             }
             else
             {
@@ -162,7 +166,7 @@ namespace Ookii.Jumbo
             }
 
             var neededFields = 6;
-            string line;
+            string? line;
             while (neededFields > 0 && (line = _procMemInfoReader.ReadLine()) != null)
             {
                 if (ExtractMemInfoValue(line, "MemTotal:", ref _totalPhysicalMemory) ||

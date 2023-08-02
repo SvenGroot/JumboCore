@@ -12,6 +12,6 @@ namespace Ookii.Jumbo.Topology
         /// </summary>
         /// <param name="hostName">The host name of the node.</param>
         /// <returns>The rack ID of the rack that the server belongs to.</returns>
-        string ResolveNode(string hostName);
+        string? ResolveNode(string hostName);
     }
 }

@@ -8,7 +8,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     public class MemoryBufferStream : Stream
     {
-        private byte[] _buffer;
+        private byte[]? _buffer;
         private int _offset;
         private int _end;
         private int _position;
@@ -107,6 +107,11 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("No buffer is set.");
+            }
+
             if (_position + count >= _end)
                 count = _end - _position;
             Buffer.BlockCopy(_buffer, _position, buffer, offset, count);
@@ -122,6 +127,11 @@ namespace Ookii.Jumbo.IO
         /// </returns>
         public override int ReadByte()
         {
+            if (_buffer == null)
+            {
+                throw new InvalidOperationException("No buffer is set.");
+            }
+
             if (_position < _end)
                 return _buffer[_position++];
             else

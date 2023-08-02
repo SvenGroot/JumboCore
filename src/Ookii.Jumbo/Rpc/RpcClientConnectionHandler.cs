@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Rpc
             _cache = cache;
         }
 
-        public object SendRequest(string objectName, string interfaceName, string operationName, object[] parameters)
+        public object? SendRequest(string objectName, string interfaceName, string operationName, object[] parameters)
         {
             using (var stream = new MemoryStream())
             {
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Rpc
             }
 
             var status = (RpcResponseStatus)_stream.ReadByte();
-            object result = null;
+            object? result = null;
             if (status != RpcResponseStatus.SuccessNoValue)
                 result = _formatter.Deserialize(_stream);
 
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Rpc
                 return result;
             else
             {
-                throw (Exception)result;
+                throw (Exception)result!;
             }
         }
 

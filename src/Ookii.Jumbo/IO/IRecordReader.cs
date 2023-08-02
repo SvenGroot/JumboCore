@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ookii.Jumbo.IO
 {
@@ -16,7 +17,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Occurs when the value of the <see cref="HasRecords"/> property changes.
         /// </summary>
-        event EventHandler HasRecordsChanged;
+        event EventHandler? HasRecordsChanged;
 
         /// <summary>
         /// Gets the number of records that has been read by this record reader.
@@ -52,12 +53,12 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets the current record.
         /// </summary>
-        object CurrentRecord { get; }
+        object? CurrentRecord { get; }
 
         /// <summary>
         /// Gets or sets the an informational string indicating the source of the records.
         /// </summary>
-        string SourceName { get; set; }
+        string? SourceName { get; set; }
 
         /// <summary>
         /// Gets a value that indicates whether there are records available on the data source that this reader is reading from.
@@ -121,6 +122,7 @@ namespace Ookii.Jumbo.IO
         /// Reads a record.
         /// </summary>
         /// <returns><see langword="true"/> if an object was successfully read from the stream; <see langword="false"/> if the end of the stream or stream fragment was reached.</returns>
+        [MemberNotNullWhen(true, nameof(CurrentRecord))]
         bool ReadRecord();
     }
 }

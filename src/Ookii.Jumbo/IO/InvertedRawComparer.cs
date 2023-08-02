@@ -12,6 +12,7 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public class InvertedRawComparer<T> : IRawComparer<T>
+        where T : notnull
     {
         private readonly IRawComparer<T> _comparer = RawComparer<T>.CreateComparer();
 
@@ -38,7 +39,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
-        public int Compare(T x, T y)
+        public int Compare(T? x, T? y)
         {
             return _comparer.Compare(y, x);
         }

@@ -23,14 +23,15 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public class BinaryRecordReader<T> : StreamRecordReader<T>
+        where T : notnull
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(BinaryRecordReader<>));
 
         private BinaryReader _reader;
         private readonly bool _inputContainsRecordSizes;
-        private readonly T _record;
+        private readonly T? _record;
         private readonly bool _allowRecordReuse;
-        private readonly string _fileName;
+        private readonly string? _fileName;
         private readonly bool _deleteFile;
         private readonly long _end;
 
@@ -142,7 +143,7 @@ namespace Ookii.Jumbo.IO
             if (_allowRecordReuse)
             {
                 // _allowRecordReuse can only be true if the type implements IWritable
-                ((IWritable)_record).Read(_reader);
+                ((IWritable)_record!).Read(_reader);
                 CurrentRecord = _record;
             }
             else
@@ -167,7 +168,6 @@ namespace Ookii.Jumbo.IO
                 if (_reader != null)
                 {
                     ((IDisposable)_reader).Dispose();
-                    _reader = null;
                 }
             }
             if (_deleteFile)

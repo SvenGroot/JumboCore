@@ -50,14 +50,7 @@ namespace Ookii.Jumbo.IO
     public sealed class RecordFileHeader : IWritable
     {
         private static readonly byte[] _headerStart = new[] { (byte)'R', (byte)'E', (byte)'C', RecordFile.CurrentVersion };
-        private Type _recordType;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecordFileHeader"/> class that will be initialized using <see cref="IWritable.Read"/>.
-        /// </summary>
-        public RecordFileHeader()
-        {
-        }
+        private Type? _recordType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordFileHeader"/> class using the latest version and specified record type.
@@ -71,7 +64,7 @@ namespace Ookii.Jumbo.IO
 
             Version = RecordFile.CurrentVersion;
             if (useStrongName)
-                RecordTypeName = recordType.AssemblyQualifiedName;
+                RecordTypeName = recordType.AssemblyQualifiedName!;
             else
                 RecordTypeName = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}, {1}", recordType.FullName, recordType.Assembly.GetName().Name);
             _recordType = recordType;
@@ -98,7 +91,7 @@ namespace Ookii.Jumbo.IO
             get
             {
                 if (_recordType == null)
-                    _recordType = Type.GetType(RecordTypeName, true);
+                    _recordType = Type.GetType(RecordTypeName, true)!;
                 return _recordType;
             }
         }

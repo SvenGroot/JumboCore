@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Ookii.Jumbo.IO
@@ -16,8 +17,9 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public class BinaryRecordWriter<T> : StreamRecordWriter<T>
+        where T : notnull
     {
-        private BinaryWriter _writer;
+        private BinaryWriter? _writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryRecordWriter{T}"/> class.
@@ -61,6 +63,7 @@ namespace Ookii.Jumbo.IO
             }
         }
 
+        [MemberNotNull(nameof(_writer))]
         private void CheckDisposed()
         {
             if (_writer == null)

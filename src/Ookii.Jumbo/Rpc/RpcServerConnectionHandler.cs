@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Rpc
             _stream = new RpcStream(_serverSocket);
             _beginReadRequestCallback = new AsyncCallback(BeginReadRequestCallback);
             _formatter = new BinaryFormatter();
-            _context = new ServerContext() { ClientHostAddress = ((IPEndPoint)_serverSocket.RemoteEndPoint).Address };
+            _context = new ServerContext() { ClientHostAddress = ((IPEndPoint?)_serverSocket.RemoteEndPoint)?.Address };
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -103,7 +103,7 @@ namespace Ookii.Jumbo.Rpc
             return (object[])_formatter.Deserialize(_stream);
         }
 
-        public void SendResult(object obj)
+        public void SendResult(object? obj)
         {
             SendResponse(true, obj);
         }
@@ -125,7 +125,7 @@ namespace Ookii.Jumbo.Rpc
             }
         }
 
-        private void SendResponse(bool success, object response)
+        private void SendResponse(bool success, object? response)
         {
             using (var contentStream = new MemoryStream())
             {

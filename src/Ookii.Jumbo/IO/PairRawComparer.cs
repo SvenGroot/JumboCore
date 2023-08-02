@@ -9,7 +9,8 @@ namespace Ookii.Jumbo.IO
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public class PairRawComparer<TKey, TValue> : IRawComparer<Pair<TKey, TValue>>, IDeserializingRawComparer
-        where TKey : IComparable<TKey>
+        where TKey : notnull, IComparable<TKey>
+        where TValue : notnull
     {
         private readonly IRawComparer<TKey> _comparer;
 
@@ -25,7 +26,7 @@ namespace Ookii.Jumbo.IO
         /// Initializes a new instance of the <see cref="PairRawComparer{TKey, TValue}"/> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
-        public PairRawComparer(IRawComparer<TKey> comparer)
+        public PairRawComparer(IRawComparer<TKey>? comparer)
         {
             _comparer = comparer ?? RawComparer<TKey>.CreateComparer();
         }
@@ -61,7 +62,7 @@ namespace Ookii.Jumbo.IO
         /// <returns>
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
-        public int Compare(Pair<TKey, TValue> x, Pair<TKey, TValue> y)
+        public int Compare(Pair<TKey, TValue>? x, Pair<TKey, TValue>? y)
         {
             if (x == null)
             {

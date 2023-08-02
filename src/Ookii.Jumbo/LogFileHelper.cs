@@ -19,13 +19,13 @@ namespace Ookii.Jumbo
         /// <param name="maxSize">The maximum size, or zero to return the entire log file..</param>
         /// <returns>A <see cref="Stream"/> for the log file whose position is set so that no more than <paramref name="maxSize"/> bytes will be read if you read until the end,
         /// or <see langword="null"/> if the log file doesn't exist.</returns>
-        public static Stream GetLogFileStream(string serverName, LogFileKind kind, int maxSize)
+        public static Stream? GetLogFileStream(string serverName, LogFileKind kind, int maxSize)
         {
             ArgumentNullException.ThrowIfNull(serverName);
             if (maxSize < 0)
                 throw new ArgumentException("maxSize must be zero or higher positive.", nameof(maxSize));
 
-            string fileName = null;
+            string? fileName = null;
             switch (kind)
             {
             case LogFileKind.Log:
@@ -82,7 +82,7 @@ namespace Ookii.Jumbo
         /// <param name="kind">The kind of log file.</param>
         /// <param name="maxSize">The maximum size, or zero to return the entire log file..</param>
         /// <returns>The contents of the log file, or <see langword="null"/> if the log file doesn't exist.</returns>
-        public static string GetLogFileContents(string serverName, LogFileKind kind, int maxSize)
+        public static string? GetLogFileContents(string serverName, LogFileKind kind, int maxSize)
         {
             using (var logStream = GetLogFileStream(serverName, kind, maxSize))
             {

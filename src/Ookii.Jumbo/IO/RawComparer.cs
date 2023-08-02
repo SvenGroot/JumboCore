@@ -15,10 +15,10 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public static class RawComparer<T>
+        where T : notnull
     {
         #region Nested types
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "All resources are memory resources, and there's no place it would get disposed.")]
         private sealed class DeserializingComparer : IRawComparer<T>, IDeserializingRawComparer
         {
             private readonly IComparer<T> _comparer;
@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.IO
             private readonly BinaryReader _reader1;
             private readonly BinaryReader _reader2;
 
-            public DeserializingComparer(IComparer<T> comparer)
+            public DeserializingComparer(IComparer<T>? comparer)
             {
                 _comparer = comparer ?? Comparer<T>.Default;
                 _stream1 = new MemoryBufferStream();
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.IO
                 return _comparer.Compare(value1, value2);
             }
 
-            public int Compare(T x, T y)
+            public int Compare(T? x, T? y)
             {
                 return _comparer.Compare(x, y);
             }
@@ -59,14 +59,13 @@ namespace Ookii.Jumbo.IO
 
         #endregion
 
-        private static readonly IRawComparer<T> _comparer = RawComparerHelper.GetComparer<T>();
+        private static readonly IRawComparer<T>? _comparer = RawComparerHelper.GetComparer<T>();
 
         /// <summary>
         /// Gets the <see cref="IRawComparer{T}"/> instance, or <see langword="null"/> if the <typeparamref name="T"/> doesn't have
         /// a raw comparer.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
-        public static IRawComparer<T> Comparer
+        public static IRawComparer<T>? Comparer
         {
             get { return _comparer; }
         }
@@ -77,7 +76,6 @@ namespace Ookii.Jumbo.IO
         /// <returns>
         /// The raw comparer for the type, or a comparer that deserializes in order to compare if the type has no raw comparer.
         /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
         public static IRawComparer<T> CreateComparer()
         {
             return _comparer ?? new DeserializingComparer(null);
@@ -88,7 +86,6 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="comparer">The comparer.</param>
         /// <returns>A comparer that deserializes in order to compare if the type.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
         public static IRawComparer<T> CreateDeserializingComparer(IComparer<T> comparer)
         {
             return new DeserializingComparer(comparer);

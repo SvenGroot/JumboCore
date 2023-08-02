@@ -19,9 +19,9 @@ namespace Ookii.Jumbo.Topology
 
         private class RackInfo
         {
-            public string RackId { get; set; }
-            public Regex Regex { get; set; }
-            public RangeExpression RangeExpression { get; set; }
+            public string? RackId { get; set; }
+            public Regex? Regex { get; set; }
+            public RangeExpression? RangeExpression { get; set; }
         }
 
         #endregion
@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.Topology
         /// </summary>
         /// <param name="hostName">The host name of the node.</param>
         /// <returns>The rack ID of the rack that the server belongs to.</returns>
-        public string ResolveNode(string hostName)
+        public string? ResolveNode(string hostName)
         {
             ArgumentNullException.ThrowIfNull(hostName);
 
@@ -72,7 +72,7 @@ namespace Ookii.Jumbo.Topology
                 if (rack.Regex != null)
                     match = rack.Regex.IsMatch(hostName);
                 else
-                    match = rack.RangeExpression.Match(hostName, false);
+                    match = rack.RangeExpression!.Match(hostName, false);
 
                 if (match)
                     return rack.RackId;

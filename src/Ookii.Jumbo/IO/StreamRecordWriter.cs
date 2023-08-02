@@ -9,8 +9,9 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the record.</typeparam>
     public abstract class StreamRecordWriter<T> : RecordWriter<T>
+        where T : notnull
     {
-        private readonly IRecordOutputStream _recordOutputStream;
+        private readonly IRecordOutputStream? _recordOutputStream;
         private readonly long _startPosition;
 
         /// <summary>
@@ -51,8 +52,7 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                var compressionStream = Stream as ICompressor;
-                if (compressionStream == null)
+                if (Stream is not ICompressor compressionStream)
                     return Stream.Position - _startPosition;
                 else
                     return compressionStream.CompressedBytesWritten;
@@ -84,11 +84,7 @@ namespace Ookii.Jumbo.IO
             base.Dispose(disposing);
             if (disposing)
             {
-                if (Stream != null)
-                {
-                    Stream.Dispose();
-                    Stream = null;
-                }
+                Stream?.Dispose();
             }
         }
     }

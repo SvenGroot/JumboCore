@@ -3,8 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>Ookii.Jumbo.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

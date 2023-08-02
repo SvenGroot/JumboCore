@@ -10,13 +10,13 @@ namespace Ookii.Jumbo.Rpc
     public class ServerContext
     {
         [ThreadStatic]
-        private static ServerContext _current;
+        private static ServerContext? _current;
         private static readonly string _localHostName = System.Net.Dns.GetHostName();
 
         /// <summary>
         /// Gets the currently active server context for this thread.
         /// </summary>
-        public static ServerContext Current
+        public static ServerContext? Current
         {
             get { return _current; }
             internal set { _current = value; }
@@ -25,12 +25,12 @@ namespace Ookii.Jumbo.Rpc
         /// <summary>
         /// Gets the host name of the client that called the server.
         /// </summary>
-        public string ClientHostName { get; internal set; }
+        public string? ClientHostName { get; internal set; }
 
         /// <summary>
         /// Gets the IP address of the client that called the server.
         /// </summary>
-        public IPAddress ClientHostAddress { get; set; }
+        public IPAddress? ClientHostAddress { get; set; }
 
         /// <summary>
         /// Gets the name of the local host.

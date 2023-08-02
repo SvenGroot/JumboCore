@@ -27,6 +27,7 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public abstract class StreamRecordReader<T> : RecordReader<T>
+        where T : notnull
     {
         private bool _disposed;
         private long _bytesRead;
@@ -125,7 +126,7 @@ namespace Ookii.Jumbo.IO
         /// Gets or sets the <see cref="IRecordInputStream"/> implementation of <see cref="Stream"/>.
         /// </summary>
         /// <value><see cref="Stream"/> cast to <see cref="IRecordInputStream"/>, or <see langword="null"/> if it doesn't implement it.</value>
-        protected IRecordInputStream RecordInputStream { get; private set; }
+        protected IRecordInputStream? RecordInputStream { get; private set; }
 
         /// <summary>
         /// Gets or sets the offset of the first record.
@@ -234,7 +235,6 @@ namespace Ookii.Jumbo.IO
                         if (RecordInputStream != null)
                             _paddingBytesSkipped = RecordInputStream.PaddingBytesSkipped;
                         var s = Stream;
-                        Stream = null;
                         s.Dispose();
                     }
                 }

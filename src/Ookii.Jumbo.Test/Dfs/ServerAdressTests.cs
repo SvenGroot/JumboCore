@@ -7,14 +7,6 @@ namespace Ookii.Jumbo.Test.Dfs
     public class ServerAdressTests
     {
         [Test]
-        public void TestConstructor()
-        {
-            ServerAddress target = new ServerAddress();
-            Assert.IsNull(target.HostName);
-            Assert.AreEqual(0, target.Port);
-        }
-
-        [Test]
         public void TestConstructorHostAndPort()
         {
             ServerAddress target = new ServerAddress("foo", 5000);

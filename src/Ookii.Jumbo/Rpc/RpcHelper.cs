@@ -13,7 +13,7 @@ namespace Ookii.Jumbo.Rpc
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RpcHelper));
 
-        private static Dictionary<int, RpcServer> _serverChannels;
+        private static Dictionary<int, RpcServer>? _serverChannels;
         private static volatile bool _abortRetries;
 
         /// <summary>

@@ -16,15 +16,16 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     public class RecordFileReader<T> : StreamRecordReader<T>
+        where T : notnull
     {
         private BinaryReader _reader;
-        private readonly RecordFileHeader _header = new RecordFileHeader();
+        private readonly RecordFileHeader _header;
         private readonly byte[] _recordMarker = new byte[RecordFile.RecordMarkerSize];
         private long _lastRecordMarkerPosition;
         private readonly long _end;
         private readonly bool _allowRecordReuse;
-        private static readonly IValueWriter<T> _valueWriter = ValueWriter<T>.Writer;
-        private readonly IRecordInputStream _recordInputStream;
+        private static readonly IValueWriter<T>? _valueWriter = ValueWriter<T>.Writer;
+        private readonly IRecordInputStream? _recordInputStream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordFileReader{T}"/> class that reads from the specified stream.
@@ -61,6 +62,7 @@ namespace Ookii.Jumbo.IO
             ArgumentNullException.ThrowIfNull(stream);
 
             _reader = new BinaryReader(stream);
+            _header = (RecordFileHeader)FormatterServices.GetUninitializedObject(typeof(RecordFileHeader));
             ((IWritable)_header).Read(_reader);
 
             if (_header.RecordType != typeof(T))
@@ -145,7 +147,6 @@ namespace Ookii.Jumbo.IO
                 if (_reader != null)
                 {
                     ((IDisposable)_reader).Dispose();
-                    _reader = null;
                 }
             }
         }

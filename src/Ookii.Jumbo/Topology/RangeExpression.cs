@@ -265,8 +265,8 @@ namespace Ookii.Jumbo.Topology
         {
             var current = new List<BaseNode>();
             var currentGroup = current;
-            Stack<Tuple<List<BaseNode>, ChoiceNode>> groups = null;
-            ChoiceNode choice = null;
+            Stack<Tuple<List<BaseNode>, ChoiceNode>>? groups = null;
+            ChoiceNode? choice = null;
             var temp = new StringBuilder(pattern.Length);
             var state = ParseState.Text;
             var minInclusive = 0;
@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Topology
                         AddCurrentTextNode(current, temp);
                         if (groups == null)
                             groups = new Stack<Tuple<List<BaseNode>, ChoiceNode>>();
-                        groups.Push(Tuple.Create(currentGroup, choice));
+                        groups.Push(Tuple.Create(currentGroup, choice!));
                         currentGroup = new List<BaseNode>();
                         current = currentGroup;
                         choice = null;

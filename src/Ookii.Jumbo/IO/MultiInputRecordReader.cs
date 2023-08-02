@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -21,7 +22,7 @@ namespace Ookii.Jumbo.IO
         public static IEnumerable<Type> GetAcceptedInputTypes(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
-            var baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
+            var baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true)!;
 
             return GetAcceptedInputTypesCore(type, baseType);
         }
@@ -64,6 +65,7 @@ namespace Ookii.Jumbo.IO
     /// </note>
     /// </remarks>
     public abstract class MultiInputRecordReader<T> : RecordReader<T>, IMultiInputRecordReader
+        where T : notnull
     {
         #region Nested types
 
@@ -142,7 +144,7 @@ namespace Ookii.Jumbo.IO
                 }
             }
 
-            public RecordInput GetInput(int index, bool memoryOnly)
+            public RecordInput? GetInput(int index, bool memoryOnly)
             {
                 // Inputs that have been retrieved may not be moved; adjusting the _firstNonMemoryIndex field will make sure they won't be.
                 var result = _inputs[index];
@@ -180,7 +182,7 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Event raised when the value of the <see cref="CurrentPartition"/> property changes.
         /// </summary>
-        public event EventHandler CurrentPartitionChanged;
+        public event EventHandler? CurrentPartitionChanged;
 
         /// <summary>
         /// Event raised when the value of the <see cref="CurrentPartition"/> property is about to change.
@@ -196,7 +198,7 @@ namespace Ookii.Jumbo.IO
         ///   that were skipped in this fashion.
         /// </para>
         /// </remarks>
-        public event EventHandler<CurrentPartitionChangingEventArgs> CurrentPartitionChanging;
+        public event EventHandler<CurrentPartitionChangingEventArgs>? CurrentPartitionChanging;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiInputRecordReader{T}"/> class.
@@ -506,7 +508,7 @@ namespace Ookii.Jumbo.IO
                 throw new ArgumentOutOfRangeException(nameof(inputCount), "inputCount must be greater than zero.");
             if (inputCount > TotalInputCount)
                 inputCount = TotalInputCount;
-            Stopwatch sw = null;
+            Stopwatch? sw = null;
             if (timeout > 0)
                 sw = Stopwatch.StartNew();
             lock (_partitions)
@@ -514,9 +516,11 @@ namespace Ookii.Jumbo.IO
                 while (_partitions[_firstActivePartitionIndex].InputCount < inputCount)
                 {
                     var timeoutRemaining = Timeout.Infinite;
-                    if (timeout >= 0)
+                    if (timeout == 0)
+                        return false;
+                    if (timeout > 0)
                     {
-                        timeoutRemaining = (int)(timeout - sw.ElapsedMilliseconds);
+                        timeoutRemaining = (int)(timeout - sw!.ElapsedMilliseconds);
                         if (timeoutRemaining <= 0)
                             return false;
                     }
@@ -536,7 +540,7 @@ namespace Ookii.Jumbo.IO
         {
             lock (_partitions)
             {
-                return _partitions[_currentPartitionIndex].GetInput(index, false).Reader;
+                return _partitions[_currentPartitionIndex].GetInput(index, false)!.Reader;
             }
         }
 
@@ -556,7 +560,7 @@ namespace Ookii.Jumbo.IO
         ///   aren't guaranteed to return inputs from the same source.
         /// </para>
         /// </remarks>
-        protected IRecordReader GetInputReader(int partition, int index)
+        protected IRecordReader? GetInputReader(int partition, int index)
         {
             return GetInputReader(partition, index, false);
         }
@@ -586,7 +590,7 @@ namespace Ookii.Jumbo.IO
         ///   aren't guaranteed to return inputs from the same source.
         /// </para>
         /// </remarks>
-        protected IRecordReader GetInputReader(int partition, int index, bool memoryOnly)
+        protected IRecordReader? GetInputReader(int partition, int index, bool memoryOnly)
         {
             lock (_partitions)
             {
@@ -620,7 +624,7 @@ namespace Ookii.Jumbo.IO
         ///   aren't guaranteed to return inputs from the same source.
         /// </para>
         /// </remarks>
-        protected RecordInput GetInput(int partition, int index, bool memoryOnly)
+        protected RecordInput? GetInput(int partition, int index, bool memoryOnly)
         {
             lock (_partitions)
             {
