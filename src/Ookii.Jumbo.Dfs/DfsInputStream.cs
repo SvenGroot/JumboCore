@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -31,10 +32,10 @@ namespace Ookii.Jumbo.Dfs
         private int _lastBlockToDownload;
         private long _paddingSkipped;
 
-        private TcpClient _serverClient;
-        private NetworkStream _serverStream;
-        private BinaryReader _serverReader;
-        private List<ServerAddress> _dataServers;
+        private TcpClient? _serverClient;
+        private NetworkStream? _serverStream;
+        private BinaryReader? _serverReader;
+        private List<ServerAddress>? _dataServers;
         private int _currentServerIndex = 0;
         private Guid _currentBlockId;
 
@@ -419,7 +420,7 @@ namespace Ookii.Jumbo.Dfs
                             return false;
                     }
 
-                    var status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
+                    var status = (DataServerClientProtocolResult)_serverReader!.ReadInt16();
                     if (status != DataServerClientProtocolResult.Ok)
                     {
                         throw new DfsException("The data server reported an error.");
@@ -434,7 +435,7 @@ namespace Ookii.Jumbo.Dfs
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Error reading block {0} from server {1}", _currentBlockId, _dataServers[_currentServerIndex]), ex);
+                    _log.Error(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Error reading block {0} from server {1}", _currentBlockId, _dataServers![_currentServerIndex]), ex);
                     CloseDataServerConnection();
                     ++_currentServerIndex;
                     DataServerErrors++;

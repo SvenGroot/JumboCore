@@ -11,7 +11,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
     public sealed class LocalFileSystemClient : FileSystemClient
     {
         private static readonly LocalPathUtility _path = new LocalPathUtility();
-        private readonly string _rootPath;
+        private readonly string? _rootPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalFileSystemClient"/> class.
@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <value>
         /// The root path of the file system, or <see langword="null"/> if absolute paths are accepted as-is.
         /// </value>
-        public string RootPath
+        public string? RootPath
         {
             get { return _rootPath; }
         }
@@ -89,7 +89,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboDirectory"/> object representing the directory.
         /// </returns>
-        public override JumboDirectory GetDirectoryInfo(string path)
+        public override JumboDirectory? GetDirectoryInfo(string path)
         {
             ArgumentNullException.ThrowIfNull(path);
 
@@ -104,7 +104,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFile"/> object referring to the file.
         /// </returns>
-        public override JumboFile GetFileInfo(string path)
+        public override JumboFile? GetFileInfo(string path)
         {
             ArgumentNullException.ThrowIfNull(path);
 
@@ -119,7 +119,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null"/> if the .
         /// </returns>
-        public override JumboFileSystemEntry GetFileSystemEntryInfo(string path)
+        public override JumboFileSystemEntry? GetFileSystemEntryInfo(string path)
         {
             ArgumentNullException.ThrowIfNull(path);
 
@@ -233,7 +233,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 Directory.Move(source, destination);
         }
 
-        private static DfsConfiguration CreateLocalConfiguration(string rootPath)
+        private static DfsConfiguration CreateLocalConfiguration(string? rootPath)
         {
             var config = new DfsConfiguration();
             config.FileSystem.Url = rootPath == null ? new Uri("file:///") : new Uri(new Uri("file:///"), rootPath);
@@ -248,7 +248,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             {
                 if (System.IO.Path.IsPathRooted(path))
                 {
-                    var rootLength = System.IO.Path.GetPathRoot(path).Length;
+                    var rootLength = System.IO.Path.GetPathRoot(path)!.Length;
                     path = path.Substring(rootLength);
                 }
                 return System.IO.Path.Combine(_rootPath, path);

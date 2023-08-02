@@ -88,7 +88,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             {
                 var type = _fileSystemTypes[configuration.FileSystem.Url.Scheme];
 
-                return (FileSystemClient)Activator.CreateInstance(type, configuration);
+                return (FileSystemClient)Activator.CreateInstance(type, configuration)!;
             }
         }
 
@@ -106,21 +106,21 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </summary>
         /// <param name="path">The full path of the directory.</param>
         /// <returns>A <see cref="JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.</returns>
-        public abstract JumboDirectory GetDirectoryInfo(string path);
+        public abstract JumboDirectory? GetDirectoryInfo(string path);
 
         /// <summary>
         /// Gets information about a file.
         /// </summary>
         /// <param name="path">The full path of the file.</param>
         /// <returns>A <see cref="JumboFile"/> object referring to the file, or <see langword="null"/> if the file doesn't exist.</returns>
-        public abstract JumboFile GetFileInfo(string path);
+        public abstract JumboFile? GetFileInfo(string path);
 
         /// <summary>
         /// Gets information about a file or directory.
         /// </summary>
         /// <param name="path">The full path of the file or directory.</param>
         /// <returns>A <see cref="JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null" /> if the entry doesn't exist.</returns>
-        public abstract JumboFileSystemEntry GetFileSystemEntryInfo(string path);
+        public abstract JumboFileSystemEntry? GetFileSystemEntryInfo(string path);
 
         /// <summary>
         /// Creates the specified directory in the file system.
@@ -150,7 +150,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
         /// <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void UploadStream(Stream stream, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
+        public void UploadStream(Stream stream, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(targetPath);
             ArgumentNullException.ThrowIfNull(stream);
@@ -182,7 +182,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
         /// <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void UploadFile(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
+        public void UploadFile(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(targetPath);
             ArgumentNullException.ThrowIfNull(localSourcePath);
@@ -218,7 +218,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="replicationFactor">The number of replicas to create of the file's blocks, or zero to use the file system default replication factor. This parameter will be ignored if the file system doesn't support replication.</param>
         /// <param name="useLocalReplica"><see langword="true"/> to put the first replica on the node that's creating the file if it's part of the DFS cluster; otherwise, <see langword="false"/>. This parameter will be ignored if the file system doesn't support replica placement.</param>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void UploadDirectory(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback progressCallback)
+        public void UploadDirectory(string localSourcePath, string targetPath, int blockSize, int replicationFactor, bool useLocalReplica, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(localSourcePath);
             ArgumentNullException.ThrowIfNull(targetPath);
@@ -253,7 +253,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="sourcePath">The path of the file on the file system to download.</param>
         /// <param name="stream">The stream to save the file to.</param>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void DownloadStream(string sourcePath, Stream stream, ProgressCallback progressCallback)
+        public void DownloadStream(string sourcePath, Stream stream, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(sourcePath);
             ArgumentNullException.ThrowIfNull(stream);
@@ -281,7 +281,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="localTargetPath">The path of the file on the local file system to save the file to. If this is the
         /// name of an existing directory, the file will be downloaded to that directory.</param>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void DownloadFile(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
+        public void DownloadFile(string sourcePath, string localTargetPath, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(sourcePath);
             ArgumentNullException.ThrowIfNull(localTargetPath);
@@ -321,7 +321,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// specified directory.
         /// </remarks>
         /// <param name="progressCallback">The <see cref="ProgressCallback"/> that will be called to report progress of the operation. May be <see langword="null"/>.</param>
-        public void DownloadDirectory(string sourcePath, string localTargetPath, ProgressCallback progressCallback)
+        public void DownloadDirectory(string sourcePath, string localTargetPath, ProgressCallback? progressCallback)
         {
             ArgumentNullException.ThrowIfNull(sourcePath);
             ArgumentNullException.ThrowIfNull(localTargetPath);
@@ -414,7 +414,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="destination">The path to move the entry to.</param>
         public abstract void Move(string source, string destination);
 
-        private static void CopyStream(string fileName, Stream inputStream, Stream outputStream, ProgressCallback progressCallback)
+        private static void CopyStream(string fileName, Stream inputStream, Stream outputStream, ProgressCallback? progressCallback)
         {
             var buffer = new byte[4096];
             int bytesRead;

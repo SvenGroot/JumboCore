@@ -251,7 +251,7 @@ namespace Ookii.Jumbo.Dfs
         /// </summary>
         /// <param name="obj">The object to compare with.</param>
         /// <returns><see langword="true"/> if the object equals this instance; otherwise, false.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var other = obj as Packet;
             if (other != null)

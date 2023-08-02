@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Dfs
         /// </summary>
         /// <param name="path">The path string from which to obtain the file name and extension.</param>
         /// <returns>The file name and extension of the specified path string.</returns>
-        public static string GetFileName(string path)
+        public static string? GetFileName(string? path)
         {
             if (path != null)
             {
@@ -79,7 +79,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>Directory information for <paramref name="path"/>, or <see langword="null"/> if <paramref name="path"/> denotes a root directory. return <see cref="String.Empty"/> if <paramref name="path"/> does
         /// not contain directory information.</returns>
-        public static string GetDirectoryName(string path)
+        public static string? GetDirectoryName(string? path)
         {
             if (path != null)
             {

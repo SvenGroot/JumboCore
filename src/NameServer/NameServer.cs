@@ -352,11 +352,7 @@ namespace NameServerApplication
         public DfsMetrics GetMetrics()
         {
             _log.Debug("GetMetrics called");
-            var metrics = new DfsMetrics()
-            {
-                NameServer = _localAddress
-            };
-
+            var metrics = new DfsMetrics(_localAddress);
             lock (_blocks)
             {
                 metrics.TotalBlockCount = _blocks.Count;

@@ -95,7 +95,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFileSystemEntry"/> instance for the local file or directory.
         /// </returns>
-        public static JumboFileSystemEntry FromFileSystemInfo(FileSystemInfo info, string rootPath, bool includeChildren)
+        public static JumboFileSystemEntry FromFileSystemInfo(FileSystemInfo info, string? rootPath, bool includeChildren)
         {
             ArgumentNullException.ThrowIfNull(info);
 
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 return JumboDirectory.FromDirectoryInfo((DirectoryInfo)info, rootPath, includeChildren);
         }
 
-        internal static string StripRootPath(string fullPath, string rootPath)
+        internal static string StripRootPath(string fullPath, string? rootPath)
         {
             if (rootPath == null)
                 return fullPath;

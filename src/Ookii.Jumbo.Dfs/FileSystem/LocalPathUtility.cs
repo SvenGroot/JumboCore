@@ -10,7 +10,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             get { return Path.DirectorySeparatorChar; }
         }
 
-        public bool IsPathRooted(string path)
+        public bool IsPathRooted(string? path)
         {
             return Path.IsPathRooted(path);
         }
@@ -20,12 +20,12 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             return Path.Combine(path1, path2);
         }
 
-        public string GetFileName(string path)
+        public string? GetFileName(string? path)
         {
             return Path.GetFileName(path);
         }
 
-        public string GetDirectoryName(string path)
+        public string? GetDirectoryName(string? path)
         {
             return Path.GetDirectoryName(path);
         }

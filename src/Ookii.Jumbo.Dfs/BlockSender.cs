@@ -22,11 +22,11 @@ namespace Ookii.Jumbo.Dfs
 
         private readonly Guid _blockId;
         private readonly ServerAddress[] _dataServers;
-        private readonly BinaryWriter _clientWriter; // Not owned by this class; don't dispose.
-        private readonly TcpClient _serverClient;
-        private readonly NetworkStream _serverStream;
-        private readonly BinaryWriter _serverWriter;
-        private readonly BinaryReader _serverReader;
+        private readonly BinaryWriter? _clientWriter; // Not owned by this class; don't dispose.
+        private readonly TcpClient? _serverClient;
+        private readonly NetworkStream? _serverStream;
+        private readonly BinaryWriter? _serverWriter;
+        private readonly BinaryReader? _serverReader;
 
         private readonly BlockingCollection<long> _pendingAcknowledgements = new BlockingCollection<long>();
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
@@ -52,7 +52,7 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="blockId">The <see cref="Guid"/> of the block to send.</param>
         /// <param name="dataServers">The data servers that the block should be forwarded to. May be an empty list.</param>
         /// <param name="clientWriter">The writer to use to forward acknowledgements. May be null.</param>
-        public BlockSender(Guid blockId, IEnumerable<ServerAddress> dataServers, BinaryWriter clientWriter)
+        public BlockSender(Guid blockId, IEnumerable<ServerAddress> dataServers, BinaryWriter? clientWriter)
         {
             _blockId = blockId;
             _clientWriter = clientWriter;
@@ -189,15 +189,15 @@ namespace Ookii.Jumbo.Dfs
             var header = new DataServerClientProtocolWriteHeader(_dataServers);
             header.BlockId = _blockId;
             var formatter = new BinaryFormatter();
-            formatter.Serialize(_serverStream, header);
-            _serverStream.Flush();
+            formatter.Serialize(_serverStream!, header);
+            _serverStream!.Flush();
 
             return ReadResult();
         }
 
         private bool ReadResult()
         {
-            var result = (DataServerClientProtocolResult)_serverReader.ReadInt16();
+            var result = (DataServerClientProtocolResult)_serverReader!.ReadInt16();
             if (result != DataServerClientProtocolResult.Ok)
             {
                 _serverStatus = result;
@@ -221,7 +221,7 @@ namespace Ookii.Jumbo.Dfs
                 {
                     while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out var expected, Timeout.Infinite, _cancellation.Token))
                     {
-                        var sequenceNumber = _serverReader.ReadInt64();
+                        var sequenceNumber = _serverReader!.ReadInt64();
                         if (sequenceNumber != expected)
                         {
                             _log.ErrorFormat("Block sender received unexpected sequence number acknowledgement {0}", sequenceNumber);
@@ -247,7 +247,7 @@ namespace Ookii.Jumbo.Dfs
                 {
                     while (!_cancellation.IsCancellationRequested && _pendingAcknowledgements.TryTake(out var sequenceNumber, Timeout.Infinite, _cancellation.Token))
                     {
-                        _clientWriter.Write(sequenceNumber);
+                        _clientWriter!.Write(sequenceNumber);
                     }
                     Debug.Assert(_pendingAcknowledgements.IsCompleted || _cancellation.IsCancellationRequested);
 

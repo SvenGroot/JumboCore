@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Ookii.Jumbo.IO;
 
@@ -14,15 +15,15 @@ namespace Ookii.Jumbo.Dfs
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(DfsOutputStream));
         private readonly Packet _packet = new Packet();
         private long _nextSequenceNumber;
-        private BlockSender _sender;
-        private BlockAssignment _block;
+        private BlockSender? _sender;
+        private BlockAssignment? _block;
         private readonly INameServerClientProtocol _nameServer;
         private readonly string _path;
         private readonly RecordStreamOptions _recordOptions;
         private readonly bool _useLocalReplica;
         private int _blockBytesWritten;
         private readonly byte[] _buffer = new byte[Packet.PacketSize];
-        private readonly MemoryStream _recordBuffer;
+        private readonly MemoryStream? _recordBuffer;
         private int _bufferPos;
         private bool _disposed = false;
         private long _fileBytesWritten;
@@ -416,6 +417,7 @@ namespace Ookii.Jumbo.Dfs
             _sender.SendPacket(_packet);
         }
 
+        [MemberNotNull(nameof(_sender))]
         private void EnsureSenderCreated()
         {
             if (_sender == null)
@@ -446,7 +448,7 @@ namespace Ookii.Jumbo.Dfs
                 // Do we really want to wait here? We could just let it run in the background and continue on our
                 // merry way. That would require keeping track of them so we know in Dispose when we're really finished.
                 // It would also require the name server to allow appending of new blocks while old ones are still pending.
-                _sender.WaitForAcknowledgements();
+                _sender!.WaitForAcknowledgements();
                 _sender.ThrowIfErrorOccurred();
                 _sender = null;
                 _block = null;

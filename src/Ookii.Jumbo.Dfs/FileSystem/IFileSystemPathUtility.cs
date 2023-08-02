@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -18,7 +19,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><see langword="true"/> if the path is rooted; otherwise, <see langword="false"/>.</returns>
-        bool IsPathRooted(string path);
+        bool IsPathRooted(string? path);
 
         /// <summary>
         /// Combines two paths.
@@ -33,7 +34,8 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </summary>
         /// <param name="path">The path string from which to obtain the file name and extension.</param>
         /// <returns>The characters after the last directory character in path.</returns>
-        string GetFileName(string path);
+        [return: NotNullIfNotNull(nameof(path))]
+        string? GetFileName(string? path);
 
         /// <summary>
         /// Returns the directory information for the specified path string.
@@ -41,6 +43,6 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>Directory information for <paramref name="path"/>, or <see langword="null"/> if <paramref name="path"/> denotes a root directory. return <see cref="String.Empty"/> if <paramref name="path"/> does
         /// not contain directory information.</returns>
-        string GetDirectoryName(string path);
+        string? GetDirectoryName(string? path);
     }
 }

@@ -15,10 +15,21 @@ namespace Ookii.Jumbo.Dfs
         private readonly Collection<DataServerMetrics> _dataServers = new Collection<DataServerMetrics>();
 
         /// <summary>
-        /// Gets or sets the address of the name server.
+        /// Initializes a new instance of the <see cref="DfsMetrics"/> class.
+        /// </summary>
+        /// <param name="nameServer">The address of the name server.</param>
+        public DfsMetrics(ServerAddress nameServer) 
+        {
+            ArgumentNullException.ThrowIfNull(nameServer);
+            NameServer = nameServer;
+        }
+
+
+        /// <summary>
+        /// Gets the address of the name server.
         /// </summary>
         /// <value>The address of the name server.</value>
-        public ServerAddress NameServer { get; set; }
+        public ServerAddress NameServer { get; }
 
         /// <summary>
         /// Gets or sets the total size of all files.

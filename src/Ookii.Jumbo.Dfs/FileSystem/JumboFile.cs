@@ -35,7 +35,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="recordOptions">The record options.</param>
         /// <param name="isOpenForWriting">if set to <see langword="true"/> the file is open for writing.</param>
         /// <param name="blocks">The blocks that make up this file. May be <see langword="null"/>.</param>
-        public JumboFile(string fullPath, string name, DateTime dateCreated, long size, long blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool isOpenForWriting, IEnumerable<Guid> blocks)
+        public JumboFile(string fullPath, string name, DateTime dateCreated, long size, long blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool isOpenForWriting, IEnumerable<Guid>? blocks)
             : base(fullPath, name, dateCreated)
         {
             if (size < 0)
@@ -133,7 +133,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFile"/> instance for the local file.
         /// </returns>
-        public static JumboFile FromFileInfo(FileInfo file, string rootPath)
+        public static JumboFile FromFileInfo(FileInfo file, string? rootPath)
         {
             ArgumentNullException.ThrowIfNull(file);
             if (!file.Exists)

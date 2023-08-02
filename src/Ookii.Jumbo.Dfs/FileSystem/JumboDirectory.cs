@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <param name="name">The name of the directory.</param>
         /// <param name="dateCreated">The date the directory was created.</param>
         /// <param name="children">The children of the directory. May be <see langword="null"/>.</param>
-        public JumboDirectory(string fullPath, string name, DateTime dateCreated, IEnumerable<JumboFileSystemEntry> children)
+        public JumboDirectory(string fullPath, string name, DateTime dateCreated, IEnumerable<JumboFileSystemEntry>? children)
             : base(fullPath, name, dateCreated)
         {
             if (children != null)
@@ -54,7 +54,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboDirectory"/> instance for the local directory.
         /// </returns>
-        public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string rootPath)
+        public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string? rootPath)
         {
             return FromDirectoryInfo(directory, rootPath, true);
         }
@@ -68,13 +68,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboDirectory"/> instance for the local directory.
         /// </returns>
-        public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string rootPath, bool includeChildren)
+        public static JumboDirectory FromDirectoryInfo(DirectoryInfo directory, string? rootPath, bool includeChildren)
         {
             ArgumentNullException.ThrowIfNull(directory);
             if (!directory.Exists)
                 throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, "The directory '{0}' does not exist.", directory.FullName));
 
-            IEnumerable<JumboFileSystemEntry> children = null;
+            IEnumerable<JumboFileSystemEntry>? children = null;
             if (includeChildren)
                 children = directory.GetFileSystemInfos().Select(info => JumboFileSystemEntry.FromFileSystemInfo(info, rootPath, false));
             var fullPath = StripRootPath(directory.FullName, rootPath);
@@ -86,7 +86,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// </summary>
         /// <param name="name">The name of the child.</param>
         /// <returns>The <see cref="JumboFileSystemEntry"/> for the child, or <see langword="null"/> if it doesn't exist.</returns>
-        public JumboFileSystemEntry GetChild(string name)
+        public JumboFileSystemEntry? GetChild(string name)
         {
             ArgumentNullException.ThrowIfNull(name);
             return _children.Where(child => child.Name == name).SingleOrDefault();
