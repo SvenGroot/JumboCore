@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Test.Jet
             FileSystemClient fileSystemClient = Cluster.FileSystemClient;
 
             JobConfiguration config = CreateWordCountJob(fileSystemClient, null, TaskKind.Pull, ChannelType.File, false);
-
+            config.AddTypedSetting(WordCountTask.DelayTimeSettingKey, 5000);
             JetClient target = new JetClient(TestJetCluster.CreateClientConfig());
             Job job = target.RunJob(config, fileSystemClient, typeof(LineCounterTask).Assembly.Location);
 
