@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// Gets or sets the feature.
         /// </summary>
         /// <value>The feature.</value>
-        public Utf8String Feature { get; set; }
+        public Utf8String? Feature { get; set; }
         /// <summary>
         /// Gets or sets the support.
         /// </summary>
@@ -42,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// </summary>
         /// <param name="other">The other.</param>
         /// <returns>The comparison result.</returns>
-        public int CompareTo(FGListItem other)
+        public int CompareTo(FGListItem? other)
         {
             if (other == null)
                 return 1;
@@ -50,7 +50,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             int result = other.Support.CompareTo(Support); // Sort on support descending
             if (result == 0)
             {
-                result = Feature.CompareTo(other.Feature); // And feature ascending
+                result = Feature!.CompareTo(other.Feature); // And feature ascending
             }
             return result;
         }

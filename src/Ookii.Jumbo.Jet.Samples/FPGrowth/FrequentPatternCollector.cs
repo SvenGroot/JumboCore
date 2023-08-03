@@ -15,12 +15,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private readonly int[] _perfectExtensionCount;
         private readonly int[] _perfectExtensions;
         private int _perfectExtensionItemIndex;
-        private readonly FrequentPatternMaxHeap[] _itemHeaps;
+        private readonly FrequentPatternMaxHeap[]? _itemHeaps;
         private readonly int _minSupport;
         private readonly bool _expandPerfectExtensions;
         private readonly int _heapSize;
 
-        public FrequentPatternCollector(int itemCount, int weight, bool expandPerfectExtensions, int minSupport, int k, FrequentPatternMaxHeap[] itemHeaps)
+        public FrequentPatternCollector(int itemCount, int weight, bool expandPerfectExtensions, int minSupport, int k, FrequentPatternMaxHeap[]? itemHeaps)
         {
             _items = new int[itemCount];
             _perfectExtensions = new int[itemCount];
@@ -54,7 +54,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             return (_itemHeaps == null || _itemHeaps[item] == null) ? _minSupport : _itemHeaps[item].MinSupport;
         }
 
-        public FrequentPatternMaxHeap[] ItemHeaps
+        public FrequentPatternMaxHeap[]? ItemHeaps
         {
             get { return _itemHeaps; }
         }

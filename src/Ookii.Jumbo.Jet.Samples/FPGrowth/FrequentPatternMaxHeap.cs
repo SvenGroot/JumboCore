@@ -10,11 +10,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private readonly PriorityQueue<MappedFrequentPattern> _queue;
         private readonly int _maxSize;
         private int _minSupport;
-        private Dictionary<int, HashSet<MappedFrequentPattern>> _patternIndex;
+        private Dictionary<int, HashSet<MappedFrequentPattern>>? _patternIndex;
         private readonly bool _subPatternCheck;
-        private int _addCount;
 
-        public FrequentPatternMaxHeap(int maxSize, int minSupport, bool subPatternCheck, IEnumerable<MappedFrequentPattern> collection)
+        public FrequentPatternMaxHeap(int maxSize, int minSupport, bool subPatternCheck, IEnumerable<MappedFrequentPattern>? collection)
         {
             _minSupport = minSupport;
             _maxSize = maxSize;
@@ -34,7 +33,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 {
                     foreach (MappedFrequentPattern pattern in collection)
                     {
-                        HashSet<MappedFrequentPattern> index;
+                        HashSet<MappedFrequentPattern>? index;
                         if (!_patternIndex.TryGetValue(pattern.Support, out index))
                         {
                             index = new HashSet<MappedFrequentPattern>();
@@ -65,7 +64,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                     PriorityQueue<MappedFrequentPattern> result = new PriorityQueue<MappedFrequentPattern>(_maxSize, null);
                     foreach (MappedFrequentPattern p in _queue)
                     {
-                        if (_patternIndex[p.Support].Contains(p))
+                        if (_patternIndex![p.Support].Contains(p))
                             result.Enqueue(p);
                     }
                     return result;
@@ -83,7 +82,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 {
                     MappedFrequentPattern removedPattern = _queue.Dequeue();
                     if (_subPatternCheck)
-                        _patternIndex[removedPattern.Support].Remove(removedPattern);
+                        _patternIndex![removedPattern.Support].Remove(removedPattern);
                     _minSupport = _queue.Peek().Support;
                 }
             }
@@ -124,7 +123,6 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private bool AddInternal(MappedFrequentPattern pattern)
         {
-            ++_addCount;
             if (!_subPatternCheck)
             {
                 _queue.Enqueue(pattern);
@@ -132,10 +130,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             }
             else
             {
-                HashSet<MappedFrequentPattern> index;
-                if (_patternIndex.TryGetValue(pattern.Support, out index))
+                HashSet<MappedFrequentPattern>? index;
+                if (_patternIndex!.TryGetValue(pattern.Support, out index))
                 {
-                    MappedFrequentPattern patternToReplace = null;
+                    MappedFrequentPattern? patternToReplace = null;
                     foreach (MappedFrequentPattern p in index)
                     {
                         if (pattern.IsSubpatternOf(p))

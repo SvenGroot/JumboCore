@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             _position = offset;
             _end = offset + size;
 
-            IRecordInputStream recordInputStream = stream as IRecordInputStream;
+            IRecordInputStream? recordInputStream = stream as IRecordInputStream;
             long rem;
             if (recordInputStream != null && (recordInputStream.RecordOptions & RecordStreamOptions.DoNotCrossBoundary) == RecordStreamOptions.DoNotCrossBoundary)
             {

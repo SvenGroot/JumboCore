@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(Position = 0, IsRequired = true), Description("The output directory on the Jumbo DFS where the generated data will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the task count.
@@ -90,7 +90,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="context">The context.</param>
         public static void Generate(RecordWriter<Utf8String> output, ProgressContext context)
         {
-            long sizePerTask = context.TaskContext.GetSetting("GenerateText.SizePerTask", BinarySize.Zero).Value;
+            long sizePerTask = context.TaskContext!.GetSetting("GenerateText.SizePerTask", BinarySize.Zero).Value;
             int wordsPerLine = context.TaskContext.GetSetting("GenerateText.WordsPerLine", 10);
             int wordsPerLineRandomization = context.TaskContext.GetSetting("GenerateText.WordsPerLineRandomization", 5);
 

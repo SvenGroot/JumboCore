@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
     /// </summary>
     public class Transaction : IWritable, ITransaction
     {
-        private int[] _items;
+        private int[] _items = Array.Empty<int>();
 
         /// <summary>
         /// Gets or sets the items.

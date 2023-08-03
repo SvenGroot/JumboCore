@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <returns>
         /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.ValueMeaningLess than zero<paramref name="x" /> is less than <paramref name="y" />.-or-<paramref name="x" /> is null.Zero<paramref name="x" /> is equal to <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.-or-<paramref name="y" /> is null.
         /// </returns>
-        public override int Compare(string x, string y)
+        public override int Compare(string? x, string? y)
         {
             return OrdinalIgnoreCase.Compare(x, y);
         }
@@ -29,7 +29,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <returns>
         /// <see langword="true"/> if <paramref name="x" /> and <paramref name="y" /> refer to the same object, or <paramref name="x" /> and <paramref name="y" /> are equal; otherwise, <see langword="false"/>.
         /// </returns>
-        public override bool Equals(string x, string y)
+        public override bool Equals(string? x, string? y)
         {
             return OrdinalIgnoreCase.Equals(x, y);
         }

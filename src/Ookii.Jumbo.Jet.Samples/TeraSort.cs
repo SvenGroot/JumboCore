@@ -27,7 +27,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The input path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 0), Description("The input file or directory containing the data to be sorted.")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 1), Description("The output directory where the sorted data will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the merge tasks.
@@ -76,7 +76,7 @@ namespace Ookii.Jumbo.Jet.Samples
             var input = job.Read(InputPath, typeof(GenSortRecordReader));
 
             var sorted = job.SpillSort(input);
-            sorted.InputChannel.PartitionerType = typeof(RangePartitioner);
+            sorted.InputChannel!.PartitionerType = typeof(RangePartitioner);
             sorted.InputChannel.TaskCount = MergeTasks;
             sorted.InputChannel.PartitionsPerTask = PartitionsPerTask;
 
@@ -94,7 +94,7 @@ namespace Ookii.Jumbo.Jet.Samples
             string partitionFileName = FileSystemClient.Path.Combine(job.Path, RangePartitioner.SplitFileName);
             var input = (from stage in jobConfiguration.Stages
                          where stage.DataInput != null
-                         select stage.DataInput).SingleOrDefault();
+                         select stage.DataInput).Single();
             RangePartitioner.CreatePartitionFile(FileSystemClient, partitionFileName, input, MergeTasks, SampleSize);
         }
     }

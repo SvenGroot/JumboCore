@@ -76,7 +76,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// </summary>
         /// <param name="obj">The object to test for equality.</param>
         /// <returns><see langword="true"/> if this instance is equal to <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is UInt128))
                 return false;

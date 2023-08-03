@@ -32,7 +32,7 @@ namespace Ookii.Jumbo.Jet.Samples
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(ValSort));
 
-        private string _outputFile;
+        private string? _outputFile;
 
         /// <summary>
         /// Gets or sets the input path.
@@ -41,7 +41,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The input path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 0), Description("The input file or directory containing the data to validate.")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -50,7 +50,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 1), Description("The output directory where the results of the validation will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets a value indicating whether verbose logging of unsorted record locations is enabled in the combiner task.
@@ -70,9 +70,9 @@ namespace Ookii.Jumbo.Jet.Samples
             var input = job.Read(InputPath, typeof(GenSortRecordReader));
             var validatedSegments = job.Process<GenSortRecord, ValSortRecord>(input, ValidateRecords);
             var sorted = job.SpillSort(validatedSegments);
-            sorted.InputChannel.PartitionCount = 1;
+            sorted.InputChannel!.PartitionCount = 1;
             var validated = job.Process<ValSortRecord, string>(sorted, ValidateResults);
-            validated.InputChannel.ChannelType = ChannelType.Pipeline;
+            validated.InputChannel!.ChannelType = ChannelType.Pipeline;
             WriteOutput(validated, OutputPath, typeof(TextRecordWriter<>));
         }
 
@@ -83,7 +83,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="jobConfiguration"></param>
         protected override void OnJobCreated(Job job, JobConfiguration jobConfiguration)
         {
-            _outputFile = FileDataOutput.GetOutputPath(jobConfiguration.GetStage("ValidateResultsTaskStage"), 1);
+            _outputFile = FileDataOutput.GetOutputPath(jobConfiguration.GetStage("ValidateResultsTaskStage")!, 1);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Ookii.Jumbo.Jet.Samples
                 Console.WriteLine();
                 try
                 {
-                    using (Stream stream = FileSystemClient.OpenFile(_outputFile))
+                    using (Stream stream = FileSystemClient.OpenFile(_outputFile!))
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         Console.WriteLine(reader.ReadToEnd());
@@ -126,8 +126,8 @@ namespace Ookii.Jumbo.Jet.Samples
             UInt128 duplicates = UInt128.Zero;
             UInt128 unsorted = UInt128.Zero;
             UInt128 count = UInt128.Zero;
-            GenSortRecord first = null;
-            GenSortRecord prev = null;
+            GenSortRecord? first = null;
+            GenSortRecord? prev = null;
             UInt128? firstUnordered = null;
             foreach (GenSortRecord record in input.EnumerateRecords())
             {
@@ -155,15 +155,15 @@ namespace Ookii.Jumbo.Jet.Samples
                 ++count;
             }
 
-            FileTaskInput taskInput = (FileTaskInput)context.TaskInput;
+            FileTaskInput taskInput = (FileTaskInput)context.TaskInput!;
             _log.InfoFormat("Input file {0} split offset {1} size {2} contains {3} unordered records.", taskInput.Path, taskInput.Offset, taskInput.Size, unsorted);
 
             ValSortRecord result = new ValSortRecord()
             {
                 InputId = taskInput.Path,
                 InputOffset = taskInput.Offset,
-                FirstKey = first.ExtractKeyBytes(),
-                LastKey = prev.ExtractKeyBytes(),
+                FirstKey = first!.ExtractKeyBytes(),
+                LastKey = prev!.ExtractKeyBytes(),
                 Records = count,
                 UnsortedRecords = unsorted,
                 FirstUnsorted = firstUnordered != null ? firstUnordered.Value : UInt128.Zero,
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// </remarks>
         public static void ValidateResults(RecordReader<ValSortRecord> input, RecordWriter<string> output, TaskContext context)
         {
-            ValSortRecord prev = null;
+            ValSortRecord? prev = null;
             UInt128 checksum = UInt128.Zero;
             UInt128 unsortedRecords = UInt128.Zero;
             UInt128 duplicates = UInt128.Zero;
@@ -197,7 +197,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
                 if (prev != null)
                 {
-                    int diff = GenSortRecord.CompareKeys(prev.LastKey, record.FirstKey);
+                    int diff = GenSortRecord.CompareKeys(prev.LastKey!, record.FirstKey!);
                     if (diff == 0)
                         ++duplicates;
                     else if (diff > 0)
@@ -212,7 +212,7 @@ namespace Ookii.Jumbo.Jet.Samples
                 }
 
                 if (verbose && record.UnsortedRecords.High64 > 0 || record.UnsortedRecords.Low64 > 0)
-                    _log.InfoFormat("Input part {0}-{1} has {2} unsorted records.", prev.InputId, prev.InputOffset, record.UnsortedRecords);
+                    _log.InfoFormat("Input part {0}-{1} has {2} unsorted records.", prev!.InputId, prev.InputOffset, record.UnsortedRecords);
 
                 unsortedRecords += record.UnsortedRecords;
                 checksum += record.Checksum;
@@ -228,7 +228,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
             if (unsortedRecords != UInt128.Zero)
             {
-                output.WriteRecord(string.Format("First unordered record is record {0}", firstUnsorted.Value));
+                output.WriteRecord(string.Format("First unordered record is record {0}", firstUnsorted!.Value));
             }
             output.WriteRecord(string.Format("Records: {0}", records));
             output.WriteRecord(string.Format("Checksum: {0}", checksum.ToHexString()));

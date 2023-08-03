@@ -58,7 +58,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// The input path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 0), Description("The input file or directory containing the transaction database. The database should be a plain text file where each line is a transaction containing a space-separated list of items.")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -67,7 +67,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// The output path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 1), Description("The output directory where the result will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the min support.
@@ -150,13 +150,13 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             var countedFeatures = job.Process<Utf8String, Pair<Utf8String, int>>(input, CountFeatures);
             // Count the frequency of each feature.
             var aggregatedFeatureCounts = job.GroupAggregate<Utf8String, int>(countedFeatures, AccumulateFeatureCounts);
-            aggregatedFeatureCounts.InputChannel.TaskCount = AccumulatorTaskCount;
+            aggregatedFeatureCounts.InputChannel!.TaskCount = AccumulatorTaskCount;
             // Remove non-frequent features
             var filteredFeatureCounts = job.Process(aggregatedFeatureCounts, typeof(FeatureFilterTask));
-            filteredFeatureCounts.InputChannel.ChannelType = ChannelType.Pipeline;
+            filteredFeatureCounts.InputChannel!.ChannelType = ChannelType.Pipeline;
             // Sort and group the features.
             var groupedFeatures = job.Process(filteredFeatureCounts, typeof(FeatureGroupTask));
-            groupedFeatures.InputChannel.TaskCount = 1;
+            groupedFeatures.InputChannel!.TaskCount = 1;
             WriteOutput(groupedFeatures, fglistDirectory, typeof(BinaryRecordWriter<>));
 
             // Generate group-dependent transactions
@@ -165,12 +165,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
             // Mine groups for frequent patterns.
             var patterns = job.Process(groupedTransactions, typeof(TransactionMiningTask));
-            patterns.InputChannel.TaskCount = FPGrowthTaskCount;
+            patterns.InputChannel!.TaskCount = FPGrowthTaskCount;
             patterns.InputChannel.PartitionsPerTask = PartitionsPerTask;
 
             // Aggregate frequent patterns.
             var aggregatedPatterns = job.Process<Pair<int, WritableCollection<MappedFrequentPattern>>, Pair<Utf8String, WritableCollection<FrequentPattern>>>(patterns, AggregatePatterns);
-            aggregatedPatterns.InputChannel.TaskCount = AggregateTaskCount;
+            aggregatedPatterns.InputChannel!.TaskCount = AggregateTaskCount;
             WriteOutput(aggregatedPatterns, resultDirectory, BinaryOutput ? typeof(BinaryRecordWriter<>) : typeof(TextRecordWriter<>));
 
             job.Settings.Add("PFPGrowth.FGListPath", FileSystemClient.Path.Combine(fglistDirectory, "FeatureGroupTaskStage-00001"));
@@ -193,7 +193,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 string[] items = transaction.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string item in items)
                 {
-                    record.Key.Set(item);
+                    record.Key!.Set(item);
                     output.WriteRecord(record);
                 }
             }
@@ -289,7 +289,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 int maxPerGroup = itemCount / numGroups;
                 if (itemCount % numGroups != 0)
                     maxPerGroup++;
-                FrequentPatternMaxHeap[] itemHeaps = null;
+                FrequentPatternMaxHeap[]? itemHeaps = null;
                 while (true)
                 {
                     FPTree tree;
@@ -340,12 +340,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 FrequentPatternMaxHeap heap = heaps[record.Key];
                 if (heap == null)
                 {
-                    heap = new FrequentPatternMaxHeap(k, minSupport, true, record.Value);
+                    heap = new FrequentPatternMaxHeap(k, minSupport, true, record.Value!);
                     heaps[record.Key] = heap;
                 }
                 else
                 {
-                    foreach (MappedFrequentPattern pattern in record.Value)
+                    foreach (MappedFrequentPattern pattern in record.Value!)
                     {
                         heap.Add(pattern);
                     }
@@ -353,19 +353,19 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             }
 
             int patternCount = 0;
-            var outputRecord = Pair.MakePair((Utf8String)null, new WritableCollection<FrequentPattern>(k));
+            var outputRecord = Pair.MakePair((Utf8String)null!, new WritableCollection<FrequentPattern>(k));
             for (int x = 0; x < heaps.Length; ++x)
             {
                 FrequentPatternMaxHeap heap = heaps[x];
                 if (heap != null)
                 {
                     outputRecord.Key = fgList[x].Feature;
-                    outputRecord.Value.Clear();
+                    outputRecord.Value!.Clear();
                     PriorityQueue<MappedFrequentPattern> queue = heap.Queue;
                     while (queue.Count > 0)
                     {
                         MappedFrequentPattern mappedPattern = queue.Dequeue();
-                        outputRecord.Value.Add(new FrequentPattern(mappedPattern.Items.Select(i => fgList[i].Feature), mappedPattern.Support));
+                        outputRecord.Value.Add(new FrequentPattern(mappedPattern.Items.Select(i => fgList[i].Feature!), mappedPattern.Support));
                         ++patternCount;
                     }
                     output.WriteRecord(outputRecord);
@@ -376,11 +376,11 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private static IEnumerable<ITransaction> EnumerateGroup(RecordReader<Pair<int, Transaction>> reader)
         {
-            int groupId = reader.CurrentRecord.Key;
+            int groupId = reader.CurrentRecord!.Key;
             do
             {
                 //_log.Debug(reader.CurrentRecord);
-                yield return reader.CurrentRecord.Value;
+                yield return reader.CurrentRecord.Value!;
             } while (reader.ReadRecord() && reader.CurrentRecord.Key == groupId);
         }
 
@@ -392,9 +392,9 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             transactionOutput.WriteRecord(Pair.MakePair(currentGroupId, new Transaction() { Items = groupItems, Length = groupItems.Length }));
         }
 
-        internal static List<FGListItem> LoadFGList(TaskContext context, Dictionary<string, int> itemMapping)
+        internal static List<FGListItem> LoadFGList(TaskContext context, Dictionary<string, int>? itemMapping)
         {
-            string fglistPath = context.DownloadDfsFile(context.JobConfiguration.GetSetting("PFPGrowth.FGListPath", null));
+            string fglistPath = context.DownloadDfsFile(context.JobConfiguration.GetSetting("PFPGrowth.FGListPath", null)!);
 
             using (FileStream stream = File.OpenRead(fglistPath))
             {
@@ -402,7 +402,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             }
         }
 
-        private static List<FGListItem> LoadFGList(Dictionary<string, int> itemMapping, Stream stream)
+        private static List<FGListItem> LoadFGList(Dictionary<string, int>? itemMapping, Stream stream)
         {
             List<FGListItem> fgList = new List<FGListItem>();
             using (BinaryRecordReader<FGListItem> reader = new BinaryRecordReader<FGListItem>(stream, false))
@@ -412,7 +412,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 {
                     fgList.Add(item);
                     if (itemMapping != null)
-                        itemMapping.Add(item.Feature.ToString(), x);
+                        itemMapping.Add(item.Feature!.ToString(), x);
                     ++x;
                 }
             }

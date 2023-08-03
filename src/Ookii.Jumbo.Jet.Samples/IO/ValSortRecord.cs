@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// that this record represents. These IDs together with <see cref="InputOffset"/> must sort according to the order
         /// of the input fragments.
         /// </summary>
-        public string InputId { get; set; }
+        public string? InputId { get; set; }
         /// <summary>
         /// Gets or sets the input offset.
         /// </summary>
@@ -26,11 +26,11 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <summary>
         /// Gets or sets the first key in the input range.
         /// </summary>
-        public byte[] FirstKey { get; set; }
+        public byte[]? FirstKey { get; set; }
         /// <summary>
         /// Gets or sets the last key in the input range.
         /// </summary>
-        public byte[] LastKey { get; set; }
+        public byte[]? LastKey { get; set; }
         /// <summary>
         /// Gets or sets the number of records in the input range.
         /// </summary>
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <param name="other">The <see cref="ValSortRecord"/> to compare to.</param>
         /// <returns>Zero if this instance is equal to <paramref name="other"/>; less than zero if this instance precedes <paramref name="other"/>;
         /// greater than zero if this instance follows <paramref name="other"/>.</returns>
-        public int CompareTo(ValSortRecord other)
+        public int CompareTo(ValSortRecord? other)
         {
             if (other == null)
                 return 1;

@@ -94,8 +94,8 @@ namespace Ookii.Jumbo.Jet.Samples.IO
 
         #endregion
 
-        private TrieNode _trie;
-        private byte[][] _splitPoints;
+        private TrieNode? _trie;
+        private byte[][]? _splitPoints;
 
         #region IPartitioner<GenSortRecord> Members
 
@@ -115,7 +115,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
             if (_trie == null)
             {
                 ReadPartitionFile();
-                _trie = BuildTrie(0, _splitPoints.Length, new byte[] { }, 2);
+                _trie = BuildTrie(0, _splitPoints!.Length, Array.Empty<byte>(), 2);
             }
 
             return _trie.GetPartition(value.RecordBuffer);
@@ -133,7 +133,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <param name="sampleSize">The total number of records to sample.</param>
         public static void CreatePartitionFile(FileSystemClient fileSystemClient, string partitionFilePath, IDataInput input, int partitions, int sampleSize)
         {
-            int samples = Math.Min(10, input.TaskInputs.Count);
+            int samples = Math.Min(10, input.TaskInputs!.Count);
             int recordsPerSample = sampleSize / samples;
             int sampleStep = input.TaskInputs.Count / samples;
             _log.InfoFormat("Sampling {0} records in {1} samples ({2} records per sample) to create {3} partitions.", sampleSize, samples, recordsPerSample, partitions);
@@ -174,7 +174,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         private void ReadPartitionFile()
         {
             List<byte[]> splitPoints = new List<byte[]>();
-            string partitionFilePath = Path.Combine(TaskContext.LocalJobDirectory, SplitFileName);
+            string partitionFilePath = Path.Combine(TaskContext!.LocalJobDirectory, SplitFileName);
             _log.InfoFormat("Reading local partition split file {0}.", partitionFilePath);
             using (FileStream stream = File.OpenRead(partitionFilePath))
             {
@@ -198,7 +198,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         {
             int depth = prefix.Length;
             if (depth >= maxDepth || begin == end)
-                return new LeafTrieNode(depth, _splitPoints, begin, end);
+                return new LeafTrieNode(depth, _splitPoints!, begin, end);
 
             InnerTrieNode result = new InnerTrieNode(depth);
             int current = begin;
@@ -208,7 +208,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
                 prefix.CopyTo(newPrefix, 0);
                 newPrefix[depth] = (byte)(x + 1);
                 begin = current;
-                while (current < end && GenSortRecord.ComparePartialKeys(_splitPoints[current], newPrefix) < 0)
+                while (current < end && GenSortRecord.ComparePartialKeys(_splitPoints![current], newPrefix) < 0)
                 {
                     ++current;
                 }

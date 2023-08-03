@@ -35,7 +35,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(Position = 0, IsRequired = true), Description("The output directory where the generated data will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the record count.
@@ -90,7 +90,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="context">The context.</param>
         public static void Generate(RecordWriter<GenSortRecord> output, ProgressContext context)
         {
-            ulong startRecord = context.TaskContext.GetSetting("GenSort.StartRecord", 0UL);
+            ulong startRecord = context.TaskContext!.GetSetting("GenSort.StartRecord", 0UL);
             ulong count = context.TaskContext.GetSetting("GenSort.RecordCount", 0UL);
 
             ulong countPerTask = count / (ulong)context.TaskContext.StageConfiguration.TaskCount;

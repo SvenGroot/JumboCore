@@ -41,7 +41,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
-        public int Compare(ValSortRecord x, ValSortRecord y)
+        public int Compare(ValSortRecord? x, ValSortRecord? y)
         {
             return Comparer<ValSortRecord>.Default.Compare(x, y);
         }

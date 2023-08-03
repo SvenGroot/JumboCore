@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         ///   The comparison is done based on the support and then number of items. The values of the items are not considered.
         /// </para>
         /// </remarks>
-        public int CompareTo(MappedFrequentPattern other)
+        public int CompareTo(MappedFrequentPattern? other)
         {
             if (other == null)
                 return 1;
@@ -87,7 +87,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <returns>
         /// 	<see langword="true"/> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as MappedFrequentPattern);
         }
@@ -99,7 +99,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <returns>
         /// 	<see langword="true"/> if the specified <see cref="MappedFrequentPattern"/> is equal to this instance; otherwise, <see langword="false"/>.
         /// </returns>
-        public bool Equals(MappedFrequentPattern other)
+        public bool Equals(MappedFrequentPattern? other)
         {
             if (other == null)
                 return false;

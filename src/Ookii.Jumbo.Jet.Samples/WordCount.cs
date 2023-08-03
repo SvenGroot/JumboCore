@@ -42,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The input path.
         /// </value>
         [CommandLineArgument(Position = 0, IsRequired = true), Description("The input file or directory containing the text to perform the word count on (must be utf-8).")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -51,7 +51,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(Position = 1, IsRequired = true), Description("The output directory where the results of the word count will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the partitions.
@@ -98,7 +98,7 @@ namespace Ookii.Jumbo.Jet.Samples
             pairs.StageId = "WordCount";
             var counted = job.GroupAggregate(pairs, typeof(SumTask<>));
             counted.StageId = "WordCountAggregation";
-            counted.InputChannel.PartitionCount = Partitions;
+            counted.InputChannel!.PartitionCount = Partitions;
             WriteOutput(counted, OutputPath, typeof(TextRecordWriter<>));
         }
 
@@ -109,7 +109,7 @@ namespace Ookii.Jumbo.Jet.Samples
             pairs.StageId = "WordCount";
             var counted = job.GroupAggregate<Utf8String, int>(pairs, (key, value, newValue) => value + newValue);
             counted.StageId = "WordCountAggregation";
-            counted.InputChannel.PartitionCount = Partitions;
+            counted.InputChannel!.PartitionCount = Partitions;
             WriteOutput(counted, OutputPath, typeof(TextRecordWriter<>));
         }
 
@@ -119,7 +119,7 @@ namespace Ookii.Jumbo.Jet.Samples
             var pairs = job.Process<Utf8String, Pair<Utf8String, int>>(input, SplitLines);
             pairs.StageId = "WordCount";
             var sorted = job.SpillSortCombine<Utf8String, int>(pairs, ReduceWordCount);
-            sorted.InputChannel.PartitionCount = Partitions;
+            sorted.InputChannel!.PartitionCount = Partitions;
             var counted = job.Reduce<Utf8String, int, Pair<Utf8String, int>>(sorted, ReduceWordCount);
             counted.StageId = "WordCountAggregation";
             WriteOutput(counted, OutputPath, typeof(TextRecordWriter<>));
@@ -140,7 +140,7 @@ namespace Ookii.Jumbo.Jet.Samples
                 string[] words = line.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string word in words)
                 {
-                    record.Key.Set(word);
+                    record.Key!.Set(word);
                     output.WriteRecord(record);
                 }
             }

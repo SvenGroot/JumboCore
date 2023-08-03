@@ -36,10 +36,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private const int _minSize = 8;
         private int _weight;
         private int _mineUntilItem;
-        private readonly TaskContext _config;
+        private readonly TaskContext? _config;
         private bool _disposed;
 
-        public event EventHandler ProgressChanged;
+        public event EventHandler? ProgressChanged;
 
         public FPTree(IEnumerable<ITransaction> transactions, int minSupport, int itemCount, TaskContext config)
         {
@@ -80,7 +80,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         public float Progress { get; private set; }
 
-        public FrequentPatternMaxHeap[] Mine(int k, bool expandPerfectExtensions, int mineUntilItem, FrequentPatternMaxHeap[] itemHeaps)
+        public FrequentPatternMaxHeap[]? Mine(int k, bool expandPerfectExtensions, int mineUntilItem, FrequentPatternMaxHeap[]? itemHeaps)
         {
             FrequentPatternCollector collector = new FrequentPatternCollector(_headerTable.Length, _weight, expandPerfectExtensions, _minSupport, k, itemHeaps);
 
@@ -146,7 +146,10 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             {
                 string message = string.Format("Mining for patterns with item id: {0}", item);
                 _log.InfoFormat(message);
-                _config.StatusMessage = message;
+                if (_config != null)
+                {
+                    _config.StatusMessage = message;
+                }
             }
             int minSupport = collector.GetMinSupportForItem(currentItem == null ? item : currentItem.Value);
             if (_headerTable[item].Support >= minSupport)
@@ -451,9 +454,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private void OnProgressChanged(EventArgs e)
         {
-            EventHandler handler = ProgressChanged;
-            if (handler != null)
-                handler(this, e);
+            ProgressChanged?.Invoke(this, e);
         }
 
         private void CleanupChildren()

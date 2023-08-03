@@ -14,19 +14,19 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TransactionMiningTask));
         private int _groupsProcessed;
         private float _progress;
-        private MultiPartitionRecordReader<Pair<int, Transaction>> _partitionReader;
+        private MultiPartitionRecordReader<Pair<int, Transaction>>? _partitionReader;
 
         /// <summary>
         /// Runs the task.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="output">The output.</param>
-        public void Run(RecordReader<Pair<int, Transaction>> input, RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output)
+        public void Run(RecordReader<Pair<int, Transaction>>? input, RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output)
         {
             _partitionReader = input as MultiPartitionRecordReader<Pair<int, Transaction>>;
-            bool reuseHeaps = TaskContext.GetSetting("PFPGrowth.ReusePatternHeaps", true);
+            bool reuseHeaps = TaskContext!.GetSetting("PFPGrowth.ReusePatternHeaps", true);
 
-            if (input.ReadRecord())
+            if (input!.ReadRecord())
             {
                 TaskContext config = TaskContext;
                 // job settings
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
                 int maxPerGroup = fglist.Count / numGroups;
                 if (fglist.Count % numGroups != 0)
                     maxPerGroup++;
-                FrequentPatternMaxHeap[] itemHeaps = null;
+                FrequentPatternMaxHeap[]? itemHeaps = null;
                 while (!input.HasFinished)
                 {
                     int groupId;
@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
             }
         }
 
-        private static void OutputPatternHeaps(RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output, FrequentPatternMaxHeap[] itemHeaps)
+        private static void OutputPatternHeaps(RecordWriter<Pair<int, WritableCollection<MappedFrequentPattern>>> output, FrequentPatternMaxHeap[]? itemHeaps)
         {
             if (itemHeaps != null)
             {
@@ -94,18 +94,18 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 
         private static IEnumerable<ITransaction> EnumerateGroup(RecordReader<Pair<int, Transaction>> reader)
         {
-            int groupId = reader.CurrentRecord.Key;
+            int groupId = reader.CurrentRecord!.Key;
             do
             {
                 //_log.Debug(reader.CurrentRecord);
-                yield return reader.CurrentRecord.Value;
+                yield return reader.CurrentRecord.Value!;
             } while (reader.ReadRecord() && reader.CurrentRecord.Key == groupId);
         }
 
-        private void FPTree_ProgressChanged(object sender, EventArgs e)
+        private void FPTree_ProgressChanged(object? sender, EventArgs e)
         {
-            MultiPartitionRecordReader<Pair<int, Transaction>> reader = _partitionReader;
-            _progress = (_groupsProcessed + ((FPTree)sender).Progress) / (float)(reader == null ? 1 : reader.PartitionCount);
+            MultiPartitionRecordReader<Pair<int, Transaction>>? reader = _partitionReader;
+            _progress = (_groupsProcessed + ((FPTree)sender!).Progress) / (float)(reader == null ? 1 : reader.PartitionCount);
         }
 
         /// <summary>

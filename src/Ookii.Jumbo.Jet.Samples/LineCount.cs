@@ -21,7 +21,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The input path.
         /// </value>
         [CommandLineArgument(Position = 0, IsRequired = true), Description("The input file or directory containing the text to perform the line count on.")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(Position = 1, IsRequired = true), Description("The output directory where the results will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Constructs the job configuration using the specified job builder.
@@ -41,7 +41,7 @@ namespace Ookii.Jumbo.Jet.Samples
             var input = job.Read(InputPath, typeof(LineRecordReader));
             var counted = job.Process<Utf8String, long>(input, CountLines);
             var summed = job.Process<long, long>(input, SumLineCount);
-            summed.InputChannel.PartitionCount = 1;
+            summed.InputChannel!.PartitionCount = 1;
             WriteOutput(summed, OutputPath, typeof(TextRecordWriter<>));
         }
 

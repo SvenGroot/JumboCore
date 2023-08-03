@@ -132,7 +132,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <param name="other">The <see cref="GenSortRecord"/> to compare to.</param>
         /// <returns>Zero if this instance is equal to <paramref name="other"/>; less than zero if this instance precedes <paramref name="other"/>;
         /// greater than zero if this instance follows <paramref name="other"/>.</returns>
-        public int CompareTo(GenSortRecord other)
+        public int CompareTo(GenSortRecord? other)
         {
             if (other == null)
                 return 1;

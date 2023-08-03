@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
 {
@@ -18,7 +20,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// Gets or sets the items.
         /// </summary>
         /// <value>The items.</value>
-        public int[] Items { get; set; }
+        public int[]? Items { get; set; }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
@@ -28,12 +30,12 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}:{1}", Items.ToDelimitedString(), Count);
+            return string.Format(CultureInfo.InvariantCulture, "{0}:{1}", Items?.ToDelimitedString(), Count);
         }
 
         IEnumerable<int> ITransaction.Items
         {
-            get { return Items; }
+            get { return Items ?? Enumerable.Empty<int>(); }
         }
     }
 }

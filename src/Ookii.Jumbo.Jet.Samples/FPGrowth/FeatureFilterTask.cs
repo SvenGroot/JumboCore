@@ -42,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            _minSupport = TaskContext.JobConfiguration.GetSetting("PFPGrowth.MinSupport", 2);
+            _minSupport = TaskContext!.JobConfiguration.GetSetting("PFPGrowth.MinSupport", 2);
         }
     }
 }

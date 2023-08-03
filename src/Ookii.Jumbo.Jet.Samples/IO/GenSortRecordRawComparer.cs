@@ -34,7 +34,7 @@ namespace Ookii.Jumbo.Jet.Samples.IO
         /// <returns>
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
-        public int Compare(GenSortRecord x, GenSortRecord y)
+        public int Compare(GenSortRecord? x, GenSortRecord? y)
         {
             return Comparer<GenSortRecord>.Default.Compare(x, y);
         }

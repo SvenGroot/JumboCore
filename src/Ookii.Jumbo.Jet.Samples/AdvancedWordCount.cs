@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The input path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 0), Description("The input file or directory containing the input text (must be utf-8).")]
-        public string InputPath { get; set; }
+        public string InputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the output path.
@@ -39,7 +39,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The output path.
         /// </value>
         [CommandLineArgument(IsRequired = true, Position = 1), Description("The directory where the output will be written.")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets a value indicating whether to use a case-insensitive comparison for the words.
@@ -57,7 +57,7 @@ namespace Ookii.Jumbo.Jet.Samples
         /// The path of the ignore patterns file.
         /// </value>
         [CommandLineArgument, JobSetting, Description("The path of a file containing regular expression patterns that define text that should be ignored while counting.")]
-        public string IgnorePatternsFile { get; set; }
+        public string? IgnorePatternsFile { get; set; }
 
         /// <summary>
         /// Gets or sets the number of partitions for aggregation.
@@ -79,21 +79,21 @@ namespace Ookii.Jumbo.Jet.Samples
             var words = job.Process<Utf8String, Pair<string, int>>(input, MapWords);
             words.StageId = "WordCount";
 
-            Type comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
+            Type? comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
 
             var aggregated = job.GroupAggregate<string, int>(words, AggregateCounts, comparerType);
-            aggregated.InputChannel.PartitionCount = Partitions;
+            aggregated.InputChannel!.PartitionCount = Partitions;
             aggregated.StageId = "WordCountAggregation";
 
             var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePairs<string, int>);
-            reversed.InputChannel.ChannelType = ChannelType.Pipeline;
+            reversed.InputChannel!.ChannelType = ChannelType.Pipeline;
 
             var sorted = job.SpillSort(reversed, typeof(InvertedRawComparer<>));
-            sorted.InputChannel.TaskCount = 1;
+            sorted.InputChannel!.TaskCount = 1;
 
             var output = job.Map<Pair<int, string>, Pair<string, int>>(sorted, ReversePairs<int, string>);
             output.StageId = "WordCountOutput";
-            output.InputChannel.ChannelType = ChannelType.Pipeline;
+            output.InputChannel!.ChannelType = ChannelType.Pipeline;
 
             WriteOutput(output, OutputPath, typeof(TextRecordWriter<>));
         }
@@ -107,9 +107,9 @@ namespace Ookii.Jumbo.Jet.Samples
         [AllowRecordReuse]
         public static void MapWords(RecordReader<Utf8String> input, RecordWriter<Pair<string, int>> output, TaskContext context)
         {
-            Regex ignorePattern = GetIgnorePattern(context);
+            Regex? ignorePattern = GetIgnorePattern(context);
 
-            Pair<string, int> outputRecord = Pair.MakePair((string)null, 1);
+            Pair<string, int>? outputRecord = Pair.MakePair(string.Empty, 1);
             char[] separator = new char[] { ' ' };
             foreach (Utf8String record in input.EnumerateRecords())
             {
@@ -148,18 +148,20 @@ namespace Ookii.Jumbo.Jet.Samples
         /// <param name="output">The output.</param>
         [AllowRecordReuse]
         public static void ReversePairs<TKey, TValue>(Pair<TKey, TValue> record, RecordWriter<Pair<TValue, TKey>> output)
+            where TKey : notnull
+            where TValue : notnull
         {
-            output.WriteRecord(Pair.MakePair(record.Value, record.Key));
+            output.WriteRecord(Pair.MakePair(record.Value!, record.Key!));
         }
 
-        private static Regex GetIgnorePattern(TaskContext context)
+        private static Regex? GetIgnorePattern(TaskContext context)
         {
             // It would probably be easier to just add the patterns themselves to the job settings rather than using a file, but
             // the purpose of this is to demonstrate how to use the DownloadDfsFile method.
 
             // TaskContext has a GetSetting method, but it searched both stage and job settings. In this case, we know
             // that the setting is in the JobConfiguration, so we just check that directly.
-            string dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
+            string? dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
             if (dfsPath == null)
                 return null;
 
