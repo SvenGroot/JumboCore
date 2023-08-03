@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.IO
         /// A signed integer that indicates the relative values of the first and second object.
         /// </returns>
         /// <typeparam name="T">The type of the objects to compare.</typeparam>
-        public static int Compare<T>(this IRawComparer<T> self, RawRecord record1, RawRecord record2)
+        public static int Compare<T>(this IRawComparer<T> self, RawRecord? record1, RawRecord? record2)
         {
             ArgumentNullException.ThrowIfNull(self);
             if (record1?.Buffer == null)

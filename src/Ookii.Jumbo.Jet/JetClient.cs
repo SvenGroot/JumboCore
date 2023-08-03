@@ -181,8 +181,8 @@ namespace Ookii.Jumbo.Jet
         /// <returns><see langword="true"/> if the job completed successfully; otherwise, <see langword="false"/>.</returns>
         public bool WaitForJobCompletion(Guid jobId, int pollIntervalMilliseconds = 1000)
         {
-            JobStatus status = null;
-            string previousStatus = null;
+            JobStatus? status = null;
+            string? previousStatus = null;
             do
             {
                 Thread.Sleep(pollIntervalMilliseconds);
@@ -272,7 +272,7 @@ namespace Ookii.Jumbo.Jet
                 {
                     if (stage.DataInput != null)
                     {
-                        TaskInputUtility.WriteTaskInputs(fileSystemClient, job.Path, stage.StageId, stage.DataInput.TaskInputs);
+                        TaskInputUtility.WriteTaskInputs(fileSystemClient, job.Path, stage.StageId!, stage.DataInput.TaskInputs!);
                     }
                 }
 

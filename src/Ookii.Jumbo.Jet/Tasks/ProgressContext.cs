@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <value>
         /// The <see cref="TaskContext"/> for this task.
         /// </value>
-        public TaskContext TaskContext
+        public TaskContext? TaskContext
         {
             get { return _configurable.TaskContext; }
         }

@@ -67,7 +67,7 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         /// <param name="key">The key of the key/value pair.</param>
         /// <param name="value">The value of the key/value pair.</param>
-        public Pair(TKey key, TValue value)
+        public Pair(TKey? key, TValue? value)
         {
             Key = key;
             Value = value;

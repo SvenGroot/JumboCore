@@ -18,27 +18,27 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// or <see langword="null" /> to use <see cref="EqualityComparer{T}.Default"/>. May be a generic type definition with one type parameter, which will be set to the key type.</param>
         /// <returns>A <see cref="TwoStepOperation"/> instance that can be used to further customize the operation.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "False positive.")]
-        public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type keyComparerType = null)
+        public TwoStepOperation GroupAggregate(IOperationInput input, Type accumulatorTaskType, Type? keyComparerType = null)
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(accumulatorTaskType);
 
             if (accumulatorTaskType.IsGenericTypeDefinition)
             {
-                if (!(input.RecordType.IsGenericType && input.RecordType.GetGenericTypeDefinition() == typeof(Pair<,>)))
+                if (!(input.RecordType!.IsGenericType && input.RecordType.GetGenericTypeDefinition() == typeof(Pair<,>)))
                     throw new ArgumentException("The input record type must be Pair<TKey,TValue> for group aggregation.", nameof(input));
 
                 accumulatorTaskType = ConstructGenericAccumulatorTaskType(input.RecordType, accumulatorTaskType);
             }
 
-            var taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true); // Ensure it's an accumulator.
+            var taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true)!; // Ensure it's an accumulator.
 
             if (keyComparerType != null)
             {
                 if (keyComparerType.IsGenericTypeDefinition)
                     keyComparerType = keyComparerType.MakeGenericType(taskBaseType.GetGenericArguments()[0]);
 
-                var comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true);
+                var comparerBaseType = keyComparerType.FindGenericInterfaceType(typeof(IEqualityComparer<>), true)!;
                 if (comparerBaseType.GetGenericArguments()[0] != taskBaseType.GetGenericArguments()[0])
                     throw new ArgumentException("Comparer type is not an IEqualityComparer for the key type.", nameof(keyComparerType));
             }
@@ -49,8 +49,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (keyComparerType != null)
             {
                 AddAssembly(accumulatorTaskType.Assembly);
-                result.Settings.Add(TaskConstants.AccumulatorTaskKeyComparerSettingKey, keyComparerType.AssemblyQualifiedName);
-                result.InputChannel.Settings.Add(PartitionerConstants.EqualityComparerSetting, keyComparerType.AssemblyQualifiedName);
+                result.Settings.Add(TaskConstants.AccumulatorTaskKeyComparerSettingKey, keyComparerType.AssemblyQualifiedName!);
+                result.InputChannel!.Settings.Add(PartitionerConstants.EqualityComparerSetting, keyComparerType.AssemblyQualifiedName!);
             }
 
             return result;
@@ -87,8 +87,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
         /// </para>
         /// </remarks>
-        public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TaskContext, TValue> accumulator, Type keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey> // Requirement for AccumulatorTask
+        public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TaskContext, TValue> accumulator, Type? keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TKey : notnull, IComparable<TKey> // Requirement for AccumulatorTask
+            where TValue : notnull
         {
             return GroupAggregateCore<TKey, TValue>(input, accumulator, keyComparerType, recordReuse);
         }
@@ -124,20 +125,22 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
         /// </para>
         /// </remarks>
-        public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TValue> accumulator, Type keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey> // Requirement for AccumulatorTask
+        public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TValue> accumulator, Type? keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TKey : notnull, IComparable<TKey> // Requirement for AccumulatorTask
+            where TValue : notnull
         {
             return GroupAggregateCore<TKey, TValue>(input, accumulator, keyComparerType, recordReuse);
         }
 
-        private TwoStepOperation GroupAggregateCore<TKey, TValue>(IOperationInput input, Delegate accumulator, Type keyComparerType, RecordReuseMode recordReuse)
-            where TKey : IComparable<TKey> // Needed to satisfy requirement on AccumulatorTask
+        private TwoStepOperation GroupAggregateCore<TKey, TValue>(IOperationInput input, Delegate accumulator, Type? keyComparerType, RecordReuseMode recordReuse)
+            where TKey : notnull, IComparable<TKey> // Requirement for AccumulatorTask
+            where TValue : notnull
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(accumulator);
             CheckIfInputBelongsToJobBuilder(input);
 
-            var taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), accumulator, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance)!, accumulator, 0, recordReuse);
 
             var result = GroupAggregate(input, taskType, keyComparerType);
             AddAssemblyAndSerializeDelegateIfNeeded(accumulator, result);

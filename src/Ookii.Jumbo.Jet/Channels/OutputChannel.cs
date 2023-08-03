@@ -14,11 +14,10 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <summary>
         /// The name of the setting in <see cref="Jobs.JobConfiguration.JobSettings"/> or <see cref="Jobs.StageConfiguration.StageSettings"/> that overrides the global compression setting.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TypeSetting")]
         public const string CompressionTypeSetting = "FileChannel.CompressionType";
 
         private readonly List<string> _outputPartitionIds = new List<string>();
-        private ReadOnlyCollection<string> _outputIdsReadOnlyWrapper;
+        private ReadOnlyCollection<string>? _outputIdsReadOnlyWrapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OutputChannel"/> class.
@@ -30,10 +29,10 @@ namespace Ookii.Jumbo.Jet.Channels
 
             TaskExecution = taskExecution;
 
-            var channelConfig = taskExecution.Context.StageConfiguration.OutputChannel;
+            var channelConfig = taskExecution.Context.StageConfiguration.OutputChannel!;
             if (channelConfig.OutputStage != null)
             {
-                var outputStage = taskExecution.Context.JobConfiguration.GetStage(channelConfig.OutputStage);
+                var outputStage = taskExecution.Context.JobConfiguration.GetStage(channelConfig.OutputStage)!;
                 if (taskExecution.Context.StageConfiguration.InternalPartitionCount == 1 || taskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 {
                     // If this task is not a child of a compound task, or there is no partitioning done inside the compound,
@@ -62,7 +61,8 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <typeparam name="T">The type of the records.</typeparam>
         /// <returns>A <see cref="RecordWriter{T}"/> for the channel.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-        public abstract RecordWriter<T> CreateRecordWriter<T>();
+        public abstract RecordWriter<T> CreateRecordWriter<T>()
+            where T : notnull;
 
         /// <summary>
         /// Gets the task execution utility for the task that this channel is for.
@@ -94,12 +94,13 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <typeparam name="T">The type of the records.</typeparam>
         /// <returns>An object implementing <see cref="IPartitioner{T}"/> that will partition the channel's output.</returns>
         protected IPartitioner<T> CreatePartitioner<T>()
+            where T : notnull
         {
             IPartitioner<T> partitioner;
             if (TaskExecution.Context.StageConfiguration.InternalPartitionCount > 1 && TaskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 partitioner = new PrepartitionedPartitioner<T>();
             else
-                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(TaskExecution.Context.StageConfiguration.OutputChannel.PartitionerType.ReferencedType, TaskExecution);
+                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(TaskExecution.Context.StageConfiguration.OutputChannel!.PartitionerType.ReferencedType!, TaskExecution);
             return partitioner;
         }
     }

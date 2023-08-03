@@ -18,7 +18,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   This operation sorts all the records produced by a single task in memory. For large or unknown amounts of records, use <see cref="SpillSortCombine"/> instead.
         /// </para>
         /// </remarks>
-        public SortOperation MemorySort(IOperationInput input, Type comparerType = null)
+        public SortOperation MemorySort(IOperationInput input, Type? comparerType = null)
         {
             ArgumentNullException.ThrowIfNull(input);
             CheckIfInputBelongsToJobBuilder(input);
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>
         /// A <see cref="SortOperation" /> instance that can be used to further customize the operation.
         /// </returns>
-        public SortOperation SpillSort(IOperationInput input, Type comparerType = null)
+        public SortOperation SpillSort(IOperationInput input, Type? comparerType = null)
         {
             ArgumentNullException.ThrowIfNull(input);
             CheckIfInputBelongsToJobBuilder(input);
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>
         /// A <see cref="SortOperation"/> instance that can be used to further customize the operation.
         /// </returns>
-        public SortOperation SpillSortCombine(IOperationInput input, Type combinerType, Type comparerType = null)
+        public SortOperation SpillSortCombine(IOperationInput input, Type combinerType, Type? comparerType = null)
         {
             ArgumentNullException.ThrowIfNull(input);
             CheckIfInputBelongsToJobBuilder(input);
@@ -89,8 +89,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
         /// </para>
         /// </remarks>
-        public SortOperation SpillSortCombine<TKey, TValue>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<Pair<TKey, TValue>>, TaskContext> combiner, Type comparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey>
+        public SortOperation SpillSortCombine<TKey, TValue>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<Pair<TKey, TValue>>, TaskContext> combiner, Type? comparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
         {
             return SpillSortCombineCore<TKey, TValue>(input, combiner, comparerType, recordReuse);
         }
@@ -128,14 +129,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
         /// </para>
         /// </remarks>
-        public SortOperation SpillSortCombine<TKey, TValue>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<Pair<TKey, TValue>>> combiner, Type comparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey>
+        public SortOperation SpillSortCombine<TKey, TValue>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<Pair<TKey, TValue>>> combiner, Type? comparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
         {
             return SpillSortCombineCore<TKey, TValue>(input, combiner, comparerType, recordReuse);
         }
 
-        private SortOperation SpillSortCombineCore<TKey, TValue>(IOperationInput input, Delegate combiner, Type comparerType, RecordReuseMode recordReuse)
-            where TKey : IComparable<TKey>
+        private SortOperation SpillSortCombineCore<TKey, TValue>(IOperationInput input, Delegate combiner, Type? comparerType, RecordReuseMode recordReuse)
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(combiner);

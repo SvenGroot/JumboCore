@@ -9,9 +9,10 @@ namespace Ookii.Jumbo.Jet
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public sealed class PrepartitionedRecordWriter<T> : IRecordWriter, IDisposable
+        where T : notnull
     {
         private readonly RecordWriter<T> _baseWriter;
-        private readonly PrepartitionedPartitioner<T> _partitioner;
+        private readonly PrepartitionedPartitioner<T>? _partitioner;
         private readonly bool _ownsBaseWriter;
         private bool _disposed;
 

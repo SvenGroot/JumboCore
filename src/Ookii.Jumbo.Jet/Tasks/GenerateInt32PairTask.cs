@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// </remarks>
     [AllowRecordReuse(PassThrough = true)]
     public sealed class GenerateInt32PairTask<T> : Configurable, ITask<T, Pair<T, int>>
-        where T : IComparable<T>
+        where T : notnull, IComparable<T>
     {
         private int _value = 1;
 
@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         /// <param name="input">A <see cref="RecordReader{T}"/> from which the task's input can be read.</param>
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
-        public void Run(RecordReader<T> input, RecordWriter<Pair<T, int>> output)
+        public void Run(RecordReader<T>? input, RecordWriter<Pair<T, int>> output)
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(output);

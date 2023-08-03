@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <value>
         /// A list of task inputs, or <see langword="null"/> if the job is not being constructed. The returned collection may be read-only.
         /// </value>
-        IList<ITaskInput> TaskInputs { get; }
+        IList<ITaskInput>? TaskInputs { get; }
 
         /// <summary>
         /// Gets the type of the records of this input.

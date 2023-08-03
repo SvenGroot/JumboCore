@@ -11,11 +11,12 @@ namespace Ookii.Jumbo.Jet
     /// <typeparam name="T">The type of the record.</typeparam>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     public class MergeResult<T> : IEnumerable<MergeResultRecord<T>>
+        where T : notnull
     {
-        private readonly IRecordReader[] _readers; // No need to dispose these; that'll be taken care of by the merger
-        private IEnumerator<MergeResultRecord<T>> _mergeResult;
+        private readonly IRecordReader[]? _readers; // No need to dispose these; that'll be taken care of by the merger
+        private IEnumerator<MergeResultRecord<T>>? _mergeResult;
 
-        internal MergeResult(IRecordReader[] readers, IEnumerator<MergeResultRecord<T>> result)
+        internal MergeResult(IRecordReader[]? readers, IEnumerator<MergeResultRecord<T>> result)
         {
             _readers = readers;
             _mergeResult = result;
@@ -26,7 +27,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         public float Progress
         {
-            get { return _readers.Length == 0 ? 1.0f : _readers.Average(r => r.Progress); }
+            get { return _readers == null || _readers.Length == 0 ? 1.0f : _readers.Average(r => r.Progress); }
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             _path = path;
             _recordWriterType = recordWriterType;
-            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true);
+            var baseType = recordWriterType.FindGenericBaseType(typeof(RecordWriter<>), true)!;
             _recordType = baseType.GetGenericArguments()[0];
         }
 

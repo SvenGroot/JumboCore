@@ -10,11 +10,11 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private readonly Stream _baseStream;
         private readonly long _length;
-        private readonly string _fileName;
+        private readonly string? _fileName;
         private readonly bool _deleteFile;
         private readonly byte[] _sizeBuffer = new byte[sizeof(long)];
         private readonly CompressionType _compressionType;
-        private Stream _currentSegment;
+        private Stream? _currentSegment;
         private long _position;
         private bool _disposed;
 

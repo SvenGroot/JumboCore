@@ -43,8 +43,8 @@ namespace Ookii.Jumbo.Jet.IO
         /// </summary>
         public const string RecordOptionsSettingKey = "FileDataOutput.RecordOptions";
 
-        private readonly string _outputPath;
-        private Type _recordWriterType;
+        private readonly string? _outputPath;
+        private Type? _recordWriterType;
         private int _blockSize;
         private int _replicationFactor;
         private RecordStreamOptions _recordOptions;
@@ -95,7 +95,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </value>
         public Type RecordType
         {
-            get { return RecordWriter.GetRecordType(_recordWriterType); }
+            get { return RecordWriter.GetRecordType(_recordWriterType!); }
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Ookii.Jumbo.Jet.IO
             var tempFileName = fileSystem.Path.Combine(fileSystem.Path.Combine(TaskContext.DfsJobDirectory, "temp"), string.Format(CultureInfo.InvariantCulture, "{0}_partition{1}", TaskContext.TaskAttemptId, partitionNumber));
             var outputFileName = GetOutputPath(TaskContext.StageConfiguration, partitionNumber);
             var outputStream = fileSystem.CreateFile(tempFileName, _blockSize, _replicationFactor, _recordOptions);
-            var writer = (IRecordWriter)JetActivator.CreateInstance(_recordWriterType, DfsConfiguration, JetConfiguration, TaskContext, outputStream);
+            var writer = (IRecordWriter)JetActivator.CreateInstance(_recordWriterType!, DfsConfiguration, JetConfiguration, TaskContext, outputStream);
             return new FileOutputCommitter(writer, tempFileName, outputFileName);
         }
 
@@ -129,8 +129,8 @@ namespace Ookii.Jumbo.Jet.IO
             if (_outputPath == null)
                 throw new InvalidOperationException("No data output configuration is stored in this instance.");
 
-            stage.AddSetting(RecordWriterTypeSettingKey, _recordWriterType.AssemblyQualifiedName);
-            var outputPathFormat = FileSystemClient.Create(DfsConfiguration).Path.Combine(_outputPath, stage.StageId + "-{0:00000}");
+            stage.AddSetting(RecordWriterTypeSettingKey, _recordWriterType!.AssemblyQualifiedName!);
+            var outputPathFormat = FileSystemClient.Create(DfsConfiguration!).Path.Combine(_outputPath, stage.StageId + "-{0:00000}");
             stage.AddSetting(OutputPathFormatSettingKey, outputPathFormat);
             if (_blockSize != 0)
                 stage.AddSetting(BlockSizeSettingKey, _blockSize);
@@ -147,9 +147,9 @@ namespace Ookii.Jumbo.Jet.IO
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if (TaskContext != null)
+            if (TaskContext != null && TaskContext.StageConfiguration.TryGetSetting(RecordWriterTypeSettingKey, out string? typeName))
             {
-                _recordWriterType = Type.GetType(TaskContext.StageConfiguration.GetSetting(RecordWriterTypeSettingKey, null), true);
+                _recordWriterType = Type.GetType(typeName, true)!;
                 _blockSize = TaskContext.StageConfiguration.GetSetting(FileDataOutput.BlockSizeSettingKey, 0);
                 _replicationFactor = TaskContext.StageConfiguration.GetSetting(FileDataOutput.ReplicationFactorSettingKey, 0);
                 _recordOptions = TaskContext.StageConfiguration.GetSetting(FileDataOutput.RecordOptionsSettingKey, RecordStreamOptions.None);

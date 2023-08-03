@@ -7,6 +7,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public interface IMultiRecordWriter<T>
+        where T : notnull
     {
         /// <summary>
         /// Gets the partitioner.

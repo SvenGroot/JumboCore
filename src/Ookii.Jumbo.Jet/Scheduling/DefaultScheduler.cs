@@ -22,8 +22,10 @@ namespace Ookii.Jumbo.Jet.Scheduling
             public bool Invert { get; set; }
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
-            public int Compare(ITaskServerJobInfo x, ITaskServerJobInfo y)
+            public int Compare(ITaskServerJobInfo? x, ITaskServerJobInfo? y)
             {
+                Debug.Assert(x != null && y != null);
+
                 if (x.AvailableTaskSlots < y.AvailableTaskSlots)
                     return Invert ? 1 : -1;
                 else if (x.AvailableTaskSlots > y.AvailableTaskSlots)
@@ -43,8 +45,9 @@ namespace Ookii.Jumbo.Jet.Scheduling
             }
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-            public int Compare(ITaskServerJobInfo x, ITaskServerJobInfo y)
+            public int Compare(ITaskServerJobInfo? x, ITaskServerJobInfo? y)
             {
+                Debug.Assert(x != null && y != null);
                 if (x == y)
                     return 0;
 

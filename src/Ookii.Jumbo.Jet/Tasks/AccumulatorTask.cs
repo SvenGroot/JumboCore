@@ -24,18 +24,24 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// </para>
     /// </remarks>
     public abstract class AccumulatorTask<TKey, TValue> : PushTask<Pair<TKey, TValue>, Pair<TKey, TValue>>
-        where TKey : IComparable<TKey>
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
     {
         #region Nested types
 
         private sealed class ValueContainer
         {
+            public ValueContainer(TValue value)
+            {
+                Value = value;
+            }
+
             public TValue Value { get; set; }
         }
 
         #endregion
 
-        private Dictionary<TKey, ValueContainer> _acculumatedValues;
+        private Dictionary<TKey, ValueContainer>? _acculumatedValues;
 
         private readonly bool _cloneKey;
         private readonly bool _cloneValue;
@@ -63,22 +69,17 @@ namespace Ookii.Jumbo.Jet.Tasks
             if (_acculumatedValues == null)
                 _acculumatedValues = new Dictionary<TKey, ValueContainer>();
 
-            if (_acculumatedValues.TryGetValue(record.Key, out var value))
-                value.Value = Accumulate(record.Key, value.Value, record.Value);
+            if (_acculumatedValues.TryGetValue(record.Key!, out var value))
+                value.Value = Accumulate(record.Key!, value.Value, record.Value!);
             else
             {
                 TKey key;
                 if (_cloneKey)
-                    key = (TKey)((ICloneable)record.Key).Clone();
+                    key = (TKey)((ICloneable)record.Key!).Clone();
                 else
-                    key = record.Key;
+                    key = record.Key!;
 
-                value = new ValueContainer();
-                if (_cloneValue)
-                    value.Value = (TValue)((ICloneable)record.Value).Clone();
-                else
-                    value.Value = record.Value;
-
+                value = new ValueContainer(_cloneValue ? (TValue)((ICloneable)record.Value!).Clone() : record.Value!);
                 _acculumatedValues.Add(key, value);
             }
         }
@@ -93,15 +94,15 @@ namespace Ookii.Jumbo.Jet.Tasks
         public override void Finish(RecordWriter<Pair<TKey, TValue>> output)
         {
             ArgumentNullException.ThrowIfNull(output);
-            var allowRecordReuse = TaskContext.StageConfiguration.AllowOutputRecordReuse;
-            Pair<TKey, TValue> record = null;
+            var allowRecordReuse = TaskContext!.StageConfiguration.AllowOutputRecordReuse;
+            Pair<TKey, TValue>? record = null;
             if (allowRecordReuse)
                 record = new Pair<TKey, TValue>();
-            foreach (var item in _acculumatedValues)
+            foreach (var item in _acculumatedValues!)
             {
                 if (!allowRecordReuse)
                     record = new Pair<TKey, TValue>();
-                record.Key = item.Key;
+                record!.Key = item.Key;
                 record.Value = item.Value.Value;
                 output.WriteRecord(record);
             }
@@ -136,10 +137,10 @@ namespace Ookii.Jumbo.Jet.Tasks
                     throw new InvalidOperationException("Cannot change configuration after accumulation has started.");
 
                 var comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.AccumulatorTaskKeyComparerSettingKey, null);
-                IEqualityComparer<TKey> comparer = null;
+                IEqualityComparer<TKey>? comparer = null;
                 if (comparerTypeName != null)
                 {
-                    var comparerType = Type.GetType(comparerTypeName, true);
+                    var comparerType = Type.GetType(comparerTypeName, true)!;
                     comparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(comparerType, DfsConfiguration, JetConfiguration, TaskContext);
                 }
                 _acculumatedValues = new Dictionary<TKey, ValueContainer>(comparer);

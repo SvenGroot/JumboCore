@@ -14,13 +14,6 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Initializes a new instance of the <see cref="ArchivedJob"/> class.
         /// </summary>
-        public ArchivedJob()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArchivedJob"/> class.
-        /// </summary>
         /// <param name="job">The job.</param>
         public ArchivedJob(JobStatus job)
         {
@@ -44,7 +37,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets or sets the friendly name of the job.
         /// </summary>
         /// <value>The friendly name of the job.</value>
-        public string JobName { get; set; }
+        public string? JobName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this job succeeded

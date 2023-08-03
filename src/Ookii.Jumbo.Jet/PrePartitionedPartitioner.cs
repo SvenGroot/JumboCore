@@ -5,6 +5,7 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Jet
 {
     sealed class PrepartitionedPartitioner<T> : IPartitioner<T>
+        where T : notnull
     {
         private int _currentPartition;
 

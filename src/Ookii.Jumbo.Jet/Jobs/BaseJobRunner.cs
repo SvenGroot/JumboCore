@@ -14,8 +14,10 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// </summary>
     public abstract class BaseJobRunner : Configurable, IJobRunner
     {
-        private Dictionary<string, string> _jobOrStageProperties;
-        private Dictionary<string, string> _jobOrStageSettings;
+        private Dictionary<string, string>? _jobOrStageProperties;
+        private Dictionary<string, string>? _jobOrStageSettings;
+        private FileSystemClient? _fileSystemClient;
+        private JetClient? _jetClient;
 
         /// <summary>
         /// Gets or sets a value that indicates whether the output directory should be deleted, if it exists, before the job is executed.
@@ -119,7 +121,18 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <value>
         /// The DFS client.
         /// </value>
-        protected FileSystemClient FileSystemClient { get; private set; }
+        protected FileSystemClient FileSystemClient
+        {
+            get
+            {
+                if (_fileSystemClient == null)
+                {
+                    throw new InvalidOperationException("NotifyConfigurationChanged not called.");
+                }
+
+                return _fileSystemClient;
+            }
+        }
 
         /// <summary>
         /// Gets the jet client.
@@ -127,7 +140,19 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <value>
         /// The jet client.
         /// </value>
-        protected JetClient JetClient { get; private set; }
+        protected JetClient JetClient
+        {
+            get
+            {
+                if (_jetClient == null)
+                {
+                    throw new InvalidOperationException("NotifyConfigurationChanged not called.");
+                }
+
+                return _jetClient;
+            }
+        }
+
 
         #region IJobRunner Members
 
@@ -224,8 +249,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            FileSystemClient = FileSystemClient.Create(DfsConfiguration);
-            JetClient = new JetClient(JetConfiguration);
+            _fileSystemClient = FileSystemClient.Create(DfsConfiguration!);
+            _jetClient = new JetClient(JetConfiguration!);
         }
 
         private void ApplySettingProperties(JobConfiguration jobConfiguration)
@@ -233,14 +258,14 @@ namespace Ookii.Jumbo.Jet.Jobs
             var props = GetType().GetProperties();
             foreach (var prop in props)
             {
-                var attribute = (JobSettingAttribute)Attribute.GetCustomAttribute(prop, typeof(JobSettingAttribute));
+                var attribute = (JobSettingAttribute?)Attribute.GetCustomAttribute(prop, typeof(JobSettingAttribute));
                 if (attribute != null)
                 {
                     var key = attribute.Key;
                     if (key == null)
-                        key = string.Format(CultureInfo.InvariantCulture, "{0}.{1}", prop.DeclaringType.Name, prop.Name);
+                        key = string.Format(CultureInfo.InvariantCulture, "{0}.{1}", prop.DeclaringType!.Name, prop.Name);
 
-                    jobConfiguration.AddSetting(key, prop.GetValue(this, null));
+                    jobConfiguration.AddSetting(key, prop.GetValue(this, null)!);
                 }
             }
         }
@@ -253,7 +278,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 {
                     ParsePropertyOrSetting(setting.Key, out var compoundStageId, out var settingName);
 
-                    SettingsDictionary target = null;
+                    SettingsDictionary? target = null;
                     if (compoundStageId == null)
                     {
                         if (jobConfiguration.JobSettings == null)
@@ -290,7 +315,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             ParsePropertyOrSetting(property.Key, out var compoundStageId, out var propName);
 
-            object target = job;
+            object? target = job;
             if (compoundStageId != null)
             {
                 target = job.GetStageWithCompoundId(compoundStageId);
@@ -301,7 +326,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             ApplyJobProperty(target, propName, property.Value);
         }
 
-        private static void ParsePropertyOrSetting(string propOrSettingKey, out string compoundStageId, out string name)
+        private static void ParsePropertyOrSetting(string propOrSettingKey, out string? compoundStageId, out string name)
         {
             compoundStageId = null;
 
@@ -317,19 +342,22 @@ namespace Ookii.Jumbo.Jet.Jobs
         private static void ApplyJobProperty(object target, string path, string value)
         {
             var pathItems = path.Split('.');
-            PropertyInfo prop = null;
+            PropertyInfo? prop = null;
             foreach (var propName in pathItems)
             {
                 if (prop != null)
                 {
                     if (!prop.CanRead)
                         throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} in property path {1} is not readable.", prop.Name, path));
-                    target = prop.GetValue(target, null);
+                    target = prop.GetValue(target, null)!;
                 }
                 prop = target.GetType().GetProperty(propName);
                 if (prop == null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} in property path {1} is does not exist.", propName, path));
             }
+
+            if (prop == null)
+                throw new InvalidOperationException("Empty property path.");
 
             if (!prop.CanWrite)
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Property {0} is not writable.", path));

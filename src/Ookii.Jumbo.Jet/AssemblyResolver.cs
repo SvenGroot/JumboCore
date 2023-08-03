@@ -26,11 +26,11 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
             // The TaskHost wants to use Type.GetType to instantiate various types, and it wants to include the
             // assemblies loaded by Assembly.LoadFrom, which isn't done by default. We'll do that here.
-            var result = (from assembly in ((AppDomain)sender).GetAssemblies()
+            var result = (from assembly in ((AppDomain)sender!).GetAssemblies()
                           where assembly.FullName == args.Name || assembly.GetName().Name == args.Name
                           select assembly).SingleOrDefault();
             return result;

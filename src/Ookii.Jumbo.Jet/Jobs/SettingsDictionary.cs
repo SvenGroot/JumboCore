@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -41,7 +42,7 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         #region IXmlSerializable Members
 
-        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema()
+        System.Xml.Schema.XmlSchema? IXmlSerializable.GetSchema()
         {
             return null;
         }
@@ -61,7 +62,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             while (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == startElementName && reader.Depth == depth))
             {
                 if (reader.IsStartElement("Setting", JobConfiguration.XmlNamespace))
-                    Add(reader.GetAttribute("key"), reader.GetAttribute("value"));
+                    Add(reader.GetAttribute("key")!, reader.GetAttribute("value")!);
                 reader.Read();
             }
             reader.ReadEndElement();
@@ -90,7 +91,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             ArgumentNullException.ThrowIfNull(key);
             ArgumentNullException.ThrowIfNull(value);
-            Add(key, (string)TypeDescriptor.GetConverter(value).ConvertTo(null, System.Globalization.CultureInfo.InvariantCulture, value, typeof(string)));
+            Add(key, (string?)TypeDescriptor.GetConverter(value).ConvertTo(null, System.Globalization.CultureInfo.InvariantCulture, value, typeof(string)) ?? string.Empty);
         }
 
         /// <summary>
@@ -100,11 +101,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
-        public T GetSetting<T>(string key, T defaultValue)
+        public T? GetSetting<T>(string key, T? defaultValue)
         {
             if (TryGetValue(key, out var value))
             {
-                return (T)TypeDescriptor.GetConverter(defaultValue).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, value);
+                return (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, value);
             }
             else
                 return defaultValue;
@@ -117,11 +118,11 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting..</param>
         /// <param name="value">If the function returns <see langword="true"/>, receives the value of the setting.</param>
         /// <returns><see langword="true"/> if the settings dictionary contained the specified setting; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetSetting<T>(string key, out T value)
+        public bool TryGetSetting<T>(string key, out T? value)
         {
             if (TryGetValue(key, out var stringValue))
             {
-                value = (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, stringValue);
+                value = (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, stringValue);
                 return true;
             }
             else
@@ -138,7 +139,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
-        public string GetSetting(string key, string defaultValue)
+        [return: NotNullIfNotNull(nameof(defaultValue))]
+        public string? GetSetting(string key, string? defaultValue)
         {
             if (TryGetValue(key, out var value))
                 return value;
@@ -154,7 +156,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in either the stage or job settings.</returns>
-        public static string GetJobOrStageSetting(JobConfiguration job, StageConfiguration stage, string key, string defaultValue)
+        [return: NotNullIfNotNull(nameof(defaultValue))]
+        public static string? GetJobOrStageSetting(JobConfiguration job, StageConfiguration stage, string key, string? defaultValue)
         {
             ArgumentNullException.ThrowIfNull(job);
             ArgumentNullException.ThrowIfNull(stage);
@@ -177,13 +180,12 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <returns>
         /// The value of the setting, or <paramref name="defaultValue" /> if the setting was not present in either the stage or job settings.
         /// </returns>
-        public static T GetJobOrStageSetting<T>(JobConfiguration job, StageConfiguration stage, string key, T defaultValue)
+        public static T? GetJobOrStageSetting<T>(JobConfiguration job, StageConfiguration stage, string key, T? defaultValue)
         {
             ArgumentNullException.ThrowIfNull(job);
             ArgumentNullException.ThrowIfNull(stage);
 
-            if (!stage.TryGetSetting(key, out
-            T value) && !job.TryGetSetting(key, out value))
+            if (!stage.TryGetSetting(key, out T? value) && !job.TryGetSetting(key, out value))
                 return defaultValue;
             else
                 return value;

@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet
         private readonly string _taskId;
         private readonly string _stageId;
         private readonly int _taskNumber;
-        private readonly TaskId _parentTaskId;
+        private readonly TaskId? _parentTaskId;
 
         /// <summary>
         /// The separator character used to identify child stages in a compound stage identifier, e.g. "Parent.Child".
@@ -44,11 +44,11 @@ namespace Ookii.Jumbo.Jet
         /// <param name="parentTaskId">The ID of the the parent task; may be <see langword="null"/>.</param>
         /// <param name="taskId">The string representation of the task ID. This can be a compound task ID
         /// only if <paramref name="parentTaskId"/> is <see langword="null"/>.</param>
-        public TaskId(TaskId parentTaskId, string taskId)
+        public TaskId(TaskId? parentTaskId, string taskId)
         {
             ArgumentNullException.ThrowIfNull(taskId);
 
-            if (parentTaskId != null)
+            if (parentTaskId is not null)
             {
                 if (taskId.Contains(ChildStageSeparator, StringComparison.Ordinal))
                     throw new ArgumentException("Task ID cannot contain a child stage separator ('.') if a parent task ID is specified.");
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="parentTaskId">The ID of the the parent task; may be <see langword="null"/>.</param>
         /// <param name="stageId">The ID of the stage that this task belongs to.</param>
         /// <param name="taskNumber">The task number.</param>
-        public TaskId(TaskId parentTaskId, string stageId, int taskNumber)
+        public TaskId(TaskId? parentTaskId, string stageId, int taskNumber)
         {
             // CreateTaskIdString does the argument validation.
             var taskId = CreateTaskIdString(stageId, taskNumber);
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Jet
             _taskNumber = taskNumber;
             _parentTaskId = parentTaskId;
 
-            if (parentTaskId != null)
+            if (parentTaskId is not null)
                 _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
             else
                 _taskId = taskId;
@@ -105,7 +105,7 @@ namespace Ookii.Jumbo.Jet
         {
             ArgumentNullException.ThrowIfNull(info);
 
-            _taskId = info.GetString("TaskId");
+            _taskId = info.GetString("TaskId")!;
             var localTaskId = _taskId;
             var lastSeparatorIndex = _taskId.LastIndexOf(ChildStageSeparator);
             if (lastSeparatorIndex >= 0)
@@ -120,7 +120,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets the ID of the parent task as a string.
         /// </summary>
-        public TaskId ParentTaskId
+        public TaskId? ParentTaskId
         {
             get { return _parentTaskId; }
         }
@@ -165,7 +165,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                if (ParentTaskId == null)
+                if (ParentTaskId is null)
                     return 1;
                 else
                 {
@@ -225,7 +225,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// 	<see langword="true"/> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as TaskId);
         }
@@ -246,11 +246,11 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="other">The <see cref="TaskId"/> to compare to.</param>
         /// <returns><see langword="true"/> if this <see cref="TaskId"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(TaskId other)
+        public bool Equals(TaskId? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
-            if (other == this)
+            if (ReferenceEquals(other, this))
                 return true;
 
             return string.Equals(_taskId, other._taskId, StringComparison.Ordinal);
@@ -264,11 +264,11 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// Less than zero if this instance is smaller than <paramref name="other"/>; zero if this instance is equal to <paramref name="other"/>; greater than zero if this instance is larger than <paramref name="other"/>.
         /// </returns>
-        public int CompareTo(TaskId other)
+        public int CompareTo(TaskId? other)
         {
-            if (other == null)
+            if (other is null)
                 return 1;
-            if (other == this)
+            if (ReferenceEquals(other, this))
                 return 0;
 
             return string.CompareOrdinal(_taskId, other._taskId);
@@ -282,10 +282,10 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// Less than zero if this instance is smaller than <paramref name="obj"/>; zero if this instance is equal to <paramref name="obj"/>; greater than zero if this instance is larger than <paramref name="obj"/>.
         /// </returns>
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             var other = obj as TaskId;
-            if (other != null)
+            if (other is not null)
                 throw new ArgumentException("The specified object is not a TaskId.", nameof(obj));
 
             return CompareTo(other);
@@ -299,7 +299,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// <see langword="true"/> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <see langword="false"/>. 
         /// </returns>
-        public static bool operator ==(TaskId left, TaskId right)
+        public static bool operator ==(TaskId? left, TaskId? right)
         {
             return EqualityComparer<TaskId>.Default.Equals(left, right);
         }
@@ -312,7 +312,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// <see langword="true"/> if the value of <paramref name="left"/> is different from the value of <paramref name="right"/>; otherwise, <see langword="false"/>. 
         /// </returns>
-        public static bool operator !=(TaskId left, TaskId right)
+        public static bool operator !=(TaskId? left, TaskId? right)
         {
             return !EqualityComparer<TaskId>.Default.Equals(left, right);
         }
@@ -328,7 +328,7 @@ namespace Ookii.Jumbo.Jet
 
         private void BuildCompoundStageId(StringBuilder result)
         {
-            if (ParentTaskId != null)
+            if (ParentTaskId is not null)
             {
                 var parent = ParentTaskId;
                 parent.BuildCompoundStageId(result);

@@ -10,22 +10,22 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     /// </summary>
     public class SortOperation : TwoStepOperation
     {
-        private readonly Type _comparerType;
-        private readonly Type _combinerType;
+        private readonly Type? _comparerType;
+        private readonly Type? _combinerType;
         private readonly bool _useSpillSort;
 
-        private SortOperation(JobBuilder builder, IOperationInput input, Type comparerType, Type combinerType, bool useSpillSort)
+        private SortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, Type? combinerType, bool useSpillSort)
             : base(builder, input, typeof(SortTask<>), typeof(EmptyTask<>), true)
         {
             if (comparerType != null)
             {
                 if (comparerType.IsGenericTypeDefinition)
-                    comparerType = comparerType.MakeGenericType(input.RecordType);
+                    comparerType = comparerType.MakeGenericType(input.RecordType!);
                 if (comparerType.ContainsGenericParameters)
                     throw new ArgumentException("The comparer type must be a closed constructed generic type.", nameof(comparerType));
 
-                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>));
-                if (input.RecordType.IsSubclassOf(interfaceType.GetGenericArguments()[0]))
+                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>))!;
+                if (input.RecordType!.IsSubclassOf(interfaceType.GetGenericArguments()[0]))
                     throw new ArgumentException("The specified comparer cannot compare the record type.");
                 builder.AddAssembly(comparerType.Assembly);
             }
@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     throw new NotSupportedException("Combiners can only be used with spill sort.");
 
                 if (combinerType.IsGenericTypeDefinition)
-                    combinerType = combinerType.MakeGenericType(input.RecordType);
+                    combinerType = combinerType.MakeGenericType(input.RecordType!);
                 var info = new TaskTypeInfo(combinerType);
                 if (!(info.InputRecordType == input.RecordType && info.OutputRecordType == input.RecordType))
                     throw new ArgumentException("The combiner's input or output record type doesn't match the sort operation's input record type.");
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             _comparerType = comparerType;
             _combinerType = combinerType;
-            InputChannel.MultiInputRecordReaderType = typeof(MergeRecordReader<>);
+            InputChannel!.MultiInputRecordReaderType = typeof(MergeRecordReader<>);
             StageId = "SortStage";
             SecondStepStageId = "MergeStage";
             _useSpillSort = useSpillSort;
@@ -58,7 +58,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The type of the combiner.
         /// </value>
-        public Type CombinerType
+        public Type? CombinerType
         {
             get { return _combinerType; }
         }
@@ -69,7 +69,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The type of the comparer.
         /// </value>
-        public Type ComparerType
+        public Type? ComparerType
         {
             get { return _comparerType; }
         }
@@ -84,7 +84,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <remarks>
         /// If <paramref name="comparerType"/> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
         /// </remarks>
-        public static SortOperation CreateMemorySortOperation(JobBuilder builder, IOperationInput input, Type comparerType)
+        public static SortOperation CreateMemorySortOperation(JobBuilder builder, IOperationInput input, Type? comparerType)
         {
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(input);
@@ -105,7 +105,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <remarks>
         /// If <paramref name="combinerType" /> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
         /// </remarks>
-        public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type comparerType, Type combinerType)
+        public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, Type? combinerType)
         {
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(input);
@@ -125,7 +125,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(compiler);
             if (_useSpillSort)
             {
-                if (InputChannel.ChannelType == null)
+                if (InputChannel!.ChannelType == null)
                     InputChannel.ChannelType = ChannelType.File; // Spill sort requires file channel, so make sure it doesn't default to anything else
 
                 var input = InputChannel.CreateInput();
@@ -134,16 +134,16 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
                 input.InputStage.AddSetting(JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill);
                 if (_comparerType != null)
-                    input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortComparerType, _comparerType.AssemblyQualifiedName);
+                    input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortComparerType, _comparerType.AssemblyQualifiedName!);
                 if (_combinerType != null)
-                    input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, _combinerType.AssemblyQualifiedName);
+                    input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, _combinerType.AssemblyQualifiedName!);
                 return compiler.CreateStage("MergeStage", SecondStepTaskType.TaskType, InputChannel.TaskCount, input, Output, true, InputChannel.Settings);
             }
             else
             {
                 var result = base.CreateConfiguration(compiler);
                 if (_comparerType != null)
-                    FirstStepStage.AddSetting(TaskConstants.SortTaskComparerSettingKey, _comparerType.AssemblyQualifiedName);
+                    FirstStepStage!.AddSetting(TaskConstants.SortTaskComparerSettingKey, _comparerType.AssemblyQualifiedName!);
                 return result;
             }
         }

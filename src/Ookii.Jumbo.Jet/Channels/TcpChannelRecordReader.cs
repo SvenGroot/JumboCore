@@ -10,12 +10,13 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReader
+        where T : notnull
     {
         private readonly BlockingCollection<UnmanagedBufferMemoryStream> _segments = new BlockingCollection<UnmanagedBufferMemoryStream>();
         private readonly bool _allowRecordReuse;
         private bool _disposed;
-        private BinaryReader _currentSegment;
-        private readonly T _record;
+        private BinaryReader? _currentSegment;
+        private readonly T? _record;
         private int _lastSegmentNumber = 0;
 
         public TcpChannelRecordReader(bool allowRecordReuse)
@@ -78,7 +79,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if (_allowRecordReuse)
             {
-                ((IWritable)_record).Read(_currentSegment);
+                ((IWritable)_record!).Read(_currentSegment);
                 CurrentRecord = _record;
             }
             else

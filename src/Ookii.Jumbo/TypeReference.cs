@@ -83,6 +83,36 @@ namespace Ookii.Jumbo
         }
 
         /// <summary>
+        /// Gets the type that this <see cref="TypeReference" /> references.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
+        /// </returns>
+        /// <exception cref="System.InvalidOperationException">
+        /// Resolving type references is disabled, or no type is referenced.
+        /// </exception>
+        public Type GetReferencedType()
+        {
+            if (_type != null)
+            {
+                return _type;
+            }
+
+            if (_typeName == null)
+            {
+                throw new InvalidOperationException("No type is referenced by this TypeReference object.");
+            }
+
+            if (!ResolveTypes)
+            {
+                throw new InvalidOperationException("Resolving type references is disabled.");
+            }
+
+            _type = Type.GetType(_typeName, true)!;
+            return _type;
+        }
+
+        /// <summary>
         /// Gets or sets the name of the type that this <see cref="TypeReference" /> references.
         /// </summary>
         /// <value>

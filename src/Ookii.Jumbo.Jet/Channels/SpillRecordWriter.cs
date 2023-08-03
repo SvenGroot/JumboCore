@@ -14,6 +14,7 @@ namespace Ookii.Jumbo.Jet.Channels
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     public abstract class SpillRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter<T>
+        where T : notnull
     {
         #region Nested types
 
@@ -231,20 +232,20 @@ namespace Ookii.Jumbo.Jet.Channels
         private int _lastRecordEnd;
         private long _bytesWritten;
 
-        private readonly RecordIndexEntry[][] _spillIndices;
+        private readonly RecordIndexEntry[]?[] _spillIndices;
         private readonly object _spillLock = new object();
         private int _spillStart;
         private int _spillEnd;
         private int _spillSize;
         private volatile bool _spillInProgress;
         private readonly AutoResetEvent _spillWaitingEvent = new AutoResetEvent(false);
-        private Thread _spillThread;
+        private Thread? _spillThread;
         private readonly ManualResetEvent _cancelEvent = new ManualResetEvent(false);
         private int _spillCount;
-        private Exception _spillException;
+        private Exception? _spillException;
         private bool _spillExceptionThrown;
         private bool _disposed;
-        private RawRecord _record;
+        private RawRecord? _record;
 
         //private StreamWriter _debugWriter;
 
@@ -476,7 +477,7 @@ namespace Ookii.Jumbo.Jet.Channels
         ///   Only call this method from the <see cref="SpillOutput"/> method.
         /// </note>
         /// </remarks>
-        protected RecordIndexEntry[] GetSpillIndex(int partition)
+        protected RecordIndexEntry[]? GetSpillIndex(int partition)
         {
             if (!_spillInProgress)
                 throw new InvalidOperationException("No spill is currently in progress.");
@@ -495,7 +496,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </remarks>
         protected int SpillDataSizeForPartition(int partition)
         {
-            return _spillIndices[partition] == null ? 0 : _spillIndices[partition].Sum(i => i.Count);
+            return _spillIndices[partition]?.Sum(i => i.Count) ?? 0;
         }
 
         /// <summary>

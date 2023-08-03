@@ -81,7 +81,7 @@ namespace Ookii.Jumbo.Jet
         /// <value>
         /// The task input, or <see langword="null"/> if this task doesn't have a task input.
         /// </value>
-        public ITaskInput TaskInput
+        public ITaskInput? TaskInput
         {
             get { return TaskExecution == null ? null : TaskExecution.TaskInput; }
         }
@@ -94,7 +94,7 @@ namespace Ookii.Jumbo.Jet
         /// Set this status message from task classes. This status message will be sent to the task server as part of a progress update.
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
-        public string StatusMessage
+        public string? StatusMessage
         {
             get
             {
@@ -168,7 +168,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in either the stage or job settings.</returns>
-        public string GetSetting(string key, string defaultValue)
+        public string? GetSetting(string key, string? defaultValue)
         {
             return SettingsDictionary.GetJobOrStageSetting(JobConfiguration, StageConfiguration, key, defaultValue);
         }
@@ -180,11 +180,11 @@ namespace Ookii.Jumbo.Jet
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in either the stage or job settings.</returns>
-        public T GetSetting<T>(string key, T defaultValue)
+        public T? GetSetting<T>(string key, T? defaultValue)
         {
             return SettingsDictionary.GetJobOrStageSetting(JobConfiguration, StageConfiguration, key, defaultValue);
         }
 
-        internal TaskExecutionUtility TaskExecution { get; set; }
+        internal TaskExecutionUtility? TaskExecution { get; set; }
     }
 }

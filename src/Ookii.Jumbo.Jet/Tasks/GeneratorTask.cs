@@ -9,6 +9,7 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// <typeparam name="T">The record type</typeparam>
     [AdditionalProgressCounter("Generate")]
     public abstract class GeneratorTask<T> : Configurable, ITask<int, T>, IHasAdditionalProgress
+        where T : notnull
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(GeneratorTask<>));
 
@@ -27,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         /// <param name="input">A <see cref="RecordReader{T}"/> from which the task's input can be read.</param>
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
-        public void Run(RecordReader<int> input, RecordWriter<T> output)
+        public void Run(RecordReader<int>? input, RecordWriter<T> output)
         {
             if (input != null)
                 _log.Warn("Input was provided but will be ignored by this task.");

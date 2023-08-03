@@ -20,8 +20,9 @@ namespace Ookii.Jumbo.Jet
     /// </remarks>
     /// <typeparam name="T">The type of the values to partition.</typeparam>
     public class HashPartitioner<T> : Configurable, IPartitioner<T>
+        where T : notnull
     {
-        private IEqualityComparer<T> _comparer = EqualityComparer<T>.Default;
+        private IEqualityComparer<T>? _comparer = EqualityComparer<T>.Default;
 
         /// <summary>
         /// Indicates the configuration has been changed. <see cref="JetActivator.ApplyConfiguration"/> calls this method
@@ -34,7 +35,7 @@ namespace Ookii.Jumbo.Jet
             {
                 var comparerTypeName = TaskContext.StageConfiguration.GetSetting(PartitionerConstants.EqualityComparerSetting, null);
                 if (!string.IsNullOrEmpty(comparerTypeName))
-                    _comparer = (IEqualityComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
+                    _comparer = (IEqualityComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true)!, DfsConfiguration, JetConfiguration, TaskContext);
             }
 
             if (_comparer == null)
@@ -56,7 +57,7 @@ namespace Ookii.Jumbo.Jet
         public int GetPartition(T value)
         {
             // IEqualityComparer<T>.GetHashCode should return 0 when value == null.
-            return (_comparer.GetHashCode(value) & int.MaxValue) % Partitions;
+            return (_comparer!.GetHashCode(value) & int.MaxValue) % Partitions;
         }
 
         #endregion

@@ -9,14 +9,14 @@ namespace Ookii.Jumbo.Jet.Channels
     {
         private readonly Type _recordReaderType;
         private readonly string _fileName;
-        private readonly string _sourceName;
+        private readonly string? _sourceName;
         private readonly bool _inputContainsRecordSizes;
         private readonly int _bufferSize;
         private readonly bool _allowRecordReuse;
         private readonly CompressionType _compressionType;
         private readonly IEnumerable<PartitionFileIndexEntry> _indexEntries;
 
-        public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
+        public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string? sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
             ArgumentNullException.ThrowIfNull(recordReaderType);
             ArgumentNullException.ThrowIfNull(fileName);
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override IRecordReader CreateReader()
         {
             var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
-            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes)!;
             reader.SourceName = _sourceName;
             return reader;
         }

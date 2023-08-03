@@ -13,12 +13,12 @@ namespace Ookii.Jumbo.Jet
     public class StageStatus
     {
         private readonly ExtendedCollection<TaskStatus> _tasks = new ExtendedCollection<TaskStatus>();
-        private TaskMetrics _stageMetrics; // Used only if the JobStatus was created with JobStatus.FromXml()
+        private TaskMetrics? _stageMetrics; // Used only if the JobStatus was created with JobStatus.FromXml()
 
         /// <summary>
         /// Gets or sets the ID of the stage.
         /// </summary>
-        public string StageId { get; set; }
+        public string? StageId { get; set; }
 
         /// <summary>
         /// Gets the tasks of this stage.

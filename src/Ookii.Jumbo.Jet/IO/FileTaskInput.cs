@@ -10,7 +10,7 @@ namespace Ookii.Jumbo.Jet.IO
     /// </summary>
     public class FileTaskInput : ITaskInput
     {
-        private readonly string[] _locations; // Note: don't serialize with IWritable!
+        private readonly string[]? _locations; // Note: don't serialize with IWritable!
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileTaskInput"/> class.
@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <param name="offset">The offset in the file specified by <paramref name="path"/> of the split.</param>
         /// <param name="size">The size of the split.</param>
         /// <param name="locations">The names of the nodes on which this split is local. May be <see langword="null"/>.</param>
-        public FileTaskInput(string path, long offset, long size, IEnumerable<string> locations)
+        public FileTaskInput(string path, long offset, long size, IEnumerable<string>? locations)
         {
             ArgumentNullException.ThrowIfNull(path);
             if (offset < 0)
@@ -64,7 +64,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <value>
         /// The locations, or <see langword="null"/> if the input doesn't use locality.
         /// </value>
-        public ICollection<string> Locations
+        public ICollection<string>? Locations
         {
             get { return _locations; }
         }

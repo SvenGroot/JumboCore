@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
@@ -12,8 +13,8 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// </summary>
     public class InputStageInfo
     {
-        private Type _partitionerType;
-        private Type _multiInputRecordReaderType;
+        private Type? _partitionerType;
+        private Type? _multiInputRecordReaderType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputStageInfo"/> class.
@@ -40,6 +41,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <summary>
         /// Gets the type of partitioner to use.
         /// </summary>
+        [AllowNull]
         public Type PartitionerType
         {
             get
@@ -82,6 +84,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <summary>
         /// Gets the type of multi input record reader to use.
         /// </summary>
+        [AllowNull]
         public Type MultiInputRecordReaderType
         {
             get
@@ -93,26 +96,26 @@ namespace Ookii.Jumbo.Jet.Jobs
 
         private Type InputStageOutputType
         {
-            get { return InputStage.TaskTypeInfo.OutputRecordType; }
+            get { return InputStage.TaskTypeInfo!.OutputRecordType; }
         }
 
         private void ValidatePartitionerType()
         {
             // Get the output type of the input stage, which is the input to the partitioner.
             var inputType = InputStageOutputType;
-            var partitionerInterfaceType = PartitionerType.FindGenericInterfaceType(typeof(IPartitioner<>));
+            var partitionerInterfaceType = PartitionerType.FindGenericInterfaceType(typeof(IPartitioner<>))!;
             var partitionedType = partitionerInterfaceType.GetGenericArguments()[0];
             if (partitionedType != inputType)
                 throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The partitioner type {0} cannot partition objects of type {1}.", PartitionerType, inputType));
         }
 
-        internal void ValidateTypes(Type stageMultiInputRecordReaderType, Type inputType)
+        internal void ValidateTypes(Type? stageMultiInputRecordReaderType, Type inputType)
         {
             ValidatePartitionerType();
             ValidateMultiInputRecordReaderType(stageMultiInputRecordReaderType, inputType);
         }
 
-        private void ValidateMultiInputRecordReaderType(Type stageMultiInputRecordReaderType, Type inputType)
+        private void ValidateMultiInputRecordReaderType(Type? stageMultiInputRecordReaderType, Type inputType)
         {
             IEnumerable<Type> acceptedInputTypes;
             Type recordType;

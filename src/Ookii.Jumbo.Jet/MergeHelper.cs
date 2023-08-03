@@ -15,6 +15,7 @@ namespace Ookii.Jumbo.Jet
     /// </summary>
     /// <typeparam name="T">The type of the records in the segments.</typeparam>
     public class MergeHelper<T>
+        where T : notnull
     {
         #region Nested types
 
@@ -32,13 +33,13 @@ namespace Ookii.Jumbo.Jet
                 IsMemoryBased = isMemoryBased;
             }
 
-            public RecordReader<RawRecord> RawRecordReader { get; private set; }
-            public RecordReader<T> RecordReader { get; private set; }
+            public RecordReader<RawRecord>? RawRecordReader { get; private set; }
+            public RecordReader<T>? RecordReader { get; private set; }
             public bool IsMemoryBased { get; private set; }
 
             public long BytesRead
             {
-                get { return IsMemoryBased ? 0 : (RawRecordReader == null ? RecordReader.BytesRead : RawRecordReader.BytesRead); }
+                get { return IsMemoryBased ? 0 : (RawRecordReader == null ? RecordReader!.BytesRead : RawRecordReader.BytesRead); }
             }
 
             public bool ReadRecord()
@@ -46,15 +47,15 @@ namespace Ookii.Jumbo.Jet
                 if (RawRecordReader != null)
                     return RawRecordReader.ReadRecord();
                 else
-                    return RecordReader.ReadRecord();
+                    return RecordReader!.ReadRecord();
             }
 
             public void GetCurrentRecord(MergeResultRecord<T> record)
             {
                 if (RawRecordReader != null)
-                    record.Reset(RawRecordReader.CurrentRecord);
+                    record.Reset(RawRecordReader.CurrentRecord!);
                 else
-                    record.Reset(RecordReader.CurrentRecord);
+                    record.Reset(RecordReader!.CurrentRecord!);
             }
 
             public void Dispose()
@@ -68,8 +69,8 @@ namespace Ookii.Jumbo.Jet
 
         private sealed class MergeInputComparer : IComparer<MergeInput>
         {
-            private readonly IRawComparer<T> _rawComparer;
-            private readonly IComparer<T> _comparer;
+            private readonly IRawComparer<T>? _rawComparer;
+            private readonly IComparer<T>? _comparer;
 
             public MergeInputComparer(IRawComparer<T> rawComparer)
             {
@@ -81,7 +82,7 @@ namespace Ookii.Jumbo.Jet
                 _comparer = comparer;
             }
 
-            public int Compare(MergeInput x, MergeInput y)
+            public int Compare(MergeInput? x, MergeInput? y)
             {
                 if (x == null)
                 {
@@ -94,9 +95,9 @@ namespace Ookii.Jumbo.Jet
                     return 1;
 
                 if (_rawComparer == null)
-                    return _comparer.Compare(x.RecordReader.CurrentRecord, y.RecordReader.CurrentRecord);
+                    return _comparer!.Compare(x.RecordReader!.CurrentRecord, y.RecordReader!.CurrentRecord);
                 else
-                    return _rawComparer.Compare(x.RawRecordReader.CurrentRecord, y.RawRecordReader.CurrentRecord);
+                    return _rawComparer.Compare(x.RawRecordReader!.CurrentRecord, y.RawRecordReader!.CurrentRecord);
             }
         }
 
@@ -174,7 +175,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// An <see cref="IEnumerable{T}"/> that can be used to get the merge results.
         /// </returns>
-        public MergeResult<T> Merge(IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, bool forceDeserialization, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
+        public MergeResult<T> Merge(IList<RecordInput>? diskInputs, IList<RecordInput>? memoryInputs, int maxDiskInputsPerPass, IComparer<T>? comparer, bool allowRecordReuse, bool forceDeserialization, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
             if (diskInputs == null && memoryInputs == null)
                 throw new ArgumentException("diskInputs and memoryInputs cannot both be null.");
@@ -263,7 +264,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// The uncompressed size of the written data.
         /// </returns>
-        public long WriteMerge(string fileName, IList<RecordInput> diskInputs, IList<RecordInput> memoryInputs, int maxDiskInputsPerPass, IComparer<T> comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
+        public long WriteMerge(string fileName, IList<RecordInput>? diskInputs, IList<RecordInput>? memoryInputs, int maxDiskInputsPerPass, IComparer<T>? comparer, bool allowRecordReuse, string intermediateOutputPath, string passFilePrefix, CompressionType compressionType, int bufferSize, bool enableChecksum)
         {
             ArgumentNullException.ThrowIfNull(fileName);
             IEnumerable<MergeResultRecord<T>> mergeResult = Merge(diskInputs, memoryInputs, maxDiskInputsPerPass, comparer, allowRecordReuse, false, intermediateOutputPath, passFilePrefix, compressionType, bufferSize, enableChecksum);
@@ -287,16 +288,16 @@ namespace Ookii.Jumbo.Jet
                 foreach (var record in pass)
                 {
                     if (rawWriter == null)
-                        writer.WriteRecord(record.GetValue());
+                        writer!.WriteRecord(record.GetValue());
                     else
                         record.WriteRawRecord(rawWriter);
                 }
-                Interlocked.Add(ref _bytesWritten, writer == null ? rawWriter.BytesWritten : writer.BytesWritten);
-                return writer == null ? rawWriter.OutputBytes : writer.OutputBytes;
+                Interlocked.Add(ref _bytesWritten, writer == null ? rawWriter!.BytesWritten : writer.BytesWritten);
+                return writer == null ? rawWriter!.OutputBytes : writer.OutputBytes;
             }
         }
 
-        private MergeResult<T> RunMergePass(IEnumerable<RecordInput> inputs, IComparer<T> comparer, bool allowRecordReuse, bool rawReaderSupported, bool returnReaders)
+        private MergeResult<T> RunMergePass(IEnumerable<RecordInput> inputs, IComparer<T>? comparer, bool allowRecordReuse, bool rawReaderSupported, bool returnReaders)
         {
             MergePassCount++;
             var mergeQueue = CreateMergeQueue(inputs, comparer, rawReaderSupported, returnReaders, out var readers);
@@ -332,30 +333,30 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private static PriorityQueue<MergeInput> CreateMergeQueue(IEnumerable<RecordInput> inputs, IComparer<T> comparer, bool rawReaderSupported, bool returnReaders, out IRecordReader[] readers)
+        private static PriorityQueue<MergeInput> CreateMergeQueue(IEnumerable<RecordInput> inputs, IComparer<T>? comparer, bool rawReaderSupported, bool returnReaders, out IRecordReader[]? readers)
         {
             IEnumerable<MergeInput> mergeInputs;
             MergeInputComparer mergeComparer;
             readers = null;
             if (rawReaderSupported)
             {
-                var rawComparer = (IRawComparer<T>)comparer; // Caller makes sure that rawReaderSupported is only true if comparer is a raw comparer or null.
+                var rawComparer = (IRawComparer<T>?)comparer; // Caller makes sure that rawReaderSupported is only true if comparer is a raw comparer or null.
                 mergeComparer = new MergeInputComparer(rawComparer ?? RawComparer<T>.CreateComparer());
-                mergeInputs = inputs.Select(i => new MergeInput(i.GetRawReader(), i.IsMemoryBased)).Where(i => i.RawRecordReader.ReadRecord());
+                mergeInputs = inputs.Select(i => new MergeInput(i.GetRawReader(), i.IsMemoryBased)).Where(i => i.RawRecordReader!.ReadRecord());
                 if (returnReaders)
                 {
                     mergeInputs = mergeInputs.ToArray();
-                    readers = mergeInputs.Select(i => i.RawRecordReader).ToArray();
+                    readers = mergeInputs.Select(i => i.RawRecordReader!).ToArray();
                 }
             }
             else
             {
                 mergeComparer = new MergeInputComparer(comparer ?? Comparer<T>.Default);
-                mergeInputs = inputs.Select(i => new MergeInput((RecordReader<T>)i.Reader, i.IsMemoryBased)).Where(i => i.RecordReader.ReadRecord());
+                mergeInputs = inputs.Select(i => new MergeInput((RecordReader<T>)i.Reader, i.IsMemoryBased)).Where(i => i.RecordReader!.ReadRecord());
                 if (returnReaders)
                 {
                     mergeInputs = mergeInputs.ToArray();
-                    readers = mergeInputs.Select(i => i.RecordReader).ToArray();
+                    readers = mergeInputs.Select(i => i.RecordReader!).ToArray();
                 }
             }
 

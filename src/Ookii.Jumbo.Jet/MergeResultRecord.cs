@@ -11,11 +11,12 @@ namespace Ookii.Jumbo.Jet
     /// <typeparam name="T">The type of the record.</typeparam>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "Memory resources only, no good place to dispose it.")]
     public sealed class MergeResultRecord<T>
+        where T : notnull
     {
-        private T _record;
-        private RawRecord _rawRecord;
-        private MemoryBufferStream _rawRecordStream;
-        private BinaryReader _rawRecordReader;
+        private T? _record;
+        private RawRecord? _rawRecord;
+        private MemoryBufferStream? _rawRecordStream;
+        private BinaryReader? _rawRecordReader;
         private readonly bool _allowRecordReuse;
 
         internal MergeResultRecord(bool allowRecordReuse)
@@ -47,13 +48,13 @@ namespace Ookii.Jumbo.Jet
                 {
                     if (_record == null)
                         _record = (T)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(T));
-                    ((IWritable)_record).Read(_rawRecordReader);
+                    ((IWritable)_record).Read(_rawRecordReader!);
                 }
                 else
-                    _record = ValueWriter<T>.ReadValue(_rawRecordReader);
+                    _record = ValueWriter<T>.ReadValue(_rawRecordReader!);
                 _rawRecord = null;
             }
-            return _record;
+            return _record!;
         }
 
         /// <summary>

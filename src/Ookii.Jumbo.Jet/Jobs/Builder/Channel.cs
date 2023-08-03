@@ -13,11 +13,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     {
         private readonly IJobBuilderOperation _sender;
         private readonly IJobBuilderOperation _receiver;
-        private Type _partitionerType;
-        private Type _multiInputRecordReaderType;
+        private Type? _partitionerType;
+        private Type? _multiInputRecordReaderType;
         private int _taskCount;
         private int _partitionsPerTask = 1;
-        private SettingsDictionary _settings;
+        private SettingsDictionary? _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Channel"/> class.
@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The type of the records.
         /// </value>
-        public Type RecordType
+        public Type? RecordType
         {
             get { return _sender.RecordType; }
         }
@@ -91,7 +91,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   If this value is set to a type that is a generic type definition, the type is constructed using the channel's record type.
         /// </para>
         /// </remarks>
-        public Type PartitionerType
+        public Type? PartitionerType
         {
             get { return _partitionerType; }
             set
@@ -99,9 +99,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 if (value != null)
                 {
                     if (value.IsGenericTypeDefinition)
-                        value = value.MakeGenericType(RecordType);
+                        value = value.MakeGenericType(RecordType!);
 
-                    var partitionerInterfaceType = value.FindGenericInterfaceType(typeof(IPartitioner<>), true);
+                    var partitionerInterfaceType = value.FindGenericInterfaceType(typeof(IPartitioner<>), true)!;
                     if (RecordType != partitionerInterfaceType.GetGenericArguments()[0])
                         throw new ArgumentException("The partitioner's record type doesn't match the channel's record type.");
                 }
@@ -120,7 +120,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   If this value is set to a type that is a generic type definition, the type is constructed using the channel's record type.
         /// </para>
         /// </remarks>
-        public Type MultiInputRecordReaderType
+        public Type? MultiInputRecordReaderType
         {
             get { return _multiInputRecordReaderType; }
             set
@@ -128,9 +128,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 if (value != null)
                 {
                     if (value.IsGenericTypeDefinition)
-                        value = value.MakeGenericType(RecordType);
+                        value = value.MakeGenericType(RecordType!);
 
-                    var baseType = value.FindGenericBaseType(typeof(MultiInputRecordReader<>), true);
+                    var baseType = value.FindGenericBaseType(typeof(MultiInputRecordReader<>), true)!;
                     if (RecordType != baseType.GetGenericArguments()[0])
                         throw new ArgumentException("The multi-input record reader's record type doesn't match the channel's record type.");
                 }
@@ -226,7 +226,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <returns>
         /// An <see cref="InputStageInfo"/>.
         /// </returns>
-        public InputStageInfo CreateInput(StageConfiguration overrideSender = null)
+        public InputStageInfo CreateInput(StageConfiguration? overrideSender = null)
         {
             var sender = overrideSender;
             if (sender == null)
@@ -253,7 +253,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private ChannelType GetDefaultChannelType(StageConfiguration sender)
         {
-            return ((PartitionCount <= 1 && sender.Root.TaskCount == 1) || (PartitionCount == 0 && JobBuilderCompiler.IsEmptyTask(sender.TaskType.ReferencedType)))
+            return ((PartitionCount <= 1 && sender.Root.TaskCount == 1) || (PartitionCount == 0 && JobBuilderCompiler.IsEmptyTask(sender.TaskType.GetReferencedType())))
                 ? Channels.ChannelType.Pipeline : Channels.ChannelType.File;
         }
     }

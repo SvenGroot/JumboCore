@@ -18,6 +18,6 @@ namespace Ookii.Jumbo.Jet.IO
         /// <remarks>
         /// The <see cref="IWritable"/> implementation doesn't need to serialize this array; it will be stored separately.
         /// </remarks>
-        ICollection<string> Locations { get; }
+        ICollection<string>? Locations { get; }
     }
 }

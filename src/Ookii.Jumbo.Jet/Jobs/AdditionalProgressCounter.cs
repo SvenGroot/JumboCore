@@ -15,13 +15,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets or sets the name of the type that reports the additional progress.
         /// </summary>
         /// <value>The name of the type.</value>
-        public string TypeName { get; set; }
+        public string? TypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the display name of the progress counter.
         /// </summary>
         /// <value>The display name.</value>
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <exception cref="System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var counter = obj as AdditionalProgressCounter;
             if (counter == null)

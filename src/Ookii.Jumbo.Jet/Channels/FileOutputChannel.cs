@@ -16,7 +16,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(FileOutputChannel));
 
         private readonly string _localJobDirectory;
-        private IRecordWriter _writer;
+        private IRecordWriter? _writer;
         private readonly FileChannelOutputType _outputType;
 
         /// <summary>
@@ -116,6 +116,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private RecordWriter<T> CreateSpillRecordWriter<T>(BinarySize writeBufferSize)
+            where T : notnull
         {
             // We're using single file output
 
@@ -136,8 +137,8 @@ namespace Ookii.Jumbo.Jet.Channels
             if (_outputType == FileChannelOutputType.SortSpill)
             {
                 var maxDiskInputsPerMergePass = TaskExecution.Context.GetSetting(MergeRecordReaderConstants.MaxFileInputsSetting, TaskExecution.JetClient.Configuration.MergeRecordReader.MaxFileInputs);
-                var combiner = (ITask<T, T>)CreateCombiner();
-                var comparer = (IComparer<T>)CreateComparer();
+                var combiner = (ITask<T, T>?)CreateCombiner();
+                var comparer = (IComparer<T>?)CreateComparer();
                 var minSpillCountForCombineDuringMerge = TaskExecution.Context.GetSetting(JumboSettings.FileChannel.StageOrJob.SpillSortMinSpillsForCombineDuringMerge, TaskExecution.JetClient.Configuration.FileChannel.SpillSortMinSpillsForCombineDuringMerge);
                 result = new SortSpillRecordWriter<T>(Path.Combine(_localJobDirectory, fileName), partitioner, (int)outputBufferSize.Value, outputBufferLimitSize, (int)writeBufferSize.Value, TaskExecution.JetClient.Configuration.FileChannel.EnableChecksum, CompressionType, maxDiskInputsPerMergePass, comparer, combiner, minSpillCountForCombineDuringMerge);
             }
@@ -147,23 +148,23 @@ namespace Ookii.Jumbo.Jet.Channels
             return result;
         }
 
-        private object CreateCombiner()
+        private object? CreateCombiner()
         {
             var combinerTypeName = TaskExecution.Context.StageConfiguration.GetSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, null);
             if (combinerTypeName == null)
                 return null;
 
-            var combinerType = Type.GetType(combinerTypeName, true);
+            var combinerType = Type.GetType(combinerTypeName, true)!;
             return JetActivator.CreateInstance(combinerType, TaskExecution);
         }
 
-        private object CreateComparer()
+        private object? CreateComparer()
         {
             var comparerTypeName = TaskExecution.Context.StageConfiguration.GetSetting(JumboSettings.FileChannel.Stage.SpillSortComparerType, null);
             if (comparerTypeName == null)
                 return null;
 
-            var comparerType = Type.GetType(comparerTypeName, true);
+            var comparerType = Type.GetType(comparerTypeName, true)!;
             return JetActivator.CreateInstance(comparerType, TaskExecution);
         }
     }

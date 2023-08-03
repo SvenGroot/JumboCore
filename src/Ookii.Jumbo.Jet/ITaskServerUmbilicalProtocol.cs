@@ -30,7 +30,7 @@ namespace Ookii.Jumbo.Jet
         /// <param name="jobId">The job ID of the job containing the task.</param>
         /// <param name="taskAttemptId">The task attempt id.</param>
         /// <param name="failureReason">The failure reason.</param>
-        void ReportError(Guid jobId, TaskAttemptId taskAttemptId, string failureReason);
+        void ReportError(Guid jobId, TaskAttemptId taskAttemptId, string? failureReason);
 
         /// <summary>
         /// Registers the port number that the task host is listening on for TCP channel connections.

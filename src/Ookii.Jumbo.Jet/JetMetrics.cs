@@ -18,10 +18,10 @@ namespace Ookii.Jumbo.Jet
         private readonly ExtendedCollection<TaskServerMetrics> _taskServers = new ExtendedCollection<TaskServerMetrics>();
 
         /// <summary>
-        /// Gets or sets the addrses of the job server.
+        /// Gets or sets the address of the job server.
         /// </summary>
         /// <value>The address of the job server.</value>
-        public ServerAddress JobServer { get; set; }
+        public ServerAddress? JobServer { get; set; }
 
         /// <summary>
         /// Gets or sets the IDs of the running jobs.
@@ -63,7 +63,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the name of the scheduler being used.
         /// </summary>
-        public string Scheduler { get; set; }
+        public string? Scheduler { get; set; }
 
         /// <summary>
         /// Prints the metrics.

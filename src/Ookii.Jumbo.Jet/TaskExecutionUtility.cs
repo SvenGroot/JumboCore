@@ -70,20 +70,20 @@ namespace Ookii.Jumbo.Jet
         private readonly ITaskServerUmbilicalProtocol _umbilical;
         private readonly TaskExecutionUtility _rootTask;
         private readonly Type _taskType;
-        private readonly List<IInputChannel> _inputChannels;
-        private readonly List<string> _statusMessages;
+        private readonly List<IInputChannel>? _inputChannels;
+        private readonly List<string?>? _statusMessages;
         private readonly bool _isAssociatedTask;
         private readonly bool _processesAllPartitions;
-        private List<IOutputCommitter> _dataOutputs;
+        private List<IOutputCommitter>? _dataOutputs;
         private volatile bool _finished;
         private volatile bool _disposed;
-        private Dictionary<string, List<IHasAdditionalProgress>> _additionalProgressSources;
-        private Thread _progressThread;
+        private Dictionary<string, List<IHasAdditionalProgress>>? _additionalProgressSources;
+        private Thread? _progressThread;
         private readonly ManualResetEvent _finishedEvent = new ManualResetEvent(false);
-        private List<TaskExecutionUtility> _associatedTasks;
-        private IRecordWriter _outputWriter;
-        private IRecordReader _inputReader;
-        private object _task;
+        private List<TaskExecutionUtility>? _associatedTasks;
+        private IRecordWriter? _outputWriter;
+        private IRecordReader? _inputReader;
+        private object? _task;
         private readonly int _statusMessageLevel;
         private volatile bool _mustReportProgress;
         private int _totalInputPartitions = 1;
@@ -92,7 +92,7 @@ namespace Ookii.Jumbo.Jet
         private int _additionalPartitionCount;
         private int _discardedPartitionCount;
 
-        internal event EventHandler TaskInstanceCreated;
+        internal event EventHandler? TaskInstanceCreated;
 
         internal TaskExecutionUtility(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, TaskExecutionUtility parentTask, TaskContext configuration)
         {
@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Jet
             _jobServerTaskClient = JetClient.CreateJobServerTaskClient(jetClient.Configuration);
             _context = configuration;
             _umbilical = umbilical;
-            _taskType = _context.StageConfiguration.TaskType.ReferencedType;
+            _taskType = _context.StageConfiguration.TaskType.ReferencedType!;
             configuration.TaskExecution = this;
             _progressInterval = _jetClient.Configuration.TaskServer.ProgressInterval;
 
@@ -117,7 +117,7 @@ namespace Ookii.Jumbo.Jet
 
                 // Create the status message array with room for the channel message and this task's message.
                 _statusMessageLevel = 1;
-                _statusMessages = new List<string>() { null, null };
+                _statusMessages = new List<string?>() { null, null };
             }
             else
             {
@@ -182,7 +182,7 @@ namespace Ookii.Jumbo.Jet
             get { return _processesAllPartitions; }
         }
 
-        internal IRecordReader InputReader
+        internal IRecordReader? InputReader
         {
             get
             {
@@ -192,7 +192,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        internal ITaskInput TaskInput { get; private set; }
+        internal ITaskInput? TaskInput { get; private set; }
 
         internal ITaskServerUmbilicalProtocol Umbilical
         {
@@ -239,31 +239,31 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        internal IOutputChannel OutputChannel { get; private set; }
+        internal IOutputChannel? OutputChannel { get; private set; }
 
-        internal List<IInputChannel> InputChannels
+        internal List<IInputChannel>? InputChannels
         {
             get { return _inputChannels; }
         }
 
-        internal string ChannelStatusMessage
+        internal string? ChannelStatusMessage
         {
-            get { return _rootTask._statusMessages[0]; }
+            get { return _rootTask._statusMessages![0]; }
             set
             {
-                lock (_rootTask._statusMessages)
+                lock (_rootTask._statusMessages!)
                 {
                     _rootTask._statusMessages[0] = value;
                 }
             }
         }
 
-        internal string TaskStatusMessage
+        internal string? TaskStatusMessage
         {
-            get { return _rootTask._statusMessages[_statusMessageLevel]; }
+            get { return _rootTask._statusMessages![_statusMessageLevel]; }
             set
             {
-                lock (_rootTask._statusMessages)
+                lock (_rootTask._statusMessages!)
                 {
                     _rootTask._statusMessages[_statusMessageLevel] = value;
                 }
@@ -274,7 +274,7 @@ namespace Ookii.Jumbo.Jet
         {
             get
             {
-                lock (_rootTask._statusMessages)
+                lock (_rootTask._statusMessages!)
                 {
                     var status = new StringBuilder(100);
                     var first = true;
@@ -392,10 +392,10 @@ namespace Ookii.Jumbo.Jet
             ArgumentNullException.ThrowIfNull(dfsJobDirectory);
             ArgumentNullException.ThrowIfNull(localJobDirectory);
 
-            var configuration = new TaskContext(jobId, jobConfiguration, taskAttemptId, jobConfiguration.GetStage(taskAttemptId.TaskId.StageId), localJobDirectory, dfsJobDirectory);
+            var configuration = new TaskContext(jobId, jobConfiguration, taskAttemptId, jobConfiguration.GetStage(taskAttemptId.TaskId.StageId)!, localJobDirectory, dfsJobDirectory);
             var taskExecutionType = DetermineTaskExecutionType(configuration);
-            var ctor = taskExecutionType.GetConstructor(new Type[] { typeof(FileSystemClient), typeof(JetClient), typeof(ITaskServerUmbilicalProtocol), typeof(TaskExecutionUtility), typeof(TaskContext) });
-            return (TaskExecutionUtility)ctor.Invoke(new object[] { fileSystemClient, jetClient, umbilical, null, configuration });
+            var ctor = taskExecutionType.GetConstructor(new Type[] { typeof(FileSystemClient), typeof(JetClient), typeof(ITaskServerUmbilicalProtocol), typeof(TaskExecutionUtility), typeof(TaskContext) })!;
+            return (TaskExecutionUtility)ctor.Invoke(new object?[] { fileSystemClient, jetClient, umbilical, null, configuration });
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace Ookii.Jumbo.Jet
         internal bool NotifyStartPartitionProcessing(int partitionNumber)
         {
             // Stages with multiple input channels cannot use PartitionsPerTask>1, so this method should not be called for such stages
-            Debug.Assert(InputChannels.Count == 1);
+            Debug.Assert(InputChannels?.Count == 1);
             if (InputChannels[0].Configuration.DisableDynamicPartitionAssignment)
                 return true;
             else
@@ -473,7 +473,7 @@ namespace Ookii.Jumbo.Jet
         internal bool GetAdditionalPartitions(IMultiInputRecordReader reader)
         {
             // Stages with multiple input channels cannot use PartitionsPerTask>1, so this method should not be called for such stages
-            Debug.Assert(InputChannels.Count == 1);
+            Debug.Assert(InputChannels?.Count == 1);
 
             if (InputChannels[0].Configuration.DisableDynamicPartitionAssignment)
                 return false;
@@ -503,12 +503,12 @@ namespace Ookii.Jumbo.Jet
         {
             ArgumentNullException.ThrowIfNull(childStage);
 
-            var childTaskId = new TaskId(Context.TaskAttemptId.TaskId, childStage.StageId, taskNumber);
+            var childTaskId = new TaskId(Context.TaskAttemptId.TaskId, childStage.StageId!, taskNumber);
             var configuration = new TaskContext(Context.JobId, Context.JobConfiguration, new TaskAttemptId(childTaskId, Context.TaskAttemptId.Attempt), childStage, Context.LocalJobDirectory, Context.DfsJobDirectory);
 
             var taskExecutionType = DetermineTaskExecutionType(configuration);
 
-            var ctor = taskExecutionType.GetConstructor(new Type[] { typeof(FileSystemClient), typeof(JetClient), typeof(ITaskServerUmbilicalProtocol), typeof(TaskExecutionUtility), typeof(TaskContext) });
+            var ctor = taskExecutionType.GetConstructor(new Type[] { typeof(FileSystemClient), typeof(JetClient), typeof(ITaskServerUmbilicalProtocol), typeof(TaskExecutionUtility), typeof(TaskContext) })!;
             return (TaskExecutionUtility)ctor.Invoke(new object[] { FileSystemClient, JetClient, Umbilical, this, configuration });
         }
 
@@ -517,12 +517,12 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="partitioner">The partitioner to use for the <see cref="PrepartitionedRecordWriter{T}"/> if the child stage uses the <see cref="PrepartitionedPushTask{TInput,TOutput}"/> interface. Otherwise, ignored.</param>
         /// <returns>A record writer.</returns>
-        internal abstract IRecordWriter CreatePipelineRecordWriter(object partitioner);
+        internal abstract IRecordWriter CreatePipelineRecordWriter(object? partitioner);
 
         internal void EnsureStatusLevels(int maxLevel)
         {
             // Only call this on the root task!
-            while (_statusMessages.Count < maxLevel + 1)
+            while (_statusMessages!.Count < maxLevel + 1)
                 _statusMessages.Add(null);
         }
 
@@ -532,26 +532,21 @@ namespace Ookii.Jumbo.Jet
             _rootTask._mustReportProgress = true;
         }
 
-        private void SetStatusMessage(int level, string message)
-        {
-            _statusMessages[level] = message;
-        }
-
         private static Type DetermineTaskExecutionType(TaskContext configuration)
         {
-            var taskType = configuration.StageConfiguration.TaskType.ReferencedType;
-            var interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>), true);
+            var taskType = configuration.StageConfiguration.TaskType.ReferencedType!;
+            var interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>), true)!;
             var recordTypes = interfaceType.GetGenericArguments();
 
             return typeof(TaskExecutionUtilityGeneric<,>).MakeGenericType(recordTypes);
         }
 
-        private IRecordReader CreateInputRecordReader()
+        private IRecordReader? CreateInputRecordReader()
         {
             if (Context.StageConfiguration.HasDataInput)
             {
                 WarnIfNoRecordReuse();
-                var input = (IDataInput)JetActivator.CreateInstance(Context.StageConfiguration.DataInputType.ReferencedType, this);
+                var input = (IDataInput)JetActivator.CreateInstance(Context.StageConfiguration.DataInputType.ReferencedType!, this);
                 TaskInput = TaskInputUtility.ReadTaskInput(new LocalFileSystemClient(), _context.LocalJobDirectory, _context.TaskAttemptId.TaskId.StageId, _context.TaskAttemptId.TaskId.TaskNumber - 1);
                 return input.CreateRecordReader(TaskInput);
             }
@@ -565,7 +560,7 @@ namespace Ookii.Jumbo.Jet
                 }
                 else
                 {
-                    var multiInputRecordReaderType = Context.StageConfiguration.MultiInputRecordReaderType.ReferencedType;
+                    var multiInputRecordReaderType = Context.StageConfiguration.MultiInputRecordReaderType.ReferencedType!;
                     var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)JetClient.Configuration.FileChannel.ReadBufferSize;
                     var compressionType = Context.GetSetting(FileOutputChannel.CompressionTypeSetting, JetClient.Configuration.FileChannel.CompressionType);
                     var reader = (IMultiInputRecordReader)JetActivator.CreateInstance(multiInputRecordReaderType, this, new int[] { 0 }, _inputChannels.Count, Context.StageConfiguration.AllowRecordReuse, bufferSize, compressionType);
@@ -600,7 +595,7 @@ namespace Ookii.Jumbo.Jet
             if (!_context.StageConfiguration.AllowRecordReuse)
             {
                 // We don't warn for value types, since record reuse is irrelevant in that case.
-                if (!_context.StageConfiguration.TaskTypeInfo.InputRecordType.IsValueType)
+                if (!_context.StageConfiguration.TaskTypeInfo!.InputRecordType.IsValueType)
                     _log.WarnFormat("Input record reuse not allowed for task {0}.", Context.TaskId);
             }
             else
@@ -663,7 +658,7 @@ namespace Ookii.Jumbo.Jet
                     // Not setting it to null so there's no chance it'll get recreated.
                 }
 
-                foreach (var output in _dataOutputs)
+                foreach (var output in _dataOutputs!)
                     output.Commit(FileSystemClient);
             }
         }
@@ -746,7 +741,7 @@ namespace Ookii.Jumbo.Jet
                     var progressTask = task as IHasAdditionalProgress;
                     if (progressTask != null)
                     {
-                        AddAdditionalProgressSource(task.GetType().FullName, new TaskProgressSource(this));
+                        AddAdditionalProgressSource(task.GetType().FullName!, new TaskProgressSource(this));
                     }
                 }
                 else
@@ -769,7 +764,7 @@ namespace Ookii.Jumbo.Jet
                 var progressObj = obj as IHasAdditionalProgress;
                 if (progressObj != null)
                 {
-                    var progressName = obj.GetType().FullName;
+                    var progressName = obj.GetType().FullName!;
                     AddAdditionalProgressSource(progressName, progressObj);
                 }
             }
@@ -788,23 +783,17 @@ namespace Ookii.Jumbo.Jet
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        private List<IInputChannel> CreateInputChannels(IEnumerable<StageConfiguration> inputStages)
+        private List<IInputChannel>? CreateInputChannels(IEnumerable<StageConfiguration> inputStages)
         {
-            List<IInputChannel> result = null;
+            List<IInputChannel>? result = null;
             foreach (var inputStage in inputStages)
             {
-                IInputChannel channel;
-                switch (inputStage.OutputChannel.ChannelType)
+                IInputChannel channel = inputStage.OutputChannel!.ChannelType switch
                 {
-                case ChannelType.File:
-                    channel = new FileInputChannel(this, inputStage);
-                    break;
-                case ChannelType.Tcp:
-                    channel = new TcpInputChannel(this, inputStage);
-                    break;
-                default:
-                    throw new InvalidOperationException("Invalid channel type.");
-                }
+                    ChannelType.File => new FileInputChannel(this, inputStage),
+                    ChannelType.Tcp => new TcpInputChannel(this, inputStage),
+                    _ => throw new InvalidOperationException("Invalid channel type."),
+                };
                 if (result == null)
                     result = new List<IInputChannel>();
                 result.Add(channel);
@@ -813,7 +802,7 @@ namespace Ookii.Jumbo.Jet
             return result;
         }
 
-        private IOutputChannel CreateOutputChannel()
+        private IOutputChannel? CreateOutputChannel()
         {
             if (Context.StageConfiguration.ChildStage != null)
                 return new PipelineOutputChannel(this);
@@ -822,15 +811,12 @@ namespace Ookii.Jumbo.Jet
                 var config = Context.StageConfiguration.OutputChannel;
                 if (config != null)
                 {
-                    switch (config.ChannelType)
+                    return config.ChannelType switch
                     {
-                    case ChannelType.File:
-                        return new FileOutputChannel(this);
-                    case ChannelType.Tcp:
-                        return new TcpOutputChannel(this);
-                    default:
-                        throw new InvalidOperationException("Invalid channel type.");
-                    }
+                        ChannelType.File => new FileOutputChannel(this),
+                        ChannelType.Tcp => new TcpOutputChannel(this),
+                        _ => throw new InvalidOperationException("Invalid channel type."),
+                    };
                 }
             }
             return null;
@@ -841,7 +827,7 @@ namespace Ookii.Jumbo.Jet
             var file = FileSystemClient.Path.Combine(FileSystemClient.Path.Combine(Context.DfsJobDirectory, "temp"), Context.TaskAttemptId + "_part" + partition.ToString(System.Globalization.CultureInfo.InvariantCulture));
             _log.DebugFormat("Opening output file {0}", file);
 
-            var output = (IDataOutput)JetActivator.CreateInstance(Context.StageConfiguration.DataOutputType.ReferencedType, this);
+            var output = (IDataOutput)JetActivator.CreateInstance(Context.StageConfiguration.DataOutputType.ReferencedType!, this);
             if (_dataOutputs == null)
                 _dataOutputs = new List<IOutputCommitter>();
 
@@ -894,7 +880,7 @@ namespace Ookii.Jumbo.Jet
         private static void LoadAssemblyConfiguration(string jobDirectory, out DfsConfiguration dfsConfig, out JetConfiguration jetConfig)
         {
             _log.Info("Loading configuration.");
-            var configDirectory = Path.Combine(Path.GetDirectoryName(jobDirectory), "config");
+            var configDirectory = Path.Combine(Path.GetDirectoryName(jobDirectory)!, "config");
             var appConfigFile = Path.Combine(configDirectory, "taskhost.config");
 
 
@@ -917,7 +903,7 @@ namespace Ookii.Jumbo.Jet
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private void ProgressThread()
         {
-            TaskProgress progress = null;
+            TaskProgress? progress = null;
 
             using (var memStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new MemoryStatus() : null)
             using (var procStatus = JetClient.Configuration.TaskServer.LogSystemStatus ? new ProcessorStatus() : null)
@@ -934,7 +920,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private TaskProgress ReportProgress(TaskProgress previousProgress, MemoryStatus memStatus, ProcessorStatus procStatus)
+        private TaskProgress ReportProgress(TaskProgress? previousProgress, MemoryStatus? memStatus, ProcessorStatus? procStatus)
         {
             var progressChanged = false;
             if (previousProgress == null)
@@ -980,7 +966,7 @@ namespace Ookii.Jumbo.Jet
                     foreach (var progressSource in _additionalProgressSources)
                     {
                         var value = progressSource.Value.Average(i => i.AdditionalProgress);
-                        var additionalProgress = previousProgress.AdditionalProgressValues[x];
+                        var additionalProgress = previousProgress.AdditionalProgressValues![x];
                         if (additionalProgress.Progress != value)
                         {
                             additionalProgress.Progress = value;
@@ -1003,10 +989,15 @@ namespace Ookii.Jumbo.Jet
                     if (procStatus != null)
                     {
                         procStatus.Refresh();
-                        memStatus.Refresh();
                         _log.DebugFormat("CPU: {0}", procStatus.Total);
+                    }
+
+                    if (memStatus != null)
+                    {
+                        memStatus.Refresh();
                         _log.DebugFormat("Memory: {0}", memStatus);
                     }
+
                     Umbilical.ReportProgress(Context.JobId, Context.TaskAttemptId, previousProgress);
                 }
                 catch (SocketException ex)
@@ -1062,7 +1053,7 @@ namespace Ookii.Jumbo.Jet
 
                 if (Context.StageConfiguration.HasDataOutput)
                 {
-                    metrics.DfsBytesWritten += _outputWriter.BytesWritten;
+                    metrics.DfsBytesWritten += _outputWriter!.BytesWritten;
                 }
                 else
                 {
@@ -1071,7 +1062,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private static void UpdateMetricsFromSource(TaskMetrics metrics, object source)
+        private static void UpdateMetricsFromSource(TaskMetrics metrics, object? source)
         {
             var metricsSource = source as IHasMetrics;
             if (metricsSource != null)

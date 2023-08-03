@@ -89,7 +89,7 @@ namespace Ookii.Jumbo.IO
         /// <param name="buffer">The buffer.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="count">The count.</param>
-        public void Reset(byte[] buffer, int offset, int count)
+        public void Reset(byte[]? buffer, int offset, int count)
         {
             _buffer = buffer;
             _offset = _position = offset;

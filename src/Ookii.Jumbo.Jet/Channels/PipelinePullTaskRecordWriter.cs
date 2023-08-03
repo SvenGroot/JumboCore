@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class PipelinePullTaskRecordWriter<TRecord, TPipelinedTaskOutput> : RecordWriter<TRecord>
+        where TRecord : notnull
+        where TPipelinedTaskOutput : notnull
     {
         #region Nested types
 
@@ -52,7 +55,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 return !_cancelled;
             }
 
-            public bool Read(out TRecord item)
+            public bool Read([MaybeNullWhen(false)] out TRecord item)
             {
                 var newPos = (_readPos + 1) % _bufferSize;
                 _readPos = newPos;
@@ -135,8 +138,8 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly RecordWriter<TPipelinedTaskOutput> _output;
         private ITask<TRecord, TPipelinedTaskOutput> _task;
         private readonly TaskId _taskId;
-        private Thread _taskThread;
-        private ProducerConsumerBuffer _buffer;
+        private Thread? _taskThread;
+        private ProducerConsumerBuffer? _buffer;
 
         public PipelinePullTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output, TaskId taskId)
         {
@@ -154,7 +157,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             if (_taskThread != null)
             {
-                _buffer.Finish();
+                _buffer!.Finish();
                 _taskThread.Join();
             }
         }
@@ -168,13 +171,13 @@ namespace Ookii.Jumbo.Jet.Channels
                 _taskThread.Start();
             }
 
-            _buffer.Write(record);
+            _buffer!.Write(record);
         }
 
         private void TaskThread()
         {
             _task = (ITask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
-            using (var reader = new BufferRecordReader(_buffer))
+            using (var reader = new BufferRecordReader(_buffer!))
             {
                 _task.Run(reader, _output);
             }
@@ -185,7 +188,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             base.Dispose(disposing);
             if (disposing)
-                _buffer.Dispose();
+                _buffer?.Dispose();
         }
     }
 }

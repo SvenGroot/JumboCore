@@ -13,13 +13,14 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// </remarks>
     [AllowRecordReuse(PassThrough = true)]
     public class EmptyTask<T> : ITask<T, T>
+        where T : notnull
     {
         /// <summary>
         /// Runs the task.
         /// </summary>
         /// <param name="input">The input for the task.</param>
         /// <param name="output">The output for the task.</param>
-        public void Run(RecordReader<T> input, RecordWriter<T> output)
+        public void Run(RecordReader<T>? input, RecordWriter<T> output)
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(output);

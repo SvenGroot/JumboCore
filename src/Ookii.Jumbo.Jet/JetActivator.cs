@@ -24,10 +24,10 @@ namespace Ookii.Jumbo.Jet
         ///   implements <see cref="IConfigurable"/> and if so, applies the configuration to it.
         /// </para>
         /// </remarks>
-        public static object CreateInstance(Type type, DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, TaskContext taskAttemptConfiguration, params object[] args)
+        public static object CreateInstance(Type type, DfsConfiguration? dfsConfiguration, JetConfiguration? jetConfiguration, TaskContext? taskAttemptConfiguration, params object?[] args)
         {
             ArgumentNullException.ThrowIfNull(type);
-            var instance = Activator.CreateInstance(type, args);
+            var instance = Activator.CreateInstance(type, args)!;
 
             ApplyConfiguration(instance, dfsConfiguration, jetConfiguration, taskAttemptConfiguration);
 
@@ -67,7 +67,7 @@ namespace Ookii.Jumbo.Jet
         ///   This function checks if the object implements <see cref="IConfigurable"/> and if so, applies the configuration to it.
         /// </para>
         /// </remarks>
-        public static void ApplyConfiguration(object target, DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, TaskContext taskAttemptConfiguration)
+        public static void ApplyConfiguration(object target, DfsConfiguration? dfsConfiguration, JetConfiguration? jetConfiguration, TaskContext? taskAttemptConfiguration)
         {
             ArgumentNullException.ThrowIfNull(target);
 

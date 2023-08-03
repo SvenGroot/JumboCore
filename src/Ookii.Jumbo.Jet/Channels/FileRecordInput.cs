@@ -9,7 +9,7 @@ namespace Ookii.Jumbo.Jet.Channels
     {
         private readonly Type _recordReaderType;
         private readonly string _fileName;
-        private readonly string _sourceName;
+        private readonly string? _sourceName;
         private readonly long _uncompressedSize;
         private readonly bool _deleteFile;
         private readonly bool _inputContainsRecordSizes;
@@ -18,7 +18,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly int _bufferSize;
         private readonly CompressionType _compressionType;
 
-        public FileRecordInput(Type recordReaderType, string fileName, string sourceName, long uncompressedSize, bool deleteFile, bool inputContainsRecordSizes, int segmentCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
+        public FileRecordInput(Type recordReaderType, string fileName, string? sourceName, long uncompressedSize, bool deleteFile, bool inputContainsRecordSizes, int segmentCount, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
         {
             ArgumentNullException.ThrowIfNull(recordReaderType);
             ArgumentNullException.ThrowIfNull(fileName);
@@ -49,7 +49,7 @@ namespace Ookii.Jumbo.Jet.Channels
         protected override IRecordReader CreateReader()
         {
             var stream = CreateStream();
-            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes)!;
             reader.SourceName = _sourceName;
             return reader;
         }

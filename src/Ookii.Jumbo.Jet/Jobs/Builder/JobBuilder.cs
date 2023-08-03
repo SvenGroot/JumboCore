@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         private static void GetDependencies(HashSet<string> dependencies, Assembly assembly)
         {
-            if (!dependencies.Add(assembly.FullName))
+            if (!dependencies.Add(assembly.FullName!))
             {
                 return;
             }
@@ -40,7 +40,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private readonly FileSystemClient _fileSystemClient;
         private readonly JetClient _jetClient;
         private readonly DynamicTaskBuilder _taskBuilder = new DynamicTaskBuilder();
-        private SettingsDictionary _settings;
+        private SettingsDictionary? _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobBuilder"/> class.
@@ -107,7 +107,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The name of the job.
         /// </value>
-        public string JobName { get; set; }
+        public string? JobName { get; set; }
 
         /// <summary>
         /// Gets the settings for the job.
@@ -139,7 +139,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(recordWriterType);
 
             if (recordWriterType.IsGenericTypeDefinition)
-                recordWriterType = recordWriterType.MakeGenericType(operation.RecordType);
+                recordWriterType = recordWriterType.MakeGenericType(operation.RecordType!);
 
             var output = new FileOutput(path, recordWriterType);
             operation.SetOutput(output);
@@ -192,6 +192,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Process<TInput, TOutput>(IOperationInput input, Action<RecordReader<TInput>, RecordWriter<TOutput>, TaskContext> processor, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TInput : notnull
+            where TOutput : notnull
         {
             return ProcessCore<TInput, TOutput>(input, processor, recordReuse);
         }
@@ -226,6 +228,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Process<TInput, TOutput>(IOperationInput input, Action<RecordReader<TInput>, RecordWriter<TOutput>> processor, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TInput : notnull
+            where TOutput : notnull
         {
             return ProcessCore<TInput, TOutput>(input, processor, recordReuse);
         }
@@ -281,7 +285,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
-            if (!_dependencyAssemblies.Contains(assembly.FullName) &&
+            if (!_dependencyAssemblies.Contains(assembly.FullName!) &&
                 (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)))
             {
                 foreach (var reference in assembly.GetReferencedAssemblies())
@@ -306,11 +310,13 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         }
 
         private StageOperation ProcessCore<TInput, TOutput>(IOperationInput input, Delegate processor, RecordReuseMode recordReuse)
+            where TInput : notnull
+            where TOutput : notnull
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(processor);
             CheckIfInputBelongsToJobBuilder(input);
-            var taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run"), processor, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run")!, processor, 0, recordReuse);
             var result = new StageOperation(this, input, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(processor, result);
             return result;
@@ -320,7 +326,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
             if (!DynamicTaskBuilder.CanCallTargetMethodDirectly(processor))
                 DynamicTaskBuilder.SerializeDelegate(operation.Settings, processor);
-            AddAssembly(processor.Method.DeclaringType.Assembly);
+            AddAssembly(processor.Method.DeclaringType!.Assembly);
         }
     }
 }

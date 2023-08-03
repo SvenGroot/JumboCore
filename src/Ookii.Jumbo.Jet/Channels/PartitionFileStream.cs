@@ -12,8 +12,8 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly string _fileName;
         private readonly IEnumerator<PartitionFileIndexEntry> _indexEntries;
         private PartitionFileIndexEntry _current;
-        private ChecksumInputStream _currentSegmentRaw;
-        private Stream _currentSegment;
+        private ChecksumInputStream? _currentSegmentRaw;
+        private Stream? _currentSegment;
         private readonly long _length;
         private long _position;
         private readonly int _bufferSize;

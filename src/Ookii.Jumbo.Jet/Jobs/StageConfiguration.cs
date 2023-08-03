@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
@@ -18,14 +19,14 @@ namespace Ookii.Jumbo.Jet.Jobs
     [XmlType("Stage", Namespace = JobConfiguration.XmlNamespace)]
     public class StageConfiguration
     {
-        private string _stageId;
+        private string? _stageId;
         private int _taskCount;
         private readonly ExtendedCollection<string> _dependentStages = new ExtendedCollection<string>();
-        private StageConfiguration _childStage;
-        private IDataInput _dataInput;
-        private IDataOutput _dataOutput;
+        private StageConfiguration? _childStage;
+        private IDataInput? _dataInput;
+        private IDataOutput? _dataOutput;
         private TypeReference _taskType;
-        private TaskTypeInfo _taskTypeInfo;
+        private TaskTypeInfo? _taskTypeInfo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StageConfiguration"/> class.
@@ -38,7 +39,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets or sets the unique identifier for the stage.
         /// </summary>
         [XmlAttribute("id")]
-        public string StageId
+        public string? StageId
         {
             get { return _stageId; }
             set
@@ -69,7 +70,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// The <see cref="TaskTypeInfo"/> for the <see cref="TaskType"/>, or <see langword="null"/> if the type has not been set.
         /// </value>
         [XmlIgnore]
-        public TaskTypeInfo TaskTypeInfo
+        public TaskTypeInfo? TaskTypeInfo
         {
             get { return _taskType.ReferencedType == null ? null : _taskTypeInfo ?? (_taskTypeInfo = new TaskTypeInfo(_taskType.ReferencedType)); }
         }
@@ -86,7 +87,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             get
             {
                 if (DataInput != null)
-                    return DataInput.TaskInputs.Count;
+                    return DataInput.TaskInputs!.Count;
                 return _taskCount;
             }
             set
@@ -111,7 +112,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </note>
         /// </remarks>
         [XmlIgnore]
-        public IDataInput DataInput
+        public IDataInput? DataInput
         {
             get { return _dataInput; }
             set
@@ -165,7 +166,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </note>
         /// </remarks>
         [XmlIgnore]
-        public IDataOutput DataOutput
+        public IDataOutput? DataOutput
         {
             get { return _dataOutput; }
             set
@@ -216,7 +217,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <summary>
         /// Gets or sets a child stage that will be connected to this stage's tasks via a <see cref="Channels.PipelineOutputChannel"/>.
         /// </summary>
-        public StageConfiguration ChildStage
+        public StageConfiguration? ChildStage
         {
             get { return _childStage; }
             set
@@ -238,7 +239,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets the parent of this instance.
         /// </summary>
         [XmlIgnore]
-        public StageConfiguration Parent { get; private set; }
+        public StageConfiguration? Parent { get; private set; }
 
         /// <summary>
         /// Gets the root stage of this compound stage.
@@ -281,12 +282,12 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets or sets a list of settings that are specific to this task.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public SettingsDictionary StageSettings { get; set; }
+        public SettingsDictionary? StageSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the output channel configuration for this stage.
         /// </summary>
-        public ChannelConfiguration OutputChannel { get; set; }
+        public ChannelConfiguration? OutputChannel { get; set; }
 
         /// <summary>
         /// Gets or sets the type of multi record reader to use when there are multiple channels with this stage as output stage.
@@ -374,7 +375,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             get
             {
-                return ChildStage != null ? ChildStage.TaskTypeInfo.IsPushTask && ChildStage.AllowRecordReuse : true;
+                return ChildStage?.TaskTypeInfo != null ? ChildStage.TaskTypeInfo.IsPushTask && ChildStage.AllowRecordReuse : true;
             }
         }
 
@@ -382,7 +383,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets the compound stage ID.
         /// </summary>
         [XmlIgnore]
-        public string CompoundStageId
+        public string? CompoundStageId
         {
             get
             {
@@ -417,7 +418,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             get
             {
-                return TaskType.ReferencedType.FindGenericBaseType(typeof(PrepartitionedPushTask<,>), false) != null;
+                return TaskType.ReferencedType?.FindGenericBaseType(typeof(PrepartitionedPushTask<,>), false) != null;
             }
         }
 
@@ -426,7 +427,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </summary>
         /// <param name="childStageId">The child stage ID.</param>
         /// <returns>The <see cref="StageConfiguration"/> for the child stage, or <see langword="null"/> if no stage with the specified name exists.</returns>
-        public StageConfiguration GetNamedChildStage(string childStageId)
+        public StageConfiguration? GetNamedChildStage(string childStageId)
         {
             ArgumentNullException.ThrowIfNull(childStageId);
 
@@ -445,7 +446,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
-        public T GetSetting<T>(string key, T defaultValue)
+        public T? GetSetting<T>(string key, T? defaultValue)
         {
             if (StageSettings == null)
                 return defaultValue;
@@ -460,11 +461,28 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting..</param>
         /// <param name="value">If the function returns <see langword="true"/>, receives the value of the setting.</param>
         /// <returns><see langword="true"/> if the settings dictionary contained the specified setting; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetSetting<T>(string key, out T value)
+        public bool TryGetSetting<T>(string key, out T? value)
         {
             if (StageSettings == null)
             {
                 value = default(T);
+                return false;
+            }
+            else
+                return StageSettings.TryGetSetting(key, out value);
+        }
+
+        /// <summary>
+        /// Tries to get a setting with the specified type from the stage settings.
+        /// </summary>
+        /// <param name="key">The name of the setting..</param>
+        /// <param name="value">If the function returns <see langword="true"/>, receives the value of the setting.</param>
+        /// <returns><see langword="true"/> if the settings dictionary contained the specified setting; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetSetting(string key, [MaybeNullWhen(false)] out string value)
+        {
+            if (StageSettings == null)
+            {
+                value = null;
                 return false;
             }
             else
@@ -477,7 +495,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="key">The name of the setting.</param>
         /// <param name="defaultValue">The value to use if the setting is not present in the <see cref="SettingsDictionary"/>.</param>
         /// <returns>The value of the setting, or <paramref name="defaultValue"/> if the setting was not present in the <see cref="SettingsDictionary"/>.</returns>
-        public string GetSetting(string key, string defaultValue)
+        [return: NotNullIfNotNull(nameof(defaultValue))]
+        public string? GetSetting(string key, string? defaultValue)
         {
             if (StageSettings == null)
                 return defaultValue;
@@ -563,7 +582,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have data output because it has a child stage.", CompoundStageId));
                 if (OutputChannel != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has both data output and an output channel.", CompoundStageId));
-                if (DataOutput.RecordType != TaskTypeInfo.OutputRecordType)
+                if (DataOutput.RecordType != TaskTypeInfo!.OutputRecordType)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output record type {1} is incompatible with its data output's record record type {2}.", StageId, DataOutput.RecordType, TaskTypeInfo.OutputRecordType));
                 if (DataOutputType.ReferencedType == null || !DataOutputType.ReferencedType.IsInstanceOfType(DataOutput))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data output type must match the data output instance.", CompoundStageId));
@@ -580,7 +599,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 if (OutputChannel.PartitionerType.ReferencedType == null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel must specify a partitioner type.", CompoundStageId));
                 ValidatePartitionerType(OutputChannel.PartitionerType.ReferencedType);
-                if (!MultiInputRecordReader.GetAcceptedInputTypes(OutputChannel.MultiInputRecordReaderType.ReferencedType).Contains(TaskTypeInfo.OutputRecordType))
+                if (!MultiInputRecordReader.GetAcceptedInputTypes(OutputChannel.MultiInputRecordReaderType.ReferencedType).Contains(TaskTypeInfo!.OutputRecordType))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel multi-input record reader type {1} doesn't accept the stage's output record type {2}.", CompoundStageId, OutputChannel.MultiInputRecordReaderType.ReferencedType, TaskTypeInfo.OutputRecordType));
                 if (OutputChannel.OutputStage != null) // null is allowed for debugging purposes; see OutputChannel class
                 {
@@ -603,7 +622,7 @@ namespace Ookii.Jumbo.Jet.Jobs
                 }
 
                 ChildStage.Validate(job);
-                if (TaskTypeInfo.OutputRecordType != ChildStage.TaskTypeInfo.InputRecordType)
+                if (TaskTypeInfo!.OutputRecordType != ChildStage.TaskTypeInfo!.InputRecordType)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output record type {1} does not match its child stage's input record type {2}.", CompoundStageId, TaskTypeInfo.OutputRecordType, ChildStage.TaskTypeInfo.InputRecordType));
             }
         }
@@ -614,9 +633,9 @@ namespace Ookii.Jumbo.Jet.Jobs
             {
                 if (Parent != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have data input because it is a child stage.", CompoundStageId));
-                if (job.GetInputStagesForStage(StageId).Count() != 0)
+                if (job.GetInputStagesForStage(StageId!).Count() != 0)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have both data input and an input channel.", CompoundStageId));
-                if (DataInput.RecordType != TaskTypeInfo.InputRecordType)
+                if (DataInput.RecordType != TaskTypeInfo!.InputRecordType)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input record type {1} is incompatible with its data input's record record type {2}.", CompoundStageId, DataInput.RecordType, TaskTypeInfo.InputRecordType));
                 if (DataInputType.ReferencedType == null || !DataInputType.ReferencedType.IsInstanceOfType(DataInput))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data input type must match the data input instance.", CompoundStageId));
@@ -627,22 +646,22 @@ namespace Ookii.Jumbo.Jet.Jobs
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data input type must be null when the stage has no data input.", CompoundStageId));
                 if (Parent == null)
                 {
-                    var sendingStages = job.GetInputStagesForStage(StageId).ToArray();
+                    var sendingStages = job.GetInputStagesForStage(StageId!).ToArray();
                     IEnumerable<Type> inputTypes;
                     if (sendingStages.Length > 1)
                     {
                         if (MultiInputRecordReaderType.ReferencedType == null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s must specify a stage multi-input record reader because it has more than one input channel.", CompoundStageId));
-                        if (RecordReader.GetRecordType(MultiInputRecordReaderType.ReferencedType) != TaskTypeInfo.InputRecordType)
+                        if (RecordReader.GetRecordType(MultiInputRecordReaderType.ReferencedType) != TaskTypeInfo!.InputRecordType)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input record type {1} is not compatible with the stage multi-input record reader's record type {2}.", CompoundStageId, TaskTypeInfo.InputRecordType, RecordReader.GetRecordType(MultiInputRecordReaderType.ReferencedType)));
                         inputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType.ReferencedType);
                     }
                     else
-                        inputTypes = new[] { TaskTypeInfo.InputRecordType };
+                        inputTypes = new[] { TaskTypeInfo!.InputRecordType };
 
                     foreach (var sendingStage in sendingStages)
                     {
-                        if (sendingStage.OutputChannel.MultiInputRecordReaderType.ReferencedType == null)
+                        if (sendingStage.OutputChannel!.MultiInputRecordReaderType.ReferencedType == null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel must specify a multi-input record reader type.", sendingStage.CompoundStageId));
                         if (!inputTypes.Contains(RecordReader.GetRecordType(sendingStage.OutputChannel.MultiInputRecordReaderType.ReferencedType)))
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input channel uses incompatible record type {1}.", CompoundStageId, RecordReader.GetRecordType(sendingStage.OutputChannel.MultiInputRecordReaderType.ReferencedType)));
@@ -682,8 +701,8 @@ namespace Ookii.Jumbo.Jet.Jobs
             if (interfaceType == null)
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s partitioner type must implement IPartitioner<T>.", CompoundStageId));
             var recordType = interfaceType.GetGenericArguments()[0];
-            if (recordType != TaskTypeInfo.OutputRecordType)
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output record type {1} is incompatible with its partitioner's record type {2}.", CompoundStageId, TaskTypeInfo.OutputRecordType, recordType));
+            if (recordType != TaskTypeInfo?.OutputRecordType)
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output record type {1} is incompatible with its partitioner's record type {2}.", CompoundStageId, TaskTypeInfo?.OutputRecordType, recordType));
         }
 
     }

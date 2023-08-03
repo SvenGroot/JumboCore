@@ -27,6 +27,7 @@ namespace Ookii.Jumbo.Jet.Channels
     /// </para>
     /// </remarks>
     public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
+        where T : notnull
     {
         #region Nested types
 
@@ -37,7 +38,7 @@ namespace Ookii.Jumbo.Jet.Channels
             private readonly BinaryReader _reader;
             private readonly long _totalBytes;
             private readonly bool _allowRecordReuse;
-            private readonly T _record;
+            private readonly T? _record;
             private long _bytesRead;
             private int _indexPosition;
 
@@ -71,7 +72,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                     if (_allowRecordReuse)
                     {
-                        ((IWritable)_record).Read(_reader);
+                        ((IWritable)_record!).Read(_reader);
                         CurrentRecord = _record;
                     }
                     else
@@ -137,7 +138,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private readonly List<string> _spillFiles = new List<string>();
         private readonly List<PartitionFileIndexEntry>[] _spillPartitionIndices;
         private readonly int _maxDiskInputsPerMergePass;
-        private readonly ITask<T, T> _combiner;
+        private readonly ITask<T, T>? _combiner;
         private readonly bool _combinerAllowsRecordReuse;
         private readonly int _minSpillsForCombineDuringMerge;
         private readonly IRawComparer<T> _comparer;
@@ -159,7 +160,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <param name="comparer">A <see cref="IRawComparer{T}"/> or <see cref="IComparer{T}"/> to use when comparing. Using <see cref="IRawComparer{T}"/> is strongly recommended. May be <see langword="null"/></param>
         /// <param name="combiner">The combiner to use during spills. May be <see langword="null" />.</param>
         /// <param name="minSpillsForCombineDuringMerge">The minimum number of spills needed for the combiner to rerun during merge. If this value is 0, the combiner will never be run during the merge. Ignored when <paramref name="combiner" /> is <see langword="null" />.</param>
-        public SortSpillRecordWriter(string outputPath, IPartitioner<T> partitioner, int bufferSize, int limit, int writeBufferSize, bool enableChecksum, CompressionType compressionType, int maxDiskInputsPerMergePass, IComparer<T> comparer = null, ITask<T, T> combiner = null, int minSpillsForCombineDuringMerge = 0)
+        public SortSpillRecordWriter(string outputPath, IPartitioner<T> partitioner, int bufferSize, int limit, int writeBufferSize, bool enableChecksum, CompressionType compressionType, int maxDiskInputsPerMergePass, IComparer<T>? comparer = null, ITask<T, T>? combiner = null, int minSpillsForCombineDuringMerge = 0)
             : base(partitioner, bufferSize, limit, SpillRecordWriterOptions.None)
         {
             ArgumentNullException.ThrowIfNull(outputPath);
@@ -170,7 +171,7 @@ namespace Ookii.Jumbo.Jet.Channels
             ArgumentNullException.ThrowIfNull(partitioner);
             _outputPath = outputPath;
             _partitions = partitioner.Partitions;
-            _outputPathBase = Path.Combine(Path.GetDirectoryName(_outputPath), Path.GetFileNameWithoutExtension(_outputPath));
+            _outputPathBase = Path.Combine(Path.GetDirectoryName(_outputPath) ?? string.Empty, Path.GetFileNameWithoutExtension(_outputPath));
             _writeBufferSize = writeBufferSize;
             _enableChecksum = enableChecksum;
             _maxDiskInputsPerMergePass = maxDiskInputsPerMergePass;
@@ -178,8 +179,11 @@ namespace Ookii.Jumbo.Jet.Channels
             _minSpillsForCombineDuringMerge = minSpillsForCombineDuringMerge;
             _spillPartitionIndices = new List<PartitionFileIndexEntry>[_partitions];
             _compressionType = compressionType;
-            _comparer = comparer as IRawComparer<T>;
-            if (_comparer == null)
+            if (comparer is IRawComparer<T> rawComparer)
+            {
+                _comparer = rawComparer;
+            }
+            else
             {
                 if (comparer != null)
                     _comparer = RawComparer<T>.CreateDeserializingComparer(comparer);
@@ -191,8 +195,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if (combiner != null)
             {
-                var attribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(combiner.GetType(), typeof(AllowRecordReuseAttribute));
-                _combinerAllowsRecordReuse = (attribute != null); // PassThrough doesn't matter, since the combiner's output always allows record reuse.
+                _combinerAllowsRecordReuse = Attribute.IsDefined(combiner.GetType(), typeof(AllowRecordReuseAttribute));; // PassThrough doesn't matter, since the combiner's output always allows record reuse.
             }
         }
 
@@ -305,7 +308,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 using (var input = new IndexedRecordReader(buffer, index, _combinerAllowsRecordReuse))
                 using (var combineOutput = new CombineRecordWriter(output))
                 {
-                    _combiner.Run(input, combineOutput);
+                    _combiner!.Run(input, combineOutput);
                 }
             }
         }
@@ -336,7 +339,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
                 for (var partition = 0; partition < _partitions; ++partition)
                 {
-                    MergePartition(intermediateOutputPath, diskInputs, merger, fileStream, indexWriter, partition);
+                    MergePartition(intermediateOutputPath!, diskInputs, merger, fileStream, indexWriter, partition);
                 }
                 _bytesWritten += fileStream.Length + indexStream.Length + merger.BytesWritten;
                 _bytesRead = merger.BytesRead;
@@ -371,7 +374,7 @@ namespace Ookii.Jumbo.Jet.Channels
                         using (var combineInput = new EnumerableRecordReader<T>(mergeResult.Select(r => r.GetValue()), 0))
                         using (var combineOutput = new CombineRecordWriter(writer))
                         {
-                            _combiner.Run(combineInput, combineOutput);
+                            _combiner!.Run(combineInput, combineOutput);
                         }
                     }
                     else

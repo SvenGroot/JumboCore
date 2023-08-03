@@ -39,8 +39,9 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <returns>A record writer for the channel.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public RecordWriter<T> CreateRecordWriter<T>()
+            where T : notnull
         {
-            var childStage = _taskExecution.Context.StageConfiguration.ChildStage;
+            var childStage = _taskExecution.Context.StageConfiguration.ChildStage!;
             IPartitioner<T> partitioner;
             var taskCount = childStage.TaskCount;
 
@@ -53,7 +54,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
             if (childStage.IsOutputPrepartitioned)
             {
-                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.ReferencedType, _taskExecution);
+                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.GetReferencedType(), _taskExecution);
                 return (RecordWriter<T>)_taskExecution.CreateAssociatedTask(childStage, 1).CreatePipelineRecordWriter(partitioner);
             }
             else if (taskCount == 1)
@@ -61,7 +62,7 @@ namespace Ookii.Jumbo.Jet.Channels
             else
             {
                 var writers = new List<RecordWriter<T>>();
-                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.ReferencedType, _taskExecution);
+                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(_taskExecution.Context.StageConfiguration.ChildStagePartitionerType.GetReferencedType(), _taskExecution);
 
                 for (var x = 1; x <= taskCount; ++x)
                 {

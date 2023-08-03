@@ -11,6 +11,7 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
+        where T : notnull
     {
         #region Nested types
 
@@ -48,10 +49,10 @@ namespace Ookii.Jumbo.Jet.Channels
         public TcpChannelRecordWriter(TaskExecutionUtility taskExecution, bool reuseConnections, IPartitioner<T> partitioner, int bufferSize, int limit)
             : base(partitioner, bufferSize, limit, SpillRecordWriterOptions.AllowRecordWrapping | SpillRecordWriterOptions.AllowMultiRecordIndexEntries)
         {
-            var outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel.OutputStage);
+            var outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel!.OutputStage!)!;
             _outputIds = new TaskId[outputStage.TaskCount]; // We need this to be task based, not partition based.
             for (var x = 0; x < _outputIds.Length; ++x)
-                _outputIds[x] = new TaskId(outputStage.StageId, x + 1);
+                _outputIds[x] = new TaskId(outputStage.StageId!, x + 1);
             _taskConnections = new TaskConnectionInfo[_outputIds.Length];
             _taskExecution = taskExecution;
             _reuseConnections = reuseConnections;
@@ -113,13 +114,13 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             var disposeStream = false;
             var stream = _taskConnections[taskIndex].ClientStream;
-            TcpClient client = null;
+            TcpClient? client = null;
             try
             {
                 var partitions = _taskConnections[taskIndex].Partitions;
                 if (partitions == null)
                 {
-                    partitions = _taskExecution.Context.StageConfiguration.OutputChannel.PartitionsPerTask <= 1 ? new[] { _outputIds[taskIndex].TaskNumber } : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
+                    partitions = _taskExecution.Context.StageConfiguration.OutputChannel!.PartitionsPerTask <= 1 ? new[] { _outputIds[taskIndex].TaskNumber } : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
                     _taskConnections[taskIndex].Partitions = partitions;
                 }
 

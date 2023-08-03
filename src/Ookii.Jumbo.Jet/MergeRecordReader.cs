@@ -23,24 +23,25 @@ namespace Ookii.Jumbo.Jet
     /// </remarks>
     [AdditionalProgressCounter("Sort")]
     public sealed class MergeRecordReader<T> : MultiInputRecordReader<T>, IConfigurable, IChannelMultiInputRecordReader, IHasAdditionalProgress
+        where T : notnull
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(MergeRecordReader<T>));
 
         private int _maxDiskInputsPerMergePass;
         private float _memoryStorageTriggerLevel;
-        private string _mergeIntermediateOutputPath;
+        private string? _mergeIntermediateOutputPath;
         private bool _purgeMemoryBeforeFinalPass;
         private bool _disposed;
         private bool _configured;
-        private IInputChannel _channel;
+        private IInputChannel? _channel;
         private volatile bool _memoryStorageFull;
 
         private readonly MergeHelper<T> _mergeHelper = new MergeHelper<T>();
-        private PartitionMerger<T>[] _partitionMergers;
+        private PartitionMerger<T>[]? _partitionMergers;
         private readonly Dictionary<int, PartitionMerger<T>> _finalPassMergers = new Dictionary<int, PartitionMerger<T>>();
-        private IEnumerator<MergeResultRecord<T>> _currentPartitionFinalPass;
+        private IEnumerator<MergeResultRecord<T>>? _currentPartitionFinalPass;
 
-        private Thread _mergeThread;
+        private Thread? _mergeThread;
         private readonly ManualResetEvent _cancelEvent = new ManualResetEvent(false);
         private readonly AutoResetEvent _inputAddedEvent = new AutoResetEvent(false);
         private readonly object _finalPassLock = new object();
@@ -95,7 +96,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets or sets the input channel that this reader is reading from.
         /// </summary>
         /// <value>The channel.</value>
-        public IInputChannel Channel
+        public IInputChannel? Channel
         {
             get { return _channel; }
             set
@@ -111,17 +112,17 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the configuration used to access the Distributed File System.
         /// </summary>
-        public Ookii.Jumbo.Dfs.DfsConfiguration DfsConfiguration { get; set; }
+        public Ookii.Jumbo.Dfs.DfsConfiguration? DfsConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the configuration used to access the Jet servers.
         /// </summary>
-        public JetConfiguration JetConfiguration { get; set; }
+        public JetConfiguration? JetConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the configuration for the task attempt.
         /// </summary>
-        public TaskContext TaskContext { get; set; }
+        public TaskContext? TaskContext { get; set; }
 
         /// <summary>
         /// Gets the bytes read.
@@ -139,7 +140,7 @@ namespace Ookii.Jumbo.Jet
             get { return _maxDiskInputsPerMergePass; }
         }
 
-        internal string IntermediateOutputPath
+        internal string? IntermediateOutputPath
         {
             get { return _mergeIntermediateOutputPath; }
         }
@@ -166,7 +167,7 @@ namespace Ookii.Jumbo.Jet
 
             for (var x = 0; x < partitions.Count; ++x)
             {
-                _partitionMergers[x].AddInput(partitions[x]);
+                _partitionMergers![x].AddInput(partitions[x]);
             }
 
             _inputAddedEvent.Set();
@@ -209,11 +210,11 @@ namespace Ookii.Jumbo.Jet
 
             _configured = true;
 
-            _mergeIntermediateOutputPath = Path.Combine(TaskContext.LocalJobDirectory, TaskContext.TaskAttemptId.ToString());
+            _mergeIntermediateOutputPath = Path.Combine(TaskContext!.LocalJobDirectory, TaskContext.TaskAttemptId.ToString());
             if (!Directory.Exists(_mergeIntermediateOutputPath))
                 Directory.CreateDirectory(_mergeIntermediateOutputPath);
 
-            _maxDiskInputsPerMergePass = TaskContext.GetSetting(MergeRecordReaderConstants.MaxFileInputsSetting, JetConfiguration.MergeRecordReader.MaxFileInputs);
+            _maxDiskInputsPerMergePass = TaskContext.GetSetting(MergeRecordReaderConstants.MaxFileInputsSetting, JetConfiguration!.MergeRecordReader.MaxFileInputs);
             if (_maxDiskInputsPerMergePass <= 1)
                 throw new InvalidOperationException("The maximum number of file inputs per pass must be larger than one.");
 
@@ -322,6 +323,7 @@ namespace Ookii.Jumbo.Jet
         {
             _log.InfoFormat("Background merge thread started with trigger level {1} and max {2} disk inputs per pass.", TotalInputCount, _memoryStorageTriggerLevel, _maxDiskInputsPerMergePass);
 
+            Debug.Assert(_partitionMergers != null);
             var events = new WaitHandle[] { _inputAddedEvent, _cancelEvent };
 
             while (CurrentInputCount < TotalInputCount)
@@ -376,9 +378,9 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private IComparer<T> GetComparer()
+        private IComparer<T>? GetComparer()
         {
-            var comparerTypeName = TaskContext.StageConfiguration.GetSetting(MergeRecordReaderConstants.ComparerSetting, null);
+            var comparerTypeName = TaskContext!.StageConfiguration.GetSetting(MergeRecordReaderConstants.ComparerSetting, null);
             if (comparerTypeName == null && !(Channel == null || Channel.InputStage == null))
             {
                 if (Ookii.Jumbo.Jet.Jobs.SettingsDictionary.GetJobOrStageSetting(TaskContext.JobConfiguration, Channel.InputStage, JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.Spill) == FileChannelOutputType.SortSpill)
@@ -390,7 +392,7 @@ namespace Ookii.Jumbo.Jet
             if (!string.IsNullOrEmpty(comparerTypeName))
             {
                 _log.DebugFormat("Using specified comparer {0}.", comparerTypeName);
-                return (IComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
+                return (IComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true)!, DfsConfiguration, JetConfiguration, TaskContext);
             }
             else
             {
@@ -399,16 +401,16 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private IEnumerator<MergeResultRecord<T>> GetCurrentPartitionFinalPass()
+        private IEnumerator<MergeResultRecord<T>>? GetCurrentPartitionFinalPass()
         {
             if (_finalPassMergers != null && _finalPassMergers.TryGetValue(CurrentPartition, out var finalPassMerger))
             {
-                return finalPassMerger.FinalPassResult.GetEnumerator();
+                return finalPassMerger.FinalPassResult!.GetEnumerator();
             }
             return null;
         }
 
-        private void _channel_MemoryStorageFull(object sender, MemoryStorageFullEventArgs e)
+        private void _channel_MemoryStorageFull(object? sender, MemoryStorageFullEventArgs e)
         {
             e.CancelWaiting = false;
             _memoryStorageFull = true;

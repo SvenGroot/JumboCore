@@ -9,6 +9,7 @@ namespace Ookii.Jumbo.Jet.Channels
         #region Nested Types
 
         private sealed class EmptyRecordReader<T> : RecordReader<T>
+            where T : notnull
         {
             public override float Progress
             {
@@ -45,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Channels
 
         protected override IRecordReader CreateReader()
         {
-            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType);
+            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType)!;
             reader.SourceName = _sourceName;
             return reader;
         }

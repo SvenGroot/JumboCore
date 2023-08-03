@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
@@ -191,7 +192,8 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="element">The element. May be <see langword="null"/>.</param>
         /// <returns>A <see cref="TaskMetrics"/> object created from the XML element, or <see langword="null"/> if <paramref name="element"/> was <see langword="null"/>.</returns>
-        public static TaskMetrics FromXml(XElement element)
+        [return: NotNullIfNotNull(nameof(element))]
+        public static TaskMetrics? FromXml(XElement? element)
         {
             if (element == null)
                 return null;
@@ -200,18 +202,18 @@ namespace Ookii.Jumbo.Jet
 
             return new TaskMetrics()
             {
-                InputRecords = (long)element.Element("InputRecords"),
-                OutputRecords = (long)element.Element("OutputRecords"),
-                InputBytes = (long)element.Element("InputBytes"),
-                OutputBytes = (long)element.Element("OutputBytes"),
-                DfsBytesRead = (long)element.Element("DfsBytesRead"),
-                DfsBytesWritten = (long)element.Element("DfsBytesWritten"),
-                LocalBytesRead = (long)element.Element("LocalBytesRead"),
-                LocalBytesWritten = (long)element.Element("LocalBytesWritten"),
-                NetworkBytesRead = (long)element.Element("NetworkBytesRead"),
-                NetworkBytesWritten = (long)element.Element("NetworkBytesWritten"),
-                DynamicallyAssignedPartitions = (int)element.Element("DynamicallyAssignedPartitions"),
-                DiscardedPartitions = (int)element.Element("DiscardedPartitions")
+                InputRecords = (long)element.Element("InputRecords")!,
+                OutputRecords = (long)element.Element("OutputRecords")!,
+                InputBytes = (long)element.Element("InputBytes")!,
+                OutputBytes = (long)element.Element("OutputBytes")!,
+                DfsBytesRead = (long)element.Element("DfsBytesRead")!,
+                DfsBytesWritten = (long)element.Element("DfsBytesWritten")!,
+                LocalBytesRead = (long)element.Element("LocalBytesRead")!,
+                LocalBytesWritten = (long)element.Element("LocalBytesWritten")!,
+                NetworkBytesRead = (long)element.Element("NetworkBytesRead")!,
+                NetworkBytesWritten = (long)element.Element("NetworkBytesWritten")!,
+                DynamicallyAssignedPartitions = (int)element.Element("DynamicallyAssignedPartitions")!,
+                DiscardedPartitions = (int)element.Element("DiscardedPartitions")!
             };
         }
     }

@@ -20,7 +20,7 @@ namespace Ookii.Jumbo.Jet.Jobs
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class JobSettingAttribute : Attribute
     {
-        private readonly string _key;
+        private readonly string? _key;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobSettingAttribute"/> class that
@@ -47,7 +47,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// Gets the key used for the setting in the settings dictionary.
         /// </summary>
         /// <value>The key for the setting, or <see langword="null" /> if they key should be "JobBuilderClassName.PropertyName".</value>
-        public string Key
+        public string? Key
         {
             get { return _key; }
         }

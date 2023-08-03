@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <summary>
         /// Gets or sets the ID of the stage whose tasks that read from the channel.
         /// </summary>
-        public string OutputStage { get; set; }
+        public string? OutputStage { get; set; }
 
         /// <summary>
         /// Gets or sets the number of partitions to create for every output task.

@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 if (size > Size)
                     throw new ArgumentOutOfRangeException(nameof(size), "Stream size exceeds reservation.");
 
-                UnmanagedBufferMemoryStream stream = null;
+                UnmanagedBufferMemoryStream? stream = null;
                 try
                 {
                     stream = new UnmanagedBufferMemoryStream(size);
@@ -66,15 +66,15 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private const double _maxSingleStreamFraction = 0.25;
 
-        private static FileChannelMemoryStorageManager _instance;
+        private static FileChannelMemoryStorageManager? _instance;
         private readonly long _maxSize;
         private readonly List<UnmanagedBufferMemoryStream> _inputs = new List<UnmanagedBufferMemoryStream>();
         private readonly long _maxSingleStreamSize;
         private long _currentSize;
         private bool _disposed;
 
-        public event EventHandler StreamRemoved;
-        public event EventHandler<MemoryStorageFullEventArgs> WaitingForBuffer;
+        public event EventHandler? StreamRemoved;
+        public event EventHandler<MemoryStorageFullEventArgs>? WaitingForBuffer;
 
         private FileChannelMemoryStorageManager(long maxSize)
         {
@@ -108,7 +108,7 @@ namespace Ookii.Jumbo.Jet.Channels
             return _instance;
         }
 
-        public Reservation WaitForSpaceAndReserve(long size, IDisposable disposeOnWait, int millisecondsTimeout)
+        public Reservation? WaitForSpaceAndReserve(long size, IDisposable disposeOnWait, int millisecondsTimeout)
         {
             CheckDisposed();
             if (size > _maxSingleStreamSize)
@@ -200,9 +200,9 @@ namespace Ookii.Jumbo.Jet.Channels
                 throw new ObjectDisposedException(typeof(FileChannelMemoryStorageManager).FullName);
         }
 
-        private void UnmanagedBufferMemoryStream_Disposed(object sender, EventArgs e)
+        private void UnmanagedBufferMemoryStream_Disposed(object? sender, EventArgs e)
         {
-            RemoveStream((UnmanagedBufferMemoryStream)sender);
+            RemoveStream((UnmanagedBufferMemoryStream)sender!);
         }
 
         #region IDisposable Members

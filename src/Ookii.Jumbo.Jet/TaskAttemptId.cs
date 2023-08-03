@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet
         private readonly int _attempt;
 
         /// <summary>
-        /// The separator characer used to identify the task attempt number in a task attempt identifier.
+        /// The separator character used to identify the task attempt number in a task attempt identifier.
         /// </summary>
         public const char TaskAttemptNumberSeparator = '_';
 
@@ -73,7 +73,7 @@ namespace Ookii.Jumbo.Jet
         /// <exception cref="T:System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as TaskAttemptId);
         }
@@ -94,11 +94,11 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="other">The <see cref="TaskId"/> to compare to.</param>
         /// <returns><see langword="true"/> if this <see cref="TaskId"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(TaskAttemptId other)
+        public bool Equals(TaskAttemptId? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
-            if (other == this)
+            if (ReferenceEquals(other, this))
                 return true;
 
             return _taskId.Equals(other._taskId) && _attempt == other._attempt;
@@ -112,11 +112,11 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// Less than zero if this instance is smaller than <paramref name="other"/>; zero if this instance is equal to <paramref name="other"/>; greater than zero if this instance is larger than <paramref name="other"/>.
         /// </returns>
-        public int CompareTo(TaskAttemptId other)
+        public int CompareTo(TaskAttemptId? other)
         {
-            if (other == null)
+            if (other is null)
                 return 1;
-            if (other == this)
+            if (ReferenceEquals(other, this))
                 return 0;
 
             var result = _taskId.CompareTo(other._taskId);
@@ -136,10 +136,10 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// Less than zero if this instance is smaller than <paramref name="obj"/>; zero if this instance is equal to <paramref name="obj"/>; greater than zero if this instance is larger than <paramref name="obj"/>.
         /// </returns>
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             var other = obj as TaskAttemptId;
-            if (other == null)
+            if (other is null)
                 throw new ArgumentException("obj is not a TaskAttemptId.", nameof(obj));
             return CompareTo(other);
         }
@@ -152,7 +152,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// <see langword="true"/> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <see langword="false"/>. 
         /// </returns>
-        public static bool operator ==(TaskAttemptId left, TaskAttemptId right)
+        public static bool operator ==(TaskAttemptId? left, TaskAttemptId? right)
         {
             return EqualityComparer<TaskAttemptId>.Default.Equals(left, right);
         }
@@ -165,7 +165,7 @@ namespace Ookii.Jumbo.Jet
         /// <returns>
         /// <see langword="true"/> if the value of <paramref name="left"/> is different from the value of <paramref name="right"/>; otherwise, <see langword="false"/>. 
         /// </returns>
-        public static bool operator !=(TaskAttemptId left, TaskAttemptId right)
+        public static bool operator !=(TaskAttemptId? left, TaskAttemptId? right)
         {
             return !EqualityComparer<TaskAttemptId>.Default.Equals(left, right);
         }

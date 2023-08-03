@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the ID of this task.
         /// </summary>
-        public string TaskId { get; set; }
+        public string? TaskId { get; set; }
 
         /// <summary>
         /// Gets or sets the current state of the task.
@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet
         /// <remarks>
         /// If there has been more than one attempt, this information only applies to the current attempt.
         /// </remarks>
-        public ServerAddress TaskServer { get; set; }
+        public ServerAddress? TaskServer { get; set; }
 
         /// <summary>
         /// Gets or sets the number of times this task has been attempted.
@@ -48,12 +48,12 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the progress of the task.
         /// </summary>
-        public TaskProgress TaskProgress { get; set; }
+        public TaskProgress? TaskProgress { get; set; }
 
         /// <summary>
         /// Gets or sets the metrics collected during task execution.
         /// </summary>
-        public TaskMetrics Metrics { get; set; }
+        public TaskMetrics? Metrics { get; set; }
 
         /// <summary>
         /// Gets the overall progress of the task.
@@ -94,7 +94,7 @@ namespace Ookii.Jumbo.Jet
         public XElement ToXml()
         {
             return new XElement("Task",
-                new XAttribute("id", TaskId),
+                new XAttribute("id", TaskId ?? string.Empty),
                 new XAttribute("state", State.ToString()),
                 new XAttribute("server", TaskServer == null ? "" : TaskServer.ToString()),
                 new XAttribute("attempts", Attempts.ToString(System.Globalization.CultureInfo.InvariantCulture)),
@@ -120,14 +120,14 @@ namespace Ookii.Jumbo.Jet
 
             var status = new TaskStatus()
             {
-                TaskId = task.Attribute("id").Value,
-                State = (TaskState)Enum.Parse(typeof(TaskState), task.Attribute("state").Value),
-                TaskServer = string.IsNullOrEmpty(task.Attribute("server").Value) ? null : new ServerAddress(task.Attribute("server").Value),
-                Attempts = (int)task.Attribute("attempts"),
-                StartTime = DateTime.ParseExact(task.Attribute("startTime").Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
-                EndTime = DateTime.ParseExact(task.Attribute("endTime").Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
+                TaskId = task.Attribute("id")!.Value,
+                State = (TaskState)Enum.Parse(typeof(TaskState), task.Attribute("state")!.Value),
+                TaskServer = string.IsNullOrEmpty(task.Attribute("server")!.Value) ? null : new ServerAddress(task.Attribute("server")!.Value),
+                Attempts = (int)task.Attribute("attempts")!,
+                StartTime = DateTime.ParseExact(task.Attribute("startTime")!.Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
+                EndTime = DateTime.ParseExact(task.Attribute("endTime")!.Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
                 TaskProgress = new TaskProgress() { Progress = 1f },
-                DataDistance = task.Attribute("dataDistance") == null ? -1 : (int)task.Attribute("dataDistance")
+                DataDistance = task.Attribute("dataDistance") == null ? -1 : (int)task.Attribute("dataDistance")!
             };
             status.StartOffset = status.StartTime - job.StartTime;
             return status;

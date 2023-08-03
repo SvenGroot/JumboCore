@@ -30,9 +30,11 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1005:AvoidExcessiveParametersOnGenericTypes")]
     public abstract class ReduceTask<TKey, TValue, TOutput> : Configurable, ITask<Pair<TKey, TValue>, TOutput>
-        where TKey : IComparable<TKey>
+        where TKey : notnull, IComparable<TKey>
+        where TValue : notnull
+        where TOutput : notnull
     {
-        private IEqualityComparer<TKey> _keyComparer;
+        private IEqualityComparer<TKey>? _keyComparer;
         private readonly bool _cloneKey;
 
         /// <summary>
@@ -51,13 +53,13 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// </summary>
         /// <param name="input">A <see cref="RecordReader{T}"/> from which the task's input can be read.</param>
         /// <param name="output">A <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
-        public void Run(RecordReader<Pair<TKey, TValue>> input, RecordWriter<TOutput> output)
+        public void Run(RecordReader<Pair<TKey, TValue>>? input, RecordWriter<TOutput> output)
         {
             if (input != null && input.ReadRecord())
             {
                 do
                 {
-                    var key = _cloneKey ? (TKey)((ICloneable)input.CurrentRecord.Key).Clone() : input.CurrentRecord.Key;
+                    var key = _cloneKey ? (TKey)((ICloneable)input.CurrentRecord.Key!).Clone() : input.CurrentRecord.Key!;
                     Reduce(key, EnumerateGroupRecords(key, input), output);
                 } while (!input.HasFinished);
             }
@@ -73,7 +75,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             {
                 var comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.ReduceTaskKeyComparerSettingKey, null);
                 if (!string.IsNullOrEmpty(comparerTypeName))
-                    _keyComparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
+                    _keyComparer = (IEqualityComparer<TKey>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true)!, DfsConfiguration, JetConfiguration, TaskContext);
             }
 
             if (_keyComparer == null)
@@ -91,9 +93,9 @@ namespace Ookii.Jumbo.Jet.Tasks
         private IEnumerable<TValue> EnumerateGroupRecords(TKey key, RecordReader<Pair<TKey, TValue>> input)
         {
             // Checking HasFinished and comparing the first key may seem pointless, but it guards against a reducer trying to use the iterator twice.
-            while (!input.HasFinished && _keyComparer.Equals(key, input.CurrentRecord.Key))
+            while (!input.HasFinished && _keyComparer!.Equals(key, input.CurrentRecord!.Key))
             {
-                yield return input.CurrentRecord.Value;
+                yield return input.CurrentRecord.Value!;
                 input.ReadRecord();
             }
         }

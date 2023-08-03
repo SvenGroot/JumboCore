@@ -14,9 +14,9 @@ namespace Ookii.Jumbo
         /// <param name="type">The type whose interfaces to check.</param>
         /// <param name="interfaceType">The generic type definition of the interface.</param>
         /// <returns>The instantiated generic interface type.</returns>
-        public static Type? FindGenericInterfaceType(this Type type, Type interfaceType)
+        public static Type FindGenericInterfaceType(this Type type, Type interfaceType)
         {
-            return FindGenericInterfaceType(type, interfaceType, true);
+            return FindGenericInterfaceType(type, interfaceType, true)!;
         }
 
         /// <summary>

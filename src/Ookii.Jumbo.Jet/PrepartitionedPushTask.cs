@@ -23,6 +23,8 @@ namespace Ookii.Jumbo.Jet
     /// </para>
     /// </remarks>
     public abstract class PrepartitionedPushTask<TInput, TOutput> : Configurable, ITask<TInput, TOutput>
+        where TInput : notnull
+        where TOutput : notnull
     {
         /// <summary>
         /// Method called for each record in the task's input.
@@ -55,7 +57,7 @@ namespace Ookii.Jumbo.Jet
         ///   and <see cref="Finish"/> are called directly.
         /// </para>
         /// </remarks>
-        public virtual void Run(RecordReader<TInput> input, RecordWriter<TOutput> output)
+        public virtual void Run(RecordReader<TInput>? input, RecordWriter<TOutput> output)
         {
             ArgumentNullException.ThrowIfNull(input);
             // Safe to use using because PrepartitionedRecordWriter does not dispose the base stream.

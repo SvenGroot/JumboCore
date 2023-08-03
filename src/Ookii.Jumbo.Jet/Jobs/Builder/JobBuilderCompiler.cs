@@ -62,7 +62,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="input">The data input for the stage.</param>
         /// <param name="output">The output for the stage. May be <see langword="null"/>.</param>
         /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
-        public StageConfiguration CreateStage(string stageId, Type taskType, FileInput input, IOperationOutput output)
+        public StageConfiguration CreateStage(string stageId, Type taskType, FileInput input, IOperationOutput? output)
         {
             ArgumentNullException.ThrowIfNull(stageId);
             ArgumentNullException.ThrowIfNull(taskType);
@@ -94,20 +94,20 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// internal partitioning (<paramref name="taskCount" /> must be 1), and the input stage uses <see cref="EmptyTask{T}" /> this method will not create a new stage, but will change the task type
         /// of that stage with the specified task, rename the stage, and return the configuration of that stage.
         /// </remarks>
-        public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo input, IOperationOutput output, bool allowEmptyTaskReplacement, SettingsDictionary channelSettings)
+        public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo? input, IOperationOutput? output, bool allowEmptyTaskReplacement, SettingsDictionary? channelSettings)
         {
             ArgumentNullException.ThrowIfNull(stageId);
             ArgumentNullException.ThrowIfNull(taskType);
 
             StageConfiguration stage;
-            if (input != null && allowEmptyTaskReplacement && taskCount <= 1 && input.ChannelType == Channels.ChannelType.Pipeline && IsEmptyTask(input.InputStage.TaskType.ReferencedType))
+            if (input != null && allowEmptyTaskReplacement && taskCount <= 1 && input.ChannelType == Channels.ChannelType.Pipeline && IsEmptyTask(input.InputStage.TaskType.GetReferencedType()))
             {
                 if (stageId != input.InputStage.StageId)
                 {
                     // Must ensure a unique name if input is not a child stage.
                     if (input.InputStage.Parent == null)
                     {
-                        _stageIds.Remove(input.InputStage.StageId);
+                        _stageIds.Remove(input.InputStage.StageId!);
                         stageId = CreateUniqueStageId(stageId);
                     }
                     _job.RenameStage(input.InputStage, stageId);
@@ -145,7 +145,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <param name="stageMultiInputRecordReaderType">Type of the stage multi input record reader.</param>
         /// <returns>The stage configuration.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi")]
-        public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo[] input, IOperationOutput output, SettingsDictionary[] channelSettings, Type stageMultiInputRecordReaderType)
+        public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo[] input, IOperationOutput? output, SettingsDictionary[] channelSettings, Type stageMultiInputRecordReaderType)
         {
             ArgumentNullException.ThrowIfNull(stageId);
             ArgumentNullException.ThrowIfNull(taskType);
@@ -189,7 +189,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             return result;
         }
 
-        private int DetermineTaskCount(int taskCount, InputStageInfo input)
+        private int DetermineTaskCount(int taskCount, InputStageInfo? input)
         {
             if (taskCount != 0)
                 return taskCount;

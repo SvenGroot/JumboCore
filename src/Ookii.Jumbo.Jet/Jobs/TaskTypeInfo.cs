@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Jobs
             var arguments = interfaceType.GetGenericArguments();
             _inputRecordType = arguments[0];
             _outputRecordType = arguments[1];
-            var recordReuseAttribute = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
+            var recordReuseAttribute = (AllowRecordReuseAttribute?)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
             if (recordReuseAttribute != null)
                 _recordReuse = recordReuseAttribute.PassThrough ? TaskRecordReuse.PassThrough : TaskRecordReuse.Allowed;
         }

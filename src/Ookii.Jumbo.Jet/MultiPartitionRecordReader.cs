@@ -20,6 +20,7 @@ namespace Ookii.Jumbo.Jet
     /// </para>
     /// </remarks>
     public sealed class MultiPartitionRecordReader<T> : RecordReader<T>
+        where T : notnull
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(MultiPartitionRecordReader<T>));
 
@@ -142,13 +143,13 @@ namespace Ookii.Jumbo.Jet
             return true;
         }
 
-        private void _baseReader_CurrentPartitionChanging(object sender, CurrentPartitionChangingEventArgs e)
+        private void _baseReader_CurrentPartitionChanging(object? sender, CurrentPartitionChangingEventArgs e)
         {
             if (_taskExecution != null)
                 e.Cancel = !_taskExecution.NotifyStartPartitionProcessing(e.NewPartitionNumber);
         }
 
-        private void _baseReader_HasRecordsChanged(object sender, EventArgs e)
+        private void _baseReader_HasRecordsChanged(object? sender, EventArgs e)
         {
             HasRecords = _baseReader.HasRecords;
         }

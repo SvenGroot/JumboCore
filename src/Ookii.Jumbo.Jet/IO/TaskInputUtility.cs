@@ -38,7 +38,7 @@ namespace Ookii.Jumbo.Jet.IO
                 {
                     if (first)
                     {
-                        writer.Write(input.GetType().AssemblyQualifiedName);
+                        writer.Write(input.GetType().AssemblyQualifiedName!);
                     }
                     indexWriter.Write(writer.BaseStream.Position);
                     input.Write(writer);
@@ -115,7 +115,7 @@ namespace Ookii.Jumbo.Jet.IO
                 indexReader.BaseStream.Position = splitIndex * sizeof(long);
                 var offset = indexReader.ReadInt64();
                 reader.BaseStream.Position = offset;
-                var result = (ITaskInput)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(Type.GetType(typeName, true));
+                var result = (ITaskInput)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(Type.GetType(typeName, true)!);
                 result.Read(reader);
 
                 return result;

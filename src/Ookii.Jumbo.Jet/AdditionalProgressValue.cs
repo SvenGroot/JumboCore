@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets or sets the name of the source of the progress counter.
         /// </summary>
         /// <value>The name of the source.</value>
-        public string SourceName { get; set; }
+        public string? SourceName { get; set; }
 
         /// <summary>
         /// Gets or sets the progress.

@@ -132,7 +132,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 }
             }
 
-            private void SendResponse(Exception ex)
+            private void SendResponse(Exception? ex)
             {
                 if (ex != null)
                 {
@@ -166,9 +166,9 @@ namespace Ookii.Jumbo.Jet.Channels
         internal const int HeaderSize = 9; // task number + flags + segment number
         internal const int PartitionHeaderSize = 8; // partition number + size
 
-        private IMultiInputRecordReader _reader;
+        private IMultiInputRecordReader? _reader;
         private readonly Type _inputReaderType;
-        private TcpListener[] _listeners;
+        private TcpListener[]? _listeners;
         private readonly ITcpChannelRecordReader[][] _inputReaders;
         private readonly bool _running = true;
 
@@ -258,12 +258,12 @@ namespace Ookii.Jumbo.Jet.Channels
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void BeginAcceptCallback(IAsyncResult ar)
         {
-            var listener = (TcpListener)ar.AsyncState;
+            var listener = (TcpListener)ar.AsyncState!;
             if (_running)
                 listener.BeginAcceptSocket(BeginAcceptCallback, listener);
 
-            TcpChannelConnectionHandler handler = null;
-            Socket socket = null;
+            TcpChannelConnectionHandler? handler = null;
+            Socket? socket = null;
             try
             {
                 socket = listener.EndAcceptSocket(ar);
@@ -298,7 +298,7 @@ namespace Ookii.Jumbo.Jet.Channels
                         inputs[x] = new ReaderRecordInput((IRecordReader)reader, true);
                     }
                     _inputReaders[taskNumber - 1] = readers;
-                    _reader.AddInput(inputs);
+                    _reader!.AddInput(inputs);
                 }
             }
 

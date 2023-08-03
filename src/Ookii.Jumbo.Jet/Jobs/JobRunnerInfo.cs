@@ -48,7 +48,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         {
             get
             {
-                var description = (DescriptionAttribute)Attribute.GetCustomAttribute(_jobRunnerType, typeof(DescriptionAttribute));
+                var description = (DescriptionAttribute?)Attribute.GetCustomAttribute(_jobRunnerType, typeof(DescriptionAttribute));
                 return description == null ? "" : description.Description;
             }
         }
@@ -75,7 +75,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="assembly">The assembly to check for the job runner.</param>
         /// <param name="name">The name of the job runner.</param>
         /// <returns>The <see cref="JobRunnerInfo"/> for the specified job runner, or <see langword="null" /> if it was not found.</returns>
-        public static JobRunnerInfo GetJobRunner(Assembly assembly, string name)
+        public static JobRunnerInfo? GetJobRunner(Assembly assembly, string name)
         {
             ArgumentNullException.ThrowIfNull(assembly);
             ArgumentNullException.ThrowIfNull(name);
@@ -94,13 +94,13 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="args">The arguments for the job.</param>
         /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, ReadOnlyMemory<string> args, ParseOptions parseOptions)
+        public IJobRunner? CreateInstance(DfsConfiguration dfsConfiguration, JetConfiguration jetConfiguration, ReadOnlyMemory<string> args, ParseOptions? parseOptions)
         {
             ArgumentNullException.ThrowIfNull(dfsConfiguration);
             ArgumentNullException.ThrowIfNull(jetConfiguration);
 
             var parser = new CommandLineParser(_jobRunnerType, parseOptions);
-            var jobRunner = (IJobRunner)parser.ParseWithErrorHandling(args);
+            var jobRunner = (IJobRunner?)parser.ParseWithErrorHandling(args);
             if (jobRunner != null)
             {
                 var logMessage = new StringBuilder("Created job runner for job ");
@@ -116,9 +116,9 @@ namespace Ookii.Jumbo.Jet.Jobs
                             logMessage.Append(argument.MemberName);
                             logMessage.Append(" = ");
                             if (argument.Kind == ArgumentKind.Dictionary)
-                                AppendDictionayArgument(logMessage, (IDictionary)argument.Value);
+                                AppendDictionayArgument(logMessage, (IDictionary)argument.Value!);
                             else if (argument.Kind == ArgumentKind.MultiValue)
-                                AppendMultiValueArgument(logMessage, (IEnumerable)argument.Value);
+                                AppendMultiValueArgument(logMessage, (IEnumerable)argument.Value!);
                             else
                                 logMessage.Append(argument.Value);
                         }
@@ -139,7 +139,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// <param name="args">The arguments for the job.</param>
         /// <param name="parseOptions">The options that control parsing.</param>
         /// <returns>An instance of the job runner, or <see langword="null" /> if the incorrect number of arguments was specified.</returns>
-        public IJobRunner CreateInstance(ReadOnlyMemory<string> args, ParseOptions parseOptions = null)
+        public IJobRunner? CreateInstance(ReadOnlyMemory<string> args, ParseOptions? parseOptions = null)
         {
             return CreateInstance(DfsConfiguration.GetConfiguration(), JetConfiguration.GetConfiguration(), args, parseOptions);
         }

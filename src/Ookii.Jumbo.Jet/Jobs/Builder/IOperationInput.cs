@@ -20,6 +20,6 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The type of the record.
         /// </value>
-        Type RecordType { get; }
+        Type? RecordType { get; }
     }
 }

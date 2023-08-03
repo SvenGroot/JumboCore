@@ -5,6 +5,8 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput> : RecordWriter<TRecord>
+        where TRecord : notnull
+        where TPipelinedTaskOutput : notnull
     {
         private readonly TaskExecutionUtility _taskExecution;
         private PushTask<TRecord, TPipelinedTaskOutput> _task;
@@ -34,11 +36,7 @@ namespace Ookii.Jumbo.Jet.Channels
             {
                 if (disposing)
                 {
-                    if (_output != null)
-                    {
-                        _output.Dispose();
-                        _output = null;
-                    }
+                    _output.Dispose();
                 }
             }
             finally
@@ -47,7 +45,7 @@ namespace Ookii.Jumbo.Jet.Channels
             }
         }
 
-        void _taskExecution_TaskInstanceCreated(object sender, EventArgs e)
+        void _taskExecution_TaskInstanceCreated(object? sender, EventArgs e)
         {
             _task = (PushTask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
         }

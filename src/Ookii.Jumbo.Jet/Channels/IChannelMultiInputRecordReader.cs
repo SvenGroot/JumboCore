@@ -26,6 +26,6 @@ namespace Ookii.Jumbo.Jet.Channels
         /// Gets or sets the input channel that this reader is reading from.
         /// </summary>
         /// <value>The channel.</value>
-        IInputChannel Channel { get; set; }
+        IInputChannel? Channel { get; set; }
     }
 }

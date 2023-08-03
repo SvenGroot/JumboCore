@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Ookii.Jumbo.IO;
@@ -49,7 +50,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(innerInput);
             ArgumentNullException.ThrowIfNull(innerJoinRecordReaderType);
 
-            var baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true);
+            var baseType = innerJoinRecordReaderType.FindGenericBaseType(typeof(InnerJoinRecordReader<,,>), true)!;
             var outerRecordType = baseType.GetGenericArguments()[0];
             var innerRecordType = baseType.GetGenericArguments()[1];
             var inputTypeAttributes = (InputTypeAttribute[])Attribute.GetCustomAttributes(innerJoinRecordReaderType, typeof(InputTypeAttribute));
@@ -107,13 +108,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             return operation;
         }
 
-        private static Type MakeComparerType(Type comparerType, Type recordType)
+        [return: NotNullIfNotNull(nameof(comparerType))]
+        private static Type? MakeComparerType(Type? comparerType, Type recordType)
         {
             if (comparerType != null)
             {
                 if (comparerType.IsGenericTypeDefinition)
                     comparerType = comparerType.MakeGenericType(recordType);
-                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>), true);
+                var interfaceType = comparerType.FindGenericInterfaceType(typeof(IComparer<>), true)!;
                 if (interfaceType.GetGenericArguments()[0] != recordType)
                     throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Comparer {0} is not valid for type {1}.", comparerType, recordType));
             }
@@ -121,7 +123,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             return comparerType;
         }
 
-        private Channel CreateChannel(JobBuilder builder, IJobBuilderOperation input, Type comparerType)
+        private Channel CreateChannel(JobBuilder builder, IJobBuilderOperation input, Type? comparerType)
         {
             var channel = new Channel(input, this);
             channel.ChannelType = ChannelType.File;
@@ -129,10 +131,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             channel.Settings.AddSetting(JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill);
             if (comparerType != null)
             {
-                comparerType = MakeComparerType(comparerType, input.RecordType);
-                channel.Settings.Add(JumboSettings.FileChannel.Stage.SpillSortComparerType, comparerType.AssemblyQualifiedName);
-                if (comparerType.GetInterfaces().Contains(typeof(IEqualityComparer<>).MakeGenericType(input.RecordType)))
-                    channel.Settings.Add(PartitionerConstants.EqualityComparerSetting, comparerType.AssemblyQualifiedName);
+                comparerType = MakeComparerType(comparerType, input.RecordType!);
+                channel.Settings.Add(JumboSettings.FileChannel.Stage.SpillSortComparerType, comparerType.AssemblyQualifiedName!);
+                if (comparerType.GetInterfaces().Contains(typeof(IEqualityComparer<>).MakeGenericType(input.RecordType!)))
+                    channel.Settings.Add(PartitionerConstants.EqualityComparerSetting, comparerType.AssemblyQualifiedName!);
                 builder.AddAssembly(comparerType.Assembly);
             }
 

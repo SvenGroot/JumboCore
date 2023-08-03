@@ -15,7 +15,7 @@ namespace Ookii.Jumbo.Jet.Channels
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(InputChannel));
 
         private readonly List<string> _inputTaskIds = new List<string>();
-        private ReadOnlyCollection<string> _inputTaskIdsReadOnlyWrapper;
+        private ReadOnlyCollection<string>? _inputTaskIdsReadOnlyWrapper;
         private readonly List<int> _partitions = new List<int>();
         private readonly ReadOnlyCollection<int> _partitionsReadOnlyWrapper;
 
@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.Jet.Channels
         ///   the memory storage manager will immediately deny the request so the channel will store the input on disk instead.
         /// </para>
         /// </remarks>
-        public event EventHandler<MemoryStorageFullEventArgs> MemoryStorageFull;
+        public event EventHandler<MemoryStorageFullEventArgs>? MemoryStorageFull;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputChannel"/> class.
@@ -56,7 +56,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 CompressionType = taskExecution.Context.JobConfiguration.GetSetting(FileOutputChannel.CompressionTypeSetting, taskExecution.JetClient.Configuration.FileChannel.CompressionType);
             // The type of the records in the intermediate files will be the output type of the input stage, which usually matches the input type of the output stage but
             // in the case of a join it may not.
-            InputRecordType = inputStage.TaskType.ReferencedType.FindGenericInterfaceType(typeof(ITask<,>)).GetGenericArguments()[1];
+            InputRecordType = inputStage.TaskType.ReferencedType!.FindGenericInterfaceType(typeof(ITask<,>))!.GetGenericArguments()[1];
 
             GetInputTaskIdsFull();
         }
@@ -67,7 +67,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <value>The configuration of the input channel.</value>
         public ChannelConfiguration Configuration
         {
-            get { return InputStage.OutputChannel; }
+            get { return InputStage.OutputChannel!; }
         }
 
         /// <summary>
@@ -184,13 +184,13 @@ namespace Ookii.Jumbo.Jet.Channels
         /// g <see cref="IMultiInputRecordReader"/>.</returns>
         protected IMultiInputRecordReader CreateChannelRecordReader()
         {
-            var multiInputRecordReaderType = InputStage.OutputChannel.MultiInputRecordReaderType.ReferencedType;
+            var multiInputRecordReaderType = InputStage.OutputChannel!.MultiInputRecordReaderType.ReferencedType!;
             _log.InfoFormat(System.Globalization.CultureInfo.CurrentCulture, "Creating MultiRecordReader of type {3} for {0} inputs, allow record reuse = {1}, buffer size = {2}.", InputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize, multiInputRecordReaderType);
             var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)TaskExecution.JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize;
             // We're not using JetActivator to create the object because we need to delay calling NotifyConfigurationChanged until after InputStage was set.
             var partitions = TaskExecution.GetPartitions();
             _partitions.AddRange(partitions);
-            var reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType);
+            var reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType)!;
             var channelReader = reader as IChannelMultiInputRecordReader;
             if (channelReader != null)
                 channelReader.Channel = this;
@@ -215,7 +215,7 @@ namespace Ookii.Jumbo.Jet.Channels
             var stage = InputStage.Root;
             for (var x = 1; x <= stage.TaskCount; ++x)
             {
-                var taskId = new TaskId(stage.StageId, x);
+                var taskId = new TaskId(stage.StageId!, x);
                 _inputTaskIds.Add(taskId.ToString());
             }
         }

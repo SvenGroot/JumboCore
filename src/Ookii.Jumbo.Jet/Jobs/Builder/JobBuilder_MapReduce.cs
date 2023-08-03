@@ -41,6 +41,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Map<TInput, TOutput>(IOperationInput input, Action<TInput, RecordWriter<TOutput>, TaskContext> mapper, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TInput : notnull
+            where TOutput : notnull
         {
             return MapCore<TInput, TOutput>(input, mapper, recordReuse);
         }
@@ -78,6 +80,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Map<TInput, TOutput>(IOperationInput input, Action<TInput, RecordWriter<TOutput>> mapper, RecordReuseMode recordReuse = RecordReuseMode.Default)
+            where TInput : notnull
+            where TOutput : notnull
         {
             return MapCore<TInput, TOutput>(input, mapper, recordReuse);
         }
@@ -120,7 +124,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Reduce<TKey, TValue, TOutput>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<TOutput>, TaskContext> reducer, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey>
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
+            where TOutput : notnull
         {
             return ReduceCore<TKey, TValue, TOutput>(input, reducer, recordReuse);
         }
@@ -163,18 +169,22 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Reduce<TKey, TValue, TOutput>(IOperationInput input, Action<TKey, IEnumerable<TValue>, RecordWriter<TOutput>> reducer, RecordReuseMode recordReuse = RecordReuseMode.Default)
-            where TKey : IComparable<TKey>
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
+            where TOutput : notnull
         {
             return ReduceCore<TKey, TValue, TOutput>(input, reducer, recordReuse);
         }
 
         private StageOperation MapCore<TInput, TOutput>(IOperationInput input, Delegate mapper, RecordReuseMode recordReuse)
+            where TInput : notnull
+            where TOutput : notnull
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(mapper);
             CheckIfInputBelongsToJobBuilder(input);
 
-            var taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord"), mapper, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord")!, mapper, 0, recordReuse);
 
             var result = new StageOperation(this, input, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(mapper, result);
@@ -182,7 +192,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         }
 
         private StageOperation ReduceCore<TKey, TValue, TOutput>(IOperationInput input, Delegate reducer, RecordReuseMode recordReuse)
-            where TKey : IComparable<TKey>
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
+            where TOutput : notnull
         {
             ArgumentNullException.ThrowIfNull(input);
             ArgumentNullException.ThrowIfNull(reducer);
@@ -195,9 +207,12 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             return result;
         }
 
-        private Type CreateReduceTask<TKey, TValue, TOutput>(Delegate reducer, RecordReuseMode recordReuse) where TKey : IComparable<TKey>
+        private Type CreateReduceTask<TKey, TValue, TOutput>(Delegate reducer, RecordReuseMode recordReuse)
+            where TKey : notnull, IComparable<TKey>
+            where TValue : notnull
+            where TOutput : notnull
         {
-            var taskType = _taskBuilder.CreateDynamicTask(typeof(ReduceTask<TKey, TValue, TOutput>).GetMethod("Reduce", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), reducer, 0, recordReuse);
+            var taskType = _taskBuilder.CreateDynamicTask(typeof(ReduceTask<TKey, TValue, TOutput>).GetMethod("Reduce", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!, reducer, 0, recordReuse);
             return taskType;
         }
     }

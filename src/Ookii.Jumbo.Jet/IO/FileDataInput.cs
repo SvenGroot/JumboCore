@@ -37,10 +37,10 @@ namespace Ookii.Jumbo.Jet.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TypeSetting")]
         public const string RecordReaderTypeSettingKey = "FileDataInput.RecordReader";
 
-        private readonly List<ITaskInput> _taskInputs;
+        private readonly List<ITaskInput>? _taskInputs;
         private const double _splitSlack = 1.1;
-        private readonly string _inputPath;
-        private Type _recordReaderType;
+        private readonly string? _inputPath;
+        private Type? _recordReaderType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileDataInput"/> class.
@@ -122,7 +122,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// </value>
         public Type RecordType
         {
-            get { return RecordReader.GetRecordType(_recordReaderType); }
+            get { return RecordReader.GetRecordType(_recordReaderType!); }
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Ookii.Jumbo.Jet.IO
         /// <value>
         /// A list of task inputs, or <see langword="null"/> if the job is not being constructed. The returned collection may be read-only.
         /// </value>
-        public IList<ITaskInput> TaskInputs
+        public IList<ITaskInput>? TaskInputs
         {
             get { return _taskInputs == null ? null : _taskInputs.AsReadOnly(); }
         }
@@ -148,7 +148,7 @@ namespace Ookii.Jumbo.Jet.IO
             ArgumentNullException.ThrowIfNull(input);
 
             var fileInput = (FileTaskInput)input;
-            return (IRecordReader)JetActivator.CreateInstance(_recordReaderType, DfsConfiguration, JetConfiguration, TaskContext, FileSystemClient.Create(DfsConfiguration).OpenFile(fileInput.Path), fileInput.Offset, fileInput.Size, TaskContext == null ? false : TaskContext.StageConfiguration.AllowRecordReuse);
+            return (IRecordReader)JetActivator.CreateInstance(_recordReaderType!, DfsConfiguration, JetConfiguration, TaskContext, FileSystemClient.Create(DfsConfiguration!).OpenFile(fileInput.Path), fileInput.Offset, fileInput.Size, TaskContext == null ? false : TaskContext.StageConfiguration.AllowRecordReuse);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Ookii.Jumbo.Jet.IO
         {
             ArgumentNullException.ThrowIfNull(stage);
 
-            stage.AddSetting(RecordReaderTypeSettingKey, _recordReaderType.AssemblyQualifiedName);
+            stage.AddSetting(RecordReaderTypeSettingKey, _recordReaderType!.AssemblyQualifiedName!);
             // This setting is added for informational purposes only (so someone reading the job config can see what the input path was).
             // It is not used at all after setting it.
             if (_inputPath != null)
@@ -173,13 +173,13 @@ namespace Ookii.Jumbo.Jet.IO
         public override void NotifyConfigurationChanged()
         {
             base.NotifyConfigurationChanged();
-            if (TaskContext != null)
+            if (TaskContext != null && TaskContext.StageConfiguration.TryGetSetting(RecordReaderTypeSettingKey, out string? typeName))
             {
-                _recordReaderType = Type.GetType(TaskContext.StageConfiguration.GetSetting(RecordReaderTypeSettingKey, null), true);
+                _recordReaderType = Type.GetType(typeName, true)!;
             }
         }
 
-        private static IEnumerable<string> GetSplitLocations(IFileSystemWithLocality localityFileSystem, JumboFile file, long offset)
+        private static IEnumerable<string>? GetSplitLocations(IFileSystemWithLocality? localityFileSystem, JumboFile file, long offset)
         {
             if (localityFileSystem != null)
             {

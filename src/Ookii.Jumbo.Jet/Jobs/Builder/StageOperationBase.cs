@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Ookii.Jumbo.Jet.Jobs.Builder
@@ -13,14 +14,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         private readonly JobBuilder _builder;
         private readonly TaskTypeInfo _taskTypeInfo;
 
-        private SettingsDictionary _settings;
-        private List<StageOperationBase> _dependencies;
-        private List<StageOperationBase> _dependentStages;
+        private SettingsDictionary? _settings;
+        private List<StageOperationBase>? _dependencies;
+        private List<StageOperationBase>? _dependentStages;
 
-        private StageConfiguration _stage;
+        private StageConfiguration? _stage;
 
-        private IOperationOutput _output;
-        private string _stageId;
+        private IOperationOutput? _output;
+        private string? _stageId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StageOperationBase"/> class.
@@ -44,6 +45,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The name of the stage.
         /// </value>
+        [AllowNull]
         public string StageId
         {
             get { return _stageId ?? _taskTypeInfo.TaskType.Name + "Stage"; }
@@ -67,7 +69,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The output, or <see langword="null"/> if no output has been specified.
         /// </value>
-        protected IOperationOutput Output
+        protected IOperationOutput? Output
         {
             get { return _output; }
         }
@@ -114,7 +116,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (_dependencies != null)
             {
                 // We depend on other stages.
-                if (_stage.Parent != null)
+                if (_stage!.Parent != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} is a child stage which cannot have scheduler dependencies.", _stage.CompoundStageId));
                 foreach (StageOperation stage in _dependencies)
                 {
@@ -123,7 +125,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     {
                         if (stage._stage.ChildStage != null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot add a dependency to stage {0} because it has a child stage.", stage._stage.CompoundStageId));
-                        stage._stage.DependentStages.Add(_stage.StageId);
+                        stage._stage.DependentStages.Add(_stage.StageId!);
                     }
                 }
             }
@@ -131,7 +133,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (_dependentStages != null)
             {
                 // Other stages depend on us.
-                if (_stage.ChildStage != null)
+                if (_stage!.ChildStage != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Cannot add a dependency to stage {0} because it has a child stage.", _stage.CompoundStageId));
                 foreach (StageOperation stage in _dependentStages)
                 {
@@ -140,7 +142,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                     {
                         if (stage._stage.Parent != null)
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} is a child stage which cannot have scheduler dependencies.", stage._stage.CompoundStageId));
-                        _stage.DependentStages.Add(stage._stage.StageId);
+                        _stage.DependentStages.Add(stage._stage.StageId!);
                     }
                 }
             }
@@ -153,13 +155,13 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
         StageConfiguration IJobBuilderOperation.Stage
         {
-            get { return _stage; }
+            get { return _stage!; }
         }
 
         void IJobBuilderOperation.CreateConfiguration(JobBuilderCompiler compiler)
         {
             _stage = CreateConfiguration(compiler);
-            _stage.AddSettings(_settings);
+            _stage.AddSettings(_settings!);
             ApplySchedulingDependencies();
         }
 

@@ -6,6 +6,7 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class SingleFileMultiRecordWriter<T> : SpillRecordWriter<T>
+        where T : notnull
     {
         private readonly string _outputPath;
         private readonly int _writeBufferSize;

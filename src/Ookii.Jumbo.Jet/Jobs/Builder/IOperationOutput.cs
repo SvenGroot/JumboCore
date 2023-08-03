@@ -14,7 +14,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The type of the records.
         /// </value>
-        Type RecordType { get; }
+        Type? RecordType { get; }
 
         /// <summary>
         /// Applies the output settings to the specified stage.

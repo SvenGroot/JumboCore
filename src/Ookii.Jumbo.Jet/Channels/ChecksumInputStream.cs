@@ -11,9 +11,9 @@ namespace Ookii.Jumbo.Jet.Channels
 
         private readonly Stream _baseStream;
         private readonly bool _ownsBaseStream;
-        private readonly Crc32Checksum _checksum;
+        private readonly Crc32Checksum? _checksum;
         private readonly long _length;
-        private readonly string _fileName;
+        private readonly string? _fileName;
         private readonly bool _deleteFile;
         private long _position;
         private bool _disposed;

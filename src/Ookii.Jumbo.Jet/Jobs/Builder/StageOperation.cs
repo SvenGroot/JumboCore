@@ -9,8 +9,8 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     /// </summary>
     public class StageOperation : StageOperationBase
     {
-        private readonly Channel _inputChannel;
-        private readonly FileInput _dataInput;
+        private readonly Channel? _inputChannel;
+        private readonly FileInput? _dataInput;
         private readonly int _noInputTaskCount;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// You can use this with types such as <see cref="Tasks.EmptyTask{T}"/>, in which case you can specify them as <c>typeof(EmptyTask&lt;&gt;)</c> without
         /// specifying the record type.
         /// </remarks>
-        public StageOperation(JobBuilder builder, IOperationInput input, Type taskType)
+        public StageOperation(JobBuilder builder, IOperationInput? input, Type taskType)
             : this(builder, input, 0, taskType)
         {
         }
@@ -46,7 +46,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         {
         }
 
-        private StageOperation(JobBuilder builder, IOperationInput input, int noInputTaskCount, Type taskType)
+        private StageOperation(JobBuilder builder, IOperationInput? input, int noInputTaskCount, Type taskType)
             : base(builder, MakeGenericTaskType(taskType, input))
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The input channel, or <see langword="null"/>
         /// </value>
-        public Channel InputChannel
+        public Channel? InputChannel
         {
             get { return _inputChannel; }
         }
@@ -97,11 +97,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 return compiler.CreateStage(StageId, TaskType.TaskType, _inputChannel == null ? _noInputTaskCount : _inputChannel.TaskCount, _inputChannel == null ? null : _inputChannel.CreateInput(), Output, true, _inputChannel == null ? null : _inputChannel.Settings);
         }
 
-        private static Type MakeGenericTaskType(Type taskType, IOperationInput input)
+        private static Type MakeGenericTaskType(Type taskType, IOperationInput? input)
         {
             // This only works for tasks with a single type argument (like EmptyTask<T>).
             if (taskType.IsGenericTypeDefinition && input != null)
-                return taskType.MakeGenericType(input.RecordType);
+                return taskType.MakeGenericType(input.RecordType!);
             else
                 return taskType;
         }

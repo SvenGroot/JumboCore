@@ -52,6 +52,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>, ProgressContext> generator)
+            where T : notnull
         {
             return GenerateCore<T>(taskCount, generator, true);
         }
@@ -79,6 +80,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>, TaskContext> generator)
+            where T : notnull
         {
             return GenerateCore<T>(taskCount, generator, false);
         }
@@ -106,18 +108,20 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>> generator)
+            where T : notnull
         {
             return GenerateCore<T>(taskCount, generator, false);
         }
 
         private StageOperation GenerateCore<T>(int taskCount, Delegate generator, bool useProgressContext)
+            where T : notnull
         {
             ArgumentNullException.ThrowIfNull(generator);
 
             // Record reuse is irrelevant for a task with no input.
             var taskType = useProgressContext
-                                ? _taskBuilder.CreateDynamicTask(typeof(GeneratorTask<T>).GetMethod("Generate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance), generator, 0, RecordReuseMode.Default)
-                                : _taskBuilder.CreateDynamicTask(typeof(ITask<int, T>).GetMethod("Run"), generator, 1, RecordReuseMode.Default);
+                                ? _taskBuilder.CreateDynamicTask(typeof(GeneratorTask<T>).GetMethod("Generate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!, generator, 0, RecordReuseMode.Default)
+                                : _taskBuilder.CreateDynamicTask(typeof(ITask<int, T>).GetMethod("Run")!, generator, 1, RecordReuseMode.Default);
 
             var result = new StageOperation(this, taskCount, taskType);
             AddAssemblyAndSerializeDelegateIfNeeded(generator, result);

@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   For <paramref name="secondStepTaskType"/> the same thing is done by using the output record type of the <paramref name="taskType"/>.
         /// </para>
         /// </remarks>
-        public TwoStepOperation(JobBuilder builder, IOperationInput input, Type taskType, Type secondStepTaskType, bool usePrePartitioning)
+        public TwoStepOperation(JobBuilder builder, IOperationInput input, Type taskType, Type? secondStepTaskType, bool usePrePartitioning)
             : base(builder, CreateExtraStepForDataInput(builder, input), taskType)
         {
             ArgumentNullException.ThrowIfNull(input);
@@ -70,7 +70,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The second step stage ID, or <see langword="null"/> to use <see cref="StageOperationBase.StageId"/>.
         /// </value>
-        public string SecondStepStageId { get; set; }
+        public string? SecondStepStageId { get; set; }
 
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   If no second step was created, the value of <see cref="FirstStepStage"/> will be the same as <see cref="IJobBuilderOperation.Stage"/>.
         /// </para>
         /// </remarks>
-        protected StageConfiguration FirstStepStage { get; set; }
+        protected StageConfiguration? FirstStepStage { get; set; }
 
         /// <summary>
         /// Creates the configuration for this stage.
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(compiler);
             // We don't need an extra step if each of our tasks would get only a single input segment, i.e. when
             // our input channel is a pipeline or has only one task.
-            if (InputChannel.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1)
+            if (InputChannel!.ChannelType != ChannelType.Pipeline && InputChannel.Sender.Stage.Root.TaskCount > 1)
             {
                 // Second step needed
                 var taskCount = (_usePrePartitioning && InputChannel.Sender.Stage.InternalPartitionCount == 1) ? InputChannel.PartitionCount : 1;

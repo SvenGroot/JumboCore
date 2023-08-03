@@ -21,10 +21,11 @@ namespace Ookii.Jumbo.Jet.Tasks
     /// </note>
     /// </remarks>
     public class SortTask<T> : PrepartitionedPushTask<T, T>
+        where T : notnull
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(SortTask<T>));
-        private List<T>[] _partitions;
-        private IComparer<T> _comparer;
+        private List<T>[]? _partitions;
+        private IComparer<T>? _comparer;
 
         /// <summary>
         /// Indicates the configuration has been changed. <see cref="JetActivator.ApplyConfiguration"/> calls this method
@@ -37,7 +38,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             {
                 var comparerTypeName = TaskContext.StageConfiguration.GetSetting(TaskConstants.SortTaskComparerSettingKey, null);
                 if (!string.IsNullOrEmpty(comparerTypeName))
-                    _comparer = (IComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true), DfsConfiguration, JetConfiguration, TaskContext);
+                    _comparer = (IComparer<T>)JetActivator.CreateInstance(Type.GetType(comparerTypeName, true)!, DfsConfiguration, JetConfiguration, TaskContext);
                 _partitions = new List<T>[TaskContext.StageConfiguration.InternalPartitionCount];
             }
             else
@@ -58,7 +59,7 @@ namespace Ookii.Jumbo.Jet.Tasks
         /// <param name="output">The <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
         public override void ProcessRecord(T record, int partition, PrepartitionedRecordWriter<T> output)
         {
-            _partitions[partition].Add(record);
+            _partitions![partition].Add(record);
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Ookii.Jumbo.Jet.Tasks
             var parallelSort = TaskContext == null ? true : TaskContext.GetSetting(TaskConstants.SortTaskUseParallelSortSettingKey, true);
 
             // Don't do parallel sort if we've been told not do, or if it doesn't make sense (1 partition or 1 CPU).
-            if (parallelSort && _partitions.Length > 1 && Environment.ProcessorCount > 1)
+            if (parallelSort && _partitions!.Length > 1 && Environment.ProcessorCount > 1)
             {
                 SortAndOutputPartitionsParallel(output);
             }
@@ -84,7 +85,7 @@ namespace Ookii.Jumbo.Jet.Tasks
 
         private void SortAndOutputPartitionsNonParallel(PrepartitionedRecordWriter<T> output)
         {
-            _log.DebugFormat("Sorting {0} partitions using non-parallel sort.", _partitions.Length);
+            _log.DebugFormat("Sorting {0} partitions using non-parallel sort.", _partitions!.Length);
             for (var partition = 0; partition < _partitions.Length; ++partition)
             {
                 var records = _partitions[partition];
@@ -101,7 +102,7 @@ namespace Ookii.Jumbo.Jet.Tasks
 
         private void SortAndOutputPartitionsParallel(PrepartitionedRecordWriter<T> output)
         {
-            _log.DebugFormat("Sorting {0} partitions using parallel sort.", _partitions.Length);
+            _log.DebugFormat("Sorting {0} partitions using parallel sort.", _partitions!.Length);
 
             using (var evt = new CountdownEvent(_partitions.Length))
             {

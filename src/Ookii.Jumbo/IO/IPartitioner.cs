@@ -7,6 +7,7 @@ namespace Ookii.Jumbo.IO
     /// </summary>
     /// <typeparam name="T">The type of object to partition.</typeparam>
     public interface IPartitioner<T>
+        where T : notnull
     {
         /// <summary>
         /// Gets or sets the number of partitions.

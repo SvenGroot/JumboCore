@@ -33,8 +33,13 @@ the history of the port. There's no reason to try and use that version.
 
 Because this is a port of an older project, it mostly does not use any fancy new C# language
 features that were introduced after .Net Framework 4.0, except for the few places where I may have
-randomly updated some stuff. I'm sure the code could be improved in a lot of ways, but that's not
-a goal at this point. This project is not maintained or updated in any way.
+randomly updated some stuff. I did decide to add nullable annotations, just to see what it would
+uncover, and what it uncovered was that, especially in Jumbo Jet, I have a lot of places where I
+assume stuff is not null because of what part of execution I'm in. I mostly just left those, using
+the null-forgiving operator, since I didn't want to rearchitect the code too much.
+
+I'm sure the code could be improved in a lot of ways, but that's not a goal at this point. This
+project is not maintained or updated in any way.
 
 ## Limitations
 

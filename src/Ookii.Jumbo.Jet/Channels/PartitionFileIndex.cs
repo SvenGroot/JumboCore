@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,8 +17,8 @@ namespace Ookii.Jumbo.Jet.Channels
     public sealed class PartitionFileIndex : IDisposable
     {
         private readonly ManualResetEvent _loadCompleteEvent = new ManualResetEvent(false);
-        private Exception _loadException = null;
-        private List<PartitionFileIndexEntry>[] _index;
+        private Exception? _loadException = null;
+        private List<PartitionFileIndexEntry>[]? _index;
         private bool _disposed;
 
         /// <summary>
@@ -70,19 +72,22 @@ namespace Ookii.Jumbo.Jet.Channels
             return result;
         }
 
+        [MemberNotNull(nameof(_index))]
         private void WaitUntilLoaded()
         {
             _loadCompleteEvent.WaitOne();
             if (_loadException != null)
                 throw new TargetInvocationException(_loadException);
+
+            Debug.Assert(_index != null);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void LoadIndex(object state)
+        private void LoadIndex(object? state)
         {
             try
             {
-                var indexFilePath = (string)state;
+                var indexFilePath = (string)state!;
                 using (var stream = File.OpenRead(indexFilePath))
                 using (var reader = new BinaryRecordReader<PartitionFileIndexEntry>(stream, false))
                 {

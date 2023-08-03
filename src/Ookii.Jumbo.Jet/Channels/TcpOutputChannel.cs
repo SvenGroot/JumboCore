@@ -28,7 +28,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// </summary>
         public const string ReuseConnectionsSettingKey = "TcpOutputChannel.ReuseConnections";
 
-        private IRecordWriter _writer;
+        private IRecordWriter? _writer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TcpOutputChannel"/> class.

@@ -8,7 +8,7 @@ namespace Ookii.Jumbo.Jet.Channels
     {
         private readonly Stream _baseStream;
         private readonly bool _ownsBaseStream;
-        private readonly Crc32Checksum _checksum;
+        private readonly Crc32Checksum? _checksum;
         private long _bytesWritten;
         private bool _disposed;
 

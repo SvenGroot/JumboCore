@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
@@ -7,6 +8,8 @@ using Ookii.Jumbo.Jet.Channels;
 namespace Ookii.Jumbo.Jet
 {
     sealed class TaskExecutionUtilityGeneric<TInput, TOutput> : TaskExecutionUtility
+        where TInput : notnull
+        where TOutput : notnull
     {
         #region Nested types
 
@@ -26,7 +29,7 @@ namespace Ookii.Jumbo.Jet
                 _task = task;
                 _rootTask = task.RootTask;
 
-                _reader = (IMultiInputRecordReader)_rootTask.InputReader;
+                _reader = (IMultiInputRecordReader)_rootTask.InputReader!;
                 _reader.CurrentPartitionChanged += new EventHandler(IMultiInputRecordReader_CurrentPartitionChanged);
                 CreateOutputWriter();
             }
@@ -47,7 +50,7 @@ namespace Ookii.Jumbo.Jet
                 _recordWriter.WriteRecord(record);
             }
 
-            private void IMultiInputRecordReader_CurrentPartitionChanged(object sender, EventArgs e)
+            private void IMultiInputRecordReader_CurrentPartitionChanged(object? sender, EventArgs e)
             {
                 if (_recordWriter != null)
                 {
@@ -58,9 +61,9 @@ namespace Ookii.Jumbo.Jet
                 CreateOutputWriter();
             }
 
+            [MemberNotNull(nameof(_recordWriter))]
             private void CreateOutputWriter()
             {
-
                 _recordWriter = (RecordWriter<TOutput>)_task.CreateDfsOutputWriter(_reader.CurrentPartition);
             }
 
@@ -73,7 +76,6 @@ namespace Ookii.Jumbo.Jet
                     {
                         _bytesWritten += _recordWriter.OutputBytes;
                         _recordWriter.Dispose();
-                        _recordWriter = null;
                     }
                 }
             }
@@ -85,8 +87,8 @@ namespace Ookii.Jumbo.Jet
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(TaskExecutionUtility));
 
         private bool _hasTaskRun;
-        private PipelinePullTaskRecordWriter<TInput, TOutput> _pipelinePullTaskRecordWriter; // Needed to finish pipelined pull tasks.
-        private PipelinePrepartitionedPushTaskRecordWriter<TInput, TOutput> _pipelinePrepartitionedPushTaskRecordWriter; // Needed to finish pipelined prepartitioned push tasks.
+        private PipelinePullTaskRecordWriter<TInput, TOutput>? _pipelinePullTaskRecordWriter; // Needed to finish pipelined pull tasks.
+        private PipelinePrepartitionedPushTaskRecordWriter<TInput, TOutput>? _pipelinePrepartitionedPushTaskRecordWriter; // Needed to finish pipelined prepartitioned push tasks.
 
         public TaskExecutionUtilityGeneric(FileSystemClient fileSystemClient, JetClient jetClient, ITaskServerUmbilicalProtocol umbilical, TaskExecutionUtility parentTask, TaskContext configuration)
             : base(fileSystemClient, jetClient, umbilical, parentTask, configuration)
@@ -102,7 +104,7 @@ namespace Ookii.Jumbo.Jet
                 throw new InvalidOperationException("This task has already been run.");
             _hasTaskRun = true;
 
-            var input = (RecordReader<TInput>)InputReader;
+            var input = (RecordReader<TInput>?)InputReader;
             var output = (RecordWriter<TOutput>)OutputWriter;
             var taskStopwatch = new Stopwatch();
 
@@ -112,7 +114,7 @@ namespace Ookii.Jumbo.Jet
             StartProgressThread();
 
             var multiInputReader = input as MultiInputRecordReader<TInput>;
-            if (multiInputReader != null && InputChannels.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1)
+            if (multiInputReader != null && InputChannels!.Count == 1 && InputChannels[0].Configuration.PartitionsPerTask > 1)
                 RunTaskMultipleInputPartitions(multiInputReader, output, taskStopwatch, task);
             else
                 CallTaskRunMethod(input, output, taskStopwatch, task);
@@ -150,10 +152,10 @@ namespace Ookii.Jumbo.Jet
                 return OutputChannel.CreateRecordWriter<TOutput>();
             }
             else
-                return null;
+                throw new InvalidOperationException("Stage must have output.");
         }
 
-        internal override IRecordWriter CreatePipelineRecordWriter(object partitioner)
+        internal override IRecordWriter CreatePipelineRecordWriter(object? partitioner)
         {
             if (!IsAssociatedTask)
                 throw new InvalidOperationException("Can't create pipeline record writer for non-child task.");
@@ -171,7 +173,7 @@ namespace Ookii.Jumbo.Jet
                 var prepartitionedPushTask = task as PrepartitionedPushTask<TInput, TOutput>;
                 if (prepartitionedPushTask != null)
                 {
-                    var partitioner2 = (IPartitioner<TInput>)partitioner;
+                    var partitioner2 = (IPartitioner<TInput>)partitioner!;
                     partitioner2.Partitions = Context.StageConfiguration.InternalPartitionCount;
                     _pipelinePrepartitionedPushTaskRecordWriter = new PipelinePrepartitionedPushTaskRecordWriter<TInput, TOutput>(this, output, partitioner2);
                     return _pipelinePrepartitionedPushTaskRecordWriter;
@@ -184,7 +186,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private void CallTaskRunMethod(RecordReader<TInput> input, RecordWriter<TOutput> output, Stopwatch taskStopwatch, ITask<TInput, TOutput> task)
+        private void CallTaskRunMethod(RecordReader<TInput>? input, RecordWriter<TOutput> output, Stopwatch taskStopwatch, ITask<TInput, TOutput> task)
         {
             _log.Info("Running task.");
             taskStopwatch.Start();
@@ -262,7 +264,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        private void input_CurrentPartitionChanging(object sender, CurrentPartitionChangingEventArgs e)
+        private void input_CurrentPartitionChanging(object? sender, CurrentPartitionChangingEventArgs e)
         {
             e.Cancel = !NotifyStartPartitionProcessing(e.NewPartitionNumber);
         }

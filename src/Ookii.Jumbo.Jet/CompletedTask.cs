@@ -17,16 +17,16 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the task attempt ID that finished this task.
         /// </summary>
-        public TaskAttemptId TaskAttemptId { get; set; }
+        public TaskAttemptId? TaskAttemptId { get; set; }
 
         /// <summary>
         /// Gets the global task ID of the task.
         /// </summary>
-        public string FullTaskId
+        public string? FullTaskId
         {
             get
             {
-                return Job.CreateFullTaskId(JobId, TaskAttemptId);
+                return TaskAttemptId == null ? null : Job.CreateFullTaskId(JobId, TaskAttemptId);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Ookii.Jumbo.Jet
         /// <remarks>
         /// When using the <see cref="Channels.FileInputChannel"/>, this is the server where the output data can be downloaded.
         /// </remarks>
-        public ServerAddress TaskServer { get; set; }
+        public ServerAddress? TaskServer { get; set; }
 
         /// <summary>
         /// Gets or sets the port that the task server listens on for downloading file channel data.

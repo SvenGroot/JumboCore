@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,9 +20,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
     /// </summary>
     public sealed class DynamicTaskBuilder
     {
-        private AssemblyBuilder _assembly;
-        private ModuleBuilder _module;
-        private string _dynamicAssemblyDirectory;
+        private AssemblyBuilder? _assembly;
+        private ModuleBuilder? _module;
+        private string? _dynamicAssemblyDirectory;
         private readonly Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type> _taskTypeCache = new Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type>();
         private readonly HashSet<string> _usedTypeNames = new HashSet<string>();
 
@@ -30,6 +32,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// 	<see langword="true"/> if a dynamic assembly has been created.; otherwise, <see langword="false"/>.
         /// </value>
+        [MemberNotNullWhen(true, nameof(_assembly))]
+        [MemberNotNullWhen(true, nameof(_module))]
+        [MemberNotNullWhen(true, nameof(_dynamicAssemblyDirectory))]
+        [MemberNotNullWhen(true, nameof(DynamicAssemblyFileName))]
+        [MemberNotNullWhen(true, nameof(DynamicAssemblyPath))]
         public bool IsDynamicAssemblyCreated
         {
             get { return _assembly != null; }
@@ -41,7 +48,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The name of the dynamic assembly file, or <see langword="null"/> if no assembly has been generated.
         /// </value>
-        public string DynamicAssemblyFileName
+        public string? DynamicAssemblyFileName
         {
             get { return IsDynamicAssemblyCreated ? _assembly.GetName().Name + ".dll" : null; }
         }
@@ -52,7 +59,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// <value>
         /// The full path of the dynamic assembly file, or <see langword="null"/> if no assembly has been generated.
         /// </value>
-        public string DynamicAssemblyPath
+        public string? DynamicAssemblyPath
         {
             get { return IsDynamicAssemblyCreated ? Path.Combine(_dynamicAssemblyDirectory, DynamicAssemblyFileName) : null; }
         }
@@ -88,7 +95,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         public Type CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
         {
             ArgumentNullException.ThrowIfNull(methodToOverride);
-            if (methodToOverride.DeclaringType.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
+            if (methodToOverride.DeclaringType!.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
                 throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
             ArgumentNullException.ThrowIfNull(taskMethodDelegate);
 
@@ -102,14 +109,14 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 throw new ArgumentException("The delegate method doesn't have the correct return type.");
             ValidateParameters(skipParameters, parameters, delegateParameters);
 
-            var taskType = CreateTaskType(taskMethodDelegate, recordReuseMode, methodToOverride.DeclaringType, out var delegateField);
+            var taskType = CreateTaskType(taskMethodDelegate, recordReuseMode, methodToOverride.DeclaringType!, out var delegateField);
             var overriddenMethod = OverrideMethod(taskType, methodToOverride);
 
             var generator = overriddenMethod.GetILGenerator();
             if (!CanCallTargetMethodDirectly(taskMethodDelegate))
             {
                 generator.Emit(OpCodes.Ldarg_0); // Put "this" on the stack
-                generator.Emit(OpCodes.Ldfld, delegateField); // Put the delegate on the stack.
+                generator.Emit(OpCodes.Ldfld, delegateField!); // Put the delegate on the stack.
             }
 
             for (var x = skipParameters; x < parameters.Length; ++x)
@@ -118,15 +125,15 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             {
                 // Put the TaskContext on the stack.
                 generator.Emit(OpCodes.Ldarg_0);
-                generator.Emit(OpCodes.Call, typeof(Configurable).GetProperty("TaskContext").GetGetMethod());
+                generator.Emit(OpCodes.Call, typeof(Configurable).GetProperty("TaskContext")!.GetGetMethod()!);
             }
             if (CanCallTargetMethodDirectly(taskMethodDelegate))
                 generator.Emit(OpCodes.Call, taskMethodDelegate.Method);
             else
-                generator.Emit(OpCodes.Callvirt, taskMethodDelegate.GetType().GetMethod("Invoke"));
+                generator.Emit(OpCodes.Callvirt, taskMethodDelegate.GetType().GetMethod("Invoke")!);
             generator.Emit(OpCodes.Ret);
 
-            var result = taskType.CreateType();
+            var result = taskType.CreateType()!;
 
             _taskTypeCache.Add(cacheKey, result);
 
@@ -154,7 +161,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </summary>
         public void SaveAssembly()
         {
-            if (_assembly != null)
+            if (IsDynamicAssemblyCreated)
             {
                 // TODO: Switch back to _assembly.Save once supported by .Net Core.
                 var generator = new Lokad.ILPack.AssemblyGenerator();
@@ -187,15 +194,15 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(settings);
             ArgumentNullException.ThrowIfNull(taskDelegate);
 
-            settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName);
-            settings.Add(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, taskDelegate.Method.DeclaringType.AssemblyQualifiedName);
+            settings.Add(TaskConstants.JobBuilderDelegateTypeSettingKey, taskDelegate.GetType().AssemblyQualifiedName!);
+            settings.Add(TaskConstants.JobBuilderDelegateMethodTypeSettingKey, taskDelegate.Method.DeclaringType!.AssemblyQualifiedName!);
             settings.Add(TaskConstants.JobBuilderDelegateMethodSettingKey, taskDelegate.Method.Name);
             if (!taskDelegate.Method.IsStatic)
             {
                 var formatter = new BinaryFormatter();
                 using (var stream = new MemoryStream())
                 {
-                    formatter.Serialize(stream, taskDelegate.Target);
+                    formatter.Serialize(stream, taskDelegate.Target!);
                     settings.Add(TaskConstants.JobBuilderDelegateTargetSettingKey, Convert.ToBase64String(stream.ToArray()));
                 }
             }
@@ -206,7 +213,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         /// </summary>
         /// <param name="context">The task context.</param>
         /// <returns>The deserialized delegate.</returns>
-        public static object DeserializeDelegate(TaskContext context)
+        public static object? DeserializeDelegate(TaskContext context)
         {
             if (context != null)
             {
@@ -215,10 +222,10 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 var delegateTypeName = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateTypeSettingKey, null);
                 if (typeName != null && methodName != null && delegateTypeName != null)
                 {
-                    var type = Type.GetType(typeName);
-                    var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-                    var delegateType = Type.GetType(delegateTypeName);
-                    object target = null;
+                    var type = Type.GetType(typeName, true)!;
+                    var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)!;
+                    var delegateType = Type.GetType(delegateTypeName, true)!;
+                    object? target = null;
                     var targetBase64 = context.StageConfiguration.GetSetting(TaskConstants.JobBuilderDelegateTargetSettingKey, null);
                     if (targetBase64 != null)
                     {
@@ -242,6 +249,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             return object.Equals(assembly, _assembly);
         }
 
+        [MemberNotNull(nameof(_assembly))]
+        [MemberNotNull(nameof(_module))]
+        [MemberNotNull(nameof(_dynamicAssemblyDirectory))]
         private void CreateDynamicAssembly()
         {
             if (_assembly == null)
@@ -250,7 +260,12 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                 var name = new AssemblyName("Ookii.Jumbo.Jet.Generated." + Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
                 _dynamicAssemblyDirectory = Path.GetTempPath();
                 _assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-                _module = _assembly.DefineDynamicModule(name.Name);
+                _module = _assembly.DefineDynamicModule(name.Name!);
+            }
+            else
+            {
+                Debug.Assert(_module != null);
+                Debug.Assert(_dynamicAssemblyDirectory != null);
             }
         }
 
@@ -273,11 +288,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             if (mode != RecordReuseMode.DoNotAllow)
             {
                 var allowRecordReuseAttributeType = typeof(AllowRecordReuseAttribute);
-                var allowRecordReuse = (AllowRecordReuseAttribute)Attribute.GetCustomAttribute(taskMethod, allowRecordReuseAttributeType);
+                var allowRecordReuse = (AllowRecordReuseAttribute?)Attribute.GetCustomAttribute(taskMethod, allowRecordReuseAttributeType);
                 if (mode == RecordReuseMode.Allow || mode == RecordReuseMode.PassThrough || allowRecordReuse != null)
                 {
-                    var ctor = allowRecordReuseAttributeType.GetConstructor(Type.EmptyTypes);
-                    var passThrough = allowRecordReuseAttributeType.GetProperty("PassThrough");
+                    var ctor = allowRecordReuseAttributeType.GetConstructor(Type.EmptyTypes)!;
+                    var passThrough = allowRecordReuseAttributeType.GetProperty("PassThrough")!;
 
                     var allowRecordReuseBuilder = new CustomAttributeBuilder(ctor, Array.Empty<object>(), new[] { passThrough }, new object[] { mode == RecordReuseMode.PassThrough || (allowRecordReuse != null && allowRecordReuse.PassThrough) });
                     taskTypeBuilder.SetCustomAttribute(allowRecordReuseBuilder);
@@ -286,18 +301,18 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
 
             if (Attribute.IsDefined(taskMethod, typeof(ProcessAllInputPartitionsAttribute)))
             {
-                var ctor = typeof(ProcessAllInputPartitionsAttribute).GetConstructor(Type.EmptyTypes);
+                var ctor = typeof(ProcessAllInputPartitionsAttribute).GetConstructor(Type.EmptyTypes)!;
                 var partitionAttribute = new CustomAttributeBuilder(ctor, Array.Empty<object>());
 
                 taskTypeBuilder.SetCustomAttribute(partitionAttribute);
             }
         }
 
-        private TypeBuilder CreateTaskType(Delegate taskDelegate, RecordReuseMode recordReuseMode, Type baseOrInterfaceType, out FieldBuilder delegateField)
+        private TypeBuilder CreateTaskType(Delegate taskDelegate, RecordReuseMode recordReuseMode, Type baseOrInterfaceType, out FieldBuilder? delegateField)
         {
             CreateDynamicAssembly();
 
-            Type[] interfaces = null;
+            Type[]? interfaces = null;
             if (baseOrInterfaceType.IsInterface)
             {
                 interfaces = new[] { baseOrInterfaceType };
@@ -332,11 +347,11 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             var configMethod = taskTypeBuilder.DefineMethod("NotifyConfigurationChanged", MethodAttributes.Public | MethodAttributes.Virtual);
             var configGenerator = configMethod.GetILGenerator();
             configGenerator.Emit(OpCodes.Ldarg_0); // Put this on stack (for stfld)
-            configGenerator.Emit(OpCodes.Call, taskTypeBuilder.BaseType.GetMethod("NotifyConfigurationChanged"));
+            configGenerator.Emit(OpCodes.Call, taskTypeBuilder.BaseType!.GetMethod("NotifyConfigurationChanged")!);
             configGenerator.Emit(OpCodes.Ldarg_0); // Put this on stack (for stfld)
             configGenerator.Emit(OpCodes.Ldarg_0); // Put this on stack (for call)
-            configGenerator.Emit(OpCodes.Call, typeof(Configurable).GetProperty("TaskContext").GetGetMethod()); // Put task context on stack
-            configGenerator.Emit(OpCodes.Call, typeof(DynamicTaskBuilder).GetMethod("DeserializeDelegate")); // Call deserialize method
+            configGenerator.Emit(OpCodes.Call, typeof(Configurable).GetProperty("TaskContext")!.GetGetMethod()!); // Put task context on stack
+            configGenerator.Emit(OpCodes.Call, typeof(DynamicTaskBuilder).GetMethod("DeserializeDelegate")!); // Call deserialize method
             configGenerator.Emit(OpCodes.Castclass, taskDelegate.GetType());
             configGenerator.Emit(OpCodes.Stfld, delegateField);
             configGenerator.Emit(OpCodes.Ret);

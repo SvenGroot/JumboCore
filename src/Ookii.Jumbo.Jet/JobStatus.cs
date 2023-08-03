@@ -33,7 +33,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the display name of the job.
         /// </summary>
-        public string JobName { get; set; }
+        public string? JobName { get; set; }
 
         /// <summary>
         /// Gets the stages of this job.
@@ -128,7 +128,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets or sets the reason the job failed, if it failed.
         /// </summary>
         /// <value>The failure reason, or <see langword="null"/> if the job hasn't failed.</value>
-        public string FailureReason { get; set; }
+        public string? FailureReason { get; set; }
 
         /// <summary>
         /// Gets the number of task attempts that failed.
@@ -178,7 +178,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <returns>A string representation of this <see cref="JobStatus"/>.</returns>
-        public string ToString(IFormatProvider provider)
+        public string ToString(IFormatProvider? provider)
         {
             var result = new StringBuilder(100);
             result.AppendFormat(provider, "{0:P1}; finished: {1}/{2} tasks", Progress, FinishedTaskCount, TaskCount);
@@ -209,7 +209,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="stageId">The stage ID.</param>
         /// <returns>The specified stage, or <see langword="null"/> if no stage with the specified ID exists.</returns>
-        public StageStatus GetStage(string stageId)
+        public StageStatus? GetStage(string stageId)
         {
             return (from stage in Stages
                     where stage.StageId == stageId
@@ -225,7 +225,7 @@ namespace Ookii.Jumbo.Jet
             return new XDocument(new XDeclaration("1.0", "utf-8", null), new XProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"summary.xslt\""),
                 new XElement("Job",
                     new XAttribute("id", JobId.ToString()),
-                    new XAttribute("name", JobName),
+                    JobName == null ? null : new XAttribute("name", JobName),
                     new XElement("JobInfo",
                         new XAttribute("startTime", StartTime.ToString(DatePattern, System.Globalization.CultureInfo.InvariantCulture)),
                         new XAttribute("endTime", EndTime.ToString(DatePattern, System.Globalization.CultureInfo.InvariantCulture)),
@@ -247,7 +247,7 @@ namespace Ookii.Jumbo.Jet
                     new XElement("StageMetrics",
                         from stage in Stages
                         select new XElement("Stage",
-                            new XAttribute("id", stage.StageId),
+                            new XAttribute("id", stage.StageId!),
                             stage.Metrics.ToXml()))
                 )
             );
@@ -264,22 +264,22 @@ namespace Ookii.Jumbo.Jet
             if (job.Name != "Job")
                 throw new ArgumentException("Invalid job element.", nameof(job));
 
-            var jobInfo = job.Element("JobInfo");
+            var jobInfo = job.Element("JobInfo")!;
             var jobStatus = new JobStatus()
             {
-                JobId = new Guid(job.Attribute("id").Value),
-                JobName = job.Attribute("name") == null ? null : job.Attribute("name").Value,
-                StartTime = DateTime.ParseExact(jobInfo.Attribute("startTime").Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
-                EndTime = DateTime.ParseExact(jobInfo.Attribute("endTime").Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
-                FinishedTaskCount = (int)jobInfo.Attribute("finishedTasks"),
-                _rackLocalTaskCount = jobInfo.Attribute("rackLocalTasks") == null ? -1 : (int)jobInfo.Attribute("rackLocalTasks"),
-                _nonDataLocalTaskCount = jobInfo.Attribute("nonDataLocalTasks") == null ? -1 : (int)jobInfo.Attribute("nonDataLocalTasks"),
+                JobId = new Guid(job.Attribute("id")!.Value),
+                JobName = job.Attribute("name")?.Value,
+                StartTime = DateTime.ParseExact(jobInfo.Attribute("startTime")!.Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
+                EndTime = DateTime.ParseExact(jobInfo.Attribute("endTime")!.Value, JobStatus.DatePattern, System.Globalization.CultureInfo.InvariantCulture),
+                FinishedTaskCount = (int)jobInfo.Attribute("finishedTasks")!,
+                _rackLocalTaskCount = jobInfo.Attribute("rackLocalTasks") == null ? -1 : (int)jobInfo.Attribute("rackLocalTasks")!,
+                _nonDataLocalTaskCount = jobInfo.Attribute("nonDataLocalTasks") == null ? -1 : (int)jobInfo.Attribute("nonDataLocalTasks")!,
                 IsFinished = true
             };
 
-            var stages = from task in job.Element("Tasks").Elements("Task")
+            var stages = from task in job.Element("Tasks")!.Elements("Task")
                          let taskStatus = TaskStatus.FromXml(task, jobStatus)
-                         let taskId = new TaskId(taskStatus.TaskId)
+                         let taskId = new TaskId(taskStatus.TaskId!)
                          group taskStatus by taskId.StageId;
 
             foreach (var stage in stages)
@@ -291,7 +291,7 @@ namespace Ookii.Jumbo.Jet
 
             if (job.Element("FailedTaskAttempts") != null)
             {
-                jobStatus.FailedTaskAttempts.AddRange(from task in job.Element("FailedTaskAttempts").Elements("Task")
+                jobStatus.FailedTaskAttempts.AddRange(from task in job.Element("FailedTaskAttempts")!.Elements("Task")
                                                       select TaskStatus.FromXml(task, jobStatus));
             }
 
@@ -300,8 +300,8 @@ namespace Ookii.Jumbo.Jet
             {
                 foreach (var stage in metricsElement.Elements("Stage"))
                 {
-                    var stageId = stage.Attribute("id").Value;
-                    jobStatus.GetStage(stageId).Metrics = TaskMetrics.FromXml(stage.Element("Metrics"));
+                    var stageId = stage.Attribute("id")!.Value;
+                    jobStatus.GetStage(stageId)!.Metrics = TaskMetrics.FromXml(stage.Element("Metrics")!);
                 }
             }
 

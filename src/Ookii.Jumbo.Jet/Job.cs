@@ -16,17 +16,7 @@ namespace Ookii.Jumbo.Jet
         public const string JobConfigFileName = "job.xml";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Job"/> class.
-        /// </summary>
-        /// <remarks>
-        /// Needed for serialization.
-        /// </remarks>
-        public Job()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new insatnce of the <see cref="Job"/> class with the specified ID and path.
+        /// Initializes a new instance of the <see cref="Job"/> class with the specified ID and path.
         /// </summary>
         /// <param name="jobId">The unique identifier of this job.</param>
         /// <param name="path">The path on the distributed file system where files related to the job are stored.</param>

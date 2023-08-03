@@ -11,17 +11,17 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets the configuration used to access the Distributed File System.
         /// </summary>
-        DfsConfiguration DfsConfiguration { get; set; }
+        DfsConfiguration? DfsConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the configuration used to access the Jet servers.
         /// </summary>
-        JetConfiguration JetConfiguration { get; set; }
+        JetConfiguration? JetConfiguration { get; set; }
 
         /// <summary>
         /// Gets or sets the configuration for the task attempt.
         /// </summary>
-        TaskContext TaskContext { get; set; }
+        TaskContext? TaskContext { get; set; }
 
         /// <summary>
         /// Indicates the configuration has been changed. <see cref="JetActivator.ApplyConfiguration"/> calls this method

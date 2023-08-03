@@ -13,7 +13,7 @@ namespace Ookii.Jumbo.Jet
     [Serializable]
     public class TaskProgress
     {
-        private List<AdditionalProgressValue> _additionalProgressValues;
+        private List<AdditionalProgressValue>? _additionalProgressValues;
 
         /// <summary>
         /// Gets or sets the base progress value. This is the progress of the input reader.
@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Jet
         /// <summary>
         /// Gets or sets a status message for the task.
         /// </summary>
-        public string StatusMessage { get; set; }
+        public string? StatusMessage { get; set; }
 
         /// <summary>
         /// Gets the overall progress, which is the average of all the other progress values.
@@ -45,7 +45,7 @@ namespace Ookii.Jumbo.Jet
         /// Gets the additional progress values.
         /// </summary>
         /// <value>The additional progress values.</value>
-        public ReadOnlyCollection<AdditionalProgressValue> AdditionalProgressValues
+        public ReadOnlyCollection<AdditionalProgressValue>? AdditionalProgressValues
         {
             get { return _additionalProgressValues == null ? null : _additionalProgressValues.AsReadOnly(); }
         }
@@ -55,7 +55,7 @@ namespace Ookii.Jumbo.Jet
         /// </summary>
         /// <param name="typeName">Name of the type that is the source of the value.</param>
         /// <param name="value">The progress value.</param>
-        public void AddAdditionalProgressValue(string typeName, float value)
+        public void AddAdditionalProgressValue(string? typeName, float value)
         {
             if (_additionalProgressValues == null)
                 _additionalProgressValues = new List<AdditionalProgressValue>();

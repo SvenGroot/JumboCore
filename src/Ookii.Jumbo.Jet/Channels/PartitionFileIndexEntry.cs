@@ -78,7 +78,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// <returns>
         ///   <see langword="true"/> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <see langword="false"/>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var entry = obj as RecordIndexEntry?;
             if (entry == null)
