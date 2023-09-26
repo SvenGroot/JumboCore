@@ -10,6 +10,8 @@ using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace DataServerApplication
 {
     /// <summary>

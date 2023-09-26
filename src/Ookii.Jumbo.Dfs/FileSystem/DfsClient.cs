@@ -10,6 +10,8 @@ using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Rpc;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
     /// <summary>

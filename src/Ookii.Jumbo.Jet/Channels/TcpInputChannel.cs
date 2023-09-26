@@ -10,6 +10,8 @@ using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Jet.Channels
 {
     /// <summary>

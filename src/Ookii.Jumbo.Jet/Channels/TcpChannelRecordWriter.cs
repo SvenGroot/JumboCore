@@ -6,6 +6,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo.IO;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Jet.Channels
 {
     sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>

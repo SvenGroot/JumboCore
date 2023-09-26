@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>

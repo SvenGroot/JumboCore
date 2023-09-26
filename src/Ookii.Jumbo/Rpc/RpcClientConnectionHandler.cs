@@ -5,6 +5,8 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Rpc
 {
     sealed class RpcClientConnectionHandler : IDisposable

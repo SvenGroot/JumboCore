@@ -9,6 +9,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>

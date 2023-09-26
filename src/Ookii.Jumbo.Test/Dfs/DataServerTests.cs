@@ -8,6 +8,8 @@ using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Test.Dfs
 {
     [TestFixture]

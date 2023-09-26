@@ -9,6 +9,8 @@ using System.Reflection.Emit;
 using System.Runtime.Serialization.Formatters.Binary;
 using Ookii.Jumbo.Jet.Tasks;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Jet.Jobs.Builder
 {
     /// <summary>

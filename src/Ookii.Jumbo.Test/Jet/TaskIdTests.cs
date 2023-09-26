@@ -4,6 +4,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 using Ookii.Jumbo.Jet;
 
+#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+
 namespace Ookii.Jumbo.Test.Jet
 {
     [TestFixture]
