@@ -20,7 +20,7 @@ namespace NameServerApplication
         /// <param name="parent">The parent of the directory. May be <see langword="null" />.</param>
         /// <param name="name">The name of the directory.</param>
         /// <param name="dateCreated">The date the directory was created.</param>
-        public DfsDirectory(DfsDirectory parent, string name, DateTime dateCreated)
+        public DfsDirectory(DfsDirectory? parent, string name, DateTime dateCreated)
             : base(parent, name, dateCreated)
         {
         }

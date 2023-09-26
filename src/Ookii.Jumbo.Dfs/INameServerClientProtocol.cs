@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Dfs
         /// <returns>A <see cref="JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
-        JumboDirectory GetDirectoryInfo(string path);
+        JumboDirectory? GetDirectoryInfo(string path);
 
         /// <summary>
         /// Creates a new file in the specified directory.
@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Dfs
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
-        JumboFile GetFileInfo(string path);
+        JumboFile? GetFileInfo(string path);
 
         /// <summary>
         /// Gets information about a file or directory.
@@ -76,7 +76,7 @@ namespace Ookii.Jumbo.Dfs
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
-        JumboFileSystemEntry GetFileSystemEntryInfo(string path);
+        JumboFileSystemEntry? GetFileSystemEntryInfo(string path);
 
         /// <summary>
         /// Appends a new block to a file.
@@ -160,7 +160,7 @@ namespace Ookii.Jumbo.Dfs
         /// If the log file is larger than <paramref name="maxSize"/>, the tail of the file up to the
         /// specified size is returned.
         /// </remarks>
-        string GetLogFileContents(LogFileKind kind, int maxSize);
+        string? GetLogFileContents(LogFileKind kind, int maxSize);
 
         /// <summary>
         /// Removes the specified data server from the name server's list of known data servers.

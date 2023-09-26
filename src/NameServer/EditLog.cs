@@ -18,6 +18,7 @@ namespace NameServerApplication
             protected EditLogEntry(FileSystemMutation mutation)
             {
                 Mutation = mutation;
+                Path = string.Empty;
             }
 
             protected EditLogEntry(FileSystemMutation mutation, DateTime date, string path)
@@ -251,6 +252,7 @@ namespace NameServerApplication
             public MoveEditLogEntry()
                 : base(FileSystemMutation.Move)
             {
+                TargetPath = string.Empty;
             }
 
             public MoveEditLogEntry(DateTime date, string path, string targetPath)
@@ -290,8 +292,8 @@ namespace NameServerApplication
         private bool _loggingEnabled = true;
         private readonly string _logFileDirectory;
         private string _logFilePath;
-        private ChecksumOutputStream _logFileStream;
-        private BinaryWriter _logFileWriter;
+        private ChecksumOutputStream? _logFileStream;
+        private BinaryWriter? _logFileWriter;
 
         public EditLog(string logFileDirectory)
         {
@@ -424,7 +426,7 @@ namespace NameServerApplication
                 else
                 {
                     _log.Info("Discarding old edit log file, and renaming new log file.");
-                    var crc = _logFileStream.Crc;
+                    var crc = _logFileStream!.Crc;
                     CloseLogFile();
 
                     File.Delete(logFileName);
@@ -499,8 +501,8 @@ namespace NameServerApplication
                 {
                     lock (_logFileLock)
                     {
-                        entry.Write(_logFileWriter);
-                        _logFileWriter.Flush();
+                        entry.Write(_logFileWriter!);
+                        _logFileWriter!.Flush();
                     }
                 }
                 catch (IOException ex)

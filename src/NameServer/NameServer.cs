@@ -23,6 +23,8 @@ namespace NameServerApplication
 
         private const int _checkpointInterval = 3600000; // 1 hour
 
+        private static NameServer? _instance;
+
         private readonly int _replicationFactor;
         private readonly int _blockSize;
 
@@ -72,7 +74,7 @@ namespace NameServerApplication
             _checkpointTimer = new Timer(CreateCheckpointTimerCallback, null, _checkpointInterval, _checkpointInterval);
         }
 
-        public static NameServer Instance { get; private set; }
+        public static NameServer Instance => _instance ?? throw new InvalidOperationException("NameServer not running.");
 
         public DfsConfiguration Configuration { get; private set; }
 
@@ -90,7 +92,7 @@ namespace NameServerApplication
             _log.Info("---- NameServer is starting ----");
             _log.LogEnvironmentInformation();
 
-            Instance = new NameServer(jumboConfig, dfsConfig);
+            _instance = new NameServer(jumboConfig, dfsConfig);
             ConfigureRemoting(dfsConfig);
         }
 
@@ -100,7 +102,7 @@ namespace NameServerApplication
             RpcHelper.UnregisterServerChannels(Instance.Configuration.FileSystem.Url.Port);
             Instance.ShutdownInternal();
             Instance.Dispose();
-            Instance = null;
+            _instance = null;
             _log.Info("---- NameServer has shut down ----");
         }
 
@@ -209,7 +211,7 @@ namespace NameServerApplication
             _fileSystem.CreateDirectory(path);
         }
 
-        public JumboDirectory GetDirectoryInfo(string path)
+        public JumboDirectory? GetDirectoryInfo(string path)
         {
             _log.Debug("GetDirectoryInfo called");
             return _fileSystem.GetDirectoryInfo(path);
@@ -251,13 +253,13 @@ namespace NameServerApplication
             _fileSystem.Move(from, to);
         }
 
-        public JumboFile GetFileInfo(string path)
+        public JumboFile? GetFileInfo(string path)
         {
             _log.Debug("GetFileInfo called");
             return _fileSystem.GetFileInfo(path);
         }
 
-        public JumboFileSystemEntry GetFileSystemEntryInfo(string path)
+        public JumboFileSystemEntry? GetFileSystemEntryInfo(string path)
         {
             _log.Debug("GetFileSystemEntry called.");
             return _fileSystem.GetFileSystemEntryInfo(path);
@@ -303,7 +305,7 @@ namespace NameServerApplication
                     if (!_blocks.TryGetValue(blockID, out var block))
                         throw new ArgumentException("Invalid block ID.");
 
-                    var hostName = ServerContext.Current.ClientHostName;
+                    var hostName = ServerContext.Current!.ClientHostName!;
                     var rackId = _topology.ResolveNode(hostName);
 
                     return (from server in block.DataServers
@@ -372,7 +374,7 @@ namespace NameServerApplication
                     metrics.DataServers.Add(new DataServerMetrics()
                     {
                         Address = server.Address,
-                        RackId = server.Rack.RackId,
+                        RackId = server.Rack!.RackId,
                         LastContactUtc = server.LastContactUtc,
                         BlockCount = server.Blocks.Count,
                         DiskSpaceFree = server.DiskSpaceFree,
@@ -426,7 +428,7 @@ namespace NameServerApplication
             }
         }
 
-        public string GetLogFileContents(LogFileKind kind, int maxSize)
+        public string? GetLogFileContents(LogFileKind kind, int maxSize)
         {
             return LogFileHelper.GetLogFileContents("NameServer", kind, maxSize);
         }
@@ -530,7 +532,7 @@ namespace NameServerApplication
 
         #endregion
 
-        void _fileSystem_FileDeleted(object sender, FileDeletedEventArgs e)
+        void _fileSystem_FileDeleted(object? sender, FileDeletedEventArgs e)
         {
             if (e.PendingBlock != null)
             {
@@ -950,7 +952,7 @@ namespace NameServerApplication
             }
         }
 
-        private void CreateCheckpointTimerCallback(object state)
+        private void CreateCheckpointTimerCallback(object? state)
         {
             CreateCheckpoint();
         }

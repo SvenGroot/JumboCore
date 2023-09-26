@@ -31,7 +31,7 @@ namespace NameServerApplication
         /// <param name="dateCreated">The date the new entry was created.</param>
         /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="name"/> contains the / character.</exception>
-        protected DfsFileSystemEntry(DfsDirectory parent, string name, DateTime dateCreated)
+        protected DfsFileSystemEntry(DfsDirectory? parent, string name, DateTime dateCreated)
         {
             ArgumentNullException.ThrowIfNull(name);
             if (name.Contains(DfsPath.DirectorySeparator, StringComparison.Ordinal))
@@ -60,7 +60,7 @@ namespace NameServerApplication
         /// <summary>
         /// Gets the parent directory of the file system entry. This will be <see langword="null"/> on objects created by <see cref="ShallowClone" />.
         /// </summary>
-        private DfsDirectory Parent { get; set; }
+        private DfsDirectory? Parent { get; set; }
 
         /// <summary>
         /// Gets the absolute path of the file system entry.
@@ -85,7 +85,7 @@ namespace NameServerApplication
         /// </summary>
         /// <param name="newParent">The new parent of the entry.</param>
         /// <param name="newName">The new name of the entry. Can be <see langword="null"/>.</param>
-        public void MoveTo(DfsDirectory newParent, string newName)
+        public void MoveTo(DfsDirectory newParent, string? newName)
         {
             ArgumentNullException.ThrowIfNull(newParent);
 
@@ -117,7 +117,7 @@ namespace NameServerApplication
         public virtual void SaveToFileSystemImage(BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
-            writer.Write(GetType().FullName);
+            writer.Write(GetType().FullName!);
             writer.Write(Name);
             writer.Write(DateCreated.Ticks);
         }
@@ -129,7 +129,7 @@ namespace NameServerApplication
         /// <param name="parent">The parent directory of the new <see cref="DfsFileSystemEntry"/>.</param>
         /// <param name="notifyFileSizeCallback">A function that should be called to notify the caller of the size of deserialized files.</param>
         /// <returns>An instance of <see cref="DfsFile"/> or <see cref="DfsDirectory"/> representing the file system entry.</returns>
-        public static DfsFileSystemEntry LoadFromFileSystemImage(BinaryReader reader, DfsDirectory parent, Action<long> notifyFileSizeCallback)
+        public static DfsFileSystemEntry LoadFromFileSystemImage(BinaryReader reader, DfsDirectory? parent, Action<long> notifyFileSizeCallback)
         {
             ArgumentNullException.ThrowIfNull(reader);
             var className = reader.ReadString();

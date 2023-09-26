@@ -27,7 +27,7 @@ namespace NameServerApplication
         /// <param name="blockSize">The size of the blocks of the file.</param>
         /// <param name="replicationFactor">The number of replicas to create of each block in the file.</param>
         /// <param name="recordOptions">The record options.</param>
-        public DfsFile(DfsDirectory parent, string name, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
+        public DfsFile(DfsDirectory? parent, string name, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
             : base(parent, name, dateCreated)
         {
             if (blockSize <= 0)
@@ -42,7 +42,7 @@ namespace NameServerApplication
             RecordOptions = recordOptions;
         }
 
-        internal DfsFile(DfsDirectory parent, string name, DateTime dateCreated)
+        internal DfsFile(DfsDirectory? parent, string name, DateTime dateCreated)
             : base(parent, name, dateCreated)
         {
             // This constructor is used by FileSystemEntry.LoadFromFileSystemImage, which will load the block size and replication factor from the image later.

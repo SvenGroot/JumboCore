@@ -34,7 +34,7 @@ namespace NameServerApplication
          */
         public const int FileSystemFormatVersion = 6;
 
-        public event EventHandler<FileDeletedEventArgs> FileDeleted;
+        public event EventHandler<FileDeletedEventArgs>? FileDeleted;
 
         private FileSystem(DfsConfiguration configuration, bool readExistingFileSystem, bool readOnly)
         {
@@ -155,7 +155,7 @@ namespace NameServerApplication
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
-        public JumboDirectory CreateDirectory(string path)
+        public JumboDirectory? CreateDirectory(string path)
         {
             return CreateDirectory(path, DateTime.UtcNow);
         }
@@ -177,7 +177,7 @@ namespace NameServerApplication
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
-        public JumboDirectory CreateDirectory(string path, DateTime dateCreated)
+        public JumboDirectory? CreateDirectory(string path, DateTime dateCreated)
         {
             _log.DebugFormat("CreateDirectory: path = \"{0}\"", path);
 
@@ -204,7 +204,7 @@ namespace NameServerApplication
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
-        public JumboDirectory GetDirectoryInfo(string path)
+        public JumboDirectory? GetDirectoryInfo(string path)
         {
             _log.DebugFormat("GetDirectory: path = \"{0}\"", path);
 
@@ -234,7 +234,8 @@ namespace NameServerApplication
         /// <exception cref="DirectoryNotFoundException"><paramref name="directory"/> does not exist.</exception>
         public BlockInfo CreateFile(string path, int blockSize, int replicationFactor, RecordStreamOptions recordOptions)
         {
-            return CreateFile(path, DateTime.UtcNow, blockSize, replicationFactor, recordOptions, true);
+            // Does not return null if appendBlock is true.
+            return CreateFile(path, DateTime.UtcNow, blockSize, replicationFactor, recordOptions, true)!;
         }
 
         /// <summary>
@@ -252,7 +253,7 @@ namespace NameServerApplication
         /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <see langword="null"/>, or <paramref name="name"/> is <see langword="null"/> or an empty string..</exception>
         /// <exception cref="ArgumentException"><paramref name="directory"/> is not an absolute path, contains an empty component, contains a file name, or <paramref name="name"/> refers to an existing file or directory.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="directory"/> does not exist.</exception>
-        public BlockInfo CreateFile(string path, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool appendBlock)
+        public BlockInfo? CreateFile(string path, DateTime dateCreated, int blockSize, int replicationFactor, RecordStreamOptions recordOptions, bool appendBlock)
         {
             ArgumentNullException.ThrowIfNull(path);
 
@@ -297,13 +298,13 @@ namespace NameServerApplication
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
-        public JumboFile GetFileInfo(string path)
+        public JumboFile? GetFileInfo(string path)
         {
             ArgumentNullException.ThrowIfNull(path);
 
             _log.DebugFormat("GetFileInfo: path = \"{0}\"", path);
 
-            JumboFile result = null;
+            JumboFile? result = null;
             lock (_root)
             {
                 var file = GetFileInfoInternal(path);
@@ -325,13 +326,13 @@ namespace NameServerApplication
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="path"/> is not an absolute path, contains an empty component, or contains a file name.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">One of the parent directories in the path specified in <paramref name="path"/> does not exist.</exception>
-        public JumboFileSystemEntry GetFileSystemEntryInfo(string path)
+        public JumboFileSystemEntry? GetFileSystemEntryInfo(string path)
         {
             ArgumentNullException.ThrowIfNull(path);
 
             _log.DebugFormat("GetFileSystemEntryInfo: path = \"{0}\"", path);
 
-            JumboFileSystemEntry result = null;
+            JumboFileSystemEntry? result = null;
             lock (_root)
             {
                 FindEntry(path, out var name, out var parent, out var entry);
@@ -439,7 +440,7 @@ namespace NameServerApplication
         {
             _log.DebugFormat("Delete: path = \"{0}\", recursive = {1}", path, recursive);
             DfsDirectory parent;
-            DfsFileSystemEntry entry;
+            DfsFileSystemEntry? entry;
             // The entire operation must be locked, otherwise it opens up the possibility of someone else deleting
             // the file.
             lock (_root)
@@ -622,13 +623,13 @@ namespace NameServerApplication
             file.PendingBlock = blockID;
         }
 
-        private DfsFile GetFileInfoInternal(string path)
+        private DfsFile? GetFileInfoInternal(string path)
         {
             FindFile(path, out var name, out var parent, out var result);
             return result;
         }
 
-        private void FindFile(string path, out string name, out DfsDirectory parent, out DfsFile file)
+        private void FindFile(string path, out string name, out DfsDirectory parent, out DfsFile? file)
         {
             FindEntry(path, out name, out parent, out var entry);
             file = entry as DfsFile;
@@ -637,21 +638,22 @@ namespace NameServerApplication
         /// <summary>
         /// Note: This function must be called with _root already locked.
         /// </summary>
-        private void FindEntry(string path, out string name, out DfsDirectory parent, out DfsFileSystemEntry file)
+        private void FindEntry(string path, out string name, out DfsDirectory parent, out DfsFileSystemEntry? file)
         {
 
             ExtractDirectoryAndFileName(path, out var directory, out name);
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("No file name specified.");
 
-            parent = GetDirectoryInternal(directory, false, DateTime.Now);
-            if (parent == null)
+            var localParent = GetDirectoryInternal(directory, false, DateTime.Now);
+            if (localParent == null)
                 throw new System.IO.DirectoryNotFoundException("The specified directory does not exist.");
 
+            parent = localParent;
             file = FindEntry(parent, name);
         }
 
-        private static DfsFileSystemEntry FindEntry(DfsDirectory parent, string name)
+        private static DfsFileSystemEntry? FindEntry(DfsDirectory parent, string name)
         {
             return (from child in parent.Children
                     where child.Name == name
@@ -669,7 +671,7 @@ namespace NameServerApplication
                 directory = "/";
         }
 
-        private DfsDirectory GetDirectoryInternal(string path, bool create, DateTime creationDate)
+        private DfsDirectory? GetDirectoryInternal(string path, bool create, DateTime creationDate)
         {
             ArgumentNullException.ThrowIfNull(path);
             if (!DfsPath.IsPathRooted(path))
@@ -756,7 +758,7 @@ namespace NameServerApplication
             }
         }
 
-        private void Move(DfsFileSystemEntry entry, DfsDirectory newParent, string newName)
+        private void Move(DfsFileSystemEntry entry, DfsDirectory newParent, string? newName)
         {
             var to = DfsPath.Combine(newParent.FullPath, newName ?? entry.Name);
             _log.InfoFormat("Moving file system entry \"{0}\" to \"{1}\".", entry.FullPath, to);
