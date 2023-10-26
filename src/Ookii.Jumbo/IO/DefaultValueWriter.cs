@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Ookii.Jumbo.IO
@@ -577,15 +578,12 @@ namespace Ookii.Jumbo.IO
             where T : Enum
             where TUnderlying : notnull
         {
-            private readonly IValueWriter<TUnderlying>  _underlyingWriter = ValueWriter<TUnderlying>.Writer!;
-
             public T Read(BinaryReader reader)
-                => (T)Enum.ToObject(typeof(T), _underlyingWriter.Read(reader));
+                => (T)Enum.ToObject(typeof(T), ValueWriter<TUnderlying>.ReadValue(reader));
 
             public void Write(T value, BinaryWriter writer)
-                => _underlyingWriter.Write((TUnderlying)Convert.ChangeType(value, typeof(TUnderlying)), writer);
+                => ValueWriter<TUnderlying>.WriteValue((TUnderlying)Convert.ChangeType(value, typeof(TUnderlying)), writer);
         }
-
 
         #endregion
 
