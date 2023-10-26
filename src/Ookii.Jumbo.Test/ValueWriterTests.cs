@@ -40,18 +40,41 @@ namespace Ookii.Jumbo.Test
             TestSerialization(DayOfWeek.Friday);
         }
 
-        private void TestSerialization<T>(T expected)
+        [Test]
+        public void TestByteArraySerialization()
         {
-            using (MemoryStream stream = new MemoryStream())
-            using (BinaryWriter writer = new BinaryWriter(stream))
-            using (BinaryReader reader = new BinaryReader(stream))
-            {
-                ValueWriter<T>.WriteValue(expected, writer);
-                writer.Flush();
-                stream.Position = 0;
-                T actual = ValueWriter<T>.ReadValue(reader);
-                Assert.AreEqual(expected, actual);
-            }
+            TestSerialization(new byte[] { 1, 2, 3, 4, 5 });
         }
+
+        [Test]
+        public void TestArraySerialization()
+        {
+            TestSerialization(new int[] { 1, 2, 3, 4, 5 });
+        }
+
+        private static void TestSerialization<T>(T expected)
+        {
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+            using var reader = new BinaryReader(stream);
+            ValueWriter<T>.WriteValue(expected, writer);
+            writer.Flush();
+            stream.Position = 0;
+            T actual = ValueWriter<T>.ReadValue(reader);
+            Assert.AreEqual(expected, actual);
+        }
+
+        private static void TestSerialization<T>(T[] expected)
+        {
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+            using var reader = new BinaryReader(stream);
+            ValueWriter<T[]>.WriteValue(expected, writer);
+            writer.Flush();
+            stream.Position = 0;
+            T[] actual = ValueWriter<T[]>.ReadValue(reader);
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
     }
 }

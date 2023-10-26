@@ -585,6 +585,46 @@ namespace Ookii.Jumbo.IO
                 => ValueWriter<TUnderlying>.WriteValue((TUnderlying)Convert.ChangeType(value, typeof(TUnderlying)), writer);
         }
 
+        private class ByteArrayWriter : IValueWriter<byte[]>
+        {
+            public byte[] Read(BinaryReader reader)
+            {
+                var length = reader.Read7BitEncodedInt();
+                return reader.ReadBytes(length);
+            }
+
+            public void Write(byte[] value, BinaryWriter writer)
+            {
+                writer.Write7BitEncodedInt(value.Length);
+                writer.Write(value);
+            }
+        }
+
+        private class ArrayWriter<T> : IValueWriter<T[]>
+            where T : notnull
+        {
+            public T[] Read(BinaryReader reader)
+            {
+                var length = reader.Read7BitEncodedInt();
+                var result = new T[length];
+                for (int i = 0; i < length; i++)
+                {
+                    result[i] = ValueWriter<T>.ReadValue(reader);
+                }
+
+                return result;
+            }
+
+            public void Write(T[] value, BinaryWriter writer)
+            {
+                writer.Write7BitEncodedInt(value.Length);
+                foreach (var item in value)
+                {
+                    ValueWriter<T>.WriteValue(item, writer);
+                }
+            }
+        }
+
         #endregion
 
         public static object GetWriter(Type type)
@@ -617,8 +657,12 @@ namespace Ookii.Jumbo.IO
                 return new DateTimeWriter();
             else if (type == typeof(Boolean))
                 return new BooleanWriter();
+            else if (type == typeof(byte[]))
+                return new ByteArrayWriter();
             else if (type.IsEnum)
                 return Activator.CreateInstance(typeof(EnumWriter<,>).MakeGenericType(type, type.GetEnumUnderlyingType()))!;
+            else if (type.IsArray)
+                return Activator.CreateInstance(typeof(ArrayWriter<>).MakeGenericType(type.GetElementType()!))!;
             else if (type.IsGenericType)
             {
                 var definition = type.GetGenericTypeDefinition();
