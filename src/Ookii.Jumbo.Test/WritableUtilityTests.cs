@@ -1,4 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
+#nullable enable
+
 using System;
 using System.IO;
 using NUnit.Framework;
@@ -9,63 +11,9 @@ namespace Ookii.Jumbo.Test
     [TestFixture]
     public class WritableUtilityTests
     {
-        [ValueWriter(typeof(TestStructWriter))]
-        struct TestStruct
-        {
-            public int Value1 { get; set; }
-            public int Value2 { get; set; }
-        }
-
-        class TestStructWriter : IValueWriter<TestStruct>
-        {
-
-            public void Write(TestStruct value, BinaryWriter writer)
-            {
-                writer.Write(value.Value1);
-                writer.Write(value.Value2);
-            }
-
-            public TestStruct Read(BinaryReader reader)
-            {
-                int value1 = reader.ReadInt32();
-                int value2 = reader.ReadInt32();
-                return new TestStruct() { Value1 = value1, Value2 = value2 };
-            }
-        }
-
-        class TestClass
-        {
-            public TestClass()
-            {
-            }
-
-            public TestClass(int n)
-            {
-                IntProperty = n;
-            }
-
-            [WritableNotNull]
-            public string StringProperty { get; set; }
-            public string AnotherStringProperty { get; set; }
-            public int IntProperty { get; private set; }
-            public bool BooleanProperty { get; set; }
-            public Utf8String WritableProperty { get; set; }
-            public Utf8String AnotherWritableProperty { get; set; }
-            public DateTime DateProperty { get; set; }
-            public byte[] ByteArrayProperty { get; set; }
-            public int[] IntArrayProperty { get; set; }
-            [WritableIgnore]
-            public int Ignored { get; set; }
-            public TestStruct ValueWriterProperty { get; set; }
-            public DayOfWeek EnumProperty { get; set; }
-        }
-
         [Test]
         public void TestSerialization()
         {
-            Action<TestClass, BinaryWriter> writeMethod = WritableUtility.CreateSerializer<TestClass>();
-            Action<TestClass, BinaryReader> readMethod = WritableUtility.CreateDeserializer<TestClass>();
-
             TestClass expected = new TestClass(42)
             {
                 StringProperty = "Hello",
@@ -81,22 +29,21 @@ namespace Ookii.Jumbo.Test
                 EnumProperty = DayOfWeek.Friday
             };
             byte[] data;
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                using (var writer = new BinaryWriter(stream))
                 {
-                    writeMethod(expected, writer);
+                    expected.Write(writer);
                 }
+
                 data = stream.ToArray();
             }
 
-            TestClass actual = new TestClass();
-            using (MemoryStream stream = new MemoryStream(data))
+            var actual = WritableUtility.GetUninitializedWritable<TestClass>();
+            using (var stream = new MemoryStream(data))
+            using (var reader = new BinaryReader(stream))
             {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    readMethod(actual, reader);
-                }
+                actual.Read(reader);
             }
 
             Assert.AreEqual(expected.StringProperty, actual.StringProperty);
@@ -129,6 +76,58 @@ namespace Ookii.Jumbo.Test
                     writeMethod(expected, writer);
                 }
             });
+        }
+    }
+
+    [GeneratedWritable]
+    partial class TestClass
+    {
+        public TestClass()
+        {
+        }
+
+        public TestClass(int n)
+        {
+            IntProperty = n;
+        }
+
+        [WritableNotNull]
+        public string StringProperty { get; set; } = default!;
+        public string? AnotherStringProperty { get; set; }
+        public int IntProperty { get; private set; }
+        public bool BooleanProperty { get; set; }
+        public Utf8String? WritableProperty { get; set; }
+        public Utf8String? AnotherWritableProperty { get; set; }
+        public DateTime DateProperty { get; set; }
+        public byte[]? ByteArrayProperty { get; set; }
+        public int[]? IntArrayProperty { get; set; }
+        [WritableIgnore]
+        public int Ignored { get; set; }
+        public TestStruct ValueWriterProperty { get; set; }
+        public DayOfWeek EnumProperty { get; set; }
+    }
+
+    [ValueWriter(typeof(TestStructWriter))]
+    struct TestStruct
+    {
+        public int Value1 { get; set; }
+        public int Value2 { get; set; }
+    }
+
+    class TestStructWriter : IValueWriter<TestStruct>
+    {
+
+        public void Write(TestStruct value, BinaryWriter writer)
+        {
+            writer.Write(value.Value1);
+            writer.Write(value.Value2);
+        }
+
+        public TestStruct Read(BinaryReader reader)
+        {
+            int value1 = reader.ReadInt32();
+            int value2 = reader.ReadInt32();
+            return new TestStruct() { Value1 = value1, Value2 = value2 };
         }
     }
 }

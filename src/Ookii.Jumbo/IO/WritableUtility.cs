@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 
 namespace Ookii.Jumbo.IO
 {
@@ -14,6 +15,20 @@ namespace Ookii.Jumbo.IO
     public static class WritableUtility
     {
         private static readonly Dictionary<Type, MethodInfo> _readMethods = CreateBinaryReaderMethodTable();
+
+        /// <summary>
+        /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to create.</typeparam>
+        /// <returns>An uninitialized instance of <typeparamref name="T"/>.</returns>
+        /// <remarks>
+        /// <para>
+        ///   The constructor of <typeparamref name="T"/> will not have been invoked.
+        /// </para>
+        /// </remarks>
+        public static T GetUninitializedWritable<T>()
+            where T : class, IWritable
+            => (T)FormatterServices.GetUninitializedObject(typeof(T));
 
         /// <summary>
         /// Uses reflection to creates a function that serializes an object to a <see cref="BinaryWriter"/>; this function

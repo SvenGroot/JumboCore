@@ -36,6 +36,29 @@ namespace Ookii.Jumbo.IO
 
             return DefaultValueWriter.GetWriter(type);
         }
+
+        /// <summary>
+        /// Writes the specified value using its <see cref="IWritable"/> implementation or its
+        /// <see cref="IValueWriter{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the object whose <see cref="IWritable"/> or <see cref="IValueWriter{T}"/>
+        /// implementation to use.
+        /// </typeparam>
+        /// <param name="value">The value to write.</param>
+        /// <param name="writer">The writer to write the value to.</param>
+        /// <remarks>
+        /// <para>
+        ///   If the type of <paramref name="value"/> implements <see cref="IWritable"/>, it is used
+        ///   to write the value. If it does not, the <see cref="IValueWriter{T}"/> is used to write
+        ///   the value.
+        /// </para>
+        /// </remarks>
+        public static void WriteValue<T>(T value, BinaryWriter writer)
+            where T : notnull
+        {
+            ValueWriter<T>.WriteValue(value, writer);
+        }
     }
 
     /// <summary>

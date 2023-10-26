@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.Jumbo.Jet.Samples", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JetWeb", "JetWeb\JetWeb.csproj", "{C2C9DB18-822E-45E0-AA5E-7A6480C5D257}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.Jumbo.Generator", "Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj", "{271A3F82-A250-4DDA-BD97-EFD156290640}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{C2C9DB18-822E-45E0-AA5E-7A6480C5D257}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2C9DB18-822E-45E0-AA5E-7A6480C5D257}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2C9DB18-822E-45E0-AA5E-7A6480C5D257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{271A3F82-A250-4DDA-BD97-EFD156290640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{271A3F82-A250-4DDA-BD97-EFD156290640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{271A3F82-A250-4DDA-BD97-EFD156290640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{271A3F82-A250-4DDA-BD97-EFD156290640}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +143,7 @@ Global
 		{D32E899B-10D9-483D-8AAE-AAEFCF798FE4} = {A8DAB872-405D-407D-A3EC-975ABFB5E6FE}
 		{0756D7BE-E857-4593-9A52-48F3421EBF2A} = {A8DAB872-405D-407D-A3EC-975ABFB5E6FE}
 		{C2C9DB18-822E-45E0-AA5E-7A6480C5D257} = {A8DAB872-405D-407D-A3EC-975ABFB5E6FE}
+		{271A3F82-A250-4DDA-BD97-EFD156290640} = {F72DA760-1B5A-4ABD-83B4-EAFCA3349042}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {546C671A-4D18-41E1-A7FD-4C453CFB5711}

@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
     <ProjectReference Include="..\TaskHost\TaskHost.csproj" />
     <ProjectReference Include="..\TaskServer\TaskServer.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
