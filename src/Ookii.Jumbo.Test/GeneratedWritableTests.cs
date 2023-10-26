@@ -9,7 +9,7 @@ using Ookii.Jumbo.IO;
 namespace Ookii.Jumbo.Test
 {
     [TestFixture]
-    public class WritableUtilityTests
+    public class GeneratedWritableTests
     {
         [Test]
         public void TestSerialization()
@@ -19,6 +19,7 @@ namespace Ookii.Jumbo.Test
                 StringProperty = "Hello",
                 AnotherStringProperty = null,
                 BooleanProperty = true,
+                NullableProperty = 42,
                 WritableProperty = new Utf8String("47"),
                 AnotherWritableProperty = null,
                 DateProperty = DateTime.UtcNow,
@@ -49,6 +50,7 @@ namespace Ookii.Jumbo.Test
             Assert.AreEqual(expected.StringProperty, actual.StringProperty);
             Assert.AreEqual(expected.AnotherStringProperty, actual.AnotherStringProperty);
             Assert.AreEqual(expected.IntProperty, actual.IntProperty);
+            Assert.AreEqual(expected.NullableProperty, actual.NullableProperty);
             Assert.AreEqual(expected.BooleanProperty, actual.BooleanProperty);
             Assert.AreEqual(expected.WritableProperty, actual.WritableProperty);
             Assert.AreEqual(expected.AnotherWritableProperty, actual.AnotherWritableProperty);
@@ -93,6 +95,7 @@ namespace Ookii.Jumbo.Test
         public string StringProperty { get; set; } = default!;
         public string? AnotherStringProperty { get; set; }
         public int IntProperty { get; private set; }
+        public int? NullableProperty { get; set; }
         public bool BooleanProperty { get; set; }
         public Utf8String? WritableProperty { get; set; }
         public Utf8String? AnotherWritableProperty { get; set; }
