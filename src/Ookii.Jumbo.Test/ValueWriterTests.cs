@@ -34,6 +34,12 @@ namespace Ookii.Jumbo.Test
             TestSerialization(("test", 1, 2, 3, 4L, true, DateTime.UtcNow, 5.0f));
         }
 
+        [Test]
+        public void TestEnumSerialization()
+        {
+            TestSerialization(DayOfWeek.Friday);
+        }
+
         private void TestSerialization<T>(T expected)
         {
             using (MemoryStream stream = new MemoryStream())

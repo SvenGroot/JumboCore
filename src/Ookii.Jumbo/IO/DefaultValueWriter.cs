@@ -573,6 +573,19 @@ namespace Ookii.Jumbo.IO
             }
         }
 
+        private class EnumWriter<T, TUnderlying> : IValueWriter<T>
+            where T : Enum
+            where TUnderlying : notnull
+        {
+            private readonly IValueWriter<TUnderlying>  _underlyingWriter = ValueWriter<TUnderlying>.Writer!;
+
+            public T Read(BinaryReader reader)
+                => (T)Enum.ToObject(typeof(T), _underlyingWriter.Read(reader));
+
+            public void Write(T value, BinaryWriter writer)
+                => _underlyingWriter.Write((TUnderlying)Convert.ChangeType(value, typeof(TUnderlying)), writer);
+        }
+
 
         #endregion
 
@@ -606,6 +619,8 @@ namespace Ookii.Jumbo.IO
                 return new DateTimeWriter();
             else if (type == typeof(Boolean))
                 return new BooleanWriter();
+            else if (type.IsEnum)
+                return Activator.CreateInstance(typeof(EnumWriter<,>).MakeGenericType(type, type.GetEnumUnderlyingType()))!;
             else if (type.IsGenericType)
             {
                 var definition = type.GetGenericTypeDefinition();
