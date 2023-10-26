@@ -104,6 +104,7 @@ internal class WritableGenerator
         if (closeIf)
         {
             _builder.CloseBlock();
+            _builder.AppendLine();
         }
     }
 
@@ -151,6 +152,7 @@ internal class WritableGenerator
         if (closeIf)
         {
             _builder.CloseBlock();
+            _builder.AppendLine();
         }
     }
 

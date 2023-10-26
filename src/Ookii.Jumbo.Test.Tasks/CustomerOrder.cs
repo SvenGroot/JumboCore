@@ -4,7 +4,8 @@ using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
-    public class CustomerOrder : Writable<CustomerOrder>, IComparable<CustomerOrder>
+    [GeneratedWritable]
+    public partial class CustomerOrder : IComparable<CustomerOrder>
     {
         public int CustomerId { get; set; }
         public int OrderId { get; set; }

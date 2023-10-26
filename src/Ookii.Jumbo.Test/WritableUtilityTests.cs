@@ -64,16 +64,14 @@ namespace Ookii.Jumbo.Test
         [Test]
         public void TestNotNullException()
         {
-            Assert.Throws(typeof(InvalidOperationException), () =>
+            Assert.Throws(typeof(ArgumentNullException), () =>
             {
-                Action<TestClass, BinaryWriter> writeMethod = WritableUtility.CreateSerializer<TestClass>();
-
                 TestClass expected = new TestClass();
                 using (MemoryStream stream = new MemoryStream())
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     // Fails because StringProperty is null.
-                    writeMethod(expected, writer);
+                    expected.Write(writer);
                 }
             });
         }

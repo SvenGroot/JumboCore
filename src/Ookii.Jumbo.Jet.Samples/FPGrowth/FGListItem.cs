@@ -8,7 +8,8 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
     /// <summary>
     /// Item in the feature and group list.
     /// </summary>
-    public class FGListItem : Writable<FGListItem>, IComparable<FGListItem>
+    [GeneratedWritable]
+    public partial class FGListItem : IComparable<FGListItem>
     {
         /// <summary>
         /// Gets or sets the feature.

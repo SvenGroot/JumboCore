@@ -4,7 +4,8 @@ using System;
 namespace Ookii.Jumbo.IO
 {
     /// <summary>
-    /// Indicates a property on a class that inherits from <see cref="Writable{T}"/> will not be <see langword="null"/>.
+    /// Indicates a property on a class using the <see cref="GeneratedWritableAttribute"/> attribute
+    /// will not be <see langword="null"/>.
     /// </summary>
     /// <remarks>
     /// If this is set, the <see cref="IWritable.Write"/> method will throw an exception if the

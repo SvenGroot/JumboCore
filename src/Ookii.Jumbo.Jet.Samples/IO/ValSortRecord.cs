@@ -7,8 +7,9 @@ namespace Ookii.Jumbo.Jet.Samples.IO
     /// <summary>
     /// Represents an intermediate record used by the ValSort job.
     /// </summary>
+    [GeneratedWritable]
     [RawComparer(typeof(ValSortRecordRawComparer))]
-    public sealed class ValSortRecord : Writable<ValSortRecord>, IComparable<ValSortRecord>
+    public sealed partial class ValSortRecord : IComparable<ValSortRecord>
     {
         /// <summary>
         /// Gets or sets a string that identifies the fragments of the input 

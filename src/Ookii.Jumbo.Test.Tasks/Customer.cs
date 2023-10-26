@@ -4,8 +4,9 @@ using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Test.Tasks
 {
+    [GeneratedWritable]
     [RawComparer(typeof(CustomerComparer))]
-    public class Customer : Writable<Customer>, IComparable<Customer>, ICloneable
+    public partial class Customer : IComparable<Customer>, ICloneable
     {
         public int Id { get; set; }
         public string Name { get; set; }
