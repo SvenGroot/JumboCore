@@ -21,6 +21,19 @@ namespace Ookii.Jumbo.Test
             TestSerialization(Tuple.Create("test", 1, 2, 3, 4L, true, DateTime.UtcNow, 5.0f));
         }
 
+        [Test]
+        public void TestValueTupleSerialization()
+        {
+            TestSerialization(("test"));
+            TestSerialization(("test", 1));
+            TestSerialization(("test", 1, 2));
+            TestSerialization(("test", 1, 2, 3));
+            TestSerialization(("test", 1, 2, 3, 4L));
+            TestSerialization(("test", 1, 2, 3, 4L, true));
+            TestSerialization(("test", 1, 2, 3, 4L, true, DateTime.UtcNow));
+            TestSerialization(("test", 1, 2, 3, 4L, true, DateTime.UtcNow, 5.0f));
+        }
+
         private void TestSerialization<T>(T expected)
         {
             using (MemoryStream stream = new MemoryStream())

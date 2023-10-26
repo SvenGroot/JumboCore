@@ -397,6 +397,183 @@ namespace Ookii.Jumbo.IO
             }
         }
 
+        private class ValueTupleWriter<T1> : IValueWriter<ValueTuple<T1>>
+            where T1 : notnull
+        {
+            public void Write(ValueTuple<T1> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+            }
+
+            public ValueTuple<T1> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2> : IValueWriter<ValueTuple<T1, T2>>
+            where T1 : notnull
+            where T2 : notnull
+        {
+            public void Write(ValueTuple<T1, T2> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+            }
+
+            public ValueTuple<T1, T2> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3> : IValueWriter<ValueTuple<T1, T2, T3>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+        {
+            public void Write(ValueTuple<T1, T2, T3> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+            }
+
+            public ValueTuple<T1, T2, T3> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3, T4> : IValueWriter<ValueTuple<T1, T2, T3, T4>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+        {
+            public void Write(ValueTuple<T1, T2, T3, T4> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+                ValueWriter<T4>.WriteValue(value.Item4, writer);
+            }
+
+            public ValueTuple<T1, T2, T3, T4> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader), ValueWriter<T4>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3, T4, T5> : IValueWriter<ValueTuple<T1, T2, T3, T4, T5>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+        {
+            public void Write(ValueTuple<T1, T2, T3, T4, T5> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+                ValueWriter<T4>.WriteValue(value.Item4, writer);
+                ValueWriter<T5>.WriteValue(value.Item5, writer);
+            }
+
+            public ValueTuple<T1, T2, T3, T4, T5> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader), ValueWriter<T4>.ReadValue(reader), ValueWriter<T5>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3, T4, T5, T6> : IValueWriter<ValueTuple<T1, T2, T3, T4, T5, T6>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
+        {
+            public void Write(ValueTuple<T1, T2, T3, T4, T5, T6> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+                ValueWriter<T4>.WriteValue(value.Item4, writer);
+                ValueWriter<T5>.WriteValue(value.Item5, writer);
+                ValueWriter<T6>.WriteValue(value.Item6, writer);
+            }
+
+            public ValueTuple<T1, T2, T3, T4, T5, T6> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader), ValueWriter<T4>.ReadValue(reader), ValueWriter<T5>.ReadValue(reader), ValueWriter<T6>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3, T4, T5, T6, T7> : IValueWriter<ValueTuple<T1, T2, T3, T4, T5, T6, T7>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
+            where T7 : notnull
+        {
+            public void Write(ValueTuple<T1, T2, T3, T4, T5, T6, T7> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+                ValueWriter<T4>.WriteValue(value.Item4, writer);
+                ValueWriter<T5>.WriteValue(value.Item5, writer);
+                ValueWriter<T6>.WriteValue(value.Item6, writer);
+                ValueWriter<T7>.WriteValue(value.Item7, writer);
+            }
+
+            public ValueTuple<T1, T2, T3, T4, T5, T6, T7> Read(BinaryReader reader)
+            {
+                return ValueTuple.Create(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader), ValueWriter<T4>.ReadValue(reader), ValueWriter<T5>.ReadValue(reader), ValueWriter<T6>.ReadValue(reader), ValueWriter<T7>.ReadValue(reader));
+            }
+        }
+
+        private class ValueTupleWriter<T1, T2, T3, T4, T5, T6, T7, TRest> : IValueWriter<ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>>
+            where T1 : notnull
+            where T2 : notnull
+            where T3 : notnull
+            where T4 : notnull
+            where T5 : notnull
+            where T6 : notnull
+            where T7 : notnull
+            where TRest : struct
+        {
+            public void Write(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ValueWriter<T1>.WriteValue(value.Item1, writer);
+                ValueWriter<T2>.WriteValue(value.Item2, writer);
+                ValueWriter<T3>.WriteValue(value.Item3, writer);
+                ValueWriter<T4>.WriteValue(value.Item4, writer);
+                ValueWriter<T5>.WriteValue(value.Item5, writer);
+                ValueWriter<T6>.WriteValue(value.Item6, writer);
+                ValueWriter<T7>.WriteValue(value.Item7, writer);
+                ValueWriter<TRest>.WriteValue(value.Rest, writer);
+            }
+
+            public ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> Read(BinaryReader reader)
+            {
+                return new ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>(ValueWriter<T1>.ReadValue(reader), ValueWriter<T2>.ReadValue(reader), ValueWriter<T3>.ReadValue(reader), ValueWriter<T4>.ReadValue(reader), ValueWriter<T5>.ReadValue(reader), ValueWriter<T6>.ReadValue(reader), ValueWriter<T7>.ReadValue(reader), ValueWriter<TRest>.ReadValue(reader));
+            }
+        }
+
+
         #endregion
 
         public static object GetWriter(Type type)
@@ -432,6 +609,22 @@ namespace Ookii.Jumbo.IO
             else if (type.IsGenericType)
             {
                 var definition = type.GetGenericTypeDefinition();
+                if (definition == typeof(ValueTuple<>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,,,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,,,,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+                if (definition == typeof(ValueTuple<,,,,,,,>))
+                    return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<>))
                     return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,>))
@@ -448,12 +641,9 @@ namespace Ookii.Jumbo.IO
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
                 if (definition == typeof(Tuple<,,,,,,,>))
                     return Activator.CreateInstance(typeof(TupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
-                else
-                    throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));
             }
-            else
-                throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));
 
+            throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));
         }
     }
 }

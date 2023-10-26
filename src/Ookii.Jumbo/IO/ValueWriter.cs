@@ -48,18 +48,24 @@ namespace Ookii.Jumbo.IO
     ///   an <see cref="NotSupportedException"/> is thrown by the static type initializer of the <see cref="ValueWriter{T}"/> class.
     /// </para>
     /// <para>
-    ///   Built-in value writers are provided for the following types: <see cref="SByte"/>, <see cref="Int16"/>, <see cref="Int32"/>, <see cref="Int64"/>, <see cref="Byte"/>, <see cref="UInt16"/>,
-    ///   <see cref="UInt32"/>, <see cref="UInt64"/>, <see cref="Decimal"/>, <see cref="Single"/>, <see cref="Double"/>, <see cref="String"/>, <see cref="DateTime"/>, <see cref="Boolean"/>,
-    ///   <see cref="Tuple{T1}"/>, <see cref="Tuple{T1, T2}"/>, <see cref="Tuple{T1, T2, T3}"/>, <see cref="Tuple{T1, T2, T3, T4}"/>, <see cref="Tuple{T1, T2, T3, T4, T5}"/>, <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>,
-    ///   <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/> and <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>.
+    ///   Built-in value writers are provided for the following types: <see cref="SByte"/>,
+    ///   <see cref="Int16"/>, <see cref="Int32"/>, <see cref="Int64"/>, <see cref="Byte"/>,
+    ///   <see cref="UInt16"/>, <see cref="UInt32"/>, <see cref="UInt64"/>, <see cref="Decimal"/>,
+    ///   <see cref="Single"/>, <see cref="Double"/>, <see cref="String"/>, <see cref="DateTime"/>,
+    ///   <see cref="Boolean"/>, <see cref="ValueTuple{T1}"/>, <see cref="ValueTuple{T1, T2}"/>,
+    ///   <see cref="ValueTuple{T1, T2, T3}"/>, <see cref="ValueTuple{T1, T2, T3, T4}"/>,
+    ///   <see cref="ValueTuple{T1, T2, T3, T4, T5}"/>, <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/>,
+    ///   <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/>
+    ///   <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>, <see cref="Tuple{T1}"/>,
+    ///   <see cref="Tuple{T1, T2}"/>, <see cref="Tuple{T1, T2, T3}"/>,
+    ///   <see cref="Tuple{T1, T2, T3, T4}"/>, <see cref="Tuple{T1, T2, T3, T4, T5}"/>,
+    ///   <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>, <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>
+    ///   and <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>.
     /// </para>
     /// <para>
-    ///   Although value writers support tuples, there may be negative performance implications from using them. All the .Net Framework tuple types are reference types, but they are
-    ///   read-only and therefore do not support record reuse. This means that for every record, a new tuple object must be created, as well as new instances of any of the
-    ///   tuple's items that are reference types, even in situations where record reuse is allowed.
-    /// </para>
-    /// <para>
-    ///   Instead of using tuples, it is recommended to create a custom class that implements <see cref="IWritable"/> for your records.
+    ///   Although value writers support tuples, there may be negative performance implications from
+    ///   using the reference type tuples, as they are read-only and do not support record reuse.
+    ///   Using value tuples is recommended.
     /// </para>
     /// <para>
     ///   The <see cref="KeyValuePair{TKey, TValue}"/> structure is not supported by the value writer. Please use the <see cref="Pair{TKey, TValue}"/> class instead, which provides
