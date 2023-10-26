@@ -53,10 +53,10 @@ namespace Ookii.Jumbo.Dfs
 
             _nameServer = nameServer;
             _log.DebugFormat("Opening file {0} from the DFS.", path);
-            _file = nameServer.GetFileInfo(path);
             // GetFileInfo doesn't throw if the file doesn't exist; we do.
-            if (_file == null)
+            _file = nameServer.GetFileInfo(path) ??
                 throw new FileNotFoundException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "The file '{0}' does not exist on the distributed file system.", path));
+
             BlockSize = (int)_file.BlockSize;
             _endOffset = _file.Size;
         }

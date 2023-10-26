@@ -171,7 +171,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboDirectory"/> object representing the directory, or <see langword="null"/> if the directory doesn't exist.
         /// </returns>
-        public override JumboDirectory GetDirectoryInfo(string path)
+        public override JumboDirectory? GetDirectoryInfo(string path)
         {
             return _nameServer.GetDirectoryInfo(path);
         }
@@ -183,7 +183,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFile"/> object referring to the file, or <see langword="null"/> if the file doesn't exist.
         /// </returns>
-        public override JumboFile GetFileInfo(string path)
+        public override JumboFile? GetFileInfo(string path)
         {
             return _nameServer.GetFileInfo(path);
         }
@@ -195,7 +195,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <returns>
         /// A <see cref="JumboFileSystemEntry"/> object referring to the file or directory, or <see langword="null"/> if the entry doesn't exist.
         /// </returns>
-        public override JumboFileSystemEntry GetFileSystemEntryInfo(string path)
+        public override JumboFileSystemEntry? GetFileSystemEntryInfo(string path)
         {
             return _nameServer.GetFileSystemEntryInfo(path);
         }
