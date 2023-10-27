@@ -1,82 +1,91 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Reflection;
 
-namespace Ookii.Jumbo.Rpc
+namespace Ookii.Jumbo.Rpc;
+
+static class RpcRequestHandler
 {
-    static class RpcRequestHandler
+    private record class ServerObject(object Server, Dictionary<string, IRpcDispatcher> Dispatchers);
+
+    private static Dictionary<string, ServerObject>? _pendingRegisteredObjects = new();
+    private static ImmutableDictionary<string, ServerObject>? _registeredObjects;
+
+    public static void HandleRequest(ServerContext context, string objectName, string interfaceName, string operationName, BinaryReader reader, BinaryWriter writer)
     {
-        private record class ServerObject(object Server, Type[] Interfaces);
-
-        private static readonly Dictionary<string, ServerObject> _registeredObjects = new Dictionary<string, ServerObject>();
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public static void HandleRequest(ServerContext context, string objectName, string interfaceName, string operationName, RpcServerConnectionHandler handler)
+        try
         {
-            var server = GetRegisteredObject(objectName);
-            if (server == null)
+            var server = GetRegisteredObject(objectName) ?? throw new RpcException("Unknown server object.");
+            if (!server.Dispatchers.TryGetValue(interfaceName, out var dispatcher))
             {
-                handler.SendError(new RpcException("Unknown server object."));
-                return;
+                throw new RpcException("Unknown interface.");
             }
 
-            try
-            {
-                var serverType = FindInterface(server, interfaceName);
-                var method = serverType.GetMethod(operationName, BindingFlags.Public | BindingFlags.Instance);
-                if (method == null)
-                {
-                    handler.SendError(new RpcException("Unknown operation."));
-                    return;
-                }
+            ServerContext.Current = context; // Set the server context for the current thread.
+            log4net.ThreadContext.Properties["ClientHostName"] = context.ClientHostName;
+            dispatcher.Dispatch(operationName, server.Server, reader, writer);
+            ServerContext.Current = null;
+        }
+        catch (Exception ex)
+        {
+            SendError(ex, writer);
+        }
+    }
 
-                object[]? parameters = null;
-                if (method.GetParameters().Length > 0)
-                    parameters = handler.ReadParameters();
-                ServerContext.Current = context; // Set the server context for the current thread.
-                log4net.ThreadContext.Properties["ClientHostName"] = context.ClientHostName;
-                var result = method.Invoke(server.Server, parameters);
-                ServerContext.Current = null;
-                handler.SendResult(result);
-            }
-            catch (TargetInvocationException ex)
+    public static void RegisterObject(string objectName, object server)
+    {
+        if (_pendingRegisteredObjects == null)
+        {
+            throw new InvalidOperationException("Object registration has finished.");
+        }
+
+        _pendingRegisteredObjects[objectName] = new ServerObject(server, GetDispatchers(server.GetType()));
+    }
+
+    public static void FinishRegistration()
+    {
+        if (_pendingRegisteredObjects != null) 
+        {
+            _registeredObjects = _pendingRegisteredObjects.ToImmutableDictionary();
+            _pendingRegisteredObjects = null;
+        }
+    }
+
+    public static void SendError(Exception exception, BinaryWriter writer)
+    {
+        writer.Write((int)RpcResponseStatus.Error);
+        writer.Write(exception.GetType().AssemblyQualifiedName ?? exception.GetType().Name);
+        writer.Write(exception.Message);
+        writer.Write(exception.StackTrace ?? "");
+    }
+
+    private static ServerObject? GetRegisteredObject(string objectName)
+    {
+        if (_registeredObjects == null)
+        {
+            throw new InvalidOperationException("RPC server registration has not yet finished.");
+        }
+
+        _registeredObjects.TryGetValue(objectName, out var result);
+        return result;
+    }
+
+    private static Dictionary<string, IRpcDispatcher> GetDispatchers(Type type)
+    {
+        var result = new Dictionary<string, IRpcDispatcher>();
+        foreach (var iface in type.GetInterfaces()) 
+        {
+            if (Attribute.IsDefined(type, typeof(RpcInterfaceAttribute)))
             {
-                handler.SendError(ex.InnerException!);
-            }
-            catch (Exception ex)
-            {
-                handler.SendError(ex);
+                var dispatcherTypeName = iface.Namespace! + ".Rpc." + iface.Name + "Dispatcher";
+                var dispatcherType = Type.GetType(dispatcherTypeName, true)!;
+                result.Add(iface.AssemblyQualifiedName!, (IRpcDispatcher)Activator.CreateInstance(dispatcherType)!);
             }
         }
 
-        public static void RegisterObject(string objectName, object server)
-        {
-            lock (_registeredObjects)
-            {
-                _registeredObjects[objectName] = new ServerObject(server, server.GetType().GetInterfaces());
-            }
-        }
-
-        private static ServerObject? GetRegisteredObject(string objectName)
-        {
-            ServerObject? result;
-            lock (_registeredObjects)
-            {
-                _registeredObjects.TryGetValue(objectName, out result);
-            }
-            return result;
-        }
-
-        private static Type FindInterface(ServerObject server, string assemblyQualifiedName)
-        {
-            var interfaces = server.Interfaces;
-            foreach (var interfaceType in interfaces)
-            {
-                if (interfaceType.AssemblyQualifiedName == assemblyQualifiedName)
-                    return interfaceType;
-            }
-            throw new RpcException("Unknown interface.");
-        }
+        return result;
     }
 }

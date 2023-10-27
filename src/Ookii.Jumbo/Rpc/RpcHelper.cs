@@ -62,9 +62,15 @@ namespace Ookii.Jumbo.Rpc
         /// <param name="server">The object implementing the service.</param>
         public static void RegisterService(string objectName, object server)
         {
+            ArgumentNullException.ThrowIfNull(objectName);
             ArgumentNullException.ThrowIfNull(server);
 
             RpcRequestHandler.RegisterObject(objectName, server);
+        }
+
+        public static void FinishRegistration()
+        {
+            RpcRequestHandler.FinishRegistration();
         }
 
         /// <summary>

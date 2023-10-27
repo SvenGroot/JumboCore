@@ -5,10 +5,12 @@
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

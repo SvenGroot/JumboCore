@@ -8,7 +8,8 @@ namespace Ookii.Jumbo.Generator;
 internal class TypeHelper
 {
     private readonly Compilation _compilation;
-    private const string NamespacePrefix = "Ookii.Jumbo.IO.";
+    private const string IoNamespacePrefix = "Ookii.Jumbo.IO.";
+    private const string RpcNamespacePrefix = "Ookii.Jumbo.Rpc.";
 
     public TypeHelper(Compilation compilation)
     {
@@ -33,11 +34,13 @@ internal class TypeHelper
 
     public INamedTypeSymbol? TypeConverterAttribute => _compilation.GetTypeByMetadataName(typeof(TypeConverterAttribute).FullName);
 
-    public INamedTypeSymbol? IWritable => _compilation.GetTypeByMetadataName(NamespacePrefix + "IWritable");
+    public INamedTypeSymbol? IWritable => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "IWritable");
 
-    public INamedTypeSymbol? GeneratedWritableAttribute => _compilation.GetTypeByMetadataName(NamespacePrefix + "GeneratedWritableAttribute");
+    public INamedTypeSymbol? GeneratedWritableAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "GeneratedWritableAttribute");
 
-    public INamedTypeSymbol? WritableNotNullAttribute => _compilation.GetTypeByMetadataName(NamespacePrefix + "WritableNotNullAttribute");
+    public INamedTypeSymbol? WritableNotNullAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "WritableNotNullAttribute");
 
-    public INamedTypeSymbol? WritableIgnoreAttribute => _compilation.GetTypeByMetadataName(NamespacePrefix + "WritableIgnoreAttribute");
+    public INamedTypeSymbol? WritableIgnoreAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "WritableIgnoreAttribute");
+
+    public INamedTypeSymbol? RpcInterfaceAttribute => _compilation.GetTypeByMetadataName(RpcNamespacePrefix + "RpcInterfaceAttribute");
 }

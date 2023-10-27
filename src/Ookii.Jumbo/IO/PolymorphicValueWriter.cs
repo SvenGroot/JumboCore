@@ -19,7 +19,7 @@ public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
 
     public void Write(T value, BinaryWriter writer)
     {
-        var typeName = value.GetType().FullName;
+        var typeName = value.GetType().FullName ?? value.GetType().Name;
         var helper = GetHelper(typeName);
         writer.Write(typeName);
         helper.Write(value, writer);

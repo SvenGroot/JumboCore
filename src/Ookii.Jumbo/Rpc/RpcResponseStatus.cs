@@ -2,7 +2,7 @@
 
 namespace Ookii.Jumbo.Rpc
 {
-    enum RpcResponseStatus
+    public enum RpcResponseStatus
     {
         Success,
         SuccessNoValue,

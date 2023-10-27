@@ -47,11 +47,18 @@ internal class SourceBuilder
         _startOfLine = true;
     }
 
+    public void AppendCaseLabel(string text)
+    {
+        DecreaseIndent();
+        AppendLine(text);
+        IncreaseIndent();
+    }
+
     public void AppendArgument(string text)
     {
         if (_needArgumentSeparator)
         {
-            AppendLine(",");
+            Append(",");
         }
 
         Append(text);
@@ -69,7 +76,6 @@ internal class SourceBuilder
             AppendLine(")");
         }
 
-        --_indentLevel;
         _needArgumentSeparator = false;
     }
 

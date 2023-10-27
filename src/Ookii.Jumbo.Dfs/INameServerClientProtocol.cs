@@ -2,12 +2,14 @@
 using System;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
+using Ookii.Jumbo.Rpc;
 
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>
     /// Defines the interface used by clients to communicate with the NameServer.
     /// </summary>
+    [RpcInterface]
     public interface INameServerClientProtocol
     {
         /// <summary>
