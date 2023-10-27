@@ -48,9 +48,14 @@ internal class WritableGenerator
         _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(writer);");
 
         // TODO: Base class members.
-        foreach (var member in _writableClass.GetMembers())
+        for (var current = _writableClass;
+             current != null && current.SpecialType == SpecialType.None;
+             current = current.BaseType)
         {
-            GenerateMemberSerialization(member);
+            foreach (var member in current.GetMembers())
+            {
+                GenerateMemberSerialization(member);
+            }
         }
 
         _builder.CloseBlock(); // Write method
