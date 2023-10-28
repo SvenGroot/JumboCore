@@ -27,21 +27,57 @@ internal class WritableGenerator
 
     public string? Generate()
     {
-        _builder.AppendLine($"partial class {_writableClass.Name} : Ookii.Jumbo.IO.IWritable");
-        _builder.OpenBlock();
-        GenerateWriteMethod();
+        string extraKeyword = string.Empty;
+        bool overrideMethod = false;
+        if (_writableClass.BaseType?.ImplementsInterface(_typeHelper.IWritable) ?? false)
+        {
+            extraKeyword = "override ";
+            overrideMethod = true;
+        }
+        else
+        {
+            var attribute = _writableClass.GetAttribute(_typeHelper.GeneratedWritableAttribute!)!;
+            if ((bool?)attribute.GetNamedArgument("Virtual")?.Value ?? false)
+            {
+                extraKeyword = "virtual ";
+            }
+        }
+
+        _builder.Append($"partial class {_writableClass.Name}");
+        if (!overrideMethod)
+        {
+            _builder.Append(" : Ookii.Jumbo.IO.IWritable");
+        }
+
         _builder.AppendLine();
-        GenerateReadMethod();
+        _builder.OpenBlock();
+        GenerateWriteMethod(extraKeyword, overrideMethod);
+        _builder.AppendLine();
+        GenerateReadMethod(extraKeyword, overrideMethod);
         _builder.CloseBlock(); // class
         return _builder.GetSource();
     }
 
-    private void GenerateWriteMethod()
+    private void GenerateWriteMethod(string extraKeyword, bool overrideMethod)
     {
         _builder.AppendLine("/// <inheritdoc />");
-        _builder.AppendLine($"void Ookii.Jumbo.IO.IWritable.Write(System.IO.BinaryWriter writer)");
+        _builder.AppendLine($"public {extraKeyword}void Write(System.IO.BinaryWriter writer)");
         _builder.OpenBlock();
-        _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(writer);");
+        if (overrideMethod)
+        {
+            var baseMethod = _writableClass.BaseType!.GetMember("Write");
+
+            // Attempt to call if null because that means the base class method may have been
+            // generated.
+            if (baseMethod == null || !baseMethod.IsAbstract)
+            {
+                _builder.AppendLine("base.Write(writer);");
+            }
+        }
+        else
+        {
+            _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(writer);");
+        }
 
         for (var current = _writableClass;
              current != null && current.SpecialType == SpecialType.None;
@@ -51,17 +87,36 @@ internal class WritableGenerator
             {
                 GenerateMemberSerialization(member);
             }
+
+            if (overrideMethod)
+            {
+                break;
+            }
         }
 
         _builder.CloseBlock(); // Write method
     }
 
-    private void GenerateReadMethod()
+    private void GenerateReadMethod(string extraKeyword, bool overrideMethod)
     {
         _builder.AppendLine("/// <inheritdoc />");
-        _builder.AppendLine($"void Ookii.Jumbo.IO.IWritable.Read(System.IO.BinaryReader reader)");
+        _builder.AppendLine($"public {extraKeyword}void Read(System.IO.BinaryReader reader)");
         _builder.OpenBlock();
-        _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(reader);");
+        if (overrideMethod)
+        {
+            var baseMethod = _writableClass.BaseType!.GetMember("Read");
+            
+            // Attempt to call if null because that means the base class method may have been
+            // generated.
+            if (baseMethod == null || !baseMethod.IsAbstract)
+            {
+                _builder.AppendLine("base.Read(reader);");
+            }
+        }
+        else
+        {
+            _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(reader);");
+        }
 
         for (var current = _writableClass;
              current != null && current.SpecialType == SpecialType.None;
@@ -70,6 +125,11 @@ internal class WritableGenerator
             foreach (var member in current.GetMembers())
             {
                 GenerateMemberDeserialization(member);
+            }
+
+            if (overrideMethod)
+            {
+                break;
             }
         }
 

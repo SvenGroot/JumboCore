@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.IO
         public static object? GetWriter(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
-            if (type.GetInterfaces().Contains(typeof(IWritable)))
+            if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(IWritable)))
                 return null;
             var attribute = type.GetCustomAttribute<ValueWriterAttribute>();
             if (attribute != null && !string.IsNullOrEmpty(attribute.ValueWriterTypeName))

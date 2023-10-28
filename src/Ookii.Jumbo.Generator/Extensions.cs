@@ -167,6 +167,19 @@ internal static class Extensions
         return null;
     }
 
+    public static ISymbol? GetMember(this INamedTypeSymbol type, string name)
+    {
+        foreach (var member in type.GetMembers())
+        {
+            if (member.Name == name)
+            {
+                return member;
+            }
+        }
+
+        return null;
+    }
+
     // Using a ref parameter with bool return allows me to chain these together.
     public static bool CheckType(this AttributeData data, ITypeSymbol? attributeType, ref AttributeData? attribute)
     {
