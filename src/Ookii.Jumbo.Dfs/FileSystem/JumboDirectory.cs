@@ -5,15 +5,35 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
     /// <summary>
     /// Provides information about a directory on a file system accessible using a <see cref="FileSystemClient"/>.
     /// </summary>
-    [Serializable]
+
+    [ValueWriter(typeof(Writer))]
     public sealed class JumboDirectory : JumboFileSystemEntry
     {
+        #region Nested types
+
+        public class Writer : IValueWriter<JumboDirectory>
+        {
+            public JumboDirectory Read(BinaryReader reader)
+                => new(reader ?? throw new ArgumentNullException(nameof(reader)));
+
+            public void Write(JumboDirectory value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(nameof(value));
+                ArgumentNullException.ThrowIfNull(nameof(writer));
+                value.Serialize(writer);
+                ValueWriter.WriteValue(value._children.ToArray(), writer);
+            }
+        }
+
+        #endregion
+
         private readonly List<JumboFileSystemEntry> _children;
 
         /// <summary>
@@ -30,6 +50,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 _children = new List<JumboFileSystemEntry>(children);
             else
                 _children = new List<JumboFileSystemEntry>();
+        }
+
+        private JumboDirectory(BinaryReader reader)
+            : base(reader)
+        {
+            var children = ValueWriter<JumboFileSystemEntry[]>.ReadValue(reader);
+            _children = new(children);
         }
 
         /// <summary>

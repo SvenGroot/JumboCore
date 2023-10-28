@@ -11,9 +11,32 @@ namespace Ookii.Jumbo.Dfs.FileSystem
     /// <summary>
     /// Provides information about a file on a file system accessible via the <see cref="FileSystemClient"/> class.
     /// </summary>
-    [Serializable]
+    [ValueWriter(typeof(Writer))]
     public sealed class JumboFile : JumboFileSystemEntry
     {
+        #region Nested types
+
+        public class Writer : IValueWriter<JumboFile>
+        {
+            public JumboFile Read(BinaryReader reader)
+                => new(reader ?? throw new ArgumentNullException(nameof(reader)));
+
+            public void Write(JumboFile value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(nameof(value));
+                ArgumentNullException.ThrowIfNull(nameof(writer));
+                value.Serialize(writer);
+                writer.Write(value._size);
+                writer.Write(value._blockSize);
+                writer.Write(value._replicationFactor);
+                ValueWriter.WriteValue(value._recordOptions, writer);
+                writer.Write(value._isOpenForWriting);
+                ValueWriter.WriteValue(value._blocks.ToArray(), writer);
+            }
+        }
+
+        #endregion
+
         private static readonly List<Guid> _emptyBlocks = new List<Guid>() { Guid.Empty };
 
         private readonly long _size;
@@ -54,6 +77,17 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 _blocks = new List<Guid>(blocks);
             else
                 _blocks = _emptyBlocks;
+        }
+
+        private JumboFile(BinaryReader reader)
+            : base(reader)
+        {
+            _size = reader.ReadInt64();
+            _blockSize = reader.ReadInt64();
+            _replicationFactor = reader.ReadInt32();
+            _recordOptions = ValueWriter<RecordStreamOptions>.ReadValue(reader);
+            _isOpenForWriting = reader.ReadBoolean();
+            _blocks = new(ValueWriter<Guid[]>.ReadValue(reader));
         }
 
         /// <summary>

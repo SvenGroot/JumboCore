@@ -2,13 +2,16 @@
 using System;
 using System.Globalization;
 using System.IO;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
     /// <summary>
     /// Provides information about a file accessible from a <see cref="JumboFileSystemEntry"/>
     /// </summary>
-    [Serializable]
+    [ValueWriter(typeof(PolymorphicValueWriter<JumboFileSystemEntry>))]
+    [WritableDerivedType(typeof(JumboFile))]
+    [WritableDerivedType(typeof(JumboDirectory))]
     public abstract class JumboFileSystemEntry
     {
         private readonly string _fullPath;
@@ -38,6 +41,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             _fullPath = fullPath;
             _name = name;
             _dateCreated = dateCreated;
+        }
+
+        internal JumboFileSystemEntry(BinaryReader reader)
+        {
+            _fullPath = reader.ReadString();
+            _name = reader.ReadString();
+            _dateCreated = ValueWriter<DateTime>.ReadValue(reader);
         }
 
         /// <summary>
@@ -104,6 +114,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 return JumboFile.FromFileInfo(file, rootPath);
             else
                 return JumboDirectory.FromDirectoryInfo((DirectoryInfo)info, rootPath, includeChildren);
+        }
+
+        internal void Serialize(BinaryWriter writer)
+        {
+            writer.Write(_fullPath);
+            writer.Write(_name);
+            ValueWriter.WriteValue(_dateCreated, writer);
         }
 
         internal static string StripRootPath(string fullPath, string? rootPath)
