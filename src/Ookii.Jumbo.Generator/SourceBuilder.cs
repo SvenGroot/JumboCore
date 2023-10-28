@@ -58,7 +58,7 @@ internal class SourceBuilder
     {
         if (_needArgumentSeparator)
         {
-            Append(",");
+            Append(", ");
         }
 
         Append(text);

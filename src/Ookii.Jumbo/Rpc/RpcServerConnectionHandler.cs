@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -82,6 +83,11 @@ namespace Ookii.Jumbo.Rpc
                 }
 
                 var objectName = reader.ReadString();
+                if (string.IsNullOrEmpty(objectName))
+                {
+                    Debugger.Break();
+                }
+
                 var interfaceName = reader.ReadString();
                 var operationName = reader.ReadString();
                 RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, reader, writer);

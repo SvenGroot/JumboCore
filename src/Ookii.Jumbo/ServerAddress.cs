@@ -1,15 +1,33 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo
 {
     /// <summary>
     /// Represents the host name and port number of a data server or task server.
     /// </summary>
-    [Serializable]
+    [ValueWriter(typeof(ValueWriter))]
     public class ServerAddress : IComparable<ServerAddress>
     {
+        #region Nested types
+
+        public class ValueWriter : IValueWriter<ServerAddress>
+        {
+            public ServerAddress Read(BinaryReader reader)
+                => new ServerAddress(reader.ReadString(), reader.ReadInt32());
+
+            public void Write(ServerAddress value, BinaryWriter writer)
+            {
+                writer.Write(value.HostName);
+                writer.Write(value.Port);
+            }
+        }
+
+        #endregion
+
         private readonly string _hostName;
         private readonly int _port;
 

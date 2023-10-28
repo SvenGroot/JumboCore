@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading;
 using Ookii.Jumbo;
@@ -205,7 +206,7 @@ namespace DataServerApplication
                 BlockReportHeartbeatData data;
                 lock (_blocks)
                 {
-                    data = new BlockReportHeartbeatData(_blocks);
+                    data = new BlockReportHeartbeatData(_blocks.ToArray());
                     GetDiskUsage(data);
                 }
                 AddDataForNextHeartbeat(data);

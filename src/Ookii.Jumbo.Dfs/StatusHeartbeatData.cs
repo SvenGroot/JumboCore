@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>
     /// Provides some general status data about the data server.
     /// </summary>
-    [Serializable]
-    public class StatusHeartbeatData : HeartbeatData
+    [GeneratedWritable]
+    public partial class StatusHeartbeatData : HeartbeatData
     {
         /// <summary>
         /// Gets or sets the total amount of disk space used by the blocks on this server.

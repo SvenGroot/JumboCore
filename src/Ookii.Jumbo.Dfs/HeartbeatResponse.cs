@@ -1,16 +1,17 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>
     /// Represents the response sent by the NameServer to a Heartbeat message from the DataServer.
     /// </summary>
-    [Serializable]
-    public class HeartbeatResponse
+    [GeneratedWritable]
+    public partial class HeartbeatResponse
     {
         /// <summary>
-        /// Initializes a new innstance of the <see cref="HeartbeatResponse" /> class with the specified command.
+        /// Initializes a new instance of the <see cref="HeartbeatResponse" /> class with the specified command.
         /// </summary>
         /// <param name="fileSystemId">The file system id.</param>
         /// <param name="command">The <see cref="DataServerHeartbeatCommand" /> to send to the server.</param>

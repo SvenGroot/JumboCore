@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-
-#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -13,7 +13,6 @@ namespace Ookii.Jumbo.Rpc
     {
         private readonly TcpClient _client;
         private readonly RpcStream _stream;
-        private readonly BinaryFormatter _formatter = new BinaryFormatter();
         private readonly ServerConnectionCache _cache;
         private bool _hostNameSent;
 
@@ -26,34 +25,35 @@ namespace Ookii.Jumbo.Rpc
             _cache = cache;
         }
 
-        public object? SendRequest(string objectName, string interfaceName, string operationName, object[] parameters)
+        public BinaryReader? SendRequest(string objectName, string interfaceName, string operationName, Action<BinaryWriter>? serializer)
         {
+            Debug.Assert(!string.IsNullOrEmpty(objectName));
             using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
             {
                 if (!_hostNameSent)
                 {
-                    WriteString(ServerContext.LocalHostName, stream);
+                    writer.Write(ServerContext.LocalHostName);
                     _hostNameSent = true;
                 }
-                WriteString(objectName, stream);
-                WriteString(interfaceName, stream);
-                WriteString(operationName, stream);
-                if (parameters != null)
-                    _formatter.Serialize(stream, parameters);
+
+                writer.Write(objectName);
+                writer.Write(interfaceName);
+                writer.Write(operationName);
+                serializer?.Invoke(writer);
+                writer.Flush();
                 stream.WriteTo(_stream);
             }
 
-            var status = (RpcResponseStatus)_stream.ReadByte();
-            object? result = null;
-            if (status != RpcResponseStatus.SuccessNoValue)
-                result = _formatter.Deserialize(_stream);
-
-            if (status != RpcResponseStatus.Error)
-                return result;
-            else
+            var reader = new BinaryReader(_stream, Encoding.UTF8, true);
+            var status = (RpcResponseStatus)reader.ReadByte();
+            return status switch
             {
-                throw (Exception)result!;
-            }
+                RpcResponseStatus.Success => reader,
+                RpcResponseStatus.SuccessNoValue => null,
+                RpcResponseStatus.Error => throw ReadException(reader),
+                _ => throw new RpcException("Malformed response.")
+            };
         }
 
         public void ReturnToCache()
@@ -65,6 +65,16 @@ namespace Ookii.Jumbo.Rpc
         {
             _stream.Close();
             _client.Close();
+        }
+
+        private static Exception ReadException(BinaryReader reader)
+        {
+            string originalExceptionType = reader.ReadString();
+            string message = reader.ReadString();
+            string stackTrace = reader.ReadString();
+            var ex = new RpcRemoteException(message, originalExceptionType);
+            ExceptionDispatchInfo.SetRemoteStackTrace(ex, stackTrace);
+            return ex;
         }
 
         private static void WriteString(string value, Stream stream)

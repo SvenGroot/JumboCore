@@ -34,7 +34,7 @@ namespace Ookii.Jumbo.Test
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    expected.Write(writer);
+                    ((IWritable)expected).Write(writer);
                 }
 
                 data = stream.ToArray();
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Test
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
             {
-                actual.Read(reader);
+                ((IWritable)actual).Read(reader);
             }
 
             Assert.AreEqual(expected.StringProperty, actual.StringProperty);
@@ -73,7 +73,7 @@ namespace Ookii.Jumbo.Test
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     // Fails because StringProperty is null.
-                    expected.Write(writer);
+                    ((IWritable)expected).Write(writer);
                 }
             });
         }

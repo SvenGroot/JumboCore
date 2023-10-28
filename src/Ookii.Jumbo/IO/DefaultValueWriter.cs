@@ -222,6 +222,21 @@ namespace Ookii.Jumbo.IO
             }
         }
 
+        private class GuidWriter : IValueWriter<Guid>
+        {
+            public void Write(Guid value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(writer);
+                ValueWriter.WriteValue(value.ToByteArray(), writer);
+            }
+
+            public Guid Read(BinaryReader reader)
+            {
+                ArgumentNullException.ThrowIfNull(reader);
+                return new Guid(ValueWriter<byte[]>.ReadValue(reader));
+            }
+        }
+
         private class TupleWriter<T1> : IValueWriter<Tuple<T1>>
             where T1 : notnull
         {
@@ -657,6 +672,8 @@ namespace Ookii.Jumbo.IO
                 return new DateTimeWriter();
             else if (type == typeof(Boolean))
                 return new BooleanWriter();
+            else if (type == typeof(Guid))
+                return new GuidWriter();
             else if (type == typeof(byte[]))
                 return new ByteArrayWriter();
             else if (type.IsEnum)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections;
+using System.IO;
 using System.Threading;
 
 namespace Ookii.Jumbo.Rpc
@@ -21,11 +22,11 @@ namespace Ookii.Jumbo.Rpc
             _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
         }
 
-        public static object? SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, object[] parameters)
+        public static BinaryReader? SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, Action<BinaryWriter>? serializer)
         {
             // This method is public only because the dynamic assemblies must be able to access it.
             var handler = GetConnection(new ServerAddress(hostName, port));
-            var result = handler.SendRequest(objectName, interfaceName, operationName, parameters);
+            var result = handler.SendRequest(objectName, interfaceName, operationName, serializer);
             handler.ReturnToCache();
             return result;
         }

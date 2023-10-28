@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -18,10 +19,10 @@ static class RpcRequestHandler
     {
         try
         {
-            var server = GetRegisteredObject(objectName) ?? throw new RpcException("Unknown server object.");
+            var server = GetRegisteredObject(objectName) ?? throw new RpcException($"Unknown server object {objectName}.");
             if (!server.Dispatchers.TryGetValue(interfaceName, out var dispatcher))
             {
-                throw new RpcException("Unknown interface.");
+                throw new RpcException($"Unknown interface {interfaceName}.");
             }
 
             ServerContext.Current = context; // Set the server context for the current thread.
@@ -56,7 +57,7 @@ static class RpcRequestHandler
 
     public static void SendError(Exception exception, BinaryWriter writer)
     {
-        writer.Write((int)RpcResponseStatus.Error);
+        writer.Write((byte)RpcResponseStatus.Error);
         writer.Write(exception.GetType().AssemblyQualifiedName ?? exception.GetType().Name);
         writer.Write(exception.Message);
         writer.Write(exception.StackTrace ?? "");
@@ -78,10 +79,10 @@ static class RpcRequestHandler
         var result = new Dictionary<string, IRpcDispatcher>();
         foreach (var iface in type.GetInterfaces()) 
         {
-            if (Attribute.IsDefined(type, typeof(RpcInterfaceAttribute)))
+            if (Attribute.IsDefined(iface, typeof(RpcInterfaceAttribute)))
             {
                 var dispatcherTypeName = iface.Namespace! + ".Rpc." + iface.Name + "Dispatcher";
-                var dispatcherType = Type.GetType(dispatcherTypeName, true)!;
+                var dispatcherType = iface.Assembly.GetType(dispatcherTypeName, true)!;
                 result.Add(iface.AssemblyQualifiedName!, (IRpcDispatcher)Activator.CreateInstance(dispatcherType)!);
             }
         }

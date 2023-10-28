@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.IO;
 
 namespace Ookii.Jumbo.Rpc
 {
@@ -40,9 +41,9 @@ namespace Ookii.Jumbo.Rpc
         /// <param name="operationName">The name of the operation to invoke.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <returns>The result of the operation.</returns>
-        protected object? SendRequest(string operationName, object[] parameters)
+        protected BinaryReader? SendRequest(string operationName, Action<BinaryWriter>? serializer)
         {
-            return RpcClient.SendRequest(_hostName, _port, _objectName, _interfaceName, operationName, parameters);
+            return RpcClient.SendRequest(_hostName, _port, _objectName, _interfaceName, operationName, serializer);
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 
+using Ookii.Jumbo.Rpc;
+
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>
     /// The protocol used by the DataServers to send heartbeat messages to the DataServers.
     /// </summary>
+    [RpcInterface]
     public interface INameServerHeartbeatProtocol
     {
         /// <summary>
@@ -18,6 +21,6 @@ namespace Ookii.Jumbo.Dfs
         /// host name and the port number they use to listen for clients, not their host name alone, so the
         /// name server cannot rely on <see cref="Ookii.Jumbo.Rpc.ServerContext.ClientHostName"/>.
         /// </remarks>
-        HeartbeatResponse[] Heartbeat(ServerAddress address, HeartbeatData[] data);
+        HeartbeatResponse[]? Heartbeat(ServerAddress address, HeartbeatData[]? data);
     }
 }

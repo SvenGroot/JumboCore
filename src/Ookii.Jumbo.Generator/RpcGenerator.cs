@@ -31,6 +31,14 @@ internal class RpcGenerator
 
     public string? Generate()
     {
+        GenerateDispatcher();
+        _builder.AppendLine();
+        GenerateClient();
+        return _builder.GetSource();
+    }
+
+    private void GenerateDispatcher()
+    {
         _builder.AppendLine($"internal class {_target.Name}Dispatcher : Ookii.Jumbo.Rpc.IRpcDispatcher");
         _builder.OpenBlock();
         foreach (var member in _target.GetMembers())
@@ -58,7 +66,6 @@ internal class RpcGenerator
         _builder.CloseBlock(); // switch
         _builder.CloseBlock(); // method
         _builder.CloseBlock(); // class
-        return _builder.GetSource();
     }
 
     public void GenerateMemberDispatchMethod(ISymbol member)
@@ -111,11 +118,11 @@ internal class RpcGenerator
 
         if (method.ReturnsVoid)
         {
-            _builder.AppendLine("__writer.Write((int)Ookii.Jumbo.Rpc.RpcResponseStatus.SuccessNoValue);");
+            _builder.AppendLine("__writer.Write((byte)Ookii.Jumbo.Rpc.RpcResponseStatus.SuccessNoValue);");
         }
         else
         {
-            _builder.AppendLine("__writer.Write((int)Ookii.Jumbo.Rpc.RpcResponseStatus.Success);");
+            _builder.AppendLine("__writer.Write((byte)Ookii.Jumbo.Rpc.RpcResponseStatus.Success);");
             if (method.ReturnType.AllowsNull())
             {
                 _builder.AppendLine($"if (__methodReturnValue == null)");
@@ -136,5 +143,133 @@ internal class RpcGenerator
 
         _builder.CloseBlock(); // method
         _builder.AppendLine();
+    }
+
+    private void GenerateClient()
+    {
+        _builder.AppendLine($"internal class {_target.Name}Client : Ookii.Jumbo.Rpc.RpcProxyBase, {_target.ToQualifiedName()}");
+        _builder.OpenBlock();
+        _builder.AppendLine($"public {_target.Name}Client(string hostName, int port, string objectName) : base(hostName, port, objectName, typeof({_target.ToQualifiedName()}).AssemblyQualifiedName!) {{ }}");
+        _builder.AppendLine();
+        foreach (var member in _target.GetMembers())
+        {
+            if (member is IMethodSymbol method)
+            {
+                GenerateProxyMethod(method);
+            }
+            else if (member is IPropertySymbol property)
+            {
+                GenerateProxyProperty(property);
+            }
+        }
+
+        _builder.CloseBlock(); // class
+    }
+
+    private void GenerateProxyMethod(IMethodSymbol method)
+    {
+        if (method.MethodKind != MethodKind.Ordinary)
+        {
+            return;
+        }
+
+        _builder.Append($"{method.ReturnType.ToQualifiedName()} {_target.ToDisplayString()}.{method.Name}(");
+        foreach (var param in method.Parameters)
+        {
+            _builder.AppendArgument($"{param.Type.ToQualifiedName()} {param.Name}");
+        }
+
+        _builder.CloseArgumentList(false);
+        _builder.OpenBlock();
+        GenerateProxyMethodBody(method);
+        _builder.CloseBlock(); // method
+        _builder.AppendLine();
+    }
+
+    private void GenerateProxyProperty(IPropertySymbol property)
+    {
+        _builder.Append($"{property.Type.ToQualifiedName()} {_target.ToDisplayString()}.{property.Name}");
+        _builder.OpenBlock();
+        if (property.GetMethod != null)
+        {
+            _builder.AppendLine("get");
+            _builder.OpenBlock();
+            GenerateProxyMethodBody(property.GetMethod);
+            _builder.CloseBlock(); // get
+        }
+
+        if (property.SetMethod != null)
+        {
+            _builder.AppendLine("set");
+            _builder.OpenBlock();
+            GenerateProxyMethodBody(property.SetMethod);
+            _builder.CloseBlock(); // get
+        }
+
+        _builder.CloseBlock(); // property
+        _builder.AppendLine();
+    }
+
+    private void GenerateProxyMethodBody(IMethodSymbol method)
+    {
+        foreach (var param in method.Parameters)
+        {
+            if (param.Type.IsReferenceType && param.Type.NullableAnnotation == NullableAnnotation.NotAnnotated)
+            {
+                _builder.AppendLine($"System.ArgumentNullException.ThrowIfNull({param.Name});");
+            }
+        }
+
+        if (!method.ReturnsVoid)
+        {
+            _builder.Append("var __reader = ");
+        }
+
+        _builder.Append($"SendRequest(\"{method.Name}\", ");
+        if (method.Parameters.Length == 0)
+        {
+            _builder.AppendLine("null);");
+        }
+        else
+        {
+            _builder.AppendLine("__writer =>");
+            _builder.OpenBlock();
+            foreach (var param in method.Parameters)
+            {
+                if (param.Type.AllowsNull())
+                {
+                    _builder.AppendLine($"if ({param.Name} == null)");
+                    _builder.OpenBlock();
+                    _builder.AppendLine("__writer.Write(false);");
+                    _builder.CloseBlock();
+                    _builder.AppendLine("else");
+                    _builder.OpenBlock();
+                    _builder.AppendLine("__writer.Write(true);");
+                }
+
+                _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteValue({param.Name}, __writer);");
+                if (param.Type.AllowsNull())
+                {
+                    _builder.CloseBlock();
+                }
+            }
+
+            _builder.DecreaseIndent();
+            _builder.AppendLine("});");
+        }
+
+        if (!method.ReturnsVoid)
+        {
+            _builder.AppendLine();
+            var typeName = method.ReturnType.WithNullableAnnotation(NullableAnnotation.NotAnnotated).ToQualifiedName();
+            if (method.ReturnType.AllowsNull())
+            {
+                _builder.AppendLine($"return __reader!.ReadBoolean() ? Ookii.Jumbo.IO.ValueWriter<{typeName}>.ReadValue(__reader) : null;");
+            }
+            else
+            {
+                _builder.AppendLine($"return Ookii.Jumbo.IO.ValueWriter<{typeName}>.ReadValue(__reader!);");
+            }
+        }
     }
 }

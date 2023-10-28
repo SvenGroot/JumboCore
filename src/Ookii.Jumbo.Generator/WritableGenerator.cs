@@ -39,11 +39,10 @@ internal class WritableGenerator
     private void GenerateWriteMethod()
     {
         _builder.AppendLine("/// <inheritdoc />");
-        _builder.AppendLine($"public void Write(System.IO.BinaryWriter writer)");
+        _builder.AppendLine($"void Ookii.Jumbo.IO.IWritable.Write(System.IO.BinaryWriter writer)");
         _builder.OpenBlock();
         _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(writer);");
 
-        // TODO: Base class members.
         for (var current = _writableClass;
              current != null && current.SpecialType == SpecialType.None;
              current = current.BaseType)
@@ -60,14 +59,18 @@ internal class WritableGenerator
     private void GenerateReadMethod()
     {
         _builder.AppendLine("/// <inheritdoc />");
-        _builder.AppendLine($"public void Read(System.IO.BinaryReader reader)");
+        _builder.AppendLine($"void Ookii.Jumbo.IO.IWritable.Read(System.IO.BinaryReader reader)");
         _builder.OpenBlock();
         _builder.AppendLine("System.ArgumentNullException.ThrowIfNull(reader);");
 
-        // TODO: Base class members.
-        foreach (var member in _writableClass.GetMembers())
+        for (var current = _writableClass;
+             current != null && current.SpecialType == SpecialType.None;
+             current = current.BaseType)
         {
-            GenerateMemberDeserialization(member);
+            foreach (var member in current.GetMembers())
+            {
+                GenerateMemberDeserialization(member);
+            }
         }
 
         _builder.CloseBlock(); // Write method

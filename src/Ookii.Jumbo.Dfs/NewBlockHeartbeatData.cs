@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -7,8 +8,8 @@ namespace Ookii.Jumbo.Dfs
     /// Represents the data sent by a data server during a heartbeat when it informs the name server
     /// it has received a new block.
     /// </summary>
-    [Serializable]
-    public class NewBlockHeartbeatData : StatusHeartbeatData
+    [GeneratedWritable]
+    public partial class NewBlockHeartbeatData : StatusHeartbeatData
     {
         /// <summary>
         /// Gets or sets the block ID.
