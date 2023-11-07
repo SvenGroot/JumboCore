@@ -82,7 +82,14 @@ internal class RpcGenerator
             var typeName = param.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated).ToQualifiedName();
             if (param.Type.AllowsNull())
             {
-                _builder.AppendLine($"var {param.Name} = __reader.ReadBoolean() ? Ookii.Jumbo.IO.ValueWriter<{typeName}>.ReadValue(__reader) : null;");
+                if (param.Type.IsNullableValueType())
+                {
+                    _builder.AppendLine($"var {param.Name} = Ookii.Jumbo.IO.ValueWriter.ReadNullableStruct<{typeName}>(__reader);");
+                }
+                else
+                {
+                    _builder.AppendLine($"var {param.Name} = Ookii.Jumbo.IO.ValueWriter.ReadNullable<{typeName}>(__reader);");
+                }
             }
             else
             {
@@ -125,19 +132,11 @@ internal class RpcGenerator
             _builder.AppendLine("__writer.Write((byte)Ookii.Jumbo.Rpc.RpcResponseStatus.Success);");
             if (method.ReturnType.AllowsNull())
             {
-                _builder.AppendLine($"if (__methodReturnValue == null)");
-                _builder.OpenBlock();
-                _builder.AppendLine("__writer.Write(false);");
-                _builder.CloseBlock();
-                _builder.AppendLine("else");
-                _builder.OpenBlock();
-                _builder.AppendLine("__writer.Write(true);");
+                _builder.AppendLine("Ookii.Jumbo.IO.ValueWriter.WriteNullable(__methodReturnValue, __writer);");
             }
-
-            _builder.AppendLine("Ookii.Jumbo.IO.ValueWriter.WriteValue(__methodReturnValue, __writer);");
-            if (method.ReturnType.AllowsNull())
+            else
             {
-                _builder.CloseBlock();
+                _builder.AppendLine("Ookii.Jumbo.IO.ValueWriter.WriteValue(__methodReturnValue, __writer);");
             }
         }
 
@@ -238,19 +237,11 @@ internal class RpcGenerator
             {
                 if (param.Type.AllowsNull())
                 {
-                    _builder.AppendLine($"if ({param.Name} == null)");
-                    _builder.OpenBlock();
-                    _builder.AppendLine("__writer.Write(false);");
-                    _builder.CloseBlock();
-                    _builder.AppendLine("else");
-                    _builder.OpenBlock();
-                    _builder.AppendLine("__writer.Write(true);");
+                    _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteNullable({param.Name}, __writer);");
                 }
-
-                _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteValue({param.Name}, __writer);");
-                if (param.Type.AllowsNull())
+                else
                 {
-                    _builder.CloseBlock();
+                    _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteValue({param.Name}, __writer);");
                 }
             }
 
@@ -264,7 +255,14 @@ internal class RpcGenerator
             var typeName = method.ReturnType.WithNullableAnnotation(NullableAnnotation.NotAnnotated).ToQualifiedName();
             if (method.ReturnType.AllowsNull())
             {
-                _builder.AppendLine($"return __reader!.ReadBoolean() ? Ookii.Jumbo.IO.ValueWriter<{typeName}>.ReadValue(__reader) : null;");
+                if (method.ReturnType.IsNullableValueType())
+                {
+                    _builder.AppendLine($"return Ookii.Jumbo.IO.ValueWriter.ReadNullableStruct<{typeName}>(__reader!);");
+                }
+                else
+                {
+                    _builder.AppendLine($"return Ookii.Jumbo.IO.ValueWriter.ReadNullable<{typeName}>(__reader!);");
+                }
             }
             else
             {

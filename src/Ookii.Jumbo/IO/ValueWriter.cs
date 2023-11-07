@@ -59,6 +59,126 @@ namespace Ookii.Jumbo.IO
         {
             ValueWriter<T>.WriteValue(value, writer);
         }
+
+        /// <summary>
+        /// Writes the specified nullable value using its <see cref="IWritable"/> implementation or
+        /// its <see cref="IValueWriter{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the object to write.
+        /// </typeparam>
+        /// <param name="value">The nullable value to write.</param>
+        /// <param name="writer">The writer to write the value to.</param>
+        /// <remarks>
+        /// <para>
+        ///   A <see cref="bool"/> will be written before the object to indicate whether the value
+        ///   is <see langword="null"/>. If it is <see langword="null"/>, nothing else will be
+        ///   written.
+        /// </para>
+        /// <para>
+        ///   If the type of <paramref name="value"/> implements <see cref="IWritable"/>, it is used
+        ///   to write the value. If it does not, the <see cref="IValueWriter{T}"/> is used to write
+        ///   the value.
+        /// </para>
+        /// </remarks>
+        public static void WriteNullable<T>(T? value, BinaryWriter writer)
+            where T : class
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            if (value == null)
+            {
+                writer.Write(false);
+            }
+            else
+            {
+                writer.Write(true);
+                ValueWriter<T>.WriteValue(value, writer);
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified nullable structure using its <see cref="IValueWriter{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the object to write.
+        /// </typeparam>
+        /// <param name="value">The nullable value to write.</param>
+        /// <param name="writer">The writer to write the value to.</param>
+        /// <remarks>
+        /// <para>
+        ///   A <see cref="bool"/> will be written before the object to indicate whether the value
+        ///   is <see langword="null"/>. If it is <see langword="null"/>, nothing else will be
+        ///   written.
+        /// </para>
+        /// </remarks>
+        public static void WriteNullable<T>(T? value, BinaryWriter writer)
+            where T : struct
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            if (value is T actual)
+            {
+                writer.Write(true);
+                ValueWriter<T>.WriteValue(actual, writer);
+            }
+            else
+            {
+                writer.Write(false);
+            }
+        }
+
+        /// <summary>
+        /// Reads a nullable value from the specified reader using the type's
+        /// <see cref="IWritable"/> implementation or its <see cref="IValueWriter{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the object to read.
+        /// </typeparam>
+        /// <param name="reader">The reader to read the value from.</param>
+        /// <returns>An object containing the value.</returns>
+        /// <remarks>
+        /// <para>
+        ///   A <see cref="bool"/> is read from <paramref name="reader"/> to see if the value is
+        ///   <see langword="null"/>. If it is <see langword="null"/>, nothing else will be
+        ///   read.
+        /// </para>
+        /// <para>
+        ///   If the type implements <see cref="IWritable"/>, a new instance is created and <see cref="IWritable.Read"/>
+        ///   is used to read the value. If it does not, <see cref="IValueWriter{T}"/> is used to read the value.
+        /// </para>
+        /// <para>
+        ///   This method will always create a new instance, even if the type implements <see cref="IWritable"/>, so
+        ///   should not be used in scenarios where you wish to support record reuse.
+        /// </para>
+        /// </remarks>
+        public static T? ReadNullable<T>(BinaryReader reader)
+            where T : class
+        {
+            ArgumentNullException.ThrowIfNull(reader);
+            return reader.ReadBoolean() ? ValueWriter<T>.ReadValue(reader) : null;
+        }
+
+        /// <summary>
+        /// Reads a nullable structure value from the specified reader using the type's
+        /// <see cref="IValueWriter{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the object to read.
+        /// </typeparam>
+        /// <param name="reader">The reader to read the value from.</param>
+        /// <returns>An object containing the value.</returns>
+        /// <remarks>
+        /// <para>
+        ///   A <see cref="bool"/> is read from <paramref name="reader"/> to see if the value is
+        ///   <see langword="null"/>. If it is <see langword="null"/>, nothing else will be
+        ///   read.
+        /// </para>
+        /// </remarks>
+        public static T? ReadNullableStruct<T>(BinaryReader reader)
+            where T : struct
+        {
+            ArgumentNullException.ThrowIfNull(reader);
+            return reader.ReadBoolean() ? ValueWriter<T>.ReadValue(reader) : null;
+        }
     }
 
     /// <summary>

@@ -27,11 +27,7 @@ partial class RpcRemoteException
         public Exception Read(BinaryReader reader)
         {
             var message = reader.ReadString();
-            string? paramName = null;
-            if (reader.ReadBoolean())
-            {
-                paramName = reader.ReadString();
-            }
+            var paramName = ValueWriter.ReadNullable<string>(reader);
 
             return new ArgumentNullException(paramName, message);
         }
@@ -40,11 +36,7 @@ partial class RpcRemoteException
         {
             var ex = (ArgumentNullException)value;
             writer.Write(ex.Message);
-            writer.Write(ex.ParamName != null);
-            if (ex.ParamName != null)
-            {
-                writer.Write(ex.ParamName);
-            }
+            ValueWriter.WriteNullable(ex.ParamName, writer);
         }
     }
 }

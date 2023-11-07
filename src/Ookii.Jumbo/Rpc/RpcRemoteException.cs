@@ -18,6 +18,7 @@ public partial class RpcRemoteException : Exception
     {
         { typeof(ArgumentException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<ArgumentException>() },
         { typeof(DirectoryNotFoundException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<DirectoryNotFoundException>() },
+        { typeof(ArgumentNullException).AssemblyQualifiedName!, new ArgumentNullExceptionWriter() },
     };
 
     /// <summary>

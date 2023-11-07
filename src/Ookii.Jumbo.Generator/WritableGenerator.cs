@@ -143,38 +143,17 @@ internal class WritableGenerator
             return;
         }
 
-        bool closeIf = false;
-        bool nullableValueType = property.Type.IsNullableValueType();
-        if ((nullableValueType || property.Type.IsReferenceType)
-            && property.GetAttribute(_typeHelper.WritableNotNullAttribute!) == null)
+        if (property.Type.AllowsNull() && property.GetAttribute(_typeHelper.WritableNotNullAttribute!) == null)
         {
-            _builder.AppendLine($"if (this.{property.Name} == null)");
-            _builder.OpenBlock();
-            _builder.AppendLine("writer.Write(false);");
-            _builder.CloseBlock();
-            _builder.AppendLine("else");
-            _builder.OpenBlock();
-            _builder.AppendLine("writer.Write(true);");
-            closeIf = true;
+            _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteNullable(this.{property.Name}, writer);");
         }
-
-        if (property.Type.ImplementsInterface(_typeHelper.IWritable))
+        else if (property.Type.ImplementsInterface(_typeHelper.IWritable))
         {
             _builder.AppendLine($"((Ookii.Jumbo.IO.IWritable)this.{property.Name}).Write(writer);");
-        }
-        else if (nullableValueType)
-        {
-            _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteValue(this.{property.Name}!.Value, writer);");
         }
         else
         {
             _builder.AppendLine($"Ookii.Jumbo.IO.ValueWriter.WriteValue(this.{property.Name}, writer);");
-        }
-
-        if (closeIf)
-        {
-            _builder.CloseBlock();
-            _builder.AppendLine();
         }
     }
 
@@ -193,20 +172,18 @@ internal class WritableGenerator
         }
 
         var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated).GetUnderlyingType();
-        bool closeIf = false;
-        if ((property.Type.IsReferenceType || property.Type.IsNullableValueType())
-            && property.GetAttribute(_typeHelper.WritableNotNullAttribute!) == null)
+        if (property.Type.AllowsNull() && property.GetAttribute(_typeHelper.WritableNotNullAttribute!) == null)
         {
-            _builder.AppendLine($"if (!reader.ReadBoolean())");
-            _builder.OpenBlock();
-            _builder.AppendLine($"this.{property.Name} = null;");
-            _builder.CloseBlock();
-            _builder.AppendLine("else");
-            _builder.OpenBlock();
-            closeIf = true;
+            if (property.Type.IsNullableValueType())
+            {
+                _builder.AppendLine($"this.{property.Name} = Ookii.Jumbo.IO.ValueWriter.ReadNullableStruct<{type.ToQualifiedName()}>(reader);");
+            }
+            else
+            {
+                _builder.AppendLine($"this.{property.Name} = Ookii.Jumbo.IO.ValueWriter.ReadNullable<{type.ToQualifiedName()}>(reader);");
+            }
         }
-
-        if (property.Type.ImplementsInterface(_typeHelper.IWritable))
+        else if (property.Type.ImplementsInterface(_typeHelper.IWritable))
         {
             _builder.AppendLine($"if (this.{property.Name} == null)"); 
             _builder.OpenBlock();
@@ -218,12 +195,6 @@ internal class WritableGenerator
         else
         {
             _builder.AppendLine($"this.{property.Name} = Ookii.Jumbo.IO.ValueWriter<{type.ToQualifiedName()}>.ReadValue(reader);");
-        }
-
-        if (closeIf)
-        {
-            _builder.CloseBlock();
-            _builder.AppendLine();
         }
     }
 
