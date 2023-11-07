@@ -365,7 +365,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment block2 = target.AppendBlock(path, true);
             Assert.AreNotEqual(block.BlockId, block2.BlockId);
-            Assert.AreEqual(1, block2.DataServers.Count);
+            Assert.AreEqual(1, block2.DataServers.Length);
             Assert.AreEqual(Dns.GetHostName(), block2.DataServers[0].HostName);
             Assert.IsTrue(block2.DataServers[0].Port == 10001 || block2.DataServers[0].Port == 10002);
 
@@ -552,7 +552,7 @@ namespace Ookii.Jumbo.Test.Dfs
             target.CreateDirectory("/createfile");
             string path = DfsPath.Combine("/createfile", fileName);
             BlockAssignment block = target.CreateFile(path, blockSize, replicationFactor, true, IO.RecordStreamOptions.None);
-            Assert.AreEqual(replicationFactor == 0 ? 1 : replicationFactor, block.DataServers.Count);
+            Assert.AreEqual(replicationFactor == 0 ? 1 : replicationFactor, block.DataServers.Length);
             Assert.AreEqual(Dns.GetHostName(), block.DataServers[0].HostName);
             //Assert.AreEqual(10001, block.DataServers[0].Port);
             Ookii.Jumbo.Dfs.FileSystem.JumboFile result = target.GetFileInfo(path);

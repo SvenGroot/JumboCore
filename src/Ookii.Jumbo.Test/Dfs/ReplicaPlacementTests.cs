@@ -24,7 +24,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, true);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.AreEqual(writer, assignment.DataServers[0].HostName);
             Assert.AreNotEqual(writer, assignment.DataServers[1].HostName);
             Assert.IsTrue(assignment.DataServers[1].HostName.StartsWith("rack1"));
@@ -44,7 +44,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, true);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.AreNotEqual(writer, assignment.DataServers[0].HostName);
             string firstNode = assignment.DataServers[0].HostName;
             string firstNodeRackId = assignment.DataServers[0].HostName.Substring(0, 5);
@@ -66,7 +66,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, false);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.IsTrue(assignment.DataServers[0].HostName.StartsWith("rack1_"));
             string firstNode = assignment.DataServers[0].HostName;
             string firstNodeRackId = assignment.DataServers[0].HostName.Substring(0, 5);
@@ -95,7 +95,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, null, true);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(1, assignment.DataServers.Count);
+            Assert.AreEqual(1, assignment.DataServers.Length);
             Assert.IsFalse(assignment.DataServers[0].HostName.StartsWith("rack1"));
         }
 
@@ -112,7 +112,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, true);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.AreNotEqual(writer, assignment.DataServers[0].HostName);
             Assert.AreNotEqual(writer, assignment.DataServers[1].HostName);
             Assert.AreNotEqual(writer, assignment.DataServers[2].HostName);
@@ -133,7 +133,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, true);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.AreEqual(writer, assignment.DataServers[0].HostName);
             Assert.AreNotEqual(writer, assignment.DataServers[1].HostName);
             Assert.AreNotEqual(writer, assignment.DataServers[2].HostName);
@@ -153,7 +153,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             BlockAssignment assignment = target.AssignBlockToDataServers(dataServers.Values, block, writer, false);
             Assert.AreEqual(block.BlockId, assignment.BlockId);
-            Assert.AreEqual(3, assignment.DataServers.Count);
+            Assert.AreEqual(3, assignment.DataServers.Length);
             Assert.AreNotEqual(writer, assignment.DataServers[1].HostName); // If it's randomly picked, it must be the first one.
             Assert.AreNotEqual(writer, assignment.DataServers[2].HostName);
             Assert.AreNotEqual(assignment.DataServers[0].HostName, assignment.DataServers[1].HostName);

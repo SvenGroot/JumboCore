@@ -361,7 +361,7 @@ namespace DataServerApplication
                             return;
                         }
                     }
-                    _log.InfoFormat("Replicating block {0} to {1} data servers; first is {2}.", response.BlockAssignment.BlockId, response.BlockAssignment.DataServers.Count, response.BlockAssignment.DataServers[0]);
+                    _log.InfoFormat("Replicating block {0} to {1} data servers; first is {2}.", response.BlockAssignment.BlockId, response.BlockAssignment.DataServers.Length, response.BlockAssignment.DataServers[0]);
                     var packet = new Packet();
                     using (var sender = new BlockSender(response.BlockAssignment))
                     using (var file = System.IO.File.OpenRead(GetBlockFileName(response.BlockAssignment.BlockId)))

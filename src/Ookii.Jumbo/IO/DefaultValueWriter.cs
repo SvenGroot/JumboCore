@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -666,6 +667,31 @@ static class DefaultValueWriter
         }
     }
 
+    private class ImmutableArrayWriter<T> : IValueWriter<ImmutableArray<T>>
+        where T : notnull
+    {
+        public ImmutableArray<T> Read(BinaryReader reader)
+        {
+            var length = reader.Read7BitEncodedInt();
+            var result = ImmutableArray.CreateBuilder<T>(length);
+            for (int i = 0; i < length; i++)
+            {
+                result.Add(ValueWriter<T>.ReadValue(reader));
+            }
+
+            return result.MoveToImmutable();
+        }
+
+        public void Write(ImmutableArray<T> value, BinaryWriter writer)
+        {
+            writer.Write7BitEncodedInt(value.Length);
+            foreach (var item in value)
+            {
+                ValueWriter<T>.WriteValue(item, writer);
+            }
+        }
+    }
+
     #endregion
 
     public static object GetWriter(Type type)
@@ -712,6 +738,10 @@ static class DefaultValueWriter
             if (definition == typeof(ReadOnlyCollection<>))
             {
                 return Activator.CreateInstance(typeof(ReadOnlyCollectionWriter<>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+            if (definition == typeof(ImmutableArray<>))
+            {
+                return Activator.CreateInstance(typeof(ImmutableArrayWriter<>).MakeGenericType(type.GetGenericArguments()))!;
             }
             if (definition == typeof(ValueTuple<>))
                 return Activator.CreateInstance(typeof(ValueTupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -33,8 +34,6 @@ namespace Ookii.Jumbo.Dfs
 
         #endregion
 
-        private readonly ReadOnlyCollection<ServerAddress> _dataServers;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockAssignment"/> class.
         /// </summary>
@@ -45,13 +44,13 @@ namespace Ookii.Jumbo.Dfs
             ArgumentNullException.ThrowIfNull(dataServers);
 
             BlockId = blockId;
-            _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();
+            DataServers = dataServers.ToImmutableArray();
         }
 
         private BlockAssignment(BinaryReader reader)
         {
             BlockId = ValueWriter<Guid>.ReadValue(reader);
-            _dataServers = ValueWriter<ReadOnlyCollection<ServerAddress>>.ReadValue(reader);
+            DataServers = ValueWriter<ImmutableArray<ServerAddress>>.ReadValue(reader);
         }
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace Ookii.Jumbo.Dfs
         /// <value>
         /// A <see cref="Guid"/> that uniquely identifies this block.
         /// </value>
-        public Guid BlockId { get; private set; }
+        public Guid BlockId { get; }
 
         /// <summary>
         /// Gets the data servers that have a replica of this block.
@@ -68,9 +67,6 @@ namespace Ookii.Jumbo.Dfs
         /// <value>
         /// A collection of <see cref="ServerAddress"/> objects for the data servers that have this block.
         /// </value>
-        public ReadOnlyCollection<ServerAddress> DataServers
-        {
-            get { return _dataServers; }
-        }
+        public ImmutableArray<ServerAddress> DataServers { get; }
     }
 }
