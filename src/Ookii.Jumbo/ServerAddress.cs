@@ -10,6 +10,7 @@ namespace Ookii.Jumbo
     /// Represents the host name and port number of a data server or task server.
     /// </summary>
     [ValueWriter(typeof(ValueWriter))]
+    [Serializable]
     public class ServerAddress : IComparable<ServerAddress>
     {
         #region Nested types

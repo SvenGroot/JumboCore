@@ -94,6 +94,7 @@ namespace Ookii.Jumbo.Test.Dfs
         public void CreateDirectoryPathContainsFileTest()
         {
             INameServerClientProtocol target = _nameServer;
+            target.CreateDirectory("/createdirectory");
             target.CreateFile("/createdirectory/test", 0, 0, true, IO.RecordStreamOptions.None);
             target.CloseFile("/createdirectory/test");
 

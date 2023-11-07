@@ -2,15 +2,37 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using Ookii.Jumbo.Dfs.FileSystem;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs
 {
     /// <summary>
     /// Provides information about a block of a file.
     /// </summary>
-    [Serializable]
+    [ValueWriter(typeof(Writer))]
     public class BlockAssignment
     {
+        #region Nested types
+
+        public class Writer : IValueWriter<BlockAssignment>
+        {
+            public BlockAssignment Read(BinaryReader reader)
+                => new(reader ?? throw new ArgumentNullException(nameof(reader)));
+
+            public void Write(BlockAssignment value, BinaryWriter writer)
+            {
+                ArgumentNullException.ThrowIfNull(nameof(value));
+                ArgumentNullException.ThrowIfNull(nameof(writer));
+                ValueWriter.WriteValue(value.BlockId, writer);
+                ValueWriter.WriteValue(value.DataServers, writer);
+            }
+        }
+
+        #endregion
+
         private readonly ReadOnlyCollection<ServerAddress> _dataServers;
 
         /// <summary>
@@ -24,6 +46,12 @@ namespace Ookii.Jumbo.Dfs
 
             BlockId = blockId;
             _dataServers = new List<ServerAddress>(dataServers).AsReadOnly();
+        }
+
+        private BlockAssignment(BinaryReader reader)
+        {
+            BlockId = ValueWriter<Guid>.ReadValue(reader);
+            _dataServers = ValueWriter<ReadOnlyCollection<ServerAddress>>.ReadValue(reader);
         }
 
         /// <summary>
