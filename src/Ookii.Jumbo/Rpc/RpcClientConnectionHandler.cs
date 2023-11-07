@@ -51,7 +51,7 @@ namespace Ookii.Jumbo.Rpc
             {
                 RpcResponseStatus.Success => reader,
                 RpcResponseStatus.SuccessNoValue => null,
-                RpcResponseStatus.Error => throw ReadException(reader),
+                RpcResponseStatus.Error => throw RpcRemoteException.ReadFrom(reader),
                 _ => throw new RpcException("Malformed response.")
             };
         }
@@ -65,25 +65,6 @@ namespace Ookii.Jumbo.Rpc
         {
             _stream.Close();
             _client.Close();
-        }
-
-        private static Exception ReadException(BinaryReader reader)
-        {
-            string originalExceptionType = reader.ReadString();
-            string message = reader.ReadString();
-            string stackTrace = reader.ReadString();
-            var ex = new RpcRemoteException(message, originalExceptionType);
-            ExceptionDispatchInfo.SetRemoteStackTrace(ex, stackTrace);
-            return ex;
-        }
-
-        private static void WriteString(string value, Stream stream)
-        {
-            var buffer = Encoding.UTF8.GetBytes(value);
-            if (buffer.Length > byte.MaxValue)
-                throw new ArgumentException("String is too long.");
-            stream.WriteByte((byte)buffer.Length);
-            stream.Write(buffer, 0, buffer.Length);
         }
 
         #region IDisposable Members

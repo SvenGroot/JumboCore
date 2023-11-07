@@ -105,7 +105,7 @@ namespace Ookii.Jumbo.Rpc
             try
             {
                 using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
-                RpcRequestHandler.SendError(ex, writer);
+                RpcRemoteException.WriteTo(ex, writer);
             }
             catch { }
         }

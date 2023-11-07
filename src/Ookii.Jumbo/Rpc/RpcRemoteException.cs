@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Rpc;
 
@@ -7,8 +11,15 @@ namespace Ookii.Jumbo.Rpc;
 /// Exception thrown when a remote operation threw an exception.
 /// </summary>
 [Serializable]
-public class RpcRemoteException : Exception
+public partial class RpcRemoteException : Exception
 {
+    private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RpcRemoteException));
+    private static readonly Dictionary<string, IValueWriter<Exception>> _writers = new()
+    {
+        { typeof(ArgumentException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<ArgumentException>() },
+        { typeof(DirectoryNotFoundException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<DirectoryNotFoundException>() },
+    };
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RpcRemoteException"/> class. 
     /// </summary>
@@ -52,10 +63,106 @@ public class RpcRemoteException : Exception
 
     public string OriginalExceptionType { get; }
 
+    public static void RegisterExceptionWriter(Type exceptionType, IValueWriter<Exception> writer)
+    {
+        ArgumentNullException.ThrowIfNull(exceptionType);
+        ArgumentNullException.ThrowIfNull(writer);
+        if (exceptionType.AssemblyQualifiedName == null)
+        {
+            throw new ArgumentException("Exception type has no name.", nameof(exceptionType));
+        }
+
+        if (!exceptionType.IsAssignableTo(typeof(Exception))) 
+        {
+            throw new ArgumentException("Type is not an exception type.", nameof(exceptionType));
+        }
+
+        lock (_writers)
+        {
+            _writers.Add(exceptionType.AssemblyQualifiedName, writer);
+        }
+    }
+
     /// <inheritdoc/>
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
         info.AddValue(nameof(OriginalExceptionType), OriginalExceptionType);
+    }
+
+    internal static Exception ReadFrom(BinaryReader reader)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        var originalExceptionType = reader.ReadString();
+        var message = reader.ReadString();
+        var stackTrace = reader.ReadString();
+        var customSerializerSize = reader.Read7BitEncodedInt();
+        Exception? ex = null;
+        if (customSerializerSize > 0)
+        {
+            var data = reader.ReadBytes(customSerializerSize);
+            using var innerStream = new MemoryStream(data);
+            using var innerReader = new BinaryReader(innerStream);
+            var writer = GetWriter(originalExceptionType);
+            if (writer != null)
+            {
+                try
+                {
+                    ex = writer.Read(innerReader);
+                }
+                catch (Exception deserializeEx)
+                {
+                    _log.Error("Could not deserialize custom exception type.", deserializeEx);
+                }
+            }
+        }
+
+        ex ??= new RpcRemoteException(message, originalExceptionType);
+        ExceptionDispatchInfo.SetRemoteStackTrace(ex, stackTrace);
+        return ex;
+    }
+
+    internal static void WriteTo(Exception exception, BinaryWriter writer)
+    {
+        writer.Write((byte)RpcResponseStatus.Error);
+        var name = exception.GetType().AssemblyQualifiedName ?? exception.GetType().Name;
+        writer.Write(name);
+        writer.Write(exception.Message);
+        writer.Write(exception.StackTrace ?? "");
+        var exWriter = GetWriter(name);
+        byte[]? customSerializerData = null;
+        if (exWriter != null)
+        {
+            using var innerStream = new MemoryStream();
+            using var innerWriter = new BinaryWriter(innerStream);
+            try
+            {
+                exWriter.Write(exception, innerWriter);
+                customSerializerData = innerStream.ToArray();
+            }
+            catch (Exception deserializeEx)
+            {
+                _log.Error("Could not serialize custom exception type.", deserializeEx);
+            }
+        }
+
+        writer.Write7BitEncodedInt(customSerializerData?.Length ?? 0);
+        if (customSerializerData != null)
+        {
+            writer.Write(customSerializerData);
+        }
+    }
+
+    private static IValueWriter<Exception>? GetWriter(string exceptionTypeName)
+    {
+        lock (_writers)
+        {
+            if (_writers.TryGetValue(exceptionTypeName, out var writer))
+            {
+                return writer;
+            }
+        }
+
+        return null;
     }
 }

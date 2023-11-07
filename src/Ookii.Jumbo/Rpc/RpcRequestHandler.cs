@@ -32,7 +32,7 @@ static class RpcRequestHandler
         }
         catch (Exception ex)
         {
-            SendError(ex, writer);
+            RpcRemoteException.WriteTo(ex, writer);
         }
     }
 
@@ -53,14 +53,6 @@ static class RpcRequestHandler
             _registeredObjects = _pendingRegisteredObjects.ToImmutableDictionary();
             _pendingRegisteredObjects = null;
         }
-    }
-
-    public static void SendError(Exception exception, BinaryWriter writer)
-    {
-        writer.Write((byte)RpcResponseStatus.Error);
-        writer.Write(exception.GetType().AssemblyQualifiedName ?? exception.GetType().Name);
-        writer.Write(exception.Message);
-        writer.Write(exception.StackTrace ?? "");
     }
 
     private static ServerObject? GetRegisteredObject(string objectName)
