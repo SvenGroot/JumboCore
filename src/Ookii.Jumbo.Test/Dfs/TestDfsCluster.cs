@@ -25,7 +25,7 @@ namespace Ookii.Jumbo.Test.Dfs
             public DataServer Server { get; set; }
         }
 
-        private class ClusterRunner : MarshalByRefObject
+        private class ClusterRunner
         {
             private int _nextDataServerPort = FirstDataServerPort;
             private string _path;

@@ -17,7 +17,7 @@ namespace NameServerApplication
     /// <summary>
     /// RPC server for the NameServer.
     /// </summary>
-    public sealed class NameServer : MarshalByRefObject, INameServerClientProtocol, INameServerHeartbeatProtocol, IDisposable
+    public sealed class NameServer : INameServerClientProtocol, INameServerHeartbeatProtocol, IDisposable
     {
         private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(NameServer));
 
