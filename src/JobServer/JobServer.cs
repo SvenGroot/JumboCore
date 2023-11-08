@@ -506,7 +506,7 @@ namespace JobServerApplication
 
             PerformCleanup(server, ref responses);
 
-            return responses == null ? null : responses.ToArray();
+            return responses?.ToArray();
         }
 
         #endregion

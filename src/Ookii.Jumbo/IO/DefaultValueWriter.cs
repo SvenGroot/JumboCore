@@ -209,6 +209,22 @@ static class DefaultValueWriter
         }
     }
 
+    private class TimeSpanWriter : IValueWriter<TimeSpan>
+    {
+        public void Write(TimeSpan value, System.IO.BinaryWriter writer)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            writer.Write(value.Ticks);
+        }
+
+        public TimeSpan Read(BinaryReader reader)
+        {
+            ArgumentNullException.ThrowIfNull(reader);
+            var ticks = reader.ReadInt64();
+            return new TimeSpan(ticks);
+        }
+    }
+
     private class BooleanWriter : IValueWriter<Boolean>
     {
         public void Write(bool value, BinaryWriter writer)
@@ -722,6 +738,8 @@ static class DefaultValueWriter
             return new DecimalWriter();
         else if (type == typeof(DateTime))
             return new DateTimeWriter();
+        else if (type == typeof(TimeSpan))
+            return new TimeSpanWriter();
         else if (type == typeof(Boolean))
             return new BooleanWriter();
         else if (type == typeof(Guid))

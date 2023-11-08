@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using Ookii.Jumbo.IO;
 
-namespace Ookii.Jumbo.Jet
+namespace Ookii.Jumbo.Jet;
+
+/// <summary>
+/// Base class for data sent by the task servers to the job server.
+/// </summary>
+[ValueWriter(typeof(PolymorphicValueWriter<JetHeartbeatData>))]
+[WritableDerivedType(typeof(InitialStatusJetHeartbeatData))]
+[WritableDerivedType(typeof(TaskStatusChangedJetHeartbeatData))]
+public abstract class JetHeartbeatData
 {
-    /// <summary>
-    /// Base class for data sent by the task servers to the job server.
-    /// </summary>
-    [Serializable]
-    public abstract class JetHeartbeatData
-    {
-    }
 }

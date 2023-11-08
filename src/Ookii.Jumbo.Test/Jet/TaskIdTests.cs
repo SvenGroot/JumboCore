@@ -2,9 +2,8 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
+using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
-
-#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
 
 namespace Ookii.Jumbo.Test.Jet
 {
@@ -103,12 +102,13 @@ namespace Ookii.Jumbo.Test.Jet
             TaskId original = new TaskId(taskId);
             TaskId target;
 
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            using (var reader = new BinaryReader(stream))
             {
-                formatter.Serialize(stream, original);
+                ValueWriter.WriteValue(original, writer);
                 stream.Position = 0;
-                target = (TaskId)formatter.Deserialize(stream);
+                target = ValueWriter<TaskId>.ReadValue(reader);
             }
 
             Assert.AreEqual(taskId, target.ToString());

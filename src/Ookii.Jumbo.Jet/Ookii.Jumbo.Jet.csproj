@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ookii.Jumbo.Dfs\Ookii.Jumbo.Dfs.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
+    <ProjectReference Include="..\Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

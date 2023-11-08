@@ -87,7 +87,7 @@ public partial class ServerAddress : IComparable<ServerAddress>, IEquatable<Serv
     /// <see langword="true"/> if this <see cref="ServerAddress"/> is equal to
     /// <paramref name="other"/>; otherwise, <see langword="false"/>.
     /// </returns>
-    public bool Equals(ServerAddress? other) => other != null && HostName == other.HostName && Port == other.Port;
+    public bool Equals(ServerAddress? other) => other is not null && HostName == other.HostName && Port == other.Port;
 
     /// <summary>
     /// Gets a hash code that identifies this object.

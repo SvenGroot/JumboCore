@@ -129,6 +129,17 @@ internal class RpcGenerator
         }
         else
         {
+            // This check is added because NameServer and JobServer don't yet have nullable
+            // warnings, so this makes it easier to find issues where they returned a null value but
+            // the interface was not annotated to allow it.
+            if (method.ReturnType.IsReferenceType && !method.ReturnType.AllowsNull())
+            {
+                _builder.AppendLine("if (__methodReturnValue == null)");
+                _builder.OpenBlock();
+                _builder.AppendLine("throw new System.InvalidOperationException(\"Null value not allowed according to protocol.\");");
+                _builder.CloseBlock(); // if
+            }
+
             _builder.AppendLine("__writer.Write((byte)Ookii.Jumbo.Rpc.RpcResponseStatus.Success);");
             if (method.ReturnType.AllowsNull())
             {
