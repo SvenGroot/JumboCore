@@ -3,7 +3,8 @@
 namespace Ookii.Jumbo.IO;
 
 /// <summary>
-/// Indicates that the IWritable implementation for a type should be create with source generation.
+/// Indicates that the <see cref="IWritable"/> implementation for a type should be created with
+/// source generation.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class GeneratedWritableAttribute : Attribute

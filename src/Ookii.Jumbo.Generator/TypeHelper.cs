@@ -38,6 +38,8 @@ internal class TypeHelper
 
     public INamedTypeSymbol? GeneratedWritableAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "GeneratedWritableAttribute");
 
+    public INamedTypeSymbol? GeneratedValueWriterAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "GeneratedValueWriterAttribute");
+
     public INamedTypeSymbol? WritableNotNullAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "WritableNotNullAttribute");
 
     public INamedTypeSymbol? WritableIgnoreAttribute => _compilation.GetTypeByMetadataName(IoNamespacePrefix + "WritableIgnoreAttribute");

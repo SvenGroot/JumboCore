@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text;
 
 namespace Ookii.Jumbo.Generator;
@@ -14,7 +15,7 @@ public class WritableIncrementalGenerator : IIncrementalGenerator
     {
         var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is ClassDeclarationSyntax c && c.AttributeLists.Count > 0,
+                static (node, _) => node is TypeDeclarationSyntax c && c.AttributeLists.Count > 0,
                 static (ctx, _) => GetClassToGenerate(ctx)
             )
             .Where(static c => c != null);
@@ -23,7 +24,7 @@ public class WritableIncrementalGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(compilationAndClasses, static (spc, source) => Execute(source.Left, source.Right!, spc));
     }
 
-    private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
+    private static void Execute(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> classes, SourceProductionContext context)
     {
         if (classes.IsDefaultOrEmpty)
         {
@@ -48,11 +49,12 @@ public class WritableIncrementalGenerator : IIncrementalGenerator
         }
     }
 
-    private static ClassDeclarationSyntax? GetClassToGenerate(GeneratorSyntaxContext context)
+    private static TypeDeclarationSyntax? GetClassToGenerate(GeneratorSyntaxContext context)
     {
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
+        var classDeclaration = (TypeDeclarationSyntax)context.Node;
         var typeHelper = new TypeHelper(context.SemanticModel.Compilation);
         var generatedWritableType = typeHelper.GeneratedWritableAttribute;
+        var generatedValueWriterType = typeHelper.GeneratedValueWriterAttribute;
         foreach (var attributeList in classDeclaration.AttributeLists)
         {
             foreach (var attribute in attributeList.Attributes)
@@ -64,7 +66,7 @@ public class WritableIncrementalGenerator : IIncrementalGenerator
                 }
 
                 var attributeType = attributeSymbol.ContainingType;
-                if (attributeType.SymbolEquals(generatedWritableType))
+                if (attributeType.SymbolEquals(generatedWritableType) || attributeType.SymbolEquals(generatedValueWriterType))
                 {
                     return classDeclaration;
                 }
