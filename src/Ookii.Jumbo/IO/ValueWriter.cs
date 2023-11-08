@@ -25,14 +25,18 @@ namespace Ookii.Jumbo.IO
         public static object? GetWriter(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
-            if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(IWritable)))
-                return null;
+
+            // Check for value writers first to allow PolymorphicValueWriter to work with a base
+            // type that implements IWritable.
             var attribute = type.GetCustomAttribute<ValueWriterAttribute>();
             if (attribute != null && !string.IsNullOrEmpty(attribute.ValueWriterTypeName))
             {
                 var writerType = Type.GetType(attribute.ValueWriterTypeName, true)!;
                 return Activator.CreateInstance(writerType);
             }
+
+            if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(IWritable)))
+                return null;
 
             return DefaultValueWriter.GetWriter(type);
         }

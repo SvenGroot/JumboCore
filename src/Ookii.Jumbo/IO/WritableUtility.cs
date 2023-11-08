@@ -29,6 +29,18 @@ namespace Ookii.Jumbo.IO
             => (T)FormatterServices.GetUninitializedObject(typeof(T));
 
         /// <summary>
+        /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
+        /// </summary>
+        /// <returns>An uninitialized instance of <paramref name="type"/>.</returns>
+        /// <remarks>
+        /// <para>
+        ///   The constructor of <paramref name="type"/> will not have been invoked.
+        /// </para>
+        /// </remarks>
+        public static IWritable GetUninitializedWritable(Type type)
+            => (IWritable)FormatterServices.GetUninitializedObject(type);
+
+        /// <summary>
         /// Writes a 32-bit integer in a compressed format.
         /// </summary>
         /// <param name="writer">The <see cref="BinaryWriter"/> to write the value to.</param>

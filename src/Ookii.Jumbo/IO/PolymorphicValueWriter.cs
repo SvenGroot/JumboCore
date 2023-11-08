@@ -9,20 +9,40 @@ public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
     where T : notnull
 {
     private static readonly Dictionary<string, WriterHelper> _derivedTypes = BuildDerivedTypes();
+    private static readonly bool _allowBaseClass = !typeof(T).IsAbstract && typeof(T).IsAssignableTo(typeof(IWritable));
 
     public T Read(BinaryReader reader)
     {
         var typeName = reader.ReadString();
-        var helper = GetHelper(typeName);
-        return (T)helper.Read(reader);
+        if (_allowBaseClass && typeName.Length == 0)
+        {
+            var result = WritableUtility.GetUninitializedWritable(typeof(T));
+            result.Read(reader);
+            return (T)result;
+        }
+        else
+        {
+            var helper = GetHelper(typeName);
+            return (T)helper.Read(reader);
+        }
     }
 
     public void Write(T value, BinaryWriter writer)
     {
-        var typeName = value.GetType().FullName ?? value.GetType().Name;
-        var helper = GetHelper(typeName);
-        writer.Write(typeName);
-        helper.Write(value, writer);
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(writer);
+        if (_allowBaseClass && value.GetType() == typeof(T))
+        {
+            writer.Write(string.Empty);
+            ((IWritable)value).Write(writer);
+        }
+        else
+        {
+            var typeName = value.GetType().FullName ?? value.GetType().Name;
+            var helper = GetHelper(typeName);
+            writer.Write(typeName);
+            helper.Write(value, writer);
+        }
     }
 
     private static WriterHelper GetHelper(string typeName)

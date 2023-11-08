@@ -642,22 +642,22 @@ static class DefaultValueWriter
         }
     }
 
-    private class ReadOnlyCollectionWriter<T> : IValueWriter<ReadOnlyCollection<T>>
+    private class ListWriter<T> : IValueWriter<List<T>>
         where T : notnull
     {
-        public ReadOnlyCollection<T> Read(BinaryReader reader)
+        public List<T> Read(BinaryReader reader)
         {
             var length = reader.Read7BitEncodedInt();
-            var result = new T[length];
+            var result = new List<T>(length);
             for (int i = 0; i < length; i++)
             {
-                result[i] = ValueWriter<T>.ReadValue(reader);
+                result.Add(ValueWriter<T>.ReadValue(reader));
             }
 
             return new(result);
         }
 
-        public void Write(ReadOnlyCollection<T> value, BinaryWriter writer)
+        public void Write(List<T> value, BinaryWriter writer)
         {
             writer.Write7BitEncodedInt(value.Count);
             foreach (var item in value)
@@ -735,9 +735,9 @@ static class DefaultValueWriter
         else if (type.IsGenericType)
         {
             var definition = type.GetGenericTypeDefinition();
-            if (definition == typeof(ReadOnlyCollection<>))
+            if (definition == typeof(List<>))
             {
-                return Activator.CreateInstance(typeof(ReadOnlyCollectionWriter<>).MakeGenericType(type.GetGenericArguments()))!;
+                return Activator.CreateInstance(typeof(ListWriter<>).MakeGenericType(type.GetGenericArguments()))!;
             }
             if (definition == typeof(ImmutableArray<>))
             {

@@ -12,7 +12,7 @@ namespace Ookii.Jumbo.IO
     ///   that you implement <see cref="IWritable"/> instead.
     /// </para>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
     public sealed class ValueWriterAttribute : Attribute
     {
         private readonly string _valueWriterTypeName;

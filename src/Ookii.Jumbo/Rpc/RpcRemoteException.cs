@@ -17,6 +17,7 @@ public partial class RpcRemoteException : Exception
     private static readonly Dictionary<string, IValueWriter<Exception>> _writers = new()
     {
         { typeof(ArgumentException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<ArgumentException>() },
+        { typeof(InvalidOperationException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<InvalidOperationException>() },
         { typeof(DirectoryNotFoundException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<DirectoryNotFoundException>() },
         { typeof(ArgumentNullException).AssemblyQualifiedName!, new ArgumentNullExceptionWriter() },
     };
