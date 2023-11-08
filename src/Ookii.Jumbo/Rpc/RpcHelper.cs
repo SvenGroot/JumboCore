@@ -68,11 +68,6 @@ namespace Ookii.Jumbo.Rpc
             RpcRequestHandler.RegisterObject(objectName, server);
         }
 
-        public static void FinishRegistration()
-        {
-            RpcRequestHandler.FinishRegistration();
-        }
-
         /// <summary>
         /// Creates a client for the specified RPC service.
         /// </summary>

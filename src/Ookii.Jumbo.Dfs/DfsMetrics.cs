@@ -1,19 +1,18 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs;
 
 /// <summary>
 /// Represents information about the current state of the distributed file system.
 /// </summary>
-[Serializable]
-public class DfsMetrics
+[GeneratedValueWriter]
+public partial class DfsMetrics
 {
-    private readonly Collection<DataServerMetrics> _dataServers = new Collection<DataServerMetrics>();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DfsMetrics"/> class.
     /// </summary>
@@ -110,10 +109,7 @@ public class DfsMetrics
     /// <value>
     /// A list of <see cref="DataServerMetrics"/> objects for each data server.
     /// </value>
-    public Collection<DataServerMetrics> DataServers
-    {
-        get { return _dataServers; }
-    }
+    public List<DataServerMetrics> DataServers { get; } = new();
 
     /// <summary>
     /// Prints the metrics.

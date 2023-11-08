@@ -807,7 +807,6 @@ namespace NameServerApplication
         {
             RpcHelper.RegisterServerChannels(config.FileSystem.Url.Port, config.NameServer.ListenIPv4AndIPv6);
             RpcHelper.RegisterService("NameServer", Instance);
-            RpcHelper.FinishRegistration();
             _log.Info("RPC server started.");
         }
 

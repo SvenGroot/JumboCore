@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -12,8 +13,7 @@ static class RpcRequestHandler
 {
     private record class ServerObject(object Server, Dictionary<string, IRpcDispatcher> Dispatchers);
 
-    private static Dictionary<string, ServerObject>? _pendingRegisteredObjects = new();
-    private static ImmutableDictionary<string, ServerObject>? _registeredObjects;
+    private static ConcurrentDictionary<string, ServerObject> _registeredObjects = new();
 
     public static void HandleRequest(ServerContext context, string objectName, string interfaceName, string operationName, BinaryReader reader, BinaryWriter writer)
     {
@@ -38,30 +38,11 @@ static class RpcRequestHandler
 
     public static void RegisterObject(string objectName, object server)
     {
-        if (_pendingRegisteredObjects == null)
-        {
-            throw new InvalidOperationException("Object registration has finished.");
-        }
-
-        _pendingRegisteredObjects[objectName] = new ServerObject(server, GetDispatchers(server.GetType()));
-    }
-
-    public static void FinishRegistration()
-    {
-        if (_pendingRegisteredObjects != null) 
-        {
-            _registeredObjects = _pendingRegisteredObjects.ToImmutableDictionary();
-            _pendingRegisteredObjects = null;
-        }
+        _registeredObjects[objectName] = new ServerObject(server, GetDispatchers(server.GetType()));
     }
 
     private static ServerObject? GetRegisteredObject(string objectName)
     {
-        if (_registeredObjects == null)
-        {
-            throw new InvalidOperationException("RPC server registration has not yet finished.");
-        }
-
         _registeredObjects.TryGetValue(objectName, out var result);
         return result;
     }

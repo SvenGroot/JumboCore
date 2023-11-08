@@ -223,12 +223,12 @@ internal class WritableGenerator
 
     private bool ShouldSerialize(ISymbol member, bool valueWriter, out IPropertySymbol property)
     {
-        // For value writers, we just serialize all properties because detecting read-only
-        // auto-generated properties (where SetMethod would be null) is possible but a bit of a
-        // pain.
+        // IValueWriter should serialize automatic properties without a set, because they can be
+        // set in the constructor.
         property = (member as IPropertySymbol)!;
-        return property != null && (valueWriter || (property.GetMethod != null && property.SetMethod != null)) &&
-                    property.GetAttribute(_typeHelper.WritableIgnoreAttribute!) == null;
+        return property != null && property.GetMethod != null && 
+            (property.SetMethod != null || valueWriter && property.IsAutomaticProperty()) &&
+            property.GetAttribute(_typeHelper.WritableIgnoreAttribute!) == null;
     }
 
     private void GenerateMemberDeserialization(ISymbol member, bool valueWriter)

@@ -238,4 +238,17 @@ internal static class Extensions
     {
         return symbol.ToDisplayString(QualifiedFormat);
     }
+
+    public static bool IsAutomaticProperty(this IPropertySymbol property)
+    {
+        foreach (var member in property.ContainingType.GetMembers())
+        {
+            if (member is IFieldSymbol field && field.AssociatedSymbol != null && field.AssociatedSymbol.SymbolEquals(property)) 
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
