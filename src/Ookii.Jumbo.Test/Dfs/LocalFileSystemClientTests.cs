@@ -223,7 +223,7 @@ namespace Ookii.Jumbo.Test.Dfs
             if (includeChildren)
             {
                 FileSystemInfo[] children = info.GetFileSystemInfos();
-                Assert.AreEqual(children.Length, directory.Children.Count);
+                Assert.AreEqual(children.Length, directory.Children.Length);
                 foreach (var child in children)
                 {
                     VerifyEntry(directory.GetChild(child.Name), rootPath, false);
@@ -245,7 +245,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.AreEqual(1, file.ReplicationFactor);
             Assert.AreEqual(RecordStreamOptions.None, file.RecordOptions);
             Assert.IsFalse(file.IsOpenForWriting);
-            Assert.AreEqual(1, file.Blocks.Count);
+            Assert.AreEqual(1, file.Blocks.Length);
             Assert.AreEqual(Guid.Empty, file.Blocks[0]);
         }
 

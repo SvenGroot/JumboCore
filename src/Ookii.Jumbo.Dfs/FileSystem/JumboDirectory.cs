@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -18,23 +19,26 @@ namespace Ookii.Jumbo.Dfs.FileSystem
     {
         #region Nested types
 
+        /// <summary>
+        /// The value writer for <see cref="JumboDirectory"/>.
+        /// </summary>
         public class Writer : IValueWriter<JumboDirectory>
         {
+            /// <inheritdoc/>
             public JumboDirectory Read(BinaryReader reader)
-                => new(reader ?? throw new ArgumentNullException(nameof(reader)));
+                => new(reader);
 
+            /// <inheritdoc/>
             public void Write(JumboDirectory value, BinaryWriter writer)
             {
                 ArgumentNullException.ThrowIfNull(nameof(value));
                 ArgumentNullException.ThrowIfNull(nameof(writer));
                 value.Serialize(writer);
-                ValueWriter.WriteValue(value._children.ToArray(), writer);
+                ValueWriter.WriteValue(value.Children, writer);
             }
         }
 
         #endregion
-
-        private readonly List<JumboFileSystemEntry> _children;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JumboDirectory"/> class.
@@ -46,17 +50,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public JumboDirectory(string fullPath, string name, DateTime dateCreated, IEnumerable<JumboFileSystemEntry>? children)
             : base(fullPath, name, dateCreated)
         {
-            if (children != null)
-                _children = new List<JumboFileSystemEntry>(children);
-            else
-                _children = new List<JumboFileSystemEntry>();
+            Children = children?.ToImmutableArray() ?? ImmutableArray<JumboFileSystemEntry>.Empty;
         }
 
         private JumboDirectory(BinaryReader reader)
             : base(reader)
         {
-            var children = ValueWriter<JumboFileSystemEntry[]>.ReadValue(reader);
-            _children = new(children);
+            Children = ValueWriter<ImmutableArray<JumboFileSystemEntry>>.ReadValue(reader);
         }
 
         /// <summary>
@@ -68,10 +68,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <remarks>
         /// Depending on how this <see cref="JumboDirectory"/> instance was obtained, this collection may not be filled.
         /// </remarks>
-        public ReadOnlyCollection<JumboFileSystemEntry> Children
-        {
-            get { return _children.AsReadOnly(); }
-        }
+        public ImmutableArray<JumboFileSystemEntry> Children { get; }
 
         /// <summary>
         /// Creates a <see cref="JumboDirectory"/> instance for a local directory from a <see cref="DirectoryInfo"/>.
@@ -116,7 +113,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         public JumboFileSystemEntry? GetChild(string name)
         {
             ArgumentNullException.ThrowIfNull(name);
-            return _children.Where(child => child.Name == name).SingleOrDefault();
+            return Children.Where(child => child.Name == name).SingleOrDefault();
         }
 
         /// <summary>
@@ -138,7 +135,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             writer.WriteLine("Directory listing for {0}", FullPath);
             writer.WriteLine();
 
-            if (Children.Count == 0)
+            if (Children.Length == 0)
                 writer.WriteLine("No entries.");
             else
             {

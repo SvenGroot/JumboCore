@@ -5,7 +5,6 @@ namespace Ookii.Jumbo.Generator;
 internal class WritableGenerator
 {
     private readonly TypeHelper _typeHelper;
-    private readonly Compilation _compilation;
     private readonly SourceProductionContext _context;
     private readonly INamedTypeSymbol _writableClass;
     private readonly SourceBuilder _builder;
@@ -13,7 +12,6 @@ internal class WritableGenerator
     public WritableGenerator(SourceProductionContext context, INamedTypeSymbol writableClass, TypeHelper typeHelper)
     {
         _typeHelper = typeHelper;
-        _compilation = typeHelper.Compilation;
         _context = context;
         _writableClass = writableClass;
         _builder = new(writableClass.ContainingNamespace);

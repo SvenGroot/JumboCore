@@ -61,7 +61,7 @@ namespace Ookii.Jumbo.Test.Dfs
                 }
 
                 Ookii.Jumbo.Dfs.FileSystem.JumboFile file = _nameServer.GetFileInfo("/TestStreams.dat");
-                Assert.AreEqual(1, file.Blocks.Count);
+                Assert.AreEqual(1, file.Blocks.Length);
                 Assert.AreEqual(size, file.Size);
                 ServerAddress[] servers = _nameServer.GetDataServersForBlock(file.Blocks[0]);
                 Assert.AreEqual(_replicationFactor, servers.Length);

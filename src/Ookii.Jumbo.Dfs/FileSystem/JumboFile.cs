@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -16,11 +17,15 @@ namespace Ookii.Jumbo.Dfs.FileSystem
     {
         #region Nested types
 
+        /// <summary>
+        /// The value writer for <see cref="JumboDirectory"/>.
+        /// </summary>
         public class Writer : IValueWriter<JumboFile>
         {
-            public JumboFile Read(BinaryReader reader)
-                => new(reader ?? throw new ArgumentNullException(nameof(reader)));
+            /// <inheritdoc/>
+            public JumboFile Read(BinaryReader reader) => new(reader);
 
+            /// <inheritdoc/>
             public void Write(JumboFile value, BinaryWriter writer)
             {
                 ArgumentNullException.ThrowIfNull(nameof(value));
@@ -31,20 +36,19 @@ namespace Ookii.Jumbo.Dfs.FileSystem
                 writer.Write(value._replicationFactor);
                 ValueWriter.WriteValue(value._recordOptions, writer);
                 writer.Write(value._isOpenForWriting);
-                ValueWriter.WriteValue(value._blocks.ToArray(), writer);
+                ValueWriter.WriteValue(value.Blocks, writer);
             }
         }
 
         #endregion
 
-        private static readonly List<Guid> _emptyBlocks = new List<Guid>() { Guid.Empty };
+        private static readonly ImmutableArray<Guid> _emptyBlocks = ImmutableArray.Create(Guid.Empty);
 
         private readonly long _size;
         private readonly long _blockSize;
         private readonly int _replicationFactor;
         private readonly RecordStreamOptions _recordOptions;
         private readonly bool _isOpenForWriting;
-        private readonly List<Guid> _blocks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JumboFile"/> class.
@@ -64,7 +68,6 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             if (size < 0)
                 throw new ArgumentOutOfRangeException(nameof(size));
             if (blockSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(blockSize));
             if (replicationFactor < 1)
                 throw new ArgumentOutOfRangeException(nameof(replicationFactor));
 
@@ -73,10 +76,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             _replicationFactor = replicationFactor;
             _recordOptions = recordOptions;
             _isOpenForWriting = isOpenForWriting;
-            if (blocks != null)
-                _blocks = new List<Guid>(blocks);
-            else
-                _blocks = _emptyBlocks;
+            Blocks = blocks?.ToImmutableArray() ?? _emptyBlocks;
         }
 
         private JumboFile(BinaryReader reader)
@@ -87,7 +87,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             _replicationFactor = reader.ReadInt32();
             _recordOptions = ValueWriter<RecordStreamOptions>.ReadValue(reader);
             _isOpenForWriting = reader.ReadBoolean();
-            _blocks = new(ValueWriter<Guid[]>.ReadValue(reader));
+            Blocks = ValueWriter<ImmutableArray<Guid>>.ReadValue(reader);
         }
 
         /// <summary>
@@ -154,10 +154,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         /// <value>
         /// A list of block IDs, or a list containing <see cref="Guid.Empty"/> if this file system doesn't support blocks.
         /// </value>
-        public ReadOnlyCollection<Guid> Blocks
-        {
-            get { return _blocks.AsReadOnly(); }
-        }
+        public ImmutableArray<Guid> Blocks { get; }
 
         /// <summary>
         /// Creates a <see cref="JumboFile"/> instance for a local file from the specified <see cref="FileInfo"/>.
@@ -198,7 +195,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
             writer.WriteLine("Replicas:         {0}", ReplicationFactor);
             writer.WriteLine("Record options:   {0}", RecordOptions);
             writer.WriteLine("Open for writing: {0}", IsOpenForWriting);
-            writer.WriteLine("Blocks:           {0}", Blocks.Count);
+            writer.WriteLine("Blocks:           {0}", Blocks.Length);
             foreach (var block in Blocks)
                 writer.WriteLine("{{{0}}}", block);
         }

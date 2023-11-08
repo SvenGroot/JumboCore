@@ -51,15 +51,15 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.AreEqual("child1", clone.Name);
             Assert.AreEqual("/child1", clone.FullPath);
             //Assert.IsNull(clone.Parent);
-            Assert.AreEqual(2, clone.Children.Count);
+            Assert.AreEqual(2, clone.Children.Length);
             Assert.AreNotSame(child1.Children, clone.Children);
             Assert.AreEqual("child2", clone.Children[0].Name);
             Assert.AreEqual("child3", clone.Children[1].Name);
             Assert.AreEqual("/child1/child2", clone.Children[0].FullPath);
             Assert.AreEqual("/child1/child3", clone.Children[1].FullPath);
             // Check the level below the children wasn't cloned.
-            Assert.AreEqual(0, ((JumboDirectory)clone.Children[0]).Children.Count);
-            Assert.AreEqual(0, ((JumboDirectory)clone.Children[1]).Children.Count);
+            Assert.AreEqual(0, ((JumboDirectory)clone.Children[0]).Children.Length);
+            Assert.AreEqual(0, ((JumboDirectory)clone.Children[1]).Children.Length);
 
         }
 

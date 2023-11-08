@@ -114,9 +114,9 @@ namespace Ookii.Jumbo.Test.Jet
 
             // Assumes that if split size is specified, it is always less than the block size.
             if (maxSplitSize < Int32.MaxValue)
-                Assert.Greater(config.GetStage("WordCount").TaskCount, client.GetFileInfo(inputFileName).Blocks.Count);
+                Assert.Greater(config.GetStage("WordCount").TaskCount, client.GetFileInfo(inputFileName).Blocks.Length);
             else
-                Assert.AreEqual(client.GetFileInfo(inputFileName).Blocks.Count, config.GetStage("WordCount").TaskCount);
+                Assert.AreEqual(client.GetFileInfo(inputFileName).Blocks.Length, config.GetStage("WordCount").TaskCount);
 
             if (forceFileDownload)
             {

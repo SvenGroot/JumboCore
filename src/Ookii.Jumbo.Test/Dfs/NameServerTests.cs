@@ -48,7 +48,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Ookii.Jumbo.Dfs.FileSystem.JumboDirectory result = target.GetDirectoryInfo(path);
             Assert.AreEqual(path, result.FullPath);
             Assert.AreEqual("bar", result.Name);
-            Assert.AreEqual(0, result.Children.Count);
+            Assert.AreEqual(0, result.Children.Length);
             Assert.IsTrue((result.DateCreated - DateTime.UtcNow).TotalSeconds < 1);
             DateTime oldDate = result.DateCreated;
             path = "/createdirectory/foo/bar/test";
@@ -56,7 +56,7 @@ namespace Ookii.Jumbo.Test.Dfs
             result = target.GetDirectoryInfo(path);
             Assert.AreEqual(path, result.FullPath);
             Assert.AreEqual("test", result.Name);
-            Assert.AreEqual(0, result.Children.Count);
+            Assert.AreEqual(0, result.Children.Length);
             Assert.IsTrue((result.DateCreated - DateTime.UtcNow).TotalSeconds < 1);
             // Recreating an old directory should return information about the existing one.
             path = "/createdirectory/foo/bar";
@@ -64,7 +64,7 @@ namespace Ookii.Jumbo.Test.Dfs
             result = target.GetDirectoryInfo(path);
             Assert.AreEqual(path, result.FullPath);
             Assert.AreEqual("bar", result.Name);
-            Assert.AreEqual(1, result.Children.Count);
+            Assert.AreEqual(1, result.Children.Length);
             Assert.AreEqual(oldDate, result.DateCreated);
         }
 
@@ -280,7 +280,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = entry as Ookii.Jumbo.Dfs.FileSystem.JumboDirectory;
             Assert.IsNotNull(dir);
             Assert.AreEqual(directoryPath, dir.FullPath);
-            Assert.AreEqual(1, dir.Children.Count);
+            Assert.AreEqual(1, dir.Children.Length);
 
             entry = target.GetFileSystemEntryInfo(filePath);
             Ookii.Jumbo.Dfs.FileSystem.JumboFile file = entry as Ookii.Jumbo.Dfs.FileSystem.JumboFile;
@@ -379,7 +379,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             target.CloseFile(path);
             Ookii.Jumbo.Dfs.FileSystem.JumboFile file = target.GetFileInfo(path);
-            Assert.AreEqual(2, file.Blocks.Count);
+            Assert.AreEqual(2, file.Blocks.Length);
             Assert.AreEqual(block.BlockId, file.Blocks[0]);
             Assert.AreEqual(block2.BlockId, file.Blocks[1]);
             Assert.AreEqual(target.BlockSize + 10000, file.Size);
@@ -444,7 +444,7 @@ namespace Ookii.Jumbo.Test.Dfs
             target.CreateFile("/closefilependingblock", 0, 0, true, IO.RecordStreamOptions.None);
             target.CloseFile("/closefilependingblock");
             Ookii.Jumbo.Dfs.FileSystem.JumboFile file = target.GetFileInfo("/closefilependingblock");
-            Assert.AreEqual(0, file.Blocks.Count);
+            Assert.AreEqual(0, file.Blocks.Length);
             Assert.AreEqual(0, target.GetMetrics().PendingBlockCount);
         }
 
@@ -518,7 +518,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.IsNotNull(dir);
             Assert.AreEqual("dir1", dir.Name);
             Assert.AreEqual("/move/dir2/dir1", dir.FullPath);
-            Assert.AreEqual(1, dir.Children.Count);
+            Assert.AreEqual(1, dir.Children.Length);
             file = _nameServer.GetFileInfo("/move/dir2/dir1/file3");
             Assert.IsNotNull(file);
             Assert.AreEqual("file3", file.Name);
@@ -559,7 +559,7 @@ namespace Ookii.Jumbo.Test.Dfs
             Assert.IsTrue((result.DateCreated - DateTime.UtcNow).TotalSeconds < 1);
             Assert.AreEqual(fileName, result.Name);
             Assert.AreEqual(path, result.FullPath);
-            Assert.AreEqual(0, result.Blocks.Count);
+            Assert.AreEqual(0, result.Blocks.Length);
             Assert.AreEqual(0, result.Size);
             Assert.AreEqual(blockSize == 0 ? _nameServer.BlockSize : blockSize, result.BlockSize);
             Assert.AreEqual(replicationFactor == 0 ? 1 : replicationFactor, result.ReplicationFactor);
@@ -574,7 +574,7 @@ namespace Ookii.Jumbo.Test.Dfs
             result = target.GetFileInfo(path);
             Assert.AreEqual(fileName, result.Name);
             Assert.AreEqual(path, result.FullPath);
-            Assert.AreEqual(1, result.Blocks.Count);
+            Assert.AreEqual(1, result.Blocks.Length);
             Assert.AreEqual(block.BlockId, result.Blocks[0]);
             Assert.AreEqual(10000, result.Size);
             Assert.AreEqual(blockSize == 0 ? _nameServer.BlockSize : blockSize, result.BlockSize);
@@ -585,7 +585,7 @@ namespace Ookii.Jumbo.Test.Dfs
             result = target.GetFileInfo(path);
             Assert.AreEqual(fileName, result.Name);
             Assert.AreEqual(path, result.FullPath);
-            Assert.AreEqual(1, result.Blocks.Count);
+            Assert.AreEqual(1, result.Blocks.Length);
             Assert.AreEqual(block.BlockId, result.Blocks[0]);
             Assert.AreEqual(10000, result.Size);
             Assert.AreEqual(blockSize == 0 ? _nameServer.BlockSize : blockSize, result.BlockSize);

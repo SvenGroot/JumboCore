@@ -45,6 +45,7 @@ namespace Ookii.Jumbo.Dfs.FileSystem
 
         internal JumboFileSystemEntry(BinaryReader reader)
         {
+            ArgumentNullException.ThrowIfNull(reader);
             _fullPath = reader.ReadString();
             _name = reader.ReadString();
             _dateCreated = ValueWriter<DateTime>.ReadValue(reader);

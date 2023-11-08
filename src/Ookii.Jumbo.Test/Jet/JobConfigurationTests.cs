@@ -138,12 +138,12 @@ namespace Ookii.Jumbo.Test.Jet
 
             Assert.IsNotNull(stage.DataInput);
             Assert.IsTrue(stage.HasDataInput);
-            Assert.AreEqual(file.Blocks.Count * splitsPerBlock, stage.TaskCount);
+            Assert.AreEqual(file.Blocks.Length * splitsPerBlock, stage.TaskCount);
             Assert.AreEqual(stage.TaskCount, stage.DataInput.TaskInputs.Count);
             Assert.AreEqual(1, target.Stages.Count);
             Assert.AreEqual(stage, target.Stages[0]);
             Assert.AreEqual("InputStage", stage.StageId);
-            Assert.AreEqual(file.Blocks.Count * splitsPerBlock, stage.DataInput.TaskInputs.Count);
+            Assert.AreEqual(file.Blocks.Length * splitsPerBlock, stage.DataInput.TaskInputs.Count);
             Assert.IsInstanceOf<FileDataInput>(stage.DataInput);
             Assert.AreEqual(typeof(FileDataInput), stage.DataInputType.ReferencedType);
             Assert.AreEqual(typeof(FileDataInput).AssemblyQualifiedName, stage.DataInputType.TypeName);

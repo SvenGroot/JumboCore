@@ -125,7 +125,7 @@ namespace Ookii.Jumbo.Test.Dfs
 
             int recordIndex = 0;
             JumboFile file = _dfsClient.NameServer.GetFileInfo(fileName);
-            int blocks = file.Blocks.Count;
+            int blocks = file.Blocks.Length;
             int totalRecordsRead = 0;
             for (int block = 0; block < blocks; ++block)
             {
@@ -158,7 +158,7 @@ namespace Ookii.Jumbo.Test.Dfs
             int recordSize = _records[0].ByteLength + Environment.NewLine.Length;
             int recordIndex = 0;
             JumboFile file = _dfsClient.NameServer.GetFileInfo(fileName);
-            int blocks = file.Blocks.Count;
+            int blocks = file.Blocks.Length;
             int totalRecordsRead = 0;
             for (int block = 0; block < blocks; ++block)
             {

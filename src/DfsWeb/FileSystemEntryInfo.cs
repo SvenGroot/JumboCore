@@ -30,7 +30,7 @@ public class FileSystemEntryInfo
             FormattedSize = new BinarySize(file.Size).ToString("0.##SB", CultureInfo.InvariantCulture);
             BlockSize = new BinarySize(file.BlockSize).ToString("AB", CultureInfo.InvariantCulture);
             ReplicationFactor = file.ReplicationFactor;
-            BlockCount = file.Blocks.Count;
+            BlockCount = file.Blocks.Length;
             RecordOptions = file.RecordOptions.ToString();
         }
         else

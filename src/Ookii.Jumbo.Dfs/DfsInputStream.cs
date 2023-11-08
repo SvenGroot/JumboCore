@@ -479,7 +479,7 @@ namespace Ookii.Jumbo.Dfs
                 _serverStream.Flush();
 
                 var status = (DataServerClientProtocolResult)_serverReader.ReadInt16();
-                if (status == DataServerClientProtocolResult.OutOfRange && blockOffset > 0 && blockIndex < _file.Blocks.Count - 1 && _file.RecordOptions == IO.RecordStreamOptions.DoNotCrossBoundary)
+                if (status == DataServerClientProtocolResult.OutOfRange && blockOffset > 0 && blockIndex < _file.Blocks.Length - 1 && _file.RecordOptions == IO.RecordStreamOptions.DoNotCrossBoundary)
                 {
                     var oldPosition = _position;
                     _position = (blockIndex + 1) * _file.BlockSize;
