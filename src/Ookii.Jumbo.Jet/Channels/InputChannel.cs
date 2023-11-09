@@ -189,7 +189,7 @@ namespace Ookii.Jumbo.Jet.Channels
             var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)TaskExecution.JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize;
             // We're not using JetActivator to create the object because we need to delay calling NotifyConfigurationChanged until after InputStage was set.
             var partitions = TaskExecution.GetPartitions();
-            _partitions.AddRange(partitions);
+            _partitions.AddRange(partitions ?? throw new InvalidOperationException("No partitions"));
             var reader = (IMultiInputRecordReader)Activator.CreateInstance(multiInputRecordReaderType, partitions, _inputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, bufferSize, CompressionType)!;
             var channelReader = reader as IChannelMultiInputRecordReader;
             if (channelReader != null)

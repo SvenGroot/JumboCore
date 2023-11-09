@@ -5,12 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Rpc;
-
-#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
 
 namespace Ookii.Jumbo.Dfs.FileSystem
 {
@@ -141,17 +138,13 @@ namespace Ookii.Jumbo.Dfs.FileSystem
         {
             ArgumentNullException.ThrowIfNull(hostName);
 
-            using (var client = new TcpClient(hostName, port))
-            using (var stream = client.GetStream())
-            {
-                DataServerClientProtocolHeader header = new DataServerClientProtocolGetLogFileContentsHeader(maxSize) { Kind = kind };
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, header);
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
+            using var client = new TcpClient(hostName, port);
+            using var stream = client.GetStream();
+            using var writer = new BinaryWriter(stream);
+            var header = new DataServerClientProtocolGetLogFileContentsHeader(maxSize) { Kind = kind };
+            ValueWriter.WriteValue<DataServerClientProtocolHeader>(header, writer);
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
         }
 
         /// <summary>

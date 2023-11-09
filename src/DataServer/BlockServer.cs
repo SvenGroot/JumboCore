@@ -9,8 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
-
-#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
+using Ookii.Jumbo.IO;
 
 namespace DataServerApplication
 {
@@ -32,41 +31,35 @@ namespace DataServerApplication
             _dataServer = dataServer;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "All exceptions should be logged and not cause a crash.")]
         protected override void HandleConnection(TcpClient client)
         {
             try
             {
-                using (var stream = client.GetStream())
-                {
-                    // TODO: Return error codes on invalid header etc.
-                    var formatter = new BinaryFormatter();
-                    var header = (DataServerClientProtocolHeader)formatter.Deserialize(stream);
+                using var stream = client.GetStream();
+                using var reader = new BinaryReader(stream);
 
-                    switch (header.Command)
+                // TODO: Return error codes on invalid header etc.
+                var header = ValueWriter<DataServerClientProtocolHeader>.ReadValue(reader);
+                switch (header.Command)
+                {
+                case DataServerCommand.WriteBlock:
+                    client.LingerState = new LingerOption(true, 10);
+                    client.NoDelay = true;
+                    if (header is DataServerClientProtocolWriteHeader writeHeader)
                     {
-                    case DataServerCommand.WriteBlock:
-                        client.LingerState = new LingerOption(true, 10);
-                        client.NoDelay = true;
-                        var writeHeader = header as DataServerClientProtocolWriteHeader;
-                        if (writeHeader != null)
-                        {
-                            ReceiveBlock(stream, writeHeader);
-                        }
-                        break;
-                    case DataServerCommand.ReadBlock:
-                        var readHeader = header as DataServerClientProtocolReadHeader;
-                        if (readHeader != null)
-                        {
-                            SendBlock(stream, readHeader);
-                        }
-                        break;
-                    case DataServerCommand.GetLogFileContents:
-                        var logHeader = header as DataServerClientProtocolGetLogFileContentsHeader;
-                        if (logHeader != null)
-                            SendLogFile(stream, logHeader);
-                        break;
+                        ReceiveBlock(stream, writeHeader);
                     }
+                    break;
+                case DataServerCommand.ReadBlock:
+                    if (header is DataServerClientProtocolReadHeader readHeader)
+                    {
+                        SendBlock(stream, readHeader);
+                    }
+                    break;
+                case DataServerCommand.GetLogFileContents:
+                    if (header is DataServerClientProtocolGetLogFileContentsHeader logHeader)
+                        SendLogFile(stream, logHeader);
+                    break;
                 }
             }
             catch (Exception ex)
@@ -87,7 +80,7 @@ namespace DataServerApplication
             {
                 try
                 {
-                    if (header.DataServers.Count == 0 || !header.DataServers[0].Equals(_dataServer.LocalAddress))
+                    if (header.DataServers.Length == 0 || !header.DataServers[0].Equals(_dataServer.LocalAddress))
                     {
                         _log.Error("This server was not the first server in the list of remaining servers for the block.");
                         clientWriter.WriteResult(DataServerClientProtocolResult.Error);

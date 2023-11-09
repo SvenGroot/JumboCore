@@ -7,10 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
-
-#pragma warning disable SYSLIB0011 // BinaryFormatter is deprecated.
 
 namespace Ookii.Jumbo.Dfs
 {
@@ -474,8 +473,10 @@ namespace Ookii.Jumbo.Dfs
                     Size = -1
                 };
 
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(_serverStream, header);
+                using (var writer = new BinaryWriter(_serverStream, Encoding.UTF8, true))
+                {
+                    ValueWriter.WriteValue<DataServerClientProtocolHeader>(header, writer);
+                }
                 _serverStream.Flush();
 
                 var status = (DataServerClientProtocolResult)_serverReader.ReadInt16();

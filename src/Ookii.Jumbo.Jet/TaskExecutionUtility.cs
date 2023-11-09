@@ -721,7 +721,7 @@ namespace Ookii.Jumbo.Jet
             }
         }
 
-        internal int[] GetPartitions()
+        internal int[]? GetPartitions()
         {
             return _jobServerTaskClient.GetPartitionsForTask(Context.JobId, Context.TaskAttemptId.TaskId);
         }

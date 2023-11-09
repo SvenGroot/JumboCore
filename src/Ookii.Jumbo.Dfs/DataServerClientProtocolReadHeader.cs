@@ -1,36 +1,36 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using Ookii.Jumbo.IO;
 
-namespace Ookii.Jumbo.Dfs
+namespace Ookii.Jumbo.Dfs;
+
+/// <summary>
+/// Represents the header sent by a client to the data server when reading a block.
+/// </summary>
+[GeneratedWritable]
+public partial class DataServerClientProtocolReadHeader : DataServerClientProtocolHeader
 {
     /// <summary>
-    /// Represents the header sent by a client to the data server when reading a block.
+    /// Initializes a new instance of the <see cref="DataServerClientProtocolReadHeader"/> class.
     /// </summary>
-    [Serializable]
-    public class DataServerClientProtocolReadHeader : DataServerClientProtocolHeader
+    public DataServerClientProtocolReadHeader()
+        : base(DataServerCommand.ReadBlock)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DataServerClientProtocolReadHeader"/> class.
-        /// </summary>
-        public DataServerClientProtocolReadHeader()
-            : base(DataServerCommand.ReadBlock)
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the offset into the block at which to start reading.
-        /// </summary>
-        /// <value>
-        /// The offset into the block, in bytes, at which to start reading.
-        /// </value>
-        public int Offset { get; set; }
-
-        /// <summary>
-        /// Gets or sets the size of the data to read.
-        /// </summary>
-        /// <value>
-        /// The size of the data to read, in bytes.
-        /// </value>
-        public int Size { get; set; }
     }
+
+    /// <summary>
+    /// Gets or sets the offset into the block at which to start reading.
+    /// </summary>
+    /// <value>
+    /// The offset into the block, in bytes, at which to start reading.
+    /// </value>
+    public int Offset { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the data to read.
+    /// </summary>
+    /// <value>
+    /// The size of the data to read, in bytes.
+    /// </value>
+    public int Size { get; set; }
 }

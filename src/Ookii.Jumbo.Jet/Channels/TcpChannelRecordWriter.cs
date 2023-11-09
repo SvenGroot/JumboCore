@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Jet.Channels
         {
             public string HostName { get; set; }
             public int Port { get; set; }
-            public int[] Partitions { get; set; }
+            public int[]? Partitions { get; set; }
             public TcpClient Client { get; set; }
             public WriteBufferedStream ClientStream { get; set; }
 
@@ -120,7 +120,15 @@ namespace Ookii.Jumbo.Jet.Channels
                 var partitions = _taskConnections[taskIndex].Partitions;
                 if (partitions == null)
                 {
-                    partitions = _taskExecution.Context.StageConfiguration.OutputChannel!.PartitionsPerTask <= 1 ? new[] { _outputIds[taskIndex].TaskNumber } : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
+                    partitions = _taskExecution.Context.StageConfiguration.OutputChannel!.PartitionsPerTask <= 1 
+                        ? new[] { _outputIds[taskIndex].TaskNumber } 
+                        : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
+
+                    if (partitions == null)
+                    {
+                        throw new InvalidOperationException("No partitions.");
+                    }
+
                     _taskConnections[taskIndex].Partitions = partitions;
                 }
 
