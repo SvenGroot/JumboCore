@@ -318,14 +318,17 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             CheckIfInputBelongsToJobBuilder(input);
             var taskType = _taskBuilder.CreateDynamicTask(typeof(ITask<TInput, TOutput>).GetMethod("Run")!, processor, 0, recordReuse);
             var result = new StageOperation(this, input, taskType);
-            AddAssemblyAndSerializeDelegateIfNeeded(processor, result);
+            AddDelegateAssembly(processor, result);
             return result;
         }
 
-        private void AddAssemblyAndSerializeDelegateIfNeeded(Delegate processor, StageOperation operation)
+        private void AddDelegateAssembly(Delegate processor, StageOperation operation)
         {
-            if (!DynamicTaskBuilder.CanCallTargetMethodDirectly(processor))
-                DynamicTaskBuilder.SerializeDelegate(operation.Settings, processor);
+            if (!processor.Method.IsPublic || !processor.Method.IsStatic)
+            {
+                throw new NotSupportedException("Only public static methods can be used as processing functions.");
+            }
+
             AddAssembly(processor.Method.DeclaringType!.Assembly);
         }
     }

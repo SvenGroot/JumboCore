@@ -147,7 +147,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             var combinerType = CreateReduceTask<TKey, TValue, Pair<TKey, TValue>>(combiner, recordReuse);
 
             var result = SpillSortCombine(input, combinerType, comparerType);
-            AddAssemblyAndSerializeDelegateIfNeeded(combiner, result);
+            AddDelegateAssembly(combiner, result);
             return result;
         }
     }

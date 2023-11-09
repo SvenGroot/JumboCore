@@ -187,7 +187,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             var taskType = _taskBuilder.CreateDynamicTask(typeof(PushTask<TInput, TOutput>).GetMethod("ProcessRecord")!, mapper, 0, recordReuse);
 
             var result = new StageOperation(this, input, taskType);
-            AddAssemblyAndSerializeDelegateIfNeeded(mapper, result);
+            AddDelegateAssembly(mapper, result);
             return result;
         }
 
@@ -203,7 +203,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             var taskType = CreateReduceTask<TKey, TValue, TOutput>(reducer, recordReuse);
 
             var result = new StageOperation(this, input, taskType);
-            AddAssemblyAndSerializeDelegateIfNeeded(reducer, result);
+            AddDelegateAssembly(reducer, result);
             return result;
         }
 

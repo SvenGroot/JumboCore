@@ -143,7 +143,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             var taskType = _taskBuilder.CreateDynamicTask(typeof(AccumulatorTask<TKey, TValue>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance)!, accumulator, 0, recordReuse);
 
             var result = GroupAggregate(input, taskType, keyComparerType);
-            AddAssemblyAndSerializeDelegateIfNeeded(accumulator, result);
+            AddDelegateAssembly(accumulator, result);
             return result;
         }
 

@@ -19,10 +19,6 @@ namespace Ookii.Jumbo.Jet.Samples
         /// </summary>
         Optimized,
         /// <summary>
-        /// Implementation using lambdas
-        /// </summary>
-        Lambda,
-        /// <summary>
         /// MapReduce implementation
         /// </summary>
         MapReduce
@@ -82,9 +78,7 @@ namespace Ookii.Jumbo.Jet.Samples
             case WordCountKind.Optimized:
                 BuildJobOptimized(job);
                 break;
-            case WordCountKind.Lambda:
-                BuildJobLambda(job);
-                break;
+
             case WordCountKind.MapReduce:
                 BuildJobMapReduce(job);
                 break;
@@ -97,17 +91,6 @@ namespace Ookii.Jumbo.Jet.Samples
             var pairs = job.Process<Utf8String, Pair<Utf8String, int>>(input, SplitLines);
             pairs.StageId = "WordCount";
             var counted = job.GroupAggregate(pairs, typeof(SumTask<>));
-            counted.StageId = "WordCountAggregation";
-            counted.InputChannel!.PartitionCount = Partitions;
-            WriteOutput(counted, OutputPath, typeof(TextRecordWriter<>));
-        }
-
-        private void BuildJobLambda(JobBuilder job)
-        {
-            var input = job.Read(InputPath, typeof(LineRecordReader));
-            var pairs = job.Map<Utf8String, Pair<Utf8String, int>>(input, (record, output) => output.WriteRecords(record.ToString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(word => Pair.MakePair(new Utf8String(word), 1))), RecordReuseMode.Allow);
-            pairs.StageId = "WordCount";
-            var counted = job.GroupAggregate<Utf8String, int>(pairs, (key, value, newValue) => value + newValue);
             counted.StageId = "WordCountAggregation";
             counted.InputChannel!.PartitionCount = Partitions;
             WriteOutput(counted, OutputPath, typeof(TextRecordWriter<>));

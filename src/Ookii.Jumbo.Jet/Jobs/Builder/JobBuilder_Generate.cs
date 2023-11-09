@@ -124,7 +124,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
                                 : _taskBuilder.CreateDynamicTask(typeof(ITask<int, T>).GetMethod("Run")!, generator, 1, RecordReuseMode.Default);
 
             var result = new StageOperation(this, taskCount, taskType);
-            AddAssemblyAndSerializeDelegateIfNeeded(generator, result);
+            AddDelegateAssembly(generator, result);
             return result;
         }
     }
