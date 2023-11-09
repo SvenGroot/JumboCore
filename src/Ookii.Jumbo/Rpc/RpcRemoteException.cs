@@ -14,6 +14,8 @@ namespace Ookii.Jumbo.Rpc;
 public partial class RpcRemoteException : Exception
 {
     private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RpcRemoteException));
+
+    // A handful of known exceptions whose type will be preserved across an RPC.
     private static readonly Dictionary<string, IValueWriter<Exception>> _writers = new()
     {
         { typeof(ArgumentException).AssemblyQualifiedName!, new MessageOnlyExceptionWriter<ArgumentException>() },
@@ -25,6 +27,9 @@ public partial class RpcRemoteException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="RpcRemoteException"/> class. 
     /// </summary>
+    /// <param name="originalExceptionType">
+    /// The full type name of the exception that was thrown by the remote server.
+    /// </param>
     public RpcRemoteException(string originalExceptionType)
     {
         ArgumentNullException.ThrowIfNull(originalExceptionType);
@@ -35,6 +40,9 @@ public partial class RpcRemoteException : Exception
     /// Initializes a new instance of the <see cref="RpcRemoteException"/> class with a specified error message.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
+    /// <param name="originalExceptionType">
+    /// The full type name of the exception that was thrown by the remote server.
+    /// </param>
     public RpcRemoteException(string? message, string originalExceptionType) : base(message)
     {
         ArgumentNullException.ThrowIfNull(originalExceptionType);
@@ -46,6 +54,9 @@ public partial class RpcRemoteException : Exception
     /// Initializes a new instance of the <see cref="RpcRemoteException"/> class with a specified error message and a reference to the inner <see cref="RpcRemoteException"/> that is the cause of this <see cref="RpcRemoteException"/>. 
     /// </summary>
     /// <param name="message">The error message that explains the reason for the <see cref="RpcRemoteException"/>.</param>
+    /// <param name="originalExceptionType">
+    /// The full type name of the exception that was thrown by the remote server.
+    /// </param>
     /// <param name="inner">The <see cref="RpcRemoteException"/> that is the cause of the current <see cref="RpcRemoteException"/>, or a <see langword="null"/> if no inner <see cref="RpcRemoteException"/> is specified.</param>
     public RpcRemoteException(string? message, string originalExceptionType, Exception inner) : base(message, inner)
     {
@@ -63,27 +74,10 @@ public partial class RpcRemoteException : Exception
         OriginalExceptionType = info.GetString(nameof(OriginalExceptionType))!;
     }
 
+    /// <summary>
+    /// Gets the full type name of the exception that was thrown by the remote server.
+    /// </summary>
     public string OriginalExceptionType { get; }
-
-    public static void RegisterExceptionWriter(Type exceptionType, IValueWriter<Exception> writer)
-    {
-        ArgumentNullException.ThrowIfNull(exceptionType);
-        ArgumentNullException.ThrowIfNull(writer);
-        if (exceptionType.AssemblyQualifiedName == null)
-        {
-            throw new ArgumentException("Exception type has no name.", nameof(exceptionType));
-        }
-
-        if (!exceptionType.IsAssignableTo(typeof(Exception))) 
-        {
-            throw new ArgumentException("Type is not an exception type.", nameof(exceptionType));
-        }
-
-        lock (_writers)
-        {
-            _writers.Add(exceptionType.AssemblyQualifiedName, writer);
-        }
-    }
 
     /// <inheritdoc/>
     public override void GetObjectData(SerializationInfo info, StreamingContext context)

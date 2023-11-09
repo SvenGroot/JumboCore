@@ -1,16 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Ookii.Jumbo.IO;
 
+/// <summary>
+/// Value writer that allows a base class to be polymorphically serialized.
+/// </summary>
+/// <typeparam name="T">The type to serialize.</typeparam>
+/// <remarks>
+/// <para>
+///   When using this value writer, you must declare all allowed derived using the <see cref="WritableDerivedTypeAttribute"/>
+///   attribute.
+/// </para>
+/// <para>
+///   In order to support serializing the base class itself, it must not be <see langword="abstract"/>
+///   and implement the <see cref="IWritable"/> interface.
+/// </para>
+/// </remarks>
 public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
     where T : notnull
 {
-    private static readonly Dictionary<string, WriterHelper> _derivedTypes = BuildDerivedTypes();
+    private interface IWriterHelper
+    {
+        T Read(BinaryReader writer);
+
+        void Write(T value, BinaryWriter writer);
+    }
+
+    private sealed class WriterHelper<TDerived> : IWriterHelper
+        where TDerived : notnull, T
+    {
+        public T Read(BinaryReader reader)
+            => ValueWriter<TDerived>.ReadValue(reader);
+
+        public void Write(T value, BinaryWriter writer)
+            => ValueWriter<TDerived>.WriteValue((TDerived)value, writer);
+    }
+
+    private static readonly ImmutableDictionary<string, IWriterHelper> _derivedTypes = BuildDerivedTypes();
     private static readonly bool _allowBaseClass = !typeof(T).IsAbstract && typeof(T).IsAssignableTo(typeof(IWritable));
 
+    /// <inheritdoc/>
     public T Read(BinaryReader reader)
     {
         var typeName = reader.ReadString();
@@ -23,10 +57,11 @@ public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
         else
         {
             var helper = GetHelper(typeName);
-            return (T)helper.Read(reader);
+            return helper.Read(reader);
         }
     }
 
+    /// <inheritdoc/>
     public void Write(T value, BinaryWriter writer)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -45,7 +80,7 @@ public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
         }
     }
 
-    private static WriterHelper GetHelper(string typeName)
+    private static IWriterHelper GetHelper(string typeName)
     {
         if (!_derivedTypes.TryGetValue(typeName, out var helper))
         {
@@ -55,32 +90,11 @@ public sealed class PolymorphicValueWriter<T> : IValueWriter<T>
         return helper;
     }
 
-    private static Dictionary<string, WriterHelper> BuildDerivedTypes()
+    private static ImmutableDictionary<string, IWriterHelper> BuildDerivedTypes()
     {
-        var result = new Dictionary<string, WriterHelper>();
-        foreach (var attr in typeof(T).GetCustomAttributes<WritableDerivedTypeAttribute>())
-        {
-            var helper = (WriterHelper)Activator.CreateInstance(typeof(WriterHelper<>).MakeGenericType(attr.DerivedType))!;
-            result.Add(attr.DerivedType.FullName!, helper);
-        }
-
-        return result;
+        return typeof(T).GetCustomAttributes<WritableDerivedTypeAttribute>()
+            .Select(attr => KeyValuePair.Create(attr.DerivedType.FullName!,
+                (IWriterHelper)Activator.CreateInstance(typeof(WriterHelper<>).MakeGenericType(typeof(T), attr.DerivedType))!))
+            .ToImmutableDictionary();
     }
-}
-
-abstract class WriterHelper
-{
-    public abstract object Read(BinaryReader writer);
-
-    public abstract void Write(object value, BinaryWriter writer);
-}
-
-sealed class WriterHelper<TDerived> : WriterHelper
-    where TDerived : notnull
-{
-    public override object Read(BinaryReader reader)
-        => ValueWriter<TDerived>.ReadValue(reader);
-
-    public override void Write(object value, BinaryWriter writer)
-        => ValueWriter<TDerived>.WriteValue((TDerived)value, writer);
 }
