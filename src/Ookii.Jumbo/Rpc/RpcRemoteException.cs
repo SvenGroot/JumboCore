@@ -86,7 +86,15 @@ public partial class RpcRemoteException : Exception
         info.AddValue(nameof(OriginalExceptionType), OriginalExceptionType);
     }
 
-    internal static Exception ReadFrom(BinaryReader reader)
+    /// <summary>
+    /// Deserializes an exception.
+    /// </summary>
+    /// <param name="reader">The <see cref="BinaryReader"/> to read the exception from.</param>
+    /// <returns>
+    /// The deserialized exception. In most cases, this will be a <see cref="RpcRemoteException"/>
+    /// object, but for some supported exception types the original type is preserved.
+    /// </returns>
+    public static Exception ReadFrom(BinaryReader reader)
     {
         ArgumentNullException.ThrowIfNull(reader);
         var originalExceptionType = reader.ReadString();
@@ -118,8 +126,15 @@ public partial class RpcRemoteException : Exception
         return ex;
     }
 
-    internal static void WriteTo(Exception exception, BinaryWriter writer)
+    /// <summary>
+    /// Serializes an exception.
+    /// </summary>
+    /// <param name="exception">The exception to serialize</param>
+    /// <param name="writer">The <see cref="BinaryWriter"/> to write the serialized data to.</param>
+    public static void WriteTo(Exception exception, BinaryWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(exception);
+        ArgumentNullException.ThrowIfNull(writer);
         writer.Write((byte)RpcResponseStatus.Error);
         var name = exception.GetType().AssemblyQualifiedName ?? exception.GetType().Name;
         writer.Write(name);
