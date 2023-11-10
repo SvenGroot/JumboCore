@@ -11,7 +11,6 @@ namespace Ookii.Jumbo.Jet.Jobs
     /// <summary>
     /// Provides settings for a job configuration.
     /// </summary>
-    [Serializable]
     public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSerializable
     {
         /// <summary>

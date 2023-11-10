@@ -46,9 +46,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   You can set the <see cref="ProgressContext.Progress"/> property to report progress of the generation process.
         /// </para>
         /// <para>
-        ///   If the target method is a <see langword="public" /> <see langword="static"/> method, it will be called directly by the generated task class. Otherwise, the supplied
-        ///   delegate will be serialized to the task settings and used to call the method. If the target method is an instance method, the instance it belongs to will be
-        ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
+        ///   The target method must be a <c>public static</c> method.
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>, ProgressContext> generator)
@@ -74,9 +72,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   on any external state.
         /// </note>
         /// <para>
-        ///   If the target method is a <see langword="public" /> <see langword="static"/> method, it will be called directly by the generated task class. Otherwise, the supplied
-        ///   delegate will be serialized to the task settings and used to call the method. If the target method is an instance method, the instance it belongs to will be
-        ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
+        ///   The target method must be a <c>public static</c> method.
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>, TaskContext> generator)
@@ -102,9 +98,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   on any external state.
         /// </note>
         /// <para>
-        ///   If the target method is a <see langword="public" /> <see langword="static"/> method, it will be called directly by the generated task class. Otherwise, the supplied
-        ///   delegate will be serialized to the task settings and used to call the method. If the target method is an instance method, the instance it belongs to will be
-        ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
+        ///   The target method must be a <c>public static</c> method.
         /// </para>
         /// </remarks>
         public StageOperation Generate<T>(int taskCount, Action<RecordWriter<T>> generator)

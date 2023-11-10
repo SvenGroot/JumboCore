@@ -16,21 +16,6 @@ namespace Ookii.Jumbo.Test.Jet
     [TestFixture]
     public class DynamicTaskBuilderTests
     {
-        #region Nested types
-
-        [Serializable]
-        private class InstanceDelegateTest
-        {
-            public int Factor { get; set; }
-
-            public void TaskMethod(RecordReader<int> input, RecordWriter<int> output)
-            {
-                output.WriteRecords(input.EnumerateRecords().Select(i => i * Factor));
-            }
-        }
-
-        #endregion
-
         [Test]
         public void TestCreateDynamicTask()
         {

@@ -9,7 +9,6 @@ namespace Ookii.Jumbo
     /// Provides additional functionality for <see cref="Collection{T}" />.
     /// </summary>
     /// <typeparam name="T">The type of the items in the collection</typeparam>
-    [Serializable]
     public class ExtendedCollection<T> : Collection<T>
     {
         private readonly List<T> _itemsList;

@@ -82,9 +82,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   that attribute will be copied to the task class.
         /// </para>
         /// <para>
-        ///   If the target method is a <see langword="public" /> <see langword="static"/> method, it will be called directly by the generated task class. Otherwise, the supplied
-        ///   delegate will be serialized to the task settings and used to call the method. If the target method is an instance method, the instance it belongs to will be
-        ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
+        ///   The target method must be a <c>public static</c> method.
         /// </para>
         /// </remarks>
         public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TaskContext, TValue> accumulator, Type? keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
@@ -120,9 +118,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
         ///   that attribute will be copied to the task class.
         /// </para>
         /// <para>
-        ///   If the target method is a <see langword="public" /> <see langword="static"/> method, it will be called directly by the generated task class. Otherwise, the supplied
-        ///   delegate will be serialized to the task settings and used to call the method. If the target method is an instance method, the instance it belongs to will be
-        ///   serialized as well (this class must have the <see cref="SerializableAttribute"/> attribute).
+        ///   The target method must be a <c>public static</c> method.
         /// </para>
         /// </remarks>
         public TwoStepOperation GroupAggregate<TKey, TValue>(IOperationInput input, Func<TKey, TValue, TValue, TValue> accumulator, Type? keyComparerType = null, RecordReuseMode recordReuse = RecordReuseMode.Default)
