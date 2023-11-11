@@ -128,14 +128,10 @@ generator tasks, and provides functionality for sorting and joining data.
 
 When using the `JobBuilder` methods that take a delegate, the `JobBuilder` dynamically generates a
 class, inheriting from one of the utility task types, that calls the target method of the delegate.
-If the target method is `public static`, the method will be called directly. If it's not, the
-delegate is serialized and saved in the job configuration, and will be deserialized and used to
-call the method during task execution, which is considerably slower and should be avoided when
-possible.
 
-It is of course also possible to still write a custom task type while using the job builder, and
-to mix and match custom task types and processing methods. This can be useful when writing more
-complicated data processing jobs.
+The target method must be `public static` so that it can be called without needing the delegate
+inside the task. With the removal of Jumbo's reliance on `BinaryFormatter`, serializing delegates
+is no longer supported.
 
 ## Channels
 
@@ -355,10 +351,6 @@ The `Write` method must serialize the objects entire state to a `BinaryWriter`. 
 to the record must be serialized, and a call to the `Read` method on the same type using the data
 written must reconstruct the state of the object that `Write` was called on.
 
-`IWritable` serialization does not support polymorphism. You should expect to use the exact same
-object type for `Read` and `Write` every time. `ValueWriter` could technically be used to support
-polymorphism, but this isn't recommended (and I've never tried it).
-
 There is also a [`Writable<T>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Writable_1.htm)
 base class, which allows you to use a default serializer that is generated at runtime using reflection,
 which will serialize all properties of the type. This can be used by implementing your record type
@@ -371,6 +363,18 @@ type that implements `IValueWriter<T>`, whose [`Read`](https://www.ookii.org/doc
 and [`Write`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_IO_IValueWriter_1_Write.htm)
 methods follow the same rules as those of `IWritable`. Apply the [`ValueWriterAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_ValueWriterAttribute.htm)
 attribute to the record type to indicate the type of its `ValueWriter`.
+
+#### Polymorphism
+
+Generally, using polymorphic records in tasks should be avoided. It is however possible to support
+it using the `PolymorphicValueWriter<T>` class. When using this class as the value writer for your
+class, it allows serialization of a predefined set of derived classes. These derived types must be
+specified using the `WritableDerivedTypeAttribute` attribute on the base class; this is to avoid
+running arbitrary code on deserialization.
+
+If the base class is not abstract, it should implement `IWritable` as well as use the
+`PolymorphicValueWriter<T>` to supported direct serialization of the base type as well as derived
+types.
 
 #### Raw comparers
 
