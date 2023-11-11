@@ -21,7 +21,7 @@ method to customize elements of the configuration after it has been created.
 
 You can also easily add job settings based on the properties of your job runner, by applying the
 [`JobSettingAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm)
-attribute to the property. This works by calling the `ApplyJobPropertiesAndSettings`(https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_BaseJobRunner_ApplyJobPropertiesAndSettings.htm)
+attribute to the property. This works by calling the [`ApplyJobPropertiesAndSettings`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_BaseJobRunner_ApplyJobPropertiesAndSettings.htm)
 method, which `JobBuilderJob` does automatically. This method also allows the user to override any
 job property or setting using the `-Property` and `-Setting` command line arguments defined by the
 [`BaseJobRunner`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm).

@@ -32,14 +32,22 @@ It's only provided to preserve the history of the project, since this repository
 the history of the port. There's no reason to try and use that version.
 
 Because this is a port of an older project, it mostly does not use any fancy new C# language
-features that were introduced after .Net Framework 4.0, except for the few places where I may have
-randomly updated some stuff. I did decide to add nullable annotations, just to see what it would
-uncover, and what it uncovered was that, especially in Jumbo Jet, I have a lot of places where I
-assume stuff is not null because of what part of execution I'm in. I mostly just left those, using
-the null-forgiving operator, since I didn't want to rearchitect the code too much.
+features that were introduced after .Net Framework 4.0, and I'm sure the code could be improved in
+many ways.
 
-I'm sure the code could be improved in a lot of ways, but that's not a goal at this point. This
-project is not maintained or updated in any way.
+This project is not really maintained, however I do still sometimes like to tinker, so you may
+randomly see some updates. Here's some updates that were made after bringing the project to GitHub:
+
+- **Nullable annotations**: all the class libraries have been updated to support Nullable Reference
+  Types (at this time, this isn't true for the executables). I was curious to see what that would
+  uncover. What I found was that, especially in Jumbo Jet, I have a lot of places where I assume stuff
+  is not null because of what part of execution I'm in. I mostly just left those, using the
+  null-forgiving operator, since I didn't want to rearchitect the code too much.
+- **Removal of BinaryFormatter**: the `BinaryFormatter` class is [unsafe](https://aka.ms/binaryformatter),
+  cannot be made safe, and is deprecated. I believe it's slated for removal in .Net 9. However,
+  Jumbo's RPC mechanism relied on it. With some modifications, I was able to transition to using
+  Jumbo's own `IWritiable`/`IValueWriter<T>` serialization mechanism for RPC, eliminating the use of
+  this dangerous class.
 
 ## Limitations
 
