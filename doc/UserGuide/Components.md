@@ -101,11 +101,10 @@ When reading a file, the process is simpler:
    next DataServer (there is currently no mechanism to remove the corrupted block and re-replicate
    it; see, this is why Jumbo is not production quality code).
 
-Client applications interact with the DFS using the [`Ookii.Jumbo.Dfs.Filesystem.FileSystemClient`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm),
-which provides an API for performing these operations. Using it, a client simply creates a file,
-gets a [Stream](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm) for
-it, and writes to that stream like any normal file. All the steps above are taken care of under the
-hood.
+Client applications interact with the DFS using the [`FileSystemClient`][] class, which provides an API
+for performing these operations. Using it, a client simply creates a file, gets a [`DfsOutputStream`][]
+for it, and writes to that stream like any normal file. All the steps above are taken care of under
+the hood.
 
 It's probably rare that you'll ever write a DFS client application yourself. If you write Jumbo Jet
 jobs, most of this is abstracted through its data input and output models. And as an end user, you
@@ -136,19 +135,23 @@ are run in parallel on multiple systems in a cluster. For stages reading a data 
 input is divided linearly across tasks (these are called _splits_). For stages reading a channel
 input, the channel _partitions_ the data across the tasks.
 
-Tasks run a user-defined piece of code to do their processing. This code doesn’t need to be aware
-of most of the details. Regardless of whether the task is reading from or writing to a file or a
-channel, the code is the same. Input is provided via a [`RecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm)
-and output is written to a [`RecordWriter`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm),
-which take care of the details. Since partitioning (and optionally, things like sorting) are handled
-by the Jumbo Jet infrastructure, you don’t have to worry about how to perform those operations; you
-simply need to specify you want them to happen.
+Tasks run a user-defined piece of code to do their processing. This code doesn’t need to be aware of
+most of the details. Regardless of whether the task is reading from or writing to a file or a
+channel, the code is the same. Input is provided via a [`RecordReader<T>`][] and output is written to a
+[`RecordWriter<T>`][], which take care of the details. Since partitioning (and optionally, things like
+sorting) are handled by the Jumbo Jet infrastructure, you don’t have to worry about how to perform
+those operations; you simply need to specify you want them to happen.
 
-The typical way to create a job in Jumbo is to use the [`JobBuilder`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm),
-which allows you to specify a sequence of operations which are then translated into a job
-configuration of stages and channels. This means you can create jobs without worrying too much
-about their actual structure during execution (although of course this is available if you want to
-do more complex processing).
+The typical way to create a job in Jumbo is to use the [`JobBuilder`][], which allows you to specify a
+sequence of operations which are then translated into a job configuration of stages and channels.
+This means you can create jobs without worrying too much about their actual structure during
+execution (although of course this is available if you want to do more complex processing).
 
 We will go into more details about how jobs are executed [later](JobExecution.md). First, it's time
 to learn how to [write your own jobs for Jumbo Jet](Tutorial1.md).
+
+[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
+[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm

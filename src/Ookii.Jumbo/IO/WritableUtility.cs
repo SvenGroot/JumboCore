@@ -31,6 +31,9 @@ namespace Ookii.Jumbo.IO
         /// <summary>
         /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
         /// </summary>
+        /// <param name="type">
+        /// The type of the object to create. This type must implement the <see cref="IWritable"/> interface.
+        /// </param>
         /// <returns>An uninitialized instance of <paramref name="type"/>.</returns>
         /// <remarks>
         /// <para>

@@ -1,0 +1,14 @@
+{
+  "#apiPrefix": "https://learn.microsoft.com/dotnet/api/",
+  "#prefix": "https://www.ookii.org/docs/jumbo-2.0/html/",
+  "#suffix": ".htm",
+  "DfsOutputStream": "T_Ookii_Jumbo_Dfs_DfsOutputStream",
+  "DfsShell": null,
+  "FileSystemClient": "T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient",
+  "JobBuilder": "T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder",
+  "Ookii.Jumbo.Dfs.Filesystem.FileSystemClient": "T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient",
+  "RecordReader": "T_Ookii_Jumbo_IO_RecordReader",
+  "RecordReader<T>": "T_Ookii_Jumbo_IO_RecordReader_1",
+  "RecordWriter": "T_Ookii_Jumbo_IO_RecordWriter",
+  "RecordWriter<T>": "T_Ookii_Jumbo_IO_RecordWriter_1"
+}

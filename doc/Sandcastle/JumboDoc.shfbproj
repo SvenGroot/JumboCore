@@ -58,25 +58,36 @@
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Ookii.Jumbo" isDocumented="True">Provides utility types used by all Jumbo components.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Dfs" isDocumented="True">Provides types used in the implementation of the Jumbo Distributed File System.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Dfs.FileSystem" isDocumented="True">Provides types used to access the Jumbo Distributed File System.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.IO" isDocumented="True">Provides types related to reading and writing input, output and intermediate records in Jumbo.
+      <NamespaceSummaryItem name="Ookii.Jumbo.Dfs" isDocumented="True">Provides types used in the implementation of the Jumbo Distributed File System.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Dfs.FileSystem" isDocumented="True">Provides types used to access the Jumbo Distributed File System.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.IO" isDocumented="True">Provides types related to reading and writing input, output and intermediate records in Jumbo.
 
 &lt;see cref="T:Ookii.Jumbo.IO.RecordReader`1" /&gt; is the base class for all types that can read input or channel data. &lt;see cref="T:Ookii.Jumbo.IO.RecordWriter`1" /&gt; is the base class for all types that can write output or channel data.
 
 &lt;see cref="T:Ookii.Jumbo.IO.IWritable" /&gt; and &lt;see cref="T:Ookii.Jumbo.IO.IValueWriter`1" /&gt; provide the serialization infrastructure used for Jumbo Jet intermediate record types.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet" isDocumented="True">Provides types used in the implementation of the Jumbo Jet data processing engine, and basic types related to job operation such as &lt;see cref="T:Ookii.Jumbo.Jet.ITask`2" /&gt;, &lt;see cref="T:Ookii.Jumbo.Jet.Configurable" /&gt; and &lt;see cref="T:Ookii.Jumbo.Jet.TaskContext" /&gt;.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Channels" isDocumented="True">Provides the implementation of File, Pipeline and TCP channels, as well as the sorting implementation used by channels using SpillSort.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.IO" isDocumented="True">Provides types that define the input and output of stages and tasks in a job configuration.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Jobs" isDocumented="True">Provides types for creating and reading job configurations, as well as the base types used for JobRunners in JetShell.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Jobs.Builder" isDocumented="True">Provides types for creating a job configuration by defining a sequence of operations in code.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples" isDocumented="True">Provides sample jobs for the Jumbo Jet data processing engine.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples.FPGrowth" isDocumented="True">Provides a sample job implementing the Parallel FP Growth algorithm.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples.IO" isDocumented="True">Provides helper record types for various Jumbo Jet samples.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Scheduling" isDocumented="True">Provides interfaces required for implementing a Jumbo Jet task scheduler, as well as the default scheduler implementation.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Jet.Tasks" isDocumented="True">Provides helper types for common types of tasks.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Rpc" isDocumented="True">Provides the infrastructure used for communication between the various Jumbo components. Jumbo originally depended on .Net Remoting for this purpose, but because of issues with the Mono implementation of .Net Remoting, a custom RPC mechanism using similar semantics was implemented. These types are internal to Jumbo and should not be used by any clients.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Ookii.Jumbo.Topology" isDocumented="True">Provides types used to define a network topology that can be used to determine data locality for replication and task scheduling.</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet" isDocumented="True">Provides types used in the implementation of the Jumbo Jet data processing engine, and basic types related to job operation such as &lt;see cref="T:Ookii.Jumbo.Jet.ITask`2" /&gt;, &lt;see cref="T:Ookii.Jumbo.Jet.Configurable" /&gt; and &lt;see cref="T:Ookii.Jumbo.Jet.TaskContext" /&gt;.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Channels" isDocumented="True">Provides the implementation of File, Pipeline and TCP channels, as well as the sorting implementation used by channels using SpillSort.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.IO" isDocumented="True">Provides types that define the input and output of stages and tasks in a job configuration.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Jobs" isDocumented="True">Provides types for creating and reading job configurations, as well as the base types used for JobRunners in JetShell.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Jobs.Builder" isDocumented="True">Provides types for creating a job configuration by defining a sequence of operations in code.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples" isDocumented="True">Provides sample jobs for the Jumbo Jet data processing engine.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples.FPGrowth" isDocumented="True">Provides a sample job implementing the Parallel FP Growth algorithm.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Samples.IO" isDocumented="True">Provides helper record types for various Jumbo Jet samples.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Scheduling" isDocumented="True">Provides interfaces required for implementing a Jumbo Jet task scheduler, as well as the default scheduler implementation.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Jet.Tasks" isDocumented="True">Provides helper types for common types of tasks.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Rpc" isDocumented="True">Provides the infrastructure used for communication between the various Jumbo components. Jumbo originally depended on .Net Remoting for this purpose, but because of issues with the Mono implementation of .Net Remoting, a custom RPC mechanism using similar semantics was implemented. These types are internal to Jumbo and should not be used by any clients.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Ookii.Jumbo.Topology" isDocumented="True">Provides types used to define a network topology that can be used to determine data locality for replication and task scheduling.</NamespaceSummaryItem>
+    </NamespaceSummaries>
+    <PlugInConfigurations>
+      <PlugInConfig id="Additional Reference Links" enabled="True" xmlns="">
+        <configuration>
+  <targets>
+    <target htmlSdkLinkType="None" helpViewerSdkLinkType="Id" websiteSdkLinkType="None" helpFileProject="..\..\..\Ookii.CommandLine\docs\Ookii.CommandLine.shfbproj" />
+    <target htmlSdkLinkType="None" helpViewerSdkLinkType="Id" websiteSdkLinkType="None" helpFileProject="..\..\..\Ookii.BinarySize\docs\Ookii.BinarySize.shfbproj" />
+  </targets>
+</configuration>
+      </PlugInConfig>
+    </PlugInConfigurations>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
