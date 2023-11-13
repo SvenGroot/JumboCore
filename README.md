@@ -48,6 +48,10 @@ randomly see some updates. Here's some updates that were made after bringing the
   Jumbo's RPC mechanism relied on it. With some modifications, I was able to transition to using
   Jumbo's own `IWritiable`/`IValueWriter<T>` serialization mechanism for RPC, eliminating the use of
   this dangerous class.
+- **Source generation**: I've used a C# source generator to help create implementations of
+  `IWritable` using the `GeneratedWritableAttribute` attribute, `IValueWriter` using the
+  `GenerateValueWriterAttribute` attribute, and RPC clients and servers using the
+  `RpcInterfaceAttribute` attribute.
 
 ## Limitations
 

@@ -212,7 +212,7 @@ a custom record writer and reader allows for direct access to the intermediate f
 greater efficiency. Leaving this functionality up to the channels also allows for a more natural
 implementation of MapReduce.
 
-## Dynamic partition assigment
+## Dynamic partition assignment
 
 One issue with the scalability of systems like MapReduce or Jumbo is the problem of stragglers.
 Stragglers are tasks that take longer than others in a stage and delay the execution time of the
@@ -351,10 +351,10 @@ The `Write` method must serialize the objects entire state to a `BinaryWriter`. 
 to the record must be serialized, and a call to the `Read` method on the same type using the data
 written must reconstruct the state of the object that `Write` was called on.
 
-There is also a [`Writable<T>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Writable_1.htm)
-base class, which allows you to use a default serializer that is generated at runtime using reflection,
-which will serialize all properties of the type. This can be used by implementing your record type
-as `class MyRecord : Writable<MyRecord>`.
+You can apply the `GeneratedWritableAttribute` attribute to a class to automatically generate an
+implementation of `IWritable` that serializes the public and private properties of your class, as
+long as they have both a get and set method. This attribute replaces the old `Writable<T>` base
+class, which did the same thing through reflection and emitting IL.
 
 #### Creating a ValueWriter
 
@@ -363,6 +363,12 @@ type that implements `IValueWriter<T>`, whose [`Read`](https://www.ookii.org/doc
 and [`Write`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_IO_IValueWriter_1_Write.htm)
 methods follow the same rules as those of `IWritable`. Apply the [`ValueWriterAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_ValueWriterAttribute.htm)
 attribute to the record type to indicate the type of its `ValueWriter`.
+
+You can generate an `IValueWriter` implementation by applying the `GeneratedValueWriterAttribute` to
+your class or structure. When doing this, a nested type called `Writer` is generated that implements
+the serialization, and a private constructor taking a `BinaryReader` is added to your class to
+handle deserialization. This allows for deserialization of automatic properties that have no set
+method, and can therefore only be set in a constructor.
 
 #### Polymorphism
 
