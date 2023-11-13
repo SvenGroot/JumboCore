@@ -46,7 +46,7 @@ randomly see some updates. Here's some updates that were made after bringing the
 - **Removal of BinaryFormatter**: the `BinaryFormatter` class is [unsafe](https://aka.ms/binaryformatter),
   cannot be made safe, and is deprecated. I believe it's slated for removal in .Net 9. However,
   Jumbo's RPC mechanism relied on it. With some modifications, I was able to transition to using
-  Jumbo's own `IWritiable`/`IValueWriter<T>` serialization mechanism for RPC, eliminating the use of
+  Jumbo's own `IWritable`/`IValueWriter<T>` serialization mechanism for RPC, eliminating the use of
   this dangerous class.
 - **Source generation**: I've used a C# source generator to help create implementations of
   `IWritable` using the `GeneratedWritableAttribute` attribute, `IValueWriter` using the
