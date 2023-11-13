@@ -51,20 +51,18 @@ data from disk. In addition, a small amount at the start of the block may be rea
 while looking for the start of a record.
 
 To avoid this, Jumbo DFS can indicate that a file is record-aware, which is done by specifying
-[`RecordStreamOptions.DoNotCrossBoundary`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordStreamOptions.htm)
-when the file is created. The [`DfsOutputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm)
-that is used to write files implements [`IRecordOutputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordOutputStream.htm),
-which lets a [`StreamRecordWriter`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordWriter_1.htm)
-indicate where records start. In this case, `DfsOutputStream` makes sure that records never cross a
-block boundary, switching to the next block if a record doesn't fit in the current block.
+[`RecordStreamOptions.DoNotCrossBoundary`][] when the file is created. The [`DfsOutputStream`][]
+that is used to write files implements [`IRecordOutputStream`][], which lets a
+[`StreamRecordWriter<T>`][] indicate where records start. In this case, [`DfsOutputStream`][] makes
+sure that records never cross a block boundary, switching to the next block if a record doesn't fit
+in the current block.
 
 In this case, all blocks in a file will have slightly different sizes, up to the file's specified
 block size.
 
-When record-aware streams are used, the [`StreamRecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordReader_1.htm)
-uses [`IRecordInputStream`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordInputStream.htm)
-to determine that it doesn't need to continue reading past a block boundary, preventing any
-non-local data from being read.
+When record-aware streams are used, the [`StreamRecordReader<T>`][] uses [`IRecordInputStream`][] to
+determine that it doesn't need to continue reading past a block boundary, preventing any non-local
+data from being read.
 
 ## DfsShell
 
@@ -146,3 +144,10 @@ files is not supported; for that, you have to use DfsShell.
 [![File system browser](images/DfsWebBrowseSmall.png)](images/DfsWebBrowse.png)
 
 Next, we'll look at [Jumbo Jet's features](JetFeatures.md).
+
+[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
+[`IRecordInputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordInputStream.htm
+[`IRecordOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordOutputStream.htm
+[`RecordStreamOptions.DoNotCrossBoundary`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordStreamOptions.htm
+[`StreamRecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordReader_1.htm
+[`StreamRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordWriter_1.htm
