@@ -64,12 +64,11 @@ use case-insensitive comparisons on the words, and finally a parameter that spec
 containing a list of patterns to ignore. Note that I’ve added descriptions to all of these, which
 will be used by JetShell when displaying command line usage information for the job.
 
-The CaseInsensitive and IgnorePatternsFile properties also have the [`JobSettingAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm)
+The CaseInsensitive and IgnorePatternsFile properties also have the [`JobSettingAttribute`][]
 applied. While you can manually add job settings via the JobBuilder.Settings property, for
-convenience [`JobBuilderJob`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm)
-will add the value of every property marked with the [`JobSettingAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm)
-to the job settings, using `ClassName.PropertyName` as the setting’s key. This allows our tasks to
-get the value of these arguments during job execution.
+convenience [`JobBuilderJob`][] will add the value of every property marked with the
+[`JobSettingAttribute`][] to the job settings, using `ClassName.PropertyName` as the setting’s key.
+This allows our tasks to get the value of these arguments during job execution.
 
 ## Data processing functions
 
@@ -83,18 +82,18 @@ public static void MapWords(RecordReader<Utf8String> input, RecordWriter<Pair<st
 {
 ```
 
-This function signature takes a [`RecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm)
-from which the input is read, instead of a record instance. It also has a [`TaskContext`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_TaskContext.htm)
-parameter, which we’ll need to access the job settings. Note that I’ve applied the [`AllowRecordReuseAttribute`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_AllowRecordReuseAttribute.htm)
-attribute to the method, to tell Jumbo it’s okay to reuse record object instances for the input,
-which improves performance by reducing GC pressure.
+This function signature takes a [`RecordReader<T>`][] from which the input is read, instead of a
+record instance. It also has a [`TaskContext`][] parameter, which we’ll need to access the job
+settings. Note that I’ve applied the [`AllowRecordReuseAttribute`][] attribute to the method, to
+tell Jumbo it’s okay to reuse record object instances for the input, which improves performance by
+reducing GC pressure.
 
-One interesting thing to note is that for the output record type, we’re using [`Pair<string, int>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm),
-so we’re using `String` instead of [`Utf8String`](https://www.ookii.org/docs/jumbo-2.0/html/Properties_T_Ookii_Jumbo_IO_Utf8String.htm).
-This is because we want to be able to use a case-insensitive string comparer, and there is none for
-`Utf8String`. Of course, you could write one, but since the .Net `String` class already has one
-we’ll use that instead. This limits our ability to use record reuse, but since we'll be converting
-records to string anyway to split the words, it doesn't really matter.
+One interesting thing to note is that for the output record type, we’re using [`Pair<string,
+int>`][], so we’re using [`String`][] instead of [`Utf8String`][]. This is because we want to be
+able to use a case-insensitive string comparer, and there is none for [`Utf8String`][]. Of course,
+you could write one, but since the .Net [`String`][] class already has one we’ll use that instead.
+This limits our ability to use record reuse, but since we'll be converting records to string anyway
+to split the words, it doesn't really matter.
 
 The first thing the method should do is read the list of ignore patterns:
 
@@ -105,7 +104,7 @@ Regex ignorePattern = GetIgnorePattern(context);
 We’ll get back to the details of the `GetIgnorePattern` function in a bit.
 
 Since we’re keeping state between the records, we might as well reuse the output record object
-instance as well, and the array containing the separator for `String.Split`.
+instance as well, and the array containing the separator for [`String.Split`][].
 
 ```csharp
 Pair<string, int> outputRecord = Pair.MakePair((string)null, 1);
@@ -113,8 +112,8 @@ char[] separator = new char[] { ' ' };
 ```
 
 In this case we know that output record reuse is safe without checking
-`TaskContext.StageConfiguration.AllowOutputRecordReuse` because the output of this stage will be a
-pipeline channel to an aggregation task, which we know also supports record reuse.
+[`TaskContext.StageConfiguration.AllowOutputRecordReuse`][] because the output of this stage will be
+a pipeline channel to an aggregation task, which we know also supports record reuse.
 
 The only thing remaining is to process the records:
 
@@ -136,7 +135,7 @@ foreach( Utf8String record in input.EnumerateRecords() )
 
 This basically does the same thing as the map function from our first version of WordCount, except
 it removes words from the line that match the ignore pattern, and reuses the same instance of
-`Pair` for every record.
+[`Pair<TKey, TValue>`][] for every record.
 
 Let’s look at that `GetIgnorePattern` function, which loads the ignore patterns file:
 
@@ -158,17 +157,17 @@ private static Regex GetIgnorePattern(TaskContext context)
 ```
 
 The function checks the job configuration to get the value of the setting that was added by our
-`IgnorePatternsFile` property. That file is then loaded by using the [`TaskContext.DownloadDfsFile`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm)
-helper function. The task could of course use [`FileSystemClient`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm)
-directly to read the file from the DFS, but this method will cache the file locally on the task
-server so that if multiple tasks on that server need the file it doesn’t need to read it from the
-DFS every time. This function returns a local path where the cached file is stored. The method then
-reads that file and constructs a regular expression for the ignored patterns, optionally making it
-case-insensitive.
+`IgnorePatternsFile` property. That file is then loaded by using the
+[`TaskContext.DownloadDfsFile`][] helper function. The task could of course use
+[`FileSystemClient`][] directly to read the file from the DFS, but this method will cache the file
+locally on the task server so that if multiple tasks on that server need the file it doesn’t need to
+read it from the DFS every time. This function returns a local path where the cached file is stored.
+The method then reads that file and constructs a regular expression for the ignored patterns,
+optionally making it case-insensitive.
 
 Note that in this case it would probably have made more sense to add the ignore patterns themselves
-to the job configuration, but I wanted to demonstrate the `DownloadDfsFile` function, so there you
-are.
+to the job configuration, but I wanted to demonstrate the [`DownloadDfsFile`][DownloadDfsFile_1]
+function, so there you are.
 
 We also need an aggregation function, which is the same as before:
 
@@ -180,10 +179,10 @@ public static int AggregateCounts(string key, int oldValue, int newValue)
 }
 ```
 
-The only difference is the key type (`String` instead of `Utf8String`), and the AllowRecordReuse
-attribute. Allowing record reuse for an aggregation function is safe as long as the types of the
-key and value are either value types or implement `ICloneable`. Since `String` implements
-`ICloneable` and `int` is a value type, we can do it here.
+The only difference is the key type ([`String`][] instead of [`Utf8String`][]), and the
+[`AllowRecordReuseAttribute`][] attribute. Allowing record reuse for an aggregation function is safe
+as long as the types of the key and value are either value types or implement [`ICloneable`][].
+Since [`String`][] implements [`ICloneable`][] and `int` is a value type, we can do it here.
 
 In this version of WordCount, we want to sort the result by descending word frequency. However,
 word frequency is the value of the key/value pair, and the default comparer for Pair sorts by key.
@@ -202,12 +201,11 @@ We’re going to use this function twice, first to put the frequency as the key,
 swap the key and value back. Therefore, I’ve made the function generic so we can use the same
 function both times.
 
-Because this task will be used in a child stage, we want the `JobBuilder` to generate a task type
-that derives from [`PushTask<TInput, TOutput>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_PushTask_2.htm).
-This is not the case if we use a loop-style function like `MapWords` above, so we use the style
-that takes a single output record. This prevents us from reusing the output `Pair` instance, but
-in this case the performance gain from using a push task is greater than the loss from not using
-output record reuse.
+Because this task will be used in a child stage, we want the [`JobBuilder`][] to generate a task
+type that derives from [`PushTask<TInput, TOutput>`][]. This is not the case if we use a loop-style
+function like `MapWords` above, so we use the style that takes a single output record. This prevents
+us from reusing the output [`Pair<TKey, TValue>`][] instance, but in this case the performance gain
+from using a push task is greater than the loss from not using output record reuse.
 
 We could get around that by implementing our own task class which keeps the reused instance as a
 member, but that's beyond the scope of this tutorial.
@@ -225,12 +223,12 @@ protected override void BuildJob(JobBuilder job)
     words.StageId = "WordCount";
 ```
 
-As before, we read the input using a [`LineRecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm).
-Because we’re using a function that processes all records rather than a map function, we call [`JobBuilder.Process`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Process__2_1.htm)
-rather than [`JobBuilder.Map`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map__2.htm)
-for the first operation. We’re also assigning an explicit stage ID, which makes the job progress in
-JetShell and the JetWeb administration portal look a bit nicer than using the auto-generated stage
-ID (which you may have noticed was MapWordsTaskStage for this stage in the previous tutorial).
+As before, we read the input using a [`LineRecordReader`][]. Because we’re using a function that
+processes all records rather than a map function, we call [`JobBuilder.Process`][] rather than
+[`JobBuilder.Map`][] for the first operation. We’re also assigning an explicit stage ID, which makes
+the job progress in JetShell and the JetWeb administration portal look a bit nicer than using the
+auto-generated stage ID (which you may have noticed was MapWordsTaskStage for this stage in the
+previous tutorial).
 
 Since we want to support case-insensitive comparisons, we need to select which comparer to use for
 aggregation based on the `CaseInsensitive` property:
@@ -249,8 +247,8 @@ words.StageId = "WordCountAggregation";
 Again, we’re assigning an explicit stage ID just to make it look nice. We’re also passing the
 custom comparer type.
 
-Next, we need to change the `Pair<string, int>` records into `Pair<int, string>`, so we can sort
-them by frequency.
+Next, we need to change the [`Pair<string, int>`][] records into [`Pair<int, string>`][], so we can
+sort them by frequency.
 
 ```csharp
 var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePair<string, int>);
@@ -269,7 +267,7 @@ var sorted = job.SpillSort(reversed, typeof(InvertedRawComparer<>));
 sorted.InputChannel.TaskCount = 1;
 ```
 
-We use the [`InvertedRawComparer<T>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_InvertedRawComparer_1.htm),
+We use the [`InvertedRawComparer<T>`][],
 which inverts the default raw comparer for a type so we can sort by descending rather than ascending
 frequency.
 
@@ -279,7 +277,7 @@ list. Therefore, we indicate explicitly that we want only one task (and thus one
 is probably not a good idea for very large amounts of data, but for this sample it shouldn’t be a
 problem.
 
-Finally, we turn the records back into `Pair<string, int>` (again using a pipelined task), and
+Finally, we turn the records back into [`Pair<string, int>`][] (again using a pipelined task), and
 write them to the output:
 
 ```csharp
@@ -290,8 +288,8 @@ output.InputChannel.ChannelType = ChannelType.Pipeline;
 WriteOutput(output, OutputPath, typeof(TextRecordWriter<>));
 ```
 
-One additional thing to note is the `OrdinalIgnoreCaseStringComparer`, which is not a standard
-type. Basically, we want to use `StringComparer.OrdinalIgnoreCase`, but that’s a property, and the
+One additional thing to note is the `OrdinalIgnoreCaseStringComparer`, which is not a standard type.
+Basically, we want to use [`StringComparer.OrdinalIgnoreCase`][], but that’s a property, and the
 type of that property is internal so we can’t use that. So we create a type that wraps it:
 
 ```csharp
@@ -564,9 +562,8 @@ Duration:   00:00:03.6723330 (3.672333s)
 ```
 
 Note that this job had two stages despite there being only one block in the input, which is because
-the [`SpillSort`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm)
-operation cannot be rolled into one stage. With more input blocks, the `JobBuilder` would create a
-three-stage job in this example.
+the [`SpillSort`][] operation cannot be rolled into one stage. With more input blocks, the
+[`JobBuilder`][] would create a three-stage job in this example.
 
 If you view the output, you can see that it did indeed ignore case (words will be listed with the
 case of their first occurrence), is sorted by frequency, and the patterns we specified were ignored:
@@ -590,3 +587,28 @@ case of their first occurrence), is sorted by frequency, and the patterns we spe
 
 If you want to look at some jobs that are more complex than WordCount, take a look at some of the
 [included samples](Samples.md).
+
+[`AllowRecordReuseAttribute`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_AllowRecordReuseAttribute.htm
+[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
+[`ICloneable`]: https://learn.microsoft.com/dotnet/api/system.icloneable
+[`InvertedRawComparer<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_InvertedRawComparer_1.htm
+[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`JobBuilder.Process`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Process.htm
+[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
+[`JobSettingAttribute`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm
+[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
+[`Pair<int, string>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<string, int>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`PushTask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_PushTask_2.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
+[`String.Split`]: https://learn.microsoft.com/dotnet/api/system.string.split
+[`String`]: https://learn.microsoft.com/dotnet/api/system.string
+[`StringComparer.OrdinalIgnoreCase`]: https://learn.microsoft.com/dotnet/api/system.stringcomparer.ordinalignorecase
+[`TaskContext.DownloadDfsFile`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
+[`TaskContext.StageConfiguration.AllowOutputRecordReuse`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_StageConfiguration_AllowOutputRecordReuse.htm
+[`TaskContext`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_TaskContext.htm
+[`Utf8String`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm
+[DownloadDfsFile_1]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
