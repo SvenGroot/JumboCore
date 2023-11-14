@@ -54,7 +54,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// specified assemblies.
         /// </summary>
         /// <param name="assemblies">The assemblies containing the task types.</param>
-        public JobConfiguration(params Assembly[] assemblies)
+        public JobConfiguration(params Assembly[]? assemblies)
             : this((IEnumerable<Assembly>?)assemblies)
         {
         }
