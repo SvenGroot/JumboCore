@@ -4,29 +4,26 @@ If you've made it this far, you've executed a few jobs on Jumbo, and even wrote 
 But what actually happens when you run a job?
 
 In this section, we’ll look at how JetShell submits a job, and how it gets executed by Jumbo Jet.
-This example assumes you’re using a [`JobBuilderJob`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm);
-for other types of job runners, the first few steps may be slightly different, though the concept is
-the same.
+This example assumes you’re using a [`JobBuilderJob`][]. For other types of job runners, the first
+few steps may be slightly different, though the concept is the same.
 
 1. When you invoke JetShell with the job argument, it will first load the specified assembly and
    search for a class matching the specified name. If that class is a job runner (it implements
-   [`IJobRunner`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm)),
-   JetShell instantiates it, and calles the [`IJobRunner.RunJob`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_IJobRunner_RunJob.htm)
-   method.
-2. For a `JobBuilderJob`, the `RunJob` method calls the [`BuildJob`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm)
-   method, which the job's author will have overridden. The `BuildJob` method specifies a sequenc
-   of operations by calling methods on the `JobBuilder` (as we saw in the [tutorial](Tutorial1.md)).
-   The `JobBuilder` compiles this sequence of operations into a job configuration.
-3. JetShell calls [`JetClient.JobServer.CreateJob`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_IJobServerClientProtocol_CreateJob.htm),
+   [`IJobRunner`][]) JetShell instantiates it, and calles the [`IJobRunner.RunJob`][] method.
+2. For a [`JobBuilderJob`][], the [`RunJob`][] method calls the [`BuildJob`][] method, which the
+   job's author will have overridden. The [`BuildJob`][] method specifies a sequence of operations
+   by calling methods on the [`JobBuilder`][] (as we saw in the [tutorial](Tutorial1.md)). The
+   [`JobBuilder`][] compiles this sequence of operations into a job configuration.
+3. JetShell calls [`JetClient.JobServer.CreateJob`][]
    which tells the JobServer to assign a new job ID and creates a directory on the DFS for the job’s
-   files. It then calls [`JobBuilderJob.OnJobCreated`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_OnJobCreated.htm)
+   files. It then calls [`JobBuilderJob.OnJobCreated`][]
    to give the job runner a chance to modify the job configuration and upload additional files.
-4. It calls [`JetClient.RunJob`](https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_JetClient_RunJob.htm),
+4. It calls [`JetClient.RunJob`][]
    passing the job ID, configuration, and list of assemblies. This method saves the configuration to
    the DFS, uploads the assembly files, and instructs the JobServer to start the job.
-5. The job ID is returned to JetShell, which calls [`JetClient.WaitForJobCompletion`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_JetClient_WaitForJobCompletion.htm)
+5. The job ID is returned to JetShell, which calls [`JetClient.WaitForJobCompletion`][]
    to wait until the job finishes, printing progress to the console occasionally.
-6. When starting a job, the `JobServer` loads the job configuration and constructs a list of all
+6. When starting a job, the JobServer loads the job configuration and constructs a list of all
    tasks, adding input data locality information if applicable. The list is ordered based on
    dependencies between the stages.
 7. The JobServer runs the task scheduler, which assigns tasks to TaskServers. If possible, it prefers
@@ -42,17 +39,17 @@ the same.
     possible in JumboCore).
 11. The task host loads the job configuration from the local cache, and finds the configuration for
     the task it has been instructed to run.
-12. The task host instantiates the task’s class (which implements [`ITask<TInput, TOutput>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm)),
+12. The task host instantiates the task’s class (which implements [`ITask<TInput, TOutput>`][])
     opens input and output files on the DFS and sets up channels to other tasks as applicable.
     Note that DFS output is written to a temporary file, not the final output path. If the stage
     for this task has a child stage connected via a pipeline channel, these are also instantiated.
-13. The task host calls [`ITask.Run`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_ITask_2_Run.htm)
+13. The task host calls [`ITask<TInput, TOutput>.Run`][]
     for the task.
 14. Periodically, the task host informs the TaskServer of the task’s progress. The TaskServer
     forwards this information to the JobServer during heartbeats. If a task does not send progress
     updates for a configurable time-out, it is killed by the TaskServer.
-15. When the task finishes, the task host finalizes any output and closes all input and output
-    files and channels. If the output is a DFS file, the temporary file is renamed to the final output
+15. When the task finishes, the task host finalizes any output and closes all input and output files
+    and channels. If the output is a DFS file, the temporary file is renamed to the final output
     file.
 16. The task host notifies the TaskServer of task completion, and terminates.
 17. When the TaskServer gets the completion notification, it notifies the JobServer on the next
@@ -64,13 +61,13 @@ the same.
 19. When a TaskServer notifies the JobServer it has finished a task, the JobServer runs the
     scheduler again to find new tasks to run on that TaskServer.
 20. The JobServer updates the state of the job, so that other tasks that depend on this task (for
-    example, if the completed task had a file channel output the tasks of the receiving stage of that
-    channel will periodically check which tasks are finished to retrieve their output). If enabled and
-    applicable, a UDP task completion broadcast message is sent, which allows receiving stage tasks
-    to immediately pick up the newly available output without having to poll.
+    example, if the completed task had a file channel output the tasks of the receiving stage of
+    that channel will periodically check which tasks are finished to retrieve their output). If
+    enabled and applicable, a UDP task completion broadcast message is sent, which allows receiving
+    stage tasks to immediately pick up the newly available output without having to poll.
 21. When all tasks in a job have finished, a job cleanup command is sent to all TaskServers that
     ran tasks for the job so they can delete any temporary and intermediate files that still remain.
-22. The `JetClient.WaitForJobCompletion` method returns once the job is finished, and JetShell
+22. The [`JetClient.WaitForJobCompletion`][] method returns once the job is finished, and JetShell
     terminates.
 
 That seems like a lot to run only the few lines of code you wrote for the WordCount job. But, all
@@ -78,3 +75,16 @@ this stuff makes it so you can process huge amounts of data on a large cluster o
 only needing to write a few lines of code.
 
 Next, let's look at some of [Jumbo's features](DfsFeatures.md) in more detail.
+
+[`BuildJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
+[`IJobRunner.RunJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_IJobRunner_RunJob.htm
+[`IJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
+[`ITask<TInput, TOutput>.Run`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
+[`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
+[`JetClient.JobServer.CreateJob`]: https://www.ookii.org/docs/jumbo-2.0/html/!UNKNOWN!.htm
+[`JetClient.RunJob`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_JetClient_RunJob.htm
+[`JetClient.WaitForJobCompletion`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_JetClient_WaitForJobCompletion.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`JobBuilderJob.OnJobCreated`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_OnJobCreated.htm
+[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
+[`RunJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_IJobRunner_RunJob.htm
