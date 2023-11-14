@@ -122,19 +122,19 @@ public partial class ValSort : JobBuilderJob
     {
         Crc32Checksum crc = new Crc32Checksum();
         long recordCrc;
-        var checksum = IO.UInt128.Zero;
-        var duplicates = IO.UInt128.Zero;
-        var unsorted = IO.UInt128.Zero;
-        var count = IO.UInt128.Zero;
+        var checksum = UInt128.Zero;
+        var duplicates = UInt128.Zero;
+        var unsorted = UInt128.Zero;
+        var count = UInt128.Zero;
         GenSortRecord? first = null;
         GenSortRecord? prev = null;
-        IO.UInt128? firstUnordered = null;
+        UInt128? firstUnordered = null;
         foreach (GenSortRecord record in input.EnumerateRecords())
         {
             crc.Reset();
             crc.Update(record.RecordBuffer);
             recordCrc = crc.Value;
-            checksum += new IO.UInt128(0, (ulong)recordCrc);
+            checksum += new UInt128(0, (ulong)recordCrc);
             if (prev == null)
             {
                 first = record;
@@ -166,7 +166,7 @@ public partial class ValSort : JobBuilderJob
             LastKey = prev!.ExtractKeyBytes(),
             Records = count,
             UnsortedRecords = unsorted,
-            FirstUnsorted = firstUnordered != null ? firstUnordered.Value : IO.UInt128.Zero,
+            FirstUnsorted = firstUnordered != null ? firstUnordered.Value : UInt128.Zero,
             Checksum = checksum,
             Duplicates = duplicates
         };
@@ -185,11 +185,11 @@ public partial class ValSort : JobBuilderJob
     public static void ValidateResults(RecordReader<ValSortRecord> input, RecordWriter<string> output, TaskContext context)
     {
         ValSortRecord? prev = null;
-        var checksum = IO.UInt128.Zero;
-        var unsortedRecords = IO.UInt128.Zero;
-        var duplicates = IO.UInt128.Zero;
-        var records = IO.UInt128.Zero;
-        IO.UInt128? firstUnsorted = null;
+        var checksum = UInt128.Zero;
+        var unsortedRecords = UInt128.Zero;
+        var duplicates = UInt128.Zero;
+        var records = UInt128.Zero;
+        UInt128? firstUnsorted = null;
 
         foreach (ValSortRecord record in input.EnumerateRecords())
         {
@@ -211,13 +211,13 @@ public partial class ValSort : JobBuilderJob
                 }
             }
 
-            if (verbose && record.UnsortedRecords.High64 > 0 || record.UnsortedRecords.Low64 > 0)
+            if (verbose && record.UnsortedRecords > 0)
                 _log.InfoFormat("Input part {0}-{1} has {2} unsorted records.", prev!.InputId, prev.InputOffset, record.UnsortedRecords);
 
             unsortedRecords += record.UnsortedRecords;
             checksum += record.Checksum;
             duplicates += record.Duplicates;
-            if (firstUnsorted == null && record.UnsortedRecords != IO.UInt128.Zero)
+            if (firstUnsorted == null && record.UnsortedRecords != UInt128.Zero)
             {
                 firstUnsorted = records + record.FirstUnsorted;
             }
@@ -226,13 +226,13 @@ public partial class ValSort : JobBuilderJob
             prev = record;
         }
 
-        if (unsortedRecords != IO.UInt128.Zero)
+        if (unsortedRecords != UInt128.Zero)
         {
             output.WriteRecord(string.Format("First unordered record is record {0}", firstUnsorted!.Value));
         }
         output.WriteRecord(string.Format("Records: {0}", records));
-        output.WriteRecord(string.Format("Checksum: {0}", checksum.ToHexString()));
-        if (unsortedRecords == IO.UInt128.Zero)
+        output.WriteRecord(string.Format("Checksum: {0}", checksum.ToString("x")));
+        if (unsortedRecords == UInt128.Zero)
         {
             output.WriteRecord(string.Format("Duplicate keys: {0}", duplicates));
             output.WriteRecord("SUCCESS - all records are in order");

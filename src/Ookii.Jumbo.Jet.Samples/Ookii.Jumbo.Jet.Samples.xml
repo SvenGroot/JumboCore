@@ -1081,110 +1081,110 @@
             <param name="partitions">The number of partitions.</param>
             <param name="sampleSize">The total number of records to sample.</param>
         </member>
-        <member name="T:Ookii.Jumbo.Jet.Samples.IO.UInt128">
+        <member name="T:Ookii.Jumbo.Jet.Samples.UInt128">
             <summary>
             A 128 bit unsigned integer, based on the code provided with gensort, see http://www.hpl.hp.com/hosted/sortbenchmark/.
             </summary>
         </member>
-        <member name="F:Ookii.Jumbo.Jet.Samples.IO.UInt128.Zero">
+        <member name="F:Ookii.Jumbo.Jet.Samples.UInt128.Zero">
             <summary>
-            A <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> with the value zero.
+            A <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> with the value zero.
             </summary>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.#ctor(System.UInt64,System.UInt64)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.#ctor(System.UInt64,System.UInt64)">
             <summary>
-            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> struct with the specified high and low bits.
+            Initializes a new instance of the <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> struct with the specified high and low bits.
             </summary>
             <param name="high64">The high 64 bits of the value.</param>
             <param name="low64">The low 64 bits of the value.</param>
         </member>
-        <member name="P:Ookii.Jumbo.Jet.Samples.IO.UInt128.High64">
+        <member name="P:Ookii.Jumbo.Jet.Samples.UInt128.High64">
             <summary>
             Gets the high 64 bits of the value.
             </summary>
         </member>
-        <member name="P:Ookii.Jumbo.Jet.Samples.IO.UInt128.Low64">
+        <member name="P:Ookii.Jumbo.Jet.Samples.UInt128.Low64">
             <summary>
             Gets the low 64 bits of the value.
             </summary>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.Equals(System.Object)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.Equals(System.Object)">
             <summary>
             Tests this instance for equality with the specified object.
             </summary>
             <param name="obj">The object to test for equality.</param>
             <returns><see langword="true"/> if this instance is equal to <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.ToString">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.ToString">
             <summary>
-            Returns a decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            Returns a decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.
             </summary>
-            <returns>A decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+            <returns>A decimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.ToHexString">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.ToHexString">
             <summary>
-            Returns a hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            Returns a hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.
             </summary>
-            <returns>A hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+            <returns>A hexadecimal string representation of the <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.GetHashCode">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.GetHashCode">
             <summary>
-            Returns a 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            Returns a 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.
             </summary>
-            <returns>A 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</returns>
+            <returns>A 32 bit hash code for this <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Equality(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.op_Equality(Ookii.Jumbo.Jet.Samples.UInt128,Ookii.Jumbo.Jet.Samples.UInt128)">
             <summary>
-            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> for equality
+            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> for equality
             </summary>
-            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
-            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
             <returns><see langword="true"/> if the two instances are equal; otherwise, <see langword="false"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Inequality(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.op_Inequality(Ookii.Jumbo.Jet.Samples.UInt128,Ookii.Jumbo.Jet.Samples.UInt128)">
             <summary>
-            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> for inequality
+            Tests two instances of <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> for inequality
             </summary>
-            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
-            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
             <returns><see langword="true"/> if the two instances are not equal; otherwise, <see langword="false"/>.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Increment(Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.op_Increment(Ookii.Jumbo.Jet.Samples.UInt128)">
             <summary>
             Increments the value of the specified instance by one.
             </summary>
-            <param name="value">The <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> to increment.</param>
+            <param name="value">The <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> to increment.</param>
             <returns>The incremented value.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Addition(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.op_Addition(Ookii.Jumbo.Jet.Samples.UInt128,Ookii.Jumbo.Jet.Samples.UInt128)">
             <summary>
-            Adds two <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> values.
+            Adds two <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> values.
             </summary>
-            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
-            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
             <returns>The result of the addition.</returns>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128.op_Multiply(Ookii.Jumbo.Jet.Samples.IO.UInt128,Ookii.Jumbo.Jet.Samples.IO.UInt128)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128.op_Multiply(Ookii.Jumbo.Jet.Samples.UInt128,Ookii.Jumbo.Jet.Samples.UInt128)">
             <summary>
-            Multiplies two <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/> values.
+            Multiplies two <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/> values.
             </summary>
-            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
-            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.</param>
+            <param name="left">The first <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
+            <param name="right">The second <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.</param>
             <returns>The result of the multiplication.</returns>
         </member>
-        <member name="T:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer">
+        <member name="T:Ookii.Jumbo.Jet.Samples.UInt128Writer">
             <summary>
-            Value writer for <see cref="T:Ookii.Jumbo.Jet.Samples.IO.UInt128"/>.
+            Value writer for <see cref="T:Ookii.Jumbo.Jet.Samples.UInt128"/>.
             </summary>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer.Write(Ookii.Jumbo.Jet.Samples.IO.UInt128,System.IO.BinaryWriter)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128Writer.Write(Ookii.Jumbo.Jet.Samples.UInt128,System.IO.BinaryWriter)">
             <summary>
             Writes the specified value to the specified writer.
             </summary>
             <param name="value">The value.</param>
             <param name="writer">The writer.</param>
         </member>
-        <member name="M:Ookii.Jumbo.Jet.Samples.IO.UInt128Writer.Read(System.IO.BinaryReader)">
+        <member name="M:Ookii.Jumbo.Jet.Samples.UInt128Writer.Read(System.IO.BinaryReader)">
             <summary>
             Reads a value from the specified reader.
             </summary>

@@ -13,7 +13,7 @@ static class DefaultValueWriter
 
     private class SByteWriter : IValueWriter<SByte>
     {
-        public void Write(SByte value, System.IO.BinaryWriter writer)
+        public void Write(SByte value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -28,7 +28,7 @@ static class DefaultValueWriter
 
     private class Int16Writer : IValueWriter<Int16>
     {
-        public void Write(Int16 value, System.IO.BinaryWriter writer)
+        public void Write(Int16 value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -43,7 +43,7 @@ static class DefaultValueWriter
 
     private class Int32Writer : IValueWriter<Int32>
     {
-        public void Write(int value, System.IO.BinaryWriter writer)
+        public void Write(int value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -58,7 +58,7 @@ static class DefaultValueWriter
 
     private class Int64Writer : IValueWriter<Int64>
     {
-        public void Write(Int64 value, System.IO.BinaryWriter writer)
+        public void Write(Int64 value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -71,9 +71,27 @@ static class DefaultValueWriter
         }
     }
 
+    private class Int128Writer : IValueWriter<Int128>
+    {
+        public void Write(Int128 value, BinaryWriter writer)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            writer.Write(value.High64());
+            writer.Write(value.Low64());
+        }
+
+        public Int128 Read(BinaryReader reader)
+        {
+            ArgumentNullException.ThrowIfNull(reader);
+            var high = reader.ReadUInt64();
+            var low = reader.ReadUInt64();
+            return new(high, low);
+        }
+    }
+
     private class ByteWriter : IValueWriter<Byte>
     {
-        public void Write(Byte value, System.IO.BinaryWriter writer)
+        public void Write(Byte value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -88,7 +106,7 @@ static class DefaultValueWriter
 
     private class UInt16Writer : IValueWriter<UInt16>
     {
-        public void Write(UInt16 value, System.IO.BinaryWriter writer)
+        public void Write(UInt16 value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -103,7 +121,7 @@ static class DefaultValueWriter
 
     private class UInt32Writer : IValueWriter<UInt32>
     {
-        public void Write(UInt32 value, System.IO.BinaryWriter writer)
+        public void Write(UInt32 value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -118,7 +136,7 @@ static class DefaultValueWriter
 
     private class UInt64Writer : IValueWriter<UInt64>
     {
-        public void Write(UInt64 value, System.IO.BinaryWriter writer)
+        public void Write(UInt64 value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -131,9 +149,27 @@ static class DefaultValueWriter
         }
     }
 
+    private class UInt128Writer : IValueWriter<UInt128>
+    {
+        public void Write(UInt128 value, BinaryWriter writer)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+            writer.Write(value.High64());
+            writer.Write(value.Low64());
+        }
+
+        public UInt128 Read(BinaryReader reader)
+        {
+            ArgumentNullException.ThrowIfNull(reader);
+            var high = reader.ReadUInt64();
+            var low = reader.ReadUInt64();
+            return new(high, low);
+        }
+    }
+
     private class DecimalWriter : IValueWriter<Decimal>
     {
-        public void Write(Decimal value, System.IO.BinaryWriter writer)
+        public void Write(Decimal value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -148,7 +184,7 @@ static class DefaultValueWriter
 
     private class SingleWriter : IValueWriter<Single>
     {
-        public void Write(Single value, System.IO.BinaryWriter writer)
+        public void Write(Single value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -163,7 +199,7 @@ static class DefaultValueWriter
 
     private class DoubleWriter : IValueWriter<Double>
     {
-        public void Write(Double value, System.IO.BinaryWriter writer)
+        public void Write(Double value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -178,7 +214,7 @@ static class DefaultValueWriter
 
     private class StringWriter : IValueWriter<String>
     {
-        public void Write(String value, System.IO.BinaryWriter writer)
+        public void Write(String value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value);
@@ -193,7 +229,7 @@ static class DefaultValueWriter
 
     private class DateTimeWriter : IValueWriter<DateTime>
     {
-        public void Write(DateTime value, System.IO.BinaryWriter writer)
+        public void Write(DateTime value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write((int)value.Kind);
@@ -211,7 +247,7 @@ static class DefaultValueWriter
 
     private class TimeSpanWriter : IValueWriter<TimeSpan>
     {
-        public void Write(TimeSpan value, System.IO.BinaryWriter writer)
+        public void Write(TimeSpan value, BinaryWriter writer)
         {
             ArgumentNullException.ThrowIfNull(writer);
             writer.Write(value.Ticks);
@@ -734,6 +770,10 @@ static class DefaultValueWriter
             return new UInt32Writer();
         else if (type == typeof(UInt64))
             return new UInt64Writer();
+        else if (type == typeof(Int128))
+            return new Int128Writer();
+        else if (type == typeof(UInt128))
+            return new UInt128Writer();
         else if (type == typeof(Decimal))
             return new DecimalWriter();
         else if (type == typeof(DateTime))
