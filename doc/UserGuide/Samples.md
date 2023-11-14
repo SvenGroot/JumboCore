@@ -31,13 +31,13 @@ and one to sum the counts.
 ## TeraSort
 
 A distributed sorting algorithm using the data format and rules described by the
-[GraySort benchmark](http://sortbenchmark.org/). This job uses `SpillSort` directly on the input
+[GraySort benchmark](http://sortbenchmark.org/). This job uses [`SpillSort`][] directly on the input
 data and writes the result directly to the output, without any actual "stages" specified. This
-causes the `JobBuilder` to generate two no-op stages using the `EmptyTask<T>` utility type.
+causes the [`JobBuilder`][] to generate two no-op stages using the [`EmptyTask<T>`][] utility type.
 
-This job also provides a custom record type (`GenSortRecord`), raw comparer
-(`GenSortRecordRawComparer`), record reader and writer (`GenSortRecordReader` and
-`GenSortRecordWriter`), and partitioner (`RangePartitioner`).
+This job also provides a custom record type ([`GenSortRecord`][]), raw comparer
+([`GenSortRecordRawComparer`][]), record reader and writer ([`GenSortRecordReader`][] and
+[`GenSortRecordWriter`][]), and partitioner ([`RangePartitioner`][]).
 
 ## GenSort
 
@@ -72,7 +72,7 @@ a transaction containing a space-delimited list of items.
 
 This example demonstrates a more complicated Jumbo job, with several stages including
 more than one stage with file input. Several of its tasks are implemented as task type classes,
-rather than using methods with `JobBuilder`. It also uses scheduling dependencies, group aggregation,
+rather than using methods with [`JobBuilder`][]. It also uses scheduling dependencies, group aggregation,
 partition-based grouping using multiple partitions per task, dynamic partition assignment,
 and custom progress providers.
 
@@ -81,3 +81,12 @@ And now, by studying these samples, you've learned everything there is to know a
 Seriously though, there's much more to learn, if you're so inclined. Begin by checking out the
 [class library documentation](http://www.ookii.org/Link/JumboDoc) and of course, the Jumbo source
 code. If you have any questions, contact me [on GitHub](https://github.com/SvenGroot/JumboCore/discussions).
+
+[`EmptyTask<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Tasks_EmptyTask_1.htm
+[`GenSortRecord`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecord.htm
+[`GenSortRecordRawComparer`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordRawComparer.htm
+[`GenSortRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordReader.htm
+[`GenSortRecordWriter`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordWriter.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`RangePartitioner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_RangePartitioner.htm
+[`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
