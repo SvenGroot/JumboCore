@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -49,22 +50,53 @@ namespace Ookii.Jumbo.Jet.Jobs
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the specified assembly.
+        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the
+        /// specified assemblies.
         /// </summary>
         /// <param name="assemblies">The assemblies containing the task types.</param>
         public JobConfiguration(params Assembly[] assemblies)
-            : this(assemblies == null ? null : (from a in assemblies select System.IO.Path.GetFileName(a.Location)).ToArray())
+            : this((IEnumerable<Assembly>?)assemblies)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the specified assembly file name.
+        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the
+        /// specified assemblies.
         /// </summary>
-        /// <param name="assemblyFileNames">The file names of the assemblies containing the task types for this class.</param>
+        /// <param name="assemblies">The assemblies containing the task types.</param>
+        public JobConfiguration(IEnumerable<Assembly>? assemblies)
+            : this(assemblies?.Where(a => a.Location.Length != 0)?.Select(a => Path.GetFileName(a.Location)))
+        {
+            // The JobBuilder generated assembly has a blank location; filter it out since it's
+            // added later.
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the
+        /// specified assembly file names.
+        /// </summary>
+        /// <param name="assemblyFileNames">
+        /// The file names of the assemblies containing the task types for this class.
+        /// </param>
         public JobConfiguration(params string[]? assemblyFileNames)
+            : this((IEnumerable<string>?)assemblyFileNames)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobConfiguration"/> class with the
+        /// specified assembly file names.
+        /// </summary>
+        /// <param name="assemblyFileNames">
+        /// The file names of the assemblies containing the task types for this class.
+        /// </param>
+        public JobConfiguration(IEnumerable<string>? assemblyFileNames)
         {
             if (assemblyFileNames != null)
+            {
                 _assemblyFileNames.AddRange(assemblyFileNames);
+            }
         }
 
         /// <summary>
