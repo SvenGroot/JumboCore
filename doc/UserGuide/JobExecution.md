@@ -81,7 +81,7 @@ Next, let's look at some of [Jumbo's features](DfsFeatures.md) in more detail.
 [`IJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
 [`ITask<TInput, TOutput>.Run`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
 [`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
-[`JetClient.JobServer.CreateJob`]: https://www.ookii.org/docs/jumbo-2.0/html/!UNKNOWN!.htm
+[`JetClient.JobServer.CreateJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_IJobServerClientProtocol_CreateJob.htm
 [`JetClient.RunJob`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_JetClient_RunJob.htm
 [`JetClient.WaitForJobCompletion`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_JetClient_WaitForJobCompletion.htm
 [`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
