@@ -5,6 +5,13 @@
     <CodeAnalysisRuleSet>../Jumbo.ruleset</CodeAnalysisRuleSet>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DelaySign>false</DelaySign>
+    <Title>Ookii.Jumbo.Jet</Title>
+    <Description>Class library for functionality common to both Jumbo DFS and Jumbo Jet.</Description>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,4 +7,9 @@
     <Product>Jumbo</Product>
     <Copyright>Copyright © Sven Groot (Ookii.org)</Copyright>
   </PropertyGroup>
+
+  <!-- Deterministic build; to build with this manually, use dotnet build /p:ContinuousIntegrationBuild=true -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 </Project>
