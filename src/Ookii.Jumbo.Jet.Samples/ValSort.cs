@@ -122,19 +122,19 @@ namespace Ookii.Jumbo.Jet.Samples
         {
             Crc32Checksum crc = new Crc32Checksum();
             long recordCrc;
-            UInt128 checksum = UInt128.Zero;
-            UInt128 duplicates = UInt128.Zero;
-            UInt128 unsorted = UInt128.Zero;
-            UInt128 count = UInt128.Zero;
+            var checksum = IO.UInt128.Zero;
+            var duplicates = IO.UInt128.Zero;
+            var unsorted = IO.UInt128.Zero;
+            var count = IO.UInt128.Zero;
             GenSortRecord? first = null;
             GenSortRecord? prev = null;
-            UInt128? firstUnordered = null;
+            IO.UInt128? firstUnordered = null;
             foreach (GenSortRecord record in input.EnumerateRecords())
             {
                 crc.Reset();
                 crc.Update(record.RecordBuffer);
                 recordCrc = crc.Value;
-                checksum += new UInt128(0, (ulong)recordCrc);
+                checksum += new IO.UInt128(0, (ulong)recordCrc);
                 if (prev == null)
                 {
                     first = record;
@@ -166,7 +166,7 @@ namespace Ookii.Jumbo.Jet.Samples
                 LastKey = prev!.ExtractKeyBytes(),
                 Records = count,
                 UnsortedRecords = unsorted,
-                FirstUnsorted = firstUnordered != null ? firstUnordered.Value : UInt128.Zero,
+                FirstUnsorted = firstUnordered != null ? firstUnordered.Value : IO.UInt128.Zero,
                 Checksum = checksum,
                 Duplicates = duplicates
             };
@@ -185,11 +185,11 @@ namespace Ookii.Jumbo.Jet.Samples
         public static void ValidateResults(RecordReader<ValSortRecord> input, RecordWriter<string> output, TaskContext context)
         {
             ValSortRecord? prev = null;
-            UInt128 checksum = UInt128.Zero;
-            UInt128 unsortedRecords = UInt128.Zero;
-            UInt128 duplicates = UInt128.Zero;
-            UInt128 records = UInt128.Zero;
-            UInt128? firstUnsorted = null;
+            var checksum = IO.UInt128.Zero;
+            var unsortedRecords = IO.UInt128.Zero;
+            var duplicates = IO.UInt128.Zero;
+            var records = IO.UInt128.Zero;
+            IO.UInt128? firstUnsorted = null;
 
             foreach (ValSortRecord record in input.EnumerateRecords())
             {
@@ -217,7 +217,7 @@ namespace Ookii.Jumbo.Jet.Samples
                 unsortedRecords += record.UnsortedRecords;
                 checksum += record.Checksum;
                 duplicates += record.Duplicates;
-                if (firstUnsorted == null && record.UnsortedRecords != UInt128.Zero)
+                if (firstUnsorted == null && record.UnsortedRecords != IO.UInt128.Zero)
                 {
                     firstUnsorted = records + record.FirstUnsorted;
                 }
@@ -226,13 +226,13 @@ namespace Ookii.Jumbo.Jet.Samples
                 prev = record;
             }
 
-            if (unsortedRecords != UInt128.Zero)
+            if (unsortedRecords != IO.UInt128.Zero)
             {
                 output.WriteRecord(string.Format("First unordered record is record {0}", firstUnsorted!.Value));
             }
             output.WriteRecord(string.Format("Records: {0}", records));
             output.WriteRecord(string.Format("Checksum: {0}", checksum.ToHexString()));
-            if (unsortedRecords == UInt128.Zero)
+            if (unsortedRecords == IO.UInt128.Zero)
             {
                 output.WriteRecord(string.Format("Duplicate keys: {0}", duplicates));
                 output.WriteRecord("SUCCESS - all records are in order");

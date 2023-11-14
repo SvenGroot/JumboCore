@@ -105,7 +105,7 @@ namespace Ookii.Jumbo.Jet.Samples
 
             GenSortGenerator generator = new GenSortGenerator();
             ulong generated = 0;
-            foreach (GenSortRecord record in generator.GenerateRecords(new UInt128(0, startRecord), count))
+            foreach (GenSortRecord record in generator.GenerateRecords(new IO.UInt128(0, startRecord), count))
             {
                 output.WriteRecord(record);
                 ++generated;
