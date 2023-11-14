@@ -3,7 +3,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using Ookii.Jumbo.IO;

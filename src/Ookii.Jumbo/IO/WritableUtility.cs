@@ -1,88 +1,83 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 
-namespace Ookii.Jumbo.IO
+namespace Ookii.Jumbo.IO;
+
+/// <summary>
+/// Provides utility functions for creating <see cref="IWritable"/> implementations.
+/// </summary>
+public static class WritableUtility
 {
     /// <summary>
-    /// Provides utility functions for creating <see cref="IWritable"/> implementations.
+    /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
     /// </summary>
-    public static class WritableUtility
+    /// <typeparam name="T">The type of the object to create.</typeparam>
+    /// <returns>An uninitialized instance of <typeparamref name="T"/>.</returns>
+    /// <remarks>
+    /// <para>
+    ///   The constructor of <typeparamref name="T"/> will not have been invoked.
+    /// </para>
+    /// </remarks>
+    public static T GetUninitializedWritable<T>()
+        where T : class, IWritable
+        => (T)RuntimeHelpers.GetUninitializedObject(typeof(T));
+
+    /// <summary>
+    /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
+    /// </summary>
+    /// <param name="type">
+    /// The type of the object to create. This type must implement the <see cref="IWritable"/> interface.
+    /// </param>
+    /// <returns>An uninitialized instance of <paramref name="type"/>.</returns>
+    /// <remarks>
+    /// <para>
+    ///   The constructor of <paramref name="type"/> will not have been invoked.
+    /// </para>
+    /// </remarks>
+    public static IWritable GetUninitializedWritable(Type type)
+        => (IWritable)RuntimeHelpers.GetUninitializedObject(type);
+
+    /// <summary>
+    /// Writes a 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The <see cref="BinaryWriter"/> to write the value to.</param>
+    /// <param name="value">The 32-bit integer to be written.</param>
+    public static void Write7BitEncodedInt32(BinaryWriter writer, int value)
     {
-        /// <summary>
-        /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to create.</typeparam>
-        /// <returns>An uninitialized instance of <typeparamref name="T"/>.</returns>
-        /// <remarks>
-        /// <para>
-        ///   The constructor of <typeparamref name="T"/> will not have been invoked.
-        /// </para>
-        /// </remarks>
-        public static T GetUninitializedWritable<T>()
-            where T : class, IWritable
-            => (T)FormatterServices.GetUninitializedObject(typeof(T));
-
-        /// <summary>
-        /// Gets an uninitialized object of a type implementing <see cref="IWritable"/>.
-        /// </summary>
-        /// <param name="type">
-        /// The type of the object to create. This type must implement the <see cref="IWritable"/> interface.
-        /// </param>
-        /// <returns>An uninitialized instance of <paramref name="type"/>.</returns>
-        /// <remarks>
-        /// <para>
-        ///   The constructor of <paramref name="type"/> will not have been invoked.
-        /// </para>
-        /// </remarks>
-        public static IWritable GetUninitializedWritable(Type type)
-            => (IWritable)FormatterServices.GetUninitializedObject(type);
-
-        /// <summary>
-        /// Writes a 32-bit integer in a compressed format.
-        /// </summary>
-        /// <param name="writer">The <see cref="BinaryWriter"/> to write the value to.</param>
-        /// <param name="value">The 32-bit integer to be written.</param>
-        public static void Write7BitEncodedInt32(BinaryWriter writer, int value)
+        ArgumentNullException.ThrowIfNull(writer);
+        var uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
+        while (uintValue >= 0x80)
         {
-            ArgumentNullException.ThrowIfNull(writer);
-            var uintValue = (uint)value; // this helps support negative numbers, not really needed but anyway.
-            while (uintValue >= 0x80)
-            {
-                writer.Write((byte)(uintValue | 0x80));
-                uintValue = uintValue >> 7;
-            }
-            writer.Write((byte)uintValue);
+            writer.Write((byte)(uintValue | 0x80));
+            uintValue = uintValue >> 7;
         }
+        writer.Write((byte)uintValue);
+    }
 
-        /// <summary>
-        /// Reads in a 32-bit integer in compressed format.
-        /// </summary>
-        /// <param name="reader">The <see cref="BinaryReader"/> to read the value from.</param>
-        /// <returns>A 32-bit integer in compressed format. </returns>
-        public static int Read7BitEncodedInt32(BinaryReader reader)
+    /// <summary>
+    /// Reads in a 32-bit integer in compressed format.
+    /// </summary>
+    /// <param name="reader">The <see cref="BinaryReader"/> to read the value from.</param>
+    /// <returns>A 32-bit integer in compressed format. </returns>
+    public static int Read7BitEncodedInt32(BinaryReader reader)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        byte currentByte;
+        var result = 0;
+        var bits = 0;
+        do
         {
-            ArgumentNullException.ThrowIfNull(reader);
-            byte currentByte;
-            var result = 0;
-            var bits = 0;
-            do
+            if (bits == 35)
             {
-                if (bits == 35)
-                {
-                    throw new FormatException("Invalid 7-bit encoded int.");
-                }
-                currentByte = reader.ReadByte();
-                result |= (currentByte & 0x7f) << bits;
-                bits += 7;
+                throw new FormatException("Invalid 7-bit encoded int.");
             }
-            while ((currentByte & 0x80) != 0);
-            return result;
+            currentByte = reader.ReadByte();
+            result |= (currentByte & 0x7f) << bits;
+            bits += 7;
         }
+        while ((currentByte & 0x80) != 0);
+        return result;
     }
 }

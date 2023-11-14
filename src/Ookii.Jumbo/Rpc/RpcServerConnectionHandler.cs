@@ -4,132 +4,130 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace Ookii.Jumbo.Rpc
+namespace Ookii.Jumbo.Rpc;
+
+sealed class RpcServerConnectionHandler : IDisposable
 {
-    sealed class RpcServerConnectionHandler : IDisposable
+    private readonly Socket _serverSocket;
+    private readonly RpcStream _stream;
+    private readonly AsyncCallback _beginReadRequestCallback;
+    private readonly ServerContext _context;
+    private bool _hostNameReceived;
+
+    public RpcServerConnectionHandler(Socket serverSocket)
     {
-        private readonly Socket _serverSocket;
-        private readonly RpcStream _stream;
-        private readonly AsyncCallback _beginReadRequestCallback;
-        private readonly ServerContext _context;
-        private bool _hostNameReceived;
+        ArgumentNullException.ThrowIfNull(serverSocket);
 
-        public RpcServerConnectionHandler(Socket serverSocket)
+        _serverSocket = serverSocket;
+        _stream = new RpcStream(_serverSocket);
+        _beginReadRequestCallback = new AsyncCallback(BeginReadRequestCallback);
+        _context = new ServerContext() { ClientHostAddress = ((IPEndPoint?)_serverSocket.RemoteEndPoint)?.Address };
+    }
+
+    public void BeginReadRequest()
+    {
+        var hasData = false;
+        try
         {
-            ArgumentNullException.ThrowIfNull(serverSocket);
-
-            _serverSocket = serverSocket;
-            _stream = new RpcStream(_serverSocket);
-            _beginReadRequestCallback = new AsyncCallback(BeginReadRequestCallback);
-            _context = new ServerContext() { ClientHostAddress = ((IPEndPoint?)_serverSocket.RemoteEndPoint)?.Address };
+            if (!_stream.HasData)
+                _stream.BeginBuffering(_beginReadRequestCallback);
+            else
+                hasData = true;
+        }
+        catch (Exception ex)
+        {
+            CloseOnError(ex);
         }
 
-        public void BeginReadRequest()
+        if (hasData)
         {
-            var hasData = false;
-            try
-            {
-                if (!_stream.HasData)
-                    _stream.BeginBuffering(_beginReadRequestCallback);
-                else
-                    hasData = true;
-            }
-            catch (Exception ex)
-            {
-                CloseOnError(ex);
-            }
+            ProcessRequest();
+        }
+    }
 
-            if (hasData)
-            {
-                ProcessRequest();
-            }
+    private void BeginReadRequestCallback(IAsyncResult ar)
+    {
+        var hasData = false;
+        try
+        {
+            _stream.EndBuffering(ar);
+            if (!_stream.HasData)
+                Close();
+            else
+                hasData = true;
+        }
+        catch (Exception ex)
+        {
+            CloseOnError(ex);
         }
 
-        private void BeginReadRequestCallback(IAsyncResult ar)
+        if (hasData)
         {
-            var hasData = false;
-            try
-            {
-                _stream.EndBuffering(ar);
-                if (!_stream.HasData)
-                    Close();
-                else
-                    hasData = true;
-            }
-            catch (Exception ex)
-            {
-                CloseOnError(ex);
-            }
-
-            if (hasData)
-            {
-                ProcessRequest();
-            }
+            ProcessRequest();
         }
+    }
 
-        public void ProcessRequest()
+    public void ProcessRequest()
+    {
+        try
         {
-            try
+            using var reader = new BinaryReader(_stream, Encoding.UTF8, true);
+            using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
+            if (!_hostNameReceived)
             {
-                using var reader = new BinaryReader(_stream, Encoding.UTF8, true);
-                using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
-                if (!_hostNameReceived)
-                {
-                    _context.ClientHostName = reader.ReadString();
-                    _hostNameReceived = true;
-                }
-
-                var objectName = reader.ReadString();
-                if (string.IsNullOrEmpty(objectName))
-                {
-                    Debugger.Break();
-                }
-
-                var interfaceName = reader.ReadString();
-                var operationName = reader.ReadString();
-                RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, reader, writer);
-            }
-            catch (Exception ex)
-            {
-                TrySendError(ex);
+                _context.ClientHostName = reader.ReadString();
+                _hostNameReceived = true;
             }
 
-            BeginReadRequest();
+            var objectName = reader.ReadString();
+            if (string.IsNullOrEmpty(objectName))
+            {
+                Debugger.Break();
+            }
+
+            var interfaceName = reader.ReadString();
+            var operationName = reader.ReadString();
+            RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, reader, writer);
         }
-
-        public void TrySendError(Exception ex)
-        {
-            try
-            {
-                using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
-                RpcRemoteException.WriteTo(ex, writer);
-            }
-            catch { }
-        }
-
-        private void CloseOnError(Exception ex)
+        catch (Exception ex)
         {
             TrySendError(ex);
-            Close();
         }
 
-        private void Close()
-        {
-            _stream.Dispose();
-            _serverSocket.Close();
-        }
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            _stream.Dispose();
-            ((IDisposable)_serverSocket).Dispose();
-        }
-
-        #endregion
+        BeginReadRequest();
     }
+
+    public void TrySendError(Exception ex)
+    {
+        try
+        {
+            using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
+            RpcRemoteException.WriteTo(ex, writer);
+        }
+        catch { }
+    }
+
+    private void CloseOnError(Exception ex)
+    {
+        TrySendError(ex);
+        Close();
+    }
+
+    private void Close()
+    {
+        _stream.Dispose();
+        _serverSocket.Close();
+    }
+
+    #region IDisposable Members
+
+    public void Dispose()
+    {
+        _stream.Dispose();
+        ((IDisposable)_serverSocket).Dispose();
+    }
+
+    #endregion
 }

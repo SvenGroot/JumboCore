@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.ExceptionServices;
-using System.Runtime.Serialization;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Rpc;
@@ -10,7 +9,6 @@ namespace Ookii.Jumbo.Rpc;
 /// <summary>
 /// Exception thrown when a remote operation threw an exception.
 /// </summary>
-[Serializable]
 public partial class RpcRemoteException : Exception
 {
     private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(RpcRemoteException));
@@ -65,26 +63,9 @@ public partial class RpcRemoteException : Exception
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RpcRemoteException"/> class with serialized data. 
-    /// </summary>
-    /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the <see cref="RpcRemoteException"/> being thrown.</param>
-    /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
-    protected RpcRemoteException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        OriginalExceptionType = info.GetString(nameof(OriginalExceptionType))!;
-    }
-
-    /// <summary>
     /// Gets the full type name of the exception that was thrown by the remote server.
     /// </summary>
     public string OriginalExceptionType { get; }
-
-    /// <inheritdoc/>
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        base.GetObjectData(info, context);
-        info.AddValue(nameof(OriginalExceptionType), OriginalExceptionType);
-    }
 
     /// <summary>
     /// Deserializes an exception.

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Jet.Samples.FPGrowth
@@ -68,8 +67,7 @@ namespace Ookii.Jumbo.Jet.Samples.FPGrowth
         /// <param name="reader">The <see cref="BinaryReader"/> to deserialize the object from.</param>
         public void Read(BinaryReader reader)
         {
-            if (_items == null)
-                _items = (WritableCollection<Utf8String>)FormatterServices.GetUninitializedObject(typeof(WritableCollection<Utf8String>));
+            _items ??= WritableUtility.GetUninitializedWritable<WritableCollection<Utf8String>>();
             _items.Read(reader);
             Support = reader.ReadInt32();
         }
