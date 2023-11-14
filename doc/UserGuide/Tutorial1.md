@@ -2,9 +2,8 @@
 
 In this section, we'll walk you through writing your own distributed data processing application
 that runs on Jumbo. Sounds complicated? Actually, it's not. Most of the complicated stuff is done
-for you by the [`JobBuilder`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm),
-a helper that makes it easy to write code for your tasks, define a job configuration, and submit
-the job to the cluster.
+for you by the [`JobBuilder`][], a helper that makes it easy to write code for your tasks, define a
+job configuration, and submit the job to the cluster.
 
 ## Setting up your project
 
@@ -63,11 +62,11 @@ A job runner is a class that creates the job configuration and specifies command
 for the job’s invocation. These job runners are invoked using the `JetShell job` command that we
 used in the quick start guide.
 
-A job runner is any class that implements the [`IJobRunner`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm)
-interface, although typically you’ll probably want to inherit from the [`BaseJobRunner`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm)
-class, which defines a number of standard command line arguments and behaviors for job runners.
-Because we’re going to use the `JobBuilder` to build our job, we’ll use the [`JobBuilderJob`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm)
-class as the base class for our job runner, which itself is derived from `BaseJobRunner`.
+A job runner is any class that implements the [`IJobRunner`][] interface, although typically you’ll
+probably want to inherit from the [`BaseJobRunner`][] class, which defines a number of standard
+command line arguments and behaviors for job runners. Because we’re going to use the
+[`JobBuilder`][] to build our job, we’ll use the [`JobBuilderJob`][] class as the base class for our
+job runner, which itself is derived from [`BaseJobRunner`][].
 
 So, start out a new C# file as follows:
 
@@ -114,7 +113,7 @@ the input line-by-line, so the function for the first operation should split tha
 and then generate key/value pairs with the word as the key and a count of 1 as the value. For that
 purpose, we’ll write a map function, much like you’ll see in Hadoop MapReduce jobs (only here it’s
 just a function; unlike in Hadoop there is no need to create full classes for each task if you’re
-using the `JobBuilder`):
+using the [`JobBuilder`][]):
 
 ```csharp
 public static void MapWords(Utf8String line, RecordWriter<Pair<Utf8String, int>> output)
@@ -136,21 +135,21 @@ Let’s see how this function works. The function will be called for each record
 in this case are the lines of text in the input (unlike Hadoop, records don’t have to be key/value
 pairs, so the input record in this case is not). That line is passed in the first parameter, `line`.
 
-The type of this parameter is [`Utf8String`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm).
-This is a special string type used by Jumbo; unlike the regular `String` class, it is mutable
-and also uses a more compact in-memory representation for most strings (as the name suggests, text
-is stored in utf-8 encoding). These two features make `Utf8String` more efficient for Jumbo’s
-purposes. Although Jumbo can use regular strings, it’s recommended to use `Utf8String` unless you
-have a good reason not to. In this case, we’ll be reading the input using the [`LineRecordReader`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm),
-which returns `Utf8String` records, so we have to use it for the input.
+The type of this parameter is [`Utf8String`][]. This is a special string type used by Jumbo; unlike
+the regular [`String`][] class, it is mutable and also uses a more compact in-memory representation
+for most strings (as the name suggests, text is stored in utf-8 encoding). These two features make
+[`Utf8String`][] more efficient for Jumbo’s purposes. Although Jumbo can use regular strings, it’s
+recommended to use [`Utf8String`][] unless you have a good reason not to. In this case, we’ll be
+reading the input using the [`LineRecordReader`][], which returns [`Utf8String`][] records, so we
+have to use it for the input.
 
-The second parameter is the `RecordWriter` to which the output should be written. This record
+The second parameter is the [`RecordWriter<T>`][] to which the output should be written. This record
 writer can be connected to a channel or a file, and can use a host of different output serialization
 options. The processing function doesn’t need to care; it just writes records to the writer.
 
-The type of our output records is [`Pair<Utf8String, int>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm).
-Note that you _cannot_ use the regular `KeyValuePair` structure with Jumbo; `Pair` provides a number
-of additional features that Jumbo needs.
+The type of our output records is [`Pair<Utf8String, int>`][]. Note that you _cannot_ use the
+regular [`KeyValuePair<TKey, TValue>`][] structure with Jumbo; [`Pair<TKey, TValue>`][] provides a
+number of additional features that Jumbo needs.
 
 The function body simply splits the input on spaces, and creates a key/value pair for each word
 with the key as the word, and a value of 1.
@@ -167,26 +166,25 @@ public static int AggregateCounts(Utf8String key, int oldValue, int newValue)
 ```
 
 Note that we’re not using the `key` parameter; this function just adds the values, and doesn’t need
-the key. However, this is the signature that the `JobBuilder` requires, so the parameter must be
+the key. However, this is the signature that the [`JobBuilder`][] requires, so the parameter must be
 included.
 
 In this case, it’s not necessary to write output. Jumbo has a built-in task type
-([`AccumulatorTask`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Tasks_AccumulatorTask_2.htm))
+([`AccumulatorTask`][])
 that performs aggregation which takes care of all of that. This function is called by that task to
 update the values, so that’s all the code we need to write for aggregation functions.
 
 ## Creating the job
 
 Now that we have the functions that will process the data, we need to tell Jumbo which order to
-apply them in. This is where the `JobBuilder` comes in. It provides a number of methods to
-construct a sequence of various types of data processing operations. The resulting job
-configuration can be customized to specify things like the number of partitions or channel types,
-or you can just use `JobBuilder`’s defaults, which automatically decide on a number of partitions
-based on the input data size and task capacity of your cluster.
+apply them in. This is where the [`JobBuilder`][] comes in. It provides a number of methods to
+construct a sequence of various types of data processing operations. The resulting job configuration
+can be customized to specify things like the number of partitions or channel types, or you can just
+use [`JobBuilder`][]’s defaults, which automatically decide on a number of partitions based on the
+input data size and task capacity of your cluster.
 
-In order to create the job with a job runner derived from `JobBuilderJob`, you need to override
-the [`BuildJob`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm)
-function. Here’s that function for our word count sample:
+In order to create the job with a job runner derived from [`JobBuilderJob`][], you need to override
+the [`BuildJob`][] function. Here’s that function for our word count sample:
 
 ```csharp
 protected override void BuildJob(JobBuilder job)
@@ -203,51 +201,48 @@ actually executed here. Each of these functions doesn’t actually perform the s
 but adds a stage to the job configuration that will perform that operation. Only when the job is
 submitted to the cluster will this be executed.
 
-The first line tells Jumbo to [read](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Read.htm)
-input from the specified path (which we get from the command line argument) using the
-`LineRecordReader`. This record reader reads utf-8 text input and provides a `Utf8String` record
-for each line. Since we didn’t specify any options, Jumbo will split the input file based on the
-DFS block size for the file (if the input is being read from the Jumbo DFS), and create a single
-task for each block. The `LineRecordReader` handles those splits and makes sure that all records
-are read by exactly one task (no records are missed and none are read by two tasks), even when those
-records cross a block boundary. Your code doesn’t need to worry about that.
+The first line tells Jumbo to read input from the specified path (which we get from the command line
+argument) using the [`LineRecordReader`][]. This record reader reads utf-8 text input and provides a
+[`Utf8String`][] record for each line. Since we didn’t specify any options, Jumbo will split the
+input file based on the DFS block size for the file (if the input is being read from the Jumbo DFS),
+and create a single task for each block. The [`LineRecordReader`][] handles those splits and makes
+sure that all records are read by exactly one task (no records are missed and none are read by two
+tasks), even when those records cross a block boundary. Your code doesn’t need to worry about that.
 
 It is possible to use the properties on the returned `input` variable to customize the split sizes
 to create more or fewer tasks, but in this simple example, we just use the defaults.
 
-The second line of the `BuildJob` function tells Jumbo to invoke a map function (the `MapWords`
+The second line of the [`BuildJob`][] function tells Jumbo to invoke a map function (the `MapWords`
 function we defined earlier) for each record in the input. Unfortunately, limitations in C#’s type
 argument inference when it comes to delegates means that it’s necessary to explicitly specify the
-generic arguments for the [`JobBuilder.Map`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map__2.htm)
+generic arguments for the [`JobBuilder.Map`][]
 function. This is true for all JobBuilder functions that use delegates.
 
-The `Map` function creates a stage that reads from the input, and executes the specified function
-on each record. What to do with the output is specified later. As indicated before, Jumbo will
-automatically create multiple tasks in the stage based on the input split size.
+The [`Map`][] function creates a stage that reads from the input, and executes the specified
+function on each record. What to do with the output is specified later. As indicated before, Jumbo
+will automatically create multiple tasks in the stage based on the input split size.
 
-The third line calls the [`GroupAggregate`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_GroupAggregate__2.htm)
-function, which tells Jumbo to group data by key and run the specified aggregation function (the
-`AggregateCounts` function we wrote earlier). Because the input here is the output from another
-operation, the `JobBuilder` will create a channel and set defaults for the number of partitions,
-which you can of course override if you want.
+The third line calls the [`GroupAggregate`][] function, which tells Jumbo to group data by key and
+run the specified aggregation function (the `AggregateCounts` function we wrote earlier). Because
+the input here is the output from another operation, the [`JobBuilder`][] will create a channel and
+set defaults for the number of partitions, which you can of course override if you want.
 
-`GroupAggregate` actually creates two stages, both performing the aggregation operation. The first
-does it locally for each task in the input stage, and the second aggregates the data from all input
-tasks. This is similar to using a combiner with MapReduce in Hadoop, and helps reduce the amount of
-data that needs to be transferred over the network.
+[`GroupAggregate`][] actually creates two stages, both performing the aggregation operation. The
+first does it locally for each task in the input stage, and the second aggregates the data from all
+input tasks. This is similar to using a combiner with MapReduce in Hadoop, and helps reduce the
+amount of data that needs to be transferred over the network.
 
 The final line tells Jumbo to write the output to the specified path using the specified
-`RecordWriter` (in this case, we’re writing the output as text). Note that we’re not calling the
-[`JobBuilder.Write`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Write.htm)
-method directly, but instead use the [`JobBuilderJob.WriteOutput`](https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_WriteOutput.htm)
+[`RecordWriter<T>`][] (in this case, we’re writing the output as text). Note that we’re not calling
+the [`JobBuilder.Write`][] method directly, but instead use the [`JobBuilderJob.WriteOutput`][]
 method. This method applies some settings from command line arguments that are common to each
-`JobBuilderJob` to the output. These command line arguments allow the user to specify things like
-the block size and replication factor for the output.
+[`JobBuilderJob`][] to the output. These command line arguments allow the user to specify things
+like the block size and replication factor for the output.
 
-In this case, we're using the [`TextRecordWriter`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm),
-which converts each record to a string and writes it to the output file. We specify the open generic
-type `TextRecordWriter<>` to let Jumbo automatically instantiate it with the type of records being
-written (`TextRecordWriter<Pair<Utf8String, int>>`) in this case.
+In this case, we're using the [`TextRecordWriter<T>`][], which converts each record to a string and
+writes it to the output file. We specify the open generic type `TextRecordWriter<>` to let Jumbo
+automatically instantiate it with the type of records being written
+([`TextRecordWriter<Pair<Utf8String, int>>`][]) in this case.
 
 And that’s it. Putting it all together gives us this:
 
@@ -320,7 +315,7 @@ The assembly JumboSample defines the following jobs:
 Replace the path with the path to the JumboSample.dll you created above.
 
 There is no description for the job, because we didn’t specify any. To add a description to a job,
-apply the `System.ComponentModel.DescriptionAttribute` to the job runner class.
+apply the [`System.ComponentModel.DescriptionAttribute`][] to the job runner class.
 
 To see which arguments are accepted by a job, specify the job name but no arguments (note: this
 only works if the job has at least one required argument; otherwise, just specify a non-existing
@@ -367,10 +362,10 @@ Usage: JetShell job JumboSample.dll WordCount  [-InputPath] <String> [-OutputPat
 ```
 
 As you can see, the WordCount job accepts far more arguments than the two we defined in the sample.
-These arguments are defined by `JobBuilderJob`, and are common to all jobs that inherit from that
-class. Note that the two properties we defined (InputPath and OutputPath) are not in the long list
-of arguments because they have no descriptions. Apply the
-`System.ComponentModel.DescriptionAttribute` to the property that defines the argument to add a
+These arguments are defined by [`JobBuilderJob`][], and are common to all jobs that inherit from
+that class. Note that the two properties we defined (InputPath and OutputPath) are not in the long
+list of arguments because they have no descriptions. Apply the
+[`System.ComponentModel.DescriptionAttribute`][] to the property that defines the argument to add a
 description.
 
 Running the job is done the same way as with the built-in WordCount sample in the quick start guide:
@@ -392,8 +387,8 @@ Duration:   00:00:03.2967750 (3.296775s)
 ```
 
 You may have noted that the JetClient class uploaded two DLLs to the DFS: your JumboSample.dll, but
-also a generated file. This is because the `JobBuilder` generates task classes to invoke the task
-functions (`MapWords` and `AggregateWordCounts`) that we used.
+also a generated file. This is because the [`JobBuilder`][] generates task classes to invoke the
+task functions (`MapWords` and `AggregateCounts`) that we used.
 
 Despite having two stages in the job, this sample execution had only 1 task. This is because the
 input file has only one block, so there is only one task for the MapWords stage. Because of this,
@@ -405,23 +400,48 @@ tasks and two distinct stages in the job execution.
 
 At its core, any Jumbo Jet needs at least two things: a job configuration, and one or more
 assemblies containing the code for the tasks. The former is an XML file that specifies the stages,
-the channels, and the input `RecordReader` and output `RecordWriter` types. Each stage specifies
-the type name of a class implementing [`ITask<TInput, TOutput>`](https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm)
-which is what will be run during the tasks.
+the channels, and the input [`RecordReader<T>`][] and output [`RecordWriter<T>`][] types. Each stage
+specifies the type name of a class implementing [`ITask<TInput, TOutput>`][] which is what will be
+run during the tasks.
 
-You could manually write classes that implement `ITask<TInput, TOutput>` (this may still be useful,
-even when using the `JobBuilder`, for more complicated tasks). You could also manually write a
-configuration file, upload it and the other required files to the DFS, and write your own client
-that talks to the JobServer to submit and start the job.
+You could manually write classes that implement [`ITask<TInput, TOutput>`][] (this may still be
+useful, even when using the [`JobBuilder`][], for more complicated tasks). You could also manually
+write a configuration file, upload it and the other required files to the DFS, and write your own
+client that talks to the JobServer to submit and start the job.
 
-Thanks to JetShell and the `JobBuilder`, you don't need to do any of that. The `JobBuilder` generates
-classes implementing `ITask<TInput, TOutput>` that invoke the data processing functions you
-provided. It transforms the sequence of steps you used in `BuildJob` into a job configuration,
-and creates the XML file. And JetShell handles uploading everything and running your job, printing
-progress until it finishes.
+Thanks to JetShell and the [`JobBuilder`][], you don't need to do any of that. The [`JobBuilder`][]
+generates classes implementing [`ITask<TInput, TOutput>`][] that invoke the data processing
+functions you provided. It transforms the sequence of steps you used in [`BuildJob`][] into a job
+configuration, and creates the XML file. And JetShell handles uploading everything and running your
+job, printing progress until it finishes.
 
-If you wanted to, you could derive from `BaseJobRunner` and build the configuration and task classes
-yourself, while still using JetShell. But for most jobs, `JobBuilder` will be the easiest option.
+If you wanted to, you could derive from [`BaseJobRunner`][] and build the configuration and task
+classes yourself, while still using JetShell. But for most jobs, [`JobBuilder`][] will be the
+easiest option.
 
 The job we used here is not a typical MapReduce job (since it used hash-table aggregation). What
 if we do want to write a traditional MapReduce job? [Keep reading](MapReduce.md) and find out.
+
+[`AccumulatorTask`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Tasks_AccumulatorTask_2.htm
+[`BaseJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm
+[`BuildJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
+[`GroupAggregate`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_GroupAggregate.htm
+[`IJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
+[`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
+[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`JobBuilder.Write`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Write.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`JobBuilderJob.WriteOutput`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_WriteOutput.htm
+[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
+[`KeyValuePair<TKey, TValue>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2
+[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
+[`Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<Utf8String, int>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm
+[`String`]: https://learn.microsoft.com/dotnet/api/system.string
+[`System.ComponentModel.DescriptionAttribute`]: https://learn.microsoft.com/dotnet/api/system.componentmodel.descriptionattribute
+[`TextRecordWriter<Pair<Utf8String, int>>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
+[`TextRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
+[`Utf8String`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm
