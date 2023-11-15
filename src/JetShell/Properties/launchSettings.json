@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JetShell": {
+      "commandName": "Project",
+      "commandLineArgs": "job D:\\jumbopub\\bin\\Ookii.Jumbo.Jet.Samples.dll gensort /unsorted 100000 10"
+    }
+  }
+}

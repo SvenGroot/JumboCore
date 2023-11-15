@@ -13,10 +13,13 @@ function Get-ConfigFile([string]$Name)
 
 function Set-ConfigFile([string]$Name, [string[]]$Content)
 {
+    $path = Join-Path $binPath $Name
     if ($Content) {
         Write-Host "Restoring $Name"
-        $path = Join-Path $binPath $Name
         $Content | Set-Content $path
+    } else {
+        Write-Host "Copying default $Name"
+        Copy-Item "$PSScriptRoot/$Name" $path
     }
 }
 

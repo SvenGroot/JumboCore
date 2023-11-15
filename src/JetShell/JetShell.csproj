@@ -14,6 +14,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    
+    <!-- 
+      Needed to resolve a conflicting reference from web sites and other binaries, which causes
+      issues with the JobBuilder's dependency detection.
+    -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

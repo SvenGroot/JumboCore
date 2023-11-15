@@ -65,10 +65,8 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// </summary>
         /// <param name="assemblies">The assemblies containing the task types.</param>
         public JobConfiguration(IEnumerable<Assembly>? assemblies)
-            : this(assemblies?.Where(a => a.Location.Length != 0)?.Select(a => Path.GetFileName(a.Location)))
+            : this(assemblies?.Select(a => Path.GetFileName(a.Location)))
         {
-            // The JobBuilder generated assembly has a blank location; filter it out since it's
-            // added later.
         }
 
 

@@ -152,10 +152,7 @@ public sealed class DynamicTaskBuilder
             File.Delete(DynamicAssemblyPath);
     }
 
-    internal bool IsDynamicAssembly(Assembly assembly)
-    {
-        return object.Equals(assembly, _assembly);
-    }
+    internal bool IsDynamicAssembly(Assembly assembly) => assembly.FullName == _assembly?.FullName;
 
     [MemberNotNull(nameof(_assembly))]
     [MemberNotNull(nameof(_module))]

@@ -26,7 +26,7 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder
             ArgumentNullException.ThrowIfNull(fileSystemClient);
             ArgumentNullException.ThrowIfNull(jetClient);
 
-            _job = new JobConfiguration(assemblies.ToArray());
+            _job = new JobConfiguration(assemblies);
             _fileSystemClient = fileSystemClient;
             _jetClient = jetClient;
         }
