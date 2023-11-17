@@ -26,7 +26,7 @@ foreach ($file in $configFiles) {
     $configContent[$file] = Get-ConfigFile $file
 }
 
-#dotnet clean -c $Configuration
+dotnet clean -c $Configuration
 $OutputPath = [System.IO.Path]::GetFullPath($OutputPath)
 $binPath = (Join-Path $OutputPath "bin")
 $nugetPath = Join-Path $OutputPath "nuget"
