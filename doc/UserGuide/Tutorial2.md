@@ -59,7 +59,7 @@ use case-insensitive comparisons on the words, and finally a parameter that spec
 containing a list of patterns to ignore.
 
 The `CaseInsensitive` and `IgnorePatternsFile` properties also have the [`JobSettingAttribute`][]
-applied. While you can manually add job settings via the `JobBuilder.Settings` property, for
+applied. While you can manually add job settings via the [`JobBuilder.Settings`][] property, for
 convenience [`JobBuilderJob`][] will add the value of every property marked with the
 [`JobSettingAttribute`][] to the job settings, using `ClassName.PropertyName` as the setting’s key.
 This allows our tasks to get the value of these arguments during job execution.
@@ -255,7 +255,7 @@ WordCountAggregation stage, there really is no sense in re-partitioning and re-s
 records. Therefore, we tell Jumbo to use a pipeline channel so that this step is performed
 immediately for each record in the same process that’s running the WordCountAggregation task.
 
-> The `StageOperation.InputChannel` property may be null in case the stage has no input, or reads
+> The [`StageOperation.InputChannel`][] property may be null in case the stage has no input, or reads
 > input from the DFS. In this case, we know that the input we used was another stage, so we know
 > it's not null, and use the null-forgiving operator `!` since the compiler doesn't know that.
 
@@ -601,8 +601,9 @@ If you want to look at some jobs that are more complex than WordCount, take a lo
 [`ICloneable`]: https://learn.microsoft.com/dotnet/api/system.icloneable
 [`InvertedRawComparer<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_InvertedRawComparer_1.htm
 [`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
 [`JobBuilder.Process`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Process.htm
+[`JobBuilder.Settings`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Settings.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
 [`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
 [`JobSettingAttribute`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm
 [`LineRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
@@ -612,6 +613,7 @@ If you want to look at some jobs that are more complex than WordCount, take a lo
 [`PushTask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_PushTask_2.htm
 [`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
 [`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
+[`StageOperation.InputChannel`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_Builder_StageOperation_InputChannel.htm
 [`String`]: https://learn.microsoft.com/dotnet/api/system.string
 [`StringComparer.OrdinalIgnoreCase`]: https://learn.microsoft.com/dotnet/api/system.stringcomparer.ordinalignorecase
 [`TaskContext.DownloadDfsFile`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
