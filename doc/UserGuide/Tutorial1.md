@@ -8,49 +8,27 @@ job configuration, and submit the job to the cluster.
 ## Setting up your project
 
 In order to introduce data processing with Jumbo, we are going to look how to create a job that
-does the same thing as the WordCount sample job. WordCount reads an input file and counts how often
-each word occurs in the input. It’s simple, and a pretty standard example for MapReduce-style data
-processing.
+does the same thing as the WordCount sample job which you used in the [quick start guide](../QuickStart.md).
+WordCount reads an input file and counts how often each word occurs in the input. It’s simple, and a
+pretty standard example for MapReduce-style data processing.
 
-First, let’s get a project set up for the sample. Create a directory called JumboSample, and run
+First, let’s get a project set up for the sample. Create a directory called `JumboTutorial`, and run
 the following command in that directory:
 
-```text
-dotnet new classlib -f net6.0
+```bash
+dotnet new classlib -f net8.0
+dotnet new nugetconfig
+dotnet nuget add source /jumbo_home/nuget -n Jumbo
+dotnet add package Ookii.Jumbo.Jet
 ```
 
-Next, we need to add references to the core Jumbo class libraries. Unfortunately, this can’t be
-done using the command line. Open the file JumboSample.csproj that was just created, and add the
-following section inside the `<Project>` element:
+Make sure to replace `/jumbo_home` with the path where you deployed Jumbo.
 
-```xml
-<ItemGroup>
-  <Reference Include="Ookii.Jumbo">
-    <HintPath>/jumbo_home/bin/Ookii.Jumbo.dll</HintPath>
-  </Reference>
-  <Reference Include="Ookii.Jumbo.Dfs">
-    <HintPath>/jumbo_home/bin/Ookii.Jumbo.Dfs.dll</HintPath>
-  </Reference>
-  <Reference Include="Ookii.Jumbo.Jet">
-    <HintPath>/jumbo_home/bin/Ookii.Jumbo.Jet.dll</HintPath>
-  </Reference>
-</ItemGroup>
-```
+These steps created a new class library project, added a local `nuget.config` file, and added a
+private NuGet package source to that file, which contains the Jumbo packages you will need. We
+then added a reference to the Ookii.Jumbo.Jet package.
 
-Make sure to replace `/jumbo_home` with the path where you deployed Jumbo. If you are using Visual
-Studio, you can also do this using the “Add Reference” dialog by browsing to the DLLs.
-
-While you're in there, set the `<Nullable>` element to `disable`; Jumbo's class libraries aren't aware
-of nullable reference types (they were written long before that was a thing), and the sample code
-here also assumes it's off.
-
-We also need to add a single package reference to the project, using the following command:
-
-```text
-dotnet add package Ookii.CommandLine -v 4.0.0
-```
-
-Finally, we’ll remove the Class1.cs file from the template, and create a new file called
+After doing this, we’ll remove the Class1.cs file from the template, and create a new file called
 WordCount.cs.
 
 ## Creating a JobRunner
@@ -62,44 +40,51 @@ A job runner is a class that creates the job configuration and specifies command
 for the job’s invocation. These job runners are invoked using the `JetShell job` command that we
 used in the quick start guide.
 
-A job runner is any class that implements the [`IJobRunner`][] interface, although typically you’ll
-probably want to inherit from the [`BaseJobRunner`][] class, which defines a number of standard
-command line arguments and behaviors for job runners. Because we’re going to use the
-[`JobBuilder`][] to build our job, we’ll use the [`JobBuilderJob`][] class as the base class for our
-job runner, which itself is derived from [`BaseJobRunner`][].
+To create a job runner, we'll define a class that inherits from the [`JobBuilderJob`][] class, which
+gives us access to the [`JobBuilder`][] to build our job.
 
-So, start out a new C# file as follows:
+> A job runner is any class that implements the [`IJobRunner`][] interface, so you can also
+> implement that manually. Typically you’ll want to at least inherit from the [`BaseJobRunner`][]
+> class, which defines a number of standard command line arguments and behaviors for job runners.
+> The [`JobBuilderJob`][] class derives from [`BaseJobRunner`][].
+
+So, start out the WordCount.cs file as follows:
 
 ```csharp
-using System;
 using Ookii.CommandLine;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs.Builder;
+using System.ComponentModel;
 
-namespace JumboSample
+namespace JumboTutorial;
+
+[GeneratedParser]
+[Description("Counts word occurrences in a text file.")]
+public partial class WordCount : JobBuilderJob
 {
-    public class WordCount : JobBuilderJob
-    {
-    }
 }
 ```
 
-That’s our job runner class. The first thing we need to add is the arguments. This job is going to
-need to know where its input data and where to place its output, so we’ll have to create command
-line arguments for that. Jumbo uses [Ookii.CommandLine](https://www.ookii.org/Link/CommandLineGitHub)
-for defining command line arguments, so we need to add properties and mark them as command line
-arguments:
+That’s our job runner class. We've given it a description, which JetShell can display, and we use
+the [`GeneratedParserAttribute`][], which is part of [Ookii.CommandLine](https://www.ookii.org/Link/CommandLineGitHub),
+which Jumbo uses to define command line arguments.
+
+Our job will need two command line arguments, to know where its input data is and where to place
+the output data. To do that, we must add two properties to our class and mark them as arguments.
 
 ```csharp
-[CommandLineArgument(IsRequired = true, Position = 0)]
-public string InputPath { get; set; }
+[CommandLineArgument(IsPositional = true)]
+[Description("The DFS path containing the input text.")]
+public required string InputPath { get; set; }
 
-[CommandLineArgument(IsRequired = true, Position = 1)]
-public string OutputPath { get; set; }
+[CommandLineArgument(IsPositional = true)]
+[Description("The DFS path where the output will be written.")]
+public required string OutputPath { get; set; }
 ```
 
 This creates two required positional arguments, so it is now possible to specify the input and
-output path on the command line when invoking this job.
+output path on the command line when invoking this job. We've also added descriptions which
+Ookii.CommandLine will use when displaying usage help for our job.
 
 ## Data processing functions
 
@@ -118,22 +103,22 @@ using the [`JobBuilder`][]):
 ```csharp
 public static void MapWords(Utf8String line, RecordWriter<Pair<Utf8String, int>> output)
 {
-    string[] words = line.ToString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-    foreach( string word in words )
+    var words = line.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    foreach (var word in words)
+    {
         output.WriteRecord(Pair.MakePair(new Utf8String(word), 1));
+    }
 }
 ```
 
-First of all, notice that this is a public static method; this is preferred for processing
-functions. Although you can use private methods or even lambdas, these must be called through a
-delegate which is slower than the direct call that’s possible with public static methods. Keep in
-mind that this code will be executed in an entirely different process than the one that is building
-the job, so none of the state that’s available during job creation will still be intact during
-execution. Preferably, processing functions should not use any external state.
+First of all, notice that this is a public static method; this is required for processing functions.
+The [`JobBuilder`][] will generate a task class for you, and it must be able to invoke this method
+directly. Note that none of the state present when building the job will be there when it's
+executing, so it's best not to rely on data stored in static fields or anything like that either.
 
 Let’s see how this function works. The function will be called for each record in the input, which
-in this case are the lines of text in the input (unlike Hadoop, records don’t have to be key/value
-pairs, so the input record in this case is not). That line is passed in the first parameter, `line`.
+in this case are lines of text (unlike Hadoop, records don’t have to be key/value pairs, so the
+input record in this case is not). That line is passed in the first parameter, `line`.
 
 The type of this parameter is [`Utf8String`][]. This is a special string type used by Jumbo; unlike
 the regular [`String`][] class, it is mutable and also uses a more compact in-memory representation
@@ -160,19 +145,15 @@ key, a new value, and returns the updated value. In this case, we need to sum th
 
 ```csharp
 public static int AggregateCounts(Utf8String key, int oldValue, int newValue)
-{
-    return oldValue + newValue;
-}
+    => oldValue + newValue;
 ```
 
 Note that we’re not using the `key` parameter; this function just adds the values, and doesn’t need
 the key. However, this is the signature that the [`JobBuilder`][] requires, so the parameter must be
 included.
 
-In this case, it’s not necessary to write output. Jumbo has a built-in task type
-([`AccumulatorTask`][])
-that performs aggregation which takes care of all of that. This function is called by that task to
-update the values, so that’s all the code we need to write for aggregation functions.
+In this case, it’s not necessary to write output. The [`JobBuilder`][] provides methods that handle
+that for these kinds of aggregation tasks.
 
 ## Creating the job
 
@@ -215,8 +196,8 @@ to create more or fewer tasks, but in this simple example, we just use the defau
 The second line of the [`BuildJob`][] function tells Jumbo to invoke a map function (the `MapWords`
 function we defined earlier) for each record in the input. Unfortunately, limitations in C#’s type
 argument inference when it comes to delegates means that it’s necessary to explicitly specify the
-generic arguments for the [`JobBuilder.Map`][]
-function. This is true for all JobBuilder functions that use delegates.
+generic arguments for the [`JobBuilder.Map`][] function. This is true for all JobBuilder functions
+that use delegates.
 
 The [`Map`][] function creates a stage that reads from the input, and executes the specified
 function on each record. What to do with the output is specified later. As indicated before, Jumbo
@@ -247,41 +228,44 @@ automatically instantiate it with the type of records being written
 And that’s it. Putting it all together gives us this:
 
 ```csharp
-using System;
 using Ookii.CommandLine;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Jobs.Builder;
+using System.ComponentModel;
 
-namespace JumboSample
+namespace JumboTutorial;
+
+[GeneratedParser]
+[Description("Counts word occurrences in a text file.")]
+public partial class WordCount : JobBuilderJob
 {
-    public class WordCount : JobBuilderJob
+    [CommandLineArgument(IsPositional = true)]
+    [Description("The DFS path containing the input text.")]
+    public required string InputPath { get; set; }
+
+    [CommandLineArgument(IsPositional = true)]
+    [Description("The DFS path where the output will be written.")]
+    public required string OutputPath { get; set; }
+
+    protected override void BuildJob(JobBuilder job)
     {
-        [CommandLineArgument(IsRequired = true, Position = 0)]
-        public string InputPath { get; set; }
+        var input = job.Read(InputPath, typeof(LineRecordReader));
+        var words = job.Map<Utf8String, Pair<Utf8String, int>>(input, MapWords);
+        var aggregated = job.GroupAggregate<Utf8String, int>(words, AggregateCounts);
+        WriteOutput(aggregated, OutputPath, typeof(TextRecordWriter<>));
+    }
 
-        [CommandLineArgument(IsRequired = true, Position = 1)]
-        public string OutputPath { get; set; }
-
-        protected override void BuildJob(JobBuilder job)
+    public static void MapWords(Utf8String line, RecordWriter<Pair<Utf8String, int>> output)
+    {
+        var words = line.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var word in words)
         {
-            var input = job.Read(InputPath, typeof(LineRecordReader));
-            var words = job.Map<Utf8String, Pair<Utf8String, int>>(input, MapWords);
-            var aggregated = job.GroupAggregate<Utf8String, int>(words, AggregateCounts);
-            WriteOutput(aggregated, OutputPath, typeof(TextRecordWriter<>));
-        }
-
-        public static void MapWords(Utf8String line, RecordWriter<Pair<Utf8String, int>> output)
-        {
-            string[] words = line.ToString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach( string word in words )
-                output.WriteRecord(Pair.MakePair(new Utf8String(word), 1));
-        }
-
-        public static int AggregateCounts(Utf8String key, int oldValue, int newValue)
-        {
-            return oldValue + newValue;
+            output.WriteRecord(Pair.MakePair(new Utf8String(word), 1));
         }
     }
+
+    public static int AggregateCounts(Utf8String key, int oldValue, int newValue)
+        => oldValue + newValue;
 }
 ```
 
@@ -303,92 +287,109 @@ of the assembly containing the job. Next, you specify the job name (which is the
 runner class), and then any arguments for the job itself. To see which jobs are defined by a DLL,
 omit the job name:
 
-```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net6.0/JumboSample.dll
-Usage: JetShell job <assemblyName> <jobName> [job arguments...]
-
-The assembly JumboSample defines the following jobs:
-
-    WordCount
+```pwsh
+./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll
 ```
 
-Replace the path with the path to the JumboSample.dll you created above.
-
-There is no description for the job, because we didn’t specify any. To add a description to a job,
-apply the [`System.ComponentModel.DescriptionAttribute`][] to the job runner class.
-
-To see which arguments are accepted by a job, specify the job name but no arguments (note: this
-only works if the job has at least one required argument; otherwise, just specify a non-existing
-argument):
+Which gives the following output:
 
 ```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net6.0/JumboSample.dll wordcount
-The required argument 'InputPath' was not supplied.
-Usage: JetShell job JumboSample.dll WordCount  [-InputPath] <String> [-OutputPath]
-   <String> [-BlockSize <BinarySize>] [-ConfigOnly <FileName>] [-Interactive]
-   [-OverwriteOutput] [-Property <[Stage:]Property=Value>...] [-ReplicationFactor
-   <Int32>] [-Setting <[Stage:]Setting=Value>...]
-   
+Usage: JetShell job JumboTutorial.dll [<job>] [job arguments...]
+
+The assembly JumboTutorial defines the following jobs:
+
+    WordCount
+        Counts word occurrences in a text file.
+```
+
+Replace the path with the path to the JumboTutorial.dll you created above.
+
+To see which arguments are accepted by a job, specify the job name followed by `-Help` (note:
+arguments are case insensitive).
+
+```pwsh
+./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net9.0/JumboTutorial.dll wordcount -help
+```
+
+This displays the usage help for your job.
+
+```text
+Counts word occurrences in a text file.
+
+Usage: JetShell job JumboTutorial.dll WordCount [-InputPath] <String> [-OutputPath] <String>
+   [-BlockSize <BinarySize>] [-ConfigOnly <FileName>] [-Help] [-Interactive] [-OverwriteOutput]
+   [-Property <[Stage:]Property=Value>...] [-ReplicationFactor <Int32>] [-Setting
+   <[Stage:]Setting=Value>...] [-Version]
+
+    -InputPath <String>
+        The DFS path containing the input text.
+
+    -OutputPath <String>
+        The DFS path where the output will be written.
+
     -BlockSize <BinarySize>
         Block size of the job's output files.
-        
+
     -ConfigOnly <FileName>
-        Don't run the job, but only create the configuration and write it to the
-        specified file. Use this to test if your job builder job is creating the correct
-        configuration without running the job. Note there can still be side-effects such
-        as output directories on the file system being created. If the OverwriteOutput
-        switch is specified, the output directory will still be erased!
-        
+        Don't run the job, but only create the configuration and write it to the specified file.
+        Use this to test if your job builder job is creating the correct configuration without
+        running the job. Note there can still be side-effects such as output directories on the
+        file system being created. If the OverwriteOutput switch is specified, the output directory
+        will still be erased!
+
+    -Help [<Boolean>] (-?, -h)
+        Displays this help message.
+
     -Interactive [<Boolean>]
         Wait for user confirmation before starting the job and before exiting.
-        
+
     -OverwriteOutput [<Boolean>]
         Delete the output directory before running the job, if it exists.
-        
+
     -Property <[Stage:]Property=Value>
-        Modifies the value of one of the properties in the job configuration after the
-        job has been created. Uses the format "PropertyName=value" or
-        "CompoundStageId:PropertyName=value". You can access properties more than one
-        level deep, e.g. "MyStage:OutputChannel.PartitionsPerTask=2". Can be specified
-        more than once.
-        
+        Modifies the value of one of the properties in the job configuration after the job has been
+        created. Uses the format "PropertyName=value" or "CompoundStageId:PropertyName=value". You
+        can access properties more than one level deep, e.g.
+        "MyStage:OutputChannel.PartitionsPerTask=2". Can be specified more than once.
+
     -ReplicationFactor <Int32>
         Replication factor of the job's output files.
-        
+
     -Setting <[Stage:]Setting=Value>
-        Defines or overrides a job or stage setting in the job configuration. Uses the
-        format "SettingName=value" or "CompoundStageId:SettingName=value". Can be
-        specified more than once. 
+        Defines or overrides a job or stage setting in the job configuration. Uses the format
+        "SettingName=value" or "CompoundStageId:SettingName=value". Can be specified more than once.
 ```
 
 As you can see, the WordCount job accepts far more arguments than the two we defined in the sample.
-These arguments are defined by [`JobBuilderJob`][], and are common to all jobs that inherit from
-that class. Note that the two properties we defined (InputPath and OutputPath) are not in the long
-list of arguments because they have no descriptions. Apply the
-[`System.ComponentModel.DescriptionAttribute`][] to the property that defines the argument to add a
-description.
+These arguments are defined by [`BaseJobRunner`][], and are common to all jobs that inherit from
+that class.
 
 Running the job is done the same way as with the built-in WordCount sample in the quick start guide:
 
-```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net5.0/JumboSample.dll wordcount /mobydick.txt /sampleoutput
-228 [1] INFO Ookii.Jumbo.Jet.Jobs.JobRunnerInfo (null) - Created job runner for job WordCount, InputPath = /mobydick.txt, OutputPath = /sampleoutput
-474 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Saving job configuration to DFS file /JumboJet/job_{9b832d24-fc89-4dbf-8f7f-0ae44f94bcec}/job.xml.
-703 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Uploading local file /home/sgroot/JumboSample/bin/Debug/net5.0/JumboSample.dll to DFS directory /JumboJet/job_{9b832d24-fc89-4dbf-8f7f-0ae44f94bcec}.
-751 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Uploading local file /tmp/Ookii.Jumbo.Jet.Generated.fb08f0e1a18f419a879c8dfd3a22d935.dll to DFS directory /JumboJet/job_{9b832d24-fc89-4dbf-8f7f-0ae44f94bcec}.
-835 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Running job 9b832d24-fc89-4dbf-8f7f-0ae44f94bcec.
-0.0 %; finished: 0/1 tasks; MapWordsTaskStage: 0.0 %
-100.0 %; finished: 1/1 tasks; MapWordsTaskStage: 100.0 %
-
-Job completed.
-Start time: 2013-06-03 03:45:39.555
-End time:   2013-06-03 03:45:42.851
-Duration:   00:00:03.2967750 (3.296775s)
+```pwsh
+./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll wordcount /mobydick.txt /sampleoutput
 ```
 
-You may have noted that the JetClient class uploaded two DLLs to the DFS: your JumboSample.dll, but
-also a generated file. This is because the [`JobBuilder`][] generates task classes to invoke the
-task functions (`MapWords` and `AggregateCounts`) that we used.
+With basically the same output:
+
+```text
+2023-11-16 16:46:30,227 [1] INFO  Ookii.Jumbo.Jet.Jobs.JobRunnerInfo [(null)] - Created job runner for job WordCount, InputPath = /mobydick.txt, OutputPath = /tutorialoutput, OverwriteOutput = True
+2023-11-16 16:46:30,563 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Saving job configuration to DFS file /JumboJet/job_{65d457e2-d8e8-4df5-a667-01e159e552c8}/job.xml.
+2023-11-16 16:46:30,651 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Uploading local file /home/user/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll to DFS directory /JumboJet/job_{65d457e2-d8e8-4df5-a667-01e159e552c8}.
+2023-11-16 16:46:30,664 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Uploading local file /tmp/Ookii.Jumbo.Jet.Generated.5da669c7c30d4ae183ad1086667d2fb8.dll to DFS directory /JumboJet/job_{65d457e2-d8e8-4df5-a667-01e159e552c8}.
+2023-11-16 16:46:30,680 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Running job 65d457e2-d8e8-4df5-a667-01e159e552c8.
+100.0%; finished: 1/1 tasks; MapWordsTaskStage: 100.0%
+
+Job completed.
+Start time: 2023-11-16 16:46:30.687
+End time:   2023-11-16 16:46:31.541
+Duration:   00:00:00.8533716 (0.8533716s)
+```
+
+You may have noted that the JetClient class uploaded two DLLs to the DFS: your JumboTutorial.dll,
+but also a generated file. This is because the [`JobBuilder`][] generates task classes to invoke the
+task functions (`MapWords` and `AggregateCounts`) that we used, and saves them in an external
+assembly.
 
 Despite having two stages in the job, this sample execution had only 1 task. This is because the
 input file has only one block, so there is only one task for the MapWords stage. Because of this,
@@ -422,9 +423,9 @@ easiest option.
 The job we used here is not a typical MapReduce job (since it used hash-table aggregation). What
 if we do want to write a traditional MapReduce job? [Keep reading](MapReduce.md) and find out.
 
-[`AccumulatorTask`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Tasks_AccumulatorTask_2.htm
 [`BaseJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm
 [`BuildJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
+[`GeneratedParserAttribute`]: https://www.ookii.org/docs/commandline-4.0/html/T_Ookii_CommandLine_GeneratedParserAttribute.htm
 [`GroupAggregate`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_GroupAggregate.htm
 [`IJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
 [`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
@@ -441,7 +442,6 @@ if we do want to write a traditional MapReduce job? [Keep reading](MapReduce.md)
 [`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
 [`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm
 [`String`]: https://learn.microsoft.com/dotnet/api/system.string
-[`System.ComponentModel.DescriptionAttribute`]: https://learn.microsoft.com/dotnet/api/system.componentmodel.descriptionattribute
 [`TextRecordWriter<Pair<Utf8String, int>>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
 [`TextRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
 [`Utf8String`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm

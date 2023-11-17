@@ -135,7 +135,7 @@ often each word occurred in your text file.
 > [user guide](../UserGuide.md) will introduce a more advanced version of WordCount that overcomes
 > some of these limitations.
 
-Don’t forget to go to the Jet administration website (http://localhost:36000 by default). You can
+Don’t forget to go to the Jet administration website (`http://localhost:36000` by default). You can
 see lots of cool statistics about your job there.
 
 And that’s your very first job! But wait a second? Isn’t Jumbo for distributed processing? But

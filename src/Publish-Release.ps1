@@ -35,7 +35,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Build failed."
 }
 
-Remove-Item $binPath -Recurse
+Remove-Item $binPath -Recurse -Exclude "log"
 
 $publishProjects = "NameServer","DataServer","DfsShell","DfsWeb","JobServer","TaskServer","TaskHost","JetShell","JetWeb","Ookii.Jumbo.Jet.Samples"
 foreach($project in $publishProjects) {
@@ -49,6 +49,7 @@ foreach ($project in $packProjects) {
 
 Copy-Item (Join-Path $PSScriptRoot "scripts" "*") $OutputPath -Recurse -Force
 Copy-Item (Join-Path $PSScriptRoot "*.config") $binPath -Force
+New-Item (Join-Path $binPath "log") -ItemType Directory -Force | Out-Null
 foreach ($file in $configFiles) {
     Set-ConfigFile $file $configContent[$file]
 }
