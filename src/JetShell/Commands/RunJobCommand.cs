@@ -43,6 +43,7 @@ namespace JetShell.Commands
             }
 
             manager.Options.UsageWriter.CommandName += $" {Path.GetFileName(assemblyFileName)} {jobRunnerInfo.Name}";
+            manager.Options.AutoVersionArgument = false;
             _jobRunner = jobRunnerInfo.CreateInstance(args[2..], manager.Options);
         }
 
