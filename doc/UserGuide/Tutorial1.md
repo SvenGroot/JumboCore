@@ -308,7 +308,7 @@ To see which arguments are accepted by a job, specify the job name followed by `
 arguments are case insensitive).
 
 ```pwsh
-./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net9.0/JumboTutorial.dll wordcount -help
+./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll wordcount -help
 ```
 
 This displays the usage help for your job.
