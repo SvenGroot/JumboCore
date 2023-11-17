@@ -23,7 +23,7 @@ public static class Pair
     ///   This function can be used to create a pair using type inference for the key and value types so you do not have to explicitly specify them.
     /// </para>
     /// </remarks>
-    public static Pair<TKey, TValue> MakePair<TKey, TValue>(TKey key, TValue value)
+    public static Pair<TKey, TValue> MakePair<TKey, TValue>(TKey? key, TValue? value)
         where TKey : notnull
         where TValue : notnull
     {

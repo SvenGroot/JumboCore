@@ -14,39 +14,34 @@ To start off, create a new file called AdvancedWordCount.cs in the project we cr
 We’ll create a class called AdvancedWordCount in this file:
 
 ```csharp
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Ookii.CommandLine;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs;
 using Ookii.Jumbo.Jet.Jobs.Builder;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
 
-namespace JumboSample
+namespace JumboTutorial;
+
+[GeneratedParser]
+[Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
+public partial class AdvancedWordCount : JobBuilderJob
 {
-    [Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
-    public class AdvancedWordCount : JobBuilderJob
-    {
-    }
 }
 ```
-
-Note that I’ve added a description to the class, which will be displayed by JetShell.
 
 This version of WordCount will have four command line parameters:
 
 ```csharp
-[CommandLineArgument(IsRequired = true, Position = 0)]
+[CommandLineArgument(IsPositional = true)]
 [Description("The input file or directory containing the input text (must be utf-8).")]
-public string InputPath { get; set; }
+public required string InputPath { get; set; }
 
-[CommandLineArgument(IsRequired = true, Position = 1)]
+[CommandLineArgument(IsPositional = true)]
 [Description("The directory where the output will be written.")]
-public string OutputPath { get; set; }
+public required string OutputPath { get; set; }
 
 [CommandLineArgument]
 [Description("Perform a case-insensitive comparison on the words.")]
@@ -56,16 +51,15 @@ public bool CaseInsensitive { get; set; }
 [CommandLineArgument]
 [Description("The DFS path of a file containing regular expression patterns that define text that should be ignored while counting.")]
 [JobSetting]
-public string IgnorePatternsFile { get; set; }
+public string? IgnorePatternsFile { get; set; }
 ```
 
 Besides the input and output path, we also have a switch argument that indicates whether or not to
 use case-insensitive comparisons on the words, and finally a parameter that specifies a text file
-containing a list of patterns to ignore. Note that I’ve added descriptions to all of these, which
-will be used by JetShell when displaying command line usage information for the job.
+containing a list of patterns to ignore.
 
-The CaseInsensitive and IgnorePatternsFile properties also have the [`JobSettingAttribute`][]
-applied. While you can manually add job settings via the JobBuilder.Settings property, for
+The `CaseInsensitive` and `IgnorePatternsFile` properties also have the [`JobSettingAttribute`][]
+applied. While you can manually add job settings via the `JobBuilder.Settings` property, for
 convenience [`JobBuilderJob`][] will add the value of every property marked with the
 [`JobSettingAttribute`][] to the job settings, using `ClassName.PropertyName` as the setting’s key.
 This allows our tasks to get the value of these arguments during job execution.
@@ -73,8 +67,8 @@ This allows our tasks to get the value of these arguments during job execution.
 ## Data processing functions
 
 Next, we have to specify the task functions. This time, we need to keep some state in between
-records (the list of ignored patterns), so instead of using a map function (which processes a
-single record), we use a function that will process all records:
+records (the list of ignored patterns), so instead of using a map function (which processes a single
+record at a time), we use a function that will process all records:
 
 ```csharp
 [AllowRecordReuse]
@@ -88,27 +82,26 @@ settings. Note that I’ve applied the [`AllowRecordReuseAttribute`][] attribute
 tell Jumbo it’s okay to reuse record object instances for the input, which improves performance by
 reducing GC pressure.
 
-One interesting thing to note is that for the output record type, we’re using [`Pair<string,
-int>`][], so we’re using [`String`][] instead of [`Utf8String`][]. This is because we want to be
-able to use a case-insensitive string comparer, and there is none for [`Utf8String`][]. Of course,
-you could write one, but since the .Net [`String`][] class already has one we’ll use that instead.
-This limits our ability to use record reuse, but since we'll be converting records to string anyway
-to split the words, it doesn't really matter.
+One interesting thing to note is that for the output record type, we’re using [`Pair<string, int>`][],
+so we’re using [`String`][] instead of [`Utf8String`][]. This is because we want to be able to use a
+case-insensitive string comparer, and there is none for [`Utf8String`][]. Of course, you could write
+one, but since the .Net [`String`][] class already has one we’ll use that instead. This limits our
+ability to use record reuse, but since we'll be converting records to strings anyway to split the
+words, it doesn't really matter.
 
 The first thing the method should do is read the list of ignore patterns:
 
 ```csharp
-Regex ignorePattern = GetIgnorePattern(context);
+var ignorePattern = GetIgnorePattern(context);
 ```
 
 We’ll get back to the details of the `GetIgnorePattern` function in a bit.
 
 Since we’re keeping state between the records, we might as well reuse the output record object
-instance as well, and the array containing the separator for [`String.Split`][].
+instance as well.
 
 ```csharp
-Pair<string, int> outputRecord = Pair.MakePair((string)null, 1);
-char[] separator = new char[] { ' ' };
+var outputRecord = Pair.MakePair((string?)null, 1);
 ```
 
 In this case we know that output record reuse is safe without checking
@@ -118,14 +111,16 @@ a pipeline channel to an aggregation task, which we know also supports record re
 The only thing remaining is to process the records:
 
 ```csharp
-foreach( Utf8String record in input.EnumerateRecords() )
+foreach (Utf8String record in input.EnumerateRecords())
 {
-    string line = record.ToString();
-    if( ignorePattern != null )
+    var line = record.ToString();
+    if (ignorePattern != null)
+    {
         line = ignorePattern.Replace(line, " ");
+    }
 
-    string[] words = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-    foreach( string word in words )
+    var words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    foreach (var word in words)
     {
         outputRecord.Key = word;
         output.WriteRecord(outputRecord);
@@ -140,14 +135,16 @@ it removes words from the line that match the ignore pattern, and reuses the sam
 Let’s look at that `GetIgnorePattern` function, which loads the ignore patterns file:
 
 ```csharp
-private static Regex GetIgnorePattern(TaskContext context)
+private static Regex? GetIgnorePattern(TaskContext context)
 {
-    string dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
-    if( dfsPath == null )
+    var dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
+    if (dfsPath == null)
+    {
         return null;
-    bool caseInsensitive = context.JobConfiguration.GetTypedSetting("AdvancedWordCount.CaseInsensitive", false);
+    }
 
-    string path = context.DownloadDfsFile(dfsPath);
+    var caseInsensitive = context.JobConfiguration.GetSetting("AdvancedWordCount.CaseInsensitive", false);
+    var path = context.DownloadDfsFile(dfsPath);
     var patterns = File.ReadLines(path)
         .Where(line => !string.IsNullOrWhiteSpace(line))
         .Select(line => "(" + line.Trim() + ")");
@@ -169,14 +166,12 @@ Note that in this case it would probably have made more sense to add the ignore 
 to the job configuration, but I wanted to demonstrate the [`DownloadDfsFile`][DownloadDfsFile_1]
 function, so there you are.
 
-We also need an aggregation function, which is the same as before:
+We also need an aggregation function, which is essentially the same as before:
 
 ```csharp
 [AllowRecordReuse]
 public static int AggregateCounts(string key, int oldValue, int newValue)
-{
-    return oldValue + newValue;
-}
+    => oldValue + newValue;
 ```
 
 The only difference is the key type ([`String`][] instead of [`Utf8String`][]), and the
@@ -187,14 +182,14 @@ Since [`String`][] implements [`ICloneable`][] and `int` is a value type, we can
 In this version of WordCount, we want to sort the result by descending word frequency. However,
 word frequency is the value of the key/value pair, and the default comparer for Pair sorts by key.
 We could write a custom comparer, but it’s easier to add an additional stage that inverts the key
-and value:
+and value, so let's write a function that does that:
 
 ```csharp
 [AllowRecordReuse]
 public static void ReversePair<TKey, TValue>(Pair<TKey, TValue> record, RecordWriter<Pair<TValue, TKey>> output)
-{
-    output.WriteRecord(Pair.MakePair(record.Value, record.Key));
-}
+    where TKey : notnull
+    where TValue : notnull
+    => output.WriteRecord(Pair.MakePair(record.Value, record.Key));
 ```
 
 We’re going to use this function twice, first to put the frequency as the key, and after sorting to
@@ -231,10 +226,10 @@ auto-generated stage ID (which you may have noticed was MapWordsTaskStage for th
 previous tutorial).
 
 Since we want to support case-insensitive comparisons, we need to select which comparer to use for
-aggregation based on the `CaseInsensitive` property:
+aggregation based on the `CaseInsensitive` property (we'll define the type we're using here below):
 
 ```csharp
-Type comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
+var comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
 ```
 
 Now add the aggregation step to the JobBuilder:
@@ -252,7 +247,7 @@ sort them by frequency.
 
 ```csharp
 var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePair<string, int>);
-reversed.InputChannel.ChannelType = ChannelType.Pipeline;
+reversed.InputChannel!.ChannelType = ChannelType.Pipeline;
 ```
 
 Because this is a simple map function applied to each of the output records of the
@@ -260,16 +255,19 @@ WordCountAggregation stage, there really is no sense in re-partitioning and re-s
 records. Therefore, we tell Jumbo to use a pipeline channel so that this step is performed
 immediately for each record in the same process that’s running the WordCountAggregation task.
 
+> The `StageOperation.InputChannel` property may be null in case the stage has no input, or reads
+> input from the DFS. In this case, we know that the input we used was another stage, so we know
+> it's not null, and use the null-forgiving operator `!` since the compiler doesn't know that.
+
 Next, we need to sort the records:
 
 ```csharp
 var sorted = job.SpillSort(reversed, typeof(InvertedRawComparer<>));
-sorted.InputChannel.TaskCount = 1;
+sorted.InputChannel!.TaskCount = 1;
 ```
 
-We use the [`InvertedRawComparer<T>`][],
-which inverts the default raw comparer for a type so we can sort by descending rather than ascending
-frequency.
+We use the [`InvertedRawComparer<T>`][], which inverts the default raw comparer for a type so we can
+sort by descending rather than ascending frequency.
 
 Normally, a file channel partitions the data over multiple tasks, but that would give us multiple
 output files that are each individually sorted by frequency, while what we want is a single sorted
@@ -283,7 +281,7 @@ write them to the output:
 ```csharp
 var output = job.Map<Pair<int, string>, Pair<string, int>>(sorted, ReversePair<int, string>);
 output.StageId = "WordCountOutput";
-output.InputChannel.ChannelType = ChannelType.Pipeline;
+output.InputChannel!.ChannelType = ChannelType.Pipeline;
 
 WriteOutput(output, OutputPath, typeof(TextRecordWriter<>));
 ```
@@ -295,12 +293,12 @@ type of that property is internal so we can’t use that. So we create a type th
 ```csharp
 private class OrdinalIgnoreCaseStringComparer : StringComparer
 {
-    public override int Compare(string x, string y)
+    public override int Compare(string? x, string? y)
     {
         return OrdinalIgnoreCase.Compare(x, y);
     }
 
-    public override bool Equals(string x, string y)
+    public override bool Equals(string? x, string? y)
     {
         return OrdinalIgnoreCase.Equals(x, y);
     }
@@ -315,132 +313,128 @@ private class OrdinalIgnoreCaseStringComparer : StringComparer
 Putting everything together, we now have the following file:
 
 ```csharp
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Ookii.CommandLine;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs;
 using Ookii.Jumbo.Jet.Jobs.Builder;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
 
-namespace JumboSample
+namespace JumboTutorial;
+
+[GeneratedParser]
+[Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
+public partial class AdvancedWordCount : JobBuilderJob
 {
-    [Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
-    public class AdvancedWordCount : JobBuilderJob
+    private class OrdinalIgnoreCaseStringComparer : StringComparer
     {
-        private class OrdinalIgnoreCaseStringComparer : StringComparer
+        public override int Compare(string? x, string? y)
         {
-            public override int Compare(string x, string y)
+            return OrdinalIgnoreCase.Compare(x, y);
+        }
+
+        public override bool Equals(string? x, string? y)
+        {
+            return OrdinalIgnoreCase.Equals(x, y);
+        }
+
+        public override int GetHashCode(string obj)
+        {
+            return OrdinalIgnoreCase.GetHashCode(obj);
+        }
+    }
+
+    [CommandLineArgument(IsPositional = true)]
+    [Description("The input file or directory containing the input text (must be utf-8).")]
+    public required string InputPath { get; set; }
+
+    [CommandLineArgument(IsPositional = true)]
+    [Description("The directory where the output will be written.")]
+    public required string OutputPath { get; set; }
+
+    [CommandLineArgument]
+    [Description("Perform a case-insensitive comparison on the words.")]
+    [JobSetting]
+    public bool CaseInsensitive { get; set; }
+
+    [CommandLineArgument]
+    [Description("The DFS path of a file containing regular expression patterns that define text that should be ignored while counting.")]
+    [JobSetting]
+    public string? IgnorePatternsFile { get; set; }
+
+    protected override void BuildJob(JobBuilder job)
+    {
+        var input = job.Read(InputPath, typeof(LineRecordReader));
+
+        var words = job.Process<Utf8String, Pair<string, int>>(input, MapWords);
+        words.StageId = "WordCount";
+
+        var comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
+        var aggregated = job.GroupAggregate<string, int>(words, AggregateCounts, comparerType);
+        words.StageId = "WordCountAggregation";
+
+        var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePair<string, int>);
+        reversed.InputChannel!.ChannelType = ChannelType.Pipeline;
+
+        var sorted = job.SpillSort(reversed, typeof(InvertedRawComparer<>));
+        sorted.InputChannel!.TaskCount = 1;
+
+        var output = job.Map<Pair<int, string>, Pair<string, int>>(sorted, ReversePair<int, string>);
+        output.StageId = "WordCountOutput";
+        output.InputChannel!.ChannelType = ChannelType.Pipeline;
+
+        WriteOutput(output, OutputPath, typeof(TextRecordWriter<>));
+    }
+
+    [AllowRecordReuse]
+    public static void MapWords(RecordReader<Utf8String> input, RecordWriter<Pair<string, int>> output, TaskContext context)
+    {
+        var ignorePattern = GetIgnorePattern(context);
+        var outputRecord = Pair.MakePair((string?)null, 1);
+        foreach (Utf8String record in input.EnumerateRecords())
+        {
+            var line = record.ToString();
+            if (ignorePattern != null)
             {
-                return OrdinalIgnoreCase.Compare(x, y);
+                line = ignorePattern.Replace(line, " ");
             }
 
-            public override bool Equals(string x, string y)
+            var words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var word in words)
             {
-                return OrdinalIgnoreCase.Equals(x, y);
-            }
-
-            public override int GetHashCode(string obj)
-            {
-                return OrdinalIgnoreCase.GetHashCode(obj);
+                outputRecord.Key = word;
+                output.WriteRecord(outputRecord);
             }
         }
+    }
 
-        [CommandLineArgument(IsRequired = true, Position = 0)]
-        [Description("The input file or directory containing the input text (must be utf-8).")]
-        public string InputPath { get; set; }
+    [AllowRecordReuse]
+    public static int AggregateCounts(string key, int oldValue, int newValue)
+        => oldValue + newValue;
 
-        [CommandLineArgument(IsRequired = true, Position = 1)]
-        [Description("The directory where the output will be written.")]
-        public string OutputPath { get; set; }
+    [AllowRecordReuse]
+    public static void ReversePair<TKey, TValue>(Pair<TKey, TValue> record, RecordWriter<Pair<TValue, TKey>> output)
+        where TKey: notnull
+        where TValue : notnull
+        => output.WriteRecord(Pair.MakePair(record.Value, record.Key));
 
-        [CommandLineArgument]
-        [Description("Perform a case-insensitive comparison on the words.")]
-        [JobSetting]
-        public bool CaseInsensitive { get; set; }
-
-        [CommandLineArgument]
-        [Description("The DFS path of a file containing regular expression patterns that define text that should be ignored while counting.")]
-        [JobSetting]
-        public string IgnorePatternsFile { get; set; }
-
-        protected override void BuildJob(JobBuilder job)
+    private static Regex? GetIgnorePattern(TaskContext context)
+    {
+        var dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
+        if (dfsPath == null)
         {
-            var input = job.Read(InputPath, typeof(LineRecordReader));
-
-            var words = job.Process<Utf8String, Pair<string, int>>(input, MapWords);
-            words.StageId = "WordCount";
-
-            Type comparerType = CaseInsensitive ? typeof(OrdinalIgnoreCaseStringComparer) : null;
-
-            var aggregated = job.GroupAggregate<string, int>(words, AggregateCounts, comparerType);
-            words.StageId = "WordCountAggregation";
-
-            var reversed = job.Map<Pair<string, int>, Pair<int, string>>(aggregated, ReversePair<string, int>);
-            reversed.InputChannel.ChannelType = ChannelType.Pipeline;
-
-            var sorted = job.SpillSort(reversed, typeof(InvertedRawComparer<>));
-            sorted.InputChannel.TaskCount = 1;
-
-            var output = job.Map<Pair<int, string>, Pair<string, int>>(sorted, ReversePair<int, string>);
-            output.StageId = "WordCountOutput";
-            output.InputChannel.ChannelType = ChannelType.Pipeline;
-
-            WriteOutput(output, OutputPath, typeof(TextRecordWriter<>));
+            return null;
         }
 
-        [AllowRecordReuse]
-        public static void MapWords(RecordReader<Utf8String> input, RecordWriter<Pair<string, int>> output, TaskContext context)
-        {
-            Regex ignorePattern = GetIgnorePattern(context);
+        var caseInsensitive = context.JobConfiguration.GetSetting("AdvancedWordCount.CaseInsensitive", false);
+        var path = context.DownloadDfsFile(dfsPath);
+        var patterns = File.ReadLines(path)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => "(" + line.Trim() + ")");
 
-            Pair<string, int> outputRecord = Pair.MakePair((string)null, 1);
-            char[] separator = new char[] { ' ' };
-            foreach( Utf8String record in input.EnumerateRecords() )
-            {
-                string line = record.ToString();
-                if( ignorePattern != null )
-                    line = ignorePattern.Replace(line, " ");
-
-                string[] words = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                foreach( string word in words )
-                {
-                    outputRecord.Key = word;
-                    output.WriteRecord(outputRecord);
-                }
-            }
-        }
-
-        [AllowRecordReuse]
-        public static int AggregateCounts(string key, int oldValue, int newValue)
-        {
-            return oldValue + newValue;
-        }
-
-        [AllowRecordReuse]
-        public static void ReversePair<TKey, TValue>(Pair<TKey, TValue> record, RecordWriter<Pair<TValue, TKey>> output)
-        {
-            output.WriteRecord(Pair.MakePair(record.Value, record.Key));
-        }
-
-        private static Regex GetIgnorePattern(TaskContext context)
-        {
-            string dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
-            if( dfsPath == null )
-                return null;
-            bool caseInsensitive = context.JobConfiguration.GetTypedSetting("AdvancedWordCount.CaseInsensitive", false);
-
-            string path = context.DownloadDfsFile(dfsPath);
-            var patterns = File.ReadLines(path)
-                .Where(line => !string.IsNullOrWhiteSpace(line))
-                .Select(line => "(" + line.Trim() + ")");
-
-            return new Regex(string.Join("|", patterns), caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
-        }
+        return new Regex(string.Join("|", patterns), caseInsensitive ? RegexOptions.IgnoreCase : RegexOptions.None);
     }
 }
 ```
@@ -455,80 +449,84 @@ Compiling the job is the same as with the first sample:
 
 Now, when we inspect the assembly using JetShell, you should see the following:
 
-```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net5.0/JumboSample.dll 
-Usage: JetShell job <assemblyName> <jobName> [job arguments...]
-
-The assembly JumboSample defines the following jobs:
-
-    AdvancedWordCount
-        Alternative version of WordCount that demonstrates some more advanced
-        features of Jumbo.
-
-    WordCount
+```pwsh
+./JetShell.ps1 job ~/JumboSample/bin/Debug/net8.0/JumboSample.dll
 ```
 
-Note how the description of the job was included in the output.
+Output:
+
+```text
+Usage: JetShell job JumboTutorial.dll [<job>] [job arguments...]
+
+The assembly JumboTutorial defines the following jobs:
+
+    AdvancedWordCount
+        Alternative version of WordCount that demonstrates some more advanced features of Jumbo.
+
+    WordCount
+        Counts word occurrences in a text file.
+```
 
 We can also check the parameters for our job:
 
-```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net5.0/JumboSample.dll advancedwordcount
-The required argument 'InputPath' was not supplied.
-Alternative version of WordCount that demonstrates some more advanced features
-of Jumbo.
+```pwsh
+./JetShell.ps1 job ~/JumboSample/bin/Debug/net8.0/JumboSample.dll advancedwordcount
+```
 
-Usage: JetShell job JumboSample.dll AdvancedWordCount  [-InputPath] <String>
-   [-OutputPath] <String> [-BlockSize <BinarySize>] [-CaseInsensitive]
-   [-ConfigOnly <FileName>] [-IgnorePatternsFile <String>] [-Interactive]
-   [-OverwriteOutput] [-Property <[Stage:]Property=Value>...]
-   [-ReplicationFactor <Int32>] [-Setting <[Stage:]Setting=Value>...]
-   
+Output:
+
+```text
+Alternative version of WordCount that demonstrates some more advanced features of Jumbo.
+
+Usage: JetShell job JumboTutorial.dll AdvancedWordCount [-InputPath] <String> [-OutputPath] <String>
+   [-BlockSize <BinarySize>] [-CaseInsensitive] [-ConfigOnly <FileName>] [-Help]
+   [-IgnorePatternsFile <String>] [-Interactive] [-OverwriteOutput] [-Property
+   <[Stage:]Property=Value>...] [-ReplicationFactor <Int32>] [-Setting <[Stage:]Setting=Value>...]
+
     -InputPath <String>
         The input file or directory containing the input text (must be utf-8).
-        
+
     -OutputPath <String>
         The directory where the output will be written.
-        
+
     -BlockSize <BinarySize>
         Block size of the job's output files.
-        
+
     -CaseInsensitive [<Boolean>]
         Perform a case-insensitive comparison on the words.
-        
+
     -ConfigOnly <FileName>
-        Don't run the job, but only create the configuration and write it to
-        the specified file. Use this to test if your job builder job is
-        creating the correct configuration without running the job. Note there
-        can still be side-effects such as output directories on the file
-        system being created. If the OverwriteOutput switch is specified, the
-        output directory will still be erased!
-        
+        Don't run the job, but only create the configuration and write it to the specified file. Use
+        this to test if your job builder job is creating the correct configuration without running
+        the job. Note there can still be side-effects such as output directories on the file system
+        being created. If the OverwriteOutput switch is specified, the output directory will still
+        be erased!
+
+    -Help [<Boolean>] (-?, -h)
+        Displays this help message.
+
     -IgnorePatternsFile <String>
-        The path of a file containing regular expression patterns that define
-        text that should be ignored while counting.
-        
+        The DFS path of a file containing regular expression patterns that define text that should
+        be ignored while counting.
+
     -Interactive [<Boolean>]
         Wait for user confirmation before starting the job and before exiting.
-        
+
     -OverwriteOutput [<Boolean>]
         Delete the output directory before running the job, if it exists.
-        
+
     -Property <[Stage:]Property=Value>
-        Modifies the value of one of the properties in the job configuration
-        after the job has been created. Uses the format "PropertyName=value"
-        or "CompoundStageId:PropertyName=value". You can access properties
-        more than one level deep, e.g.
-        "MyStage:OutputChannel.PartitionsPerTask=2". Can be specified more
-        than once.
-        
+        Modifies the value of one of the properties in the job configuration after the job has been
+        created. Uses the format "PropertyName=value" or "CompoundStageId:PropertyName=value". You
+        can access properties more than one level deep, e.g.
+        "MyStage:OutputChannel.PartitionsPerTask=2". Can be specified more than once.
+
     -ReplicationFactor <Int32>
         Replication factor of the job's output files.
-        
+
     -Setting <[Stage:]Setting=Value>
-        Defines or overrides a job or stage setting in the job configuration.
-        Uses the format "SettingName=value" or
-        "CompoundStageId:SettingName=value". Can be specified more than once.
+        Defines or overrides a job or stage setting in the job configuration. Uses the format
+        "SettingName=value" or "CompoundStageId:SettingName=value". Can be specified more than once.
 ```
 
 Notice that our custom parameters are now listed, along with their description, in the long list of
@@ -542,23 +540,28 @@ it on the DFS as /ignore.txt (`./DfsShell.ps1 put ignore.txt /`):
 \bwh.*\b
 ```
 
-This will ignore the word “Ishmael”, and any word starting with “wh” (like “whale”).
+This will ignore the word “Ishmael”, and any word starting with “wh” (like “whale”). Now, let's
+run the job.
+
+```pwsh
+./JetShell.ps1 job ~/JumboSample/bin/Debug/net8.0/JumboSample.dll advancedwordcount /mobydick.txt /tutorial2output -ignorepatternsfile /ignore.txt -caseinsensitive
+```
+
+Output:
 
 ```text
-> ./JetShell.ps1 job ~/JumboSample/bin/Debug/net5.0/JumboSample.dll advancedwordcount /mobydick.txt /sampleoutput -ignorepatternsfile /ignore.txt -caseinsensitive
-237 [1] INFO Ookii.Jumbo.Jet.Jobs.JobRunnerInfo (null) - Created job runner for job AdvancedWordCount, InputPath = /mobydick.txt, OutputPath = /sampleoutput, CaseInsensitive = True, IgnorePatternsFile = /ignore.txt, OverwriteOutput = False
-430 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Saving job configuration to DFS file /JumboJet/job_{c44c00b5-5168-49ea-beb7-b8b68eb8374e}/job.xml.
-665 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Uploading local file /home/sgroot/JumboSample/bin/Debug/net5.0/JumboSample.dll to DFS directory /JumboJet/job_{c44c00b5-5168-49ea-beb7-b8b68eb8374e}.
-713 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Uploading local file /tmp/Ookii.Jumbo.Jet.Generated.8feaf9721e2a462490336d9a7891163a.dll to DFS directory /JumboJet/job_{c44c00b5-5168-49ea-beb7-b8b68eb8374e}.
-782 [1] INFO Ookii.Jumbo.Jet.JetClient (null) - Running job c44c00b5-5168-49ea-beb7-b8b68eb8374e.
-0.0 %; finished: 0/2 tasks; WordCountAggregation: 0.0 %; WordCountOutput: 0.0 %
-50.0 %; finished: 1/2 tasks; WordCountAggregation: 100.0 %; WordCountOutput: 0.0 %
-100.0 %; finished: 2/2 tasks; WordCountAggregation: 100.0 %; WordCountOutput: 100.0 %
+2023-11-16 17:26:04,901 [1] INFO  Ookii.Jumbo.Jet.Jobs.JobRunnerInfo [(null)] - Created job runner for job AdvancedWordCount, InputPath = /mobydick.txt, OutputPath = /tutorial2output, CaseInsensitive = True, IgnorePatternsFile = /ignore.txt
+2023-11-16 17:26:05,242 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Saving job configuration to DFS file /JumboJet/job_{c270f3a4-6d7b-48bb-ab53-3e85467ce95d}/job.xml.
+2023-11-16 17:26:05,332 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Uploading local file /home/user/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll to DFS directory /JumboJet/job_{c270f3a4-6d7b-48bb-ab53-3e85467ce95d}.
+2023-11-16 17:26:05,347 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Uploading local file /tmp/Ookii.Jumbo.Jet.Generated.8a4bb42cf402457b9f26ac9d62944389.dll to DFS directory /JumboJet/job_{c270f3a4-6d7b-48bb-ab53-3e85467ce95d}.
+2023-11-16 17:26:05,363 [1] INFO  Ookii.Jumbo.Jet.JetClient [(null)] - Running job c270f3a4-6d7b-48bb-ab53-3e85467ce95d.
+0.0%; finished: 0/2 tasks; WordCountAggregation: 0.0%; WordCountOutput: 0.0%
+100.0%; finished: 2/2 tasks; WordCountAggregation: 100.0%; WordCountOutput: 100.0%
 
 Job completed.
-Start time: 2013-06-03 08:10:35.023
-End time:   2013-06-03 08:10:38.695
-Duration:   00:00:03.6723330 (3.672333s)
+Start time: 2023-11-16 17:26:05.457
+End time:   2023-11-16 17:26:09.268
+Duration:   00:00:03.8115455 (3.8115455s)
 ```
 
 Note that this job had two stages despite there being only one block in the input, which is because
@@ -568,8 +571,13 @@ the [`SpillSort`][] operation cannot be rolled into one stage. With more input b
 If you view the output, you can see that it did indeed ignore case (words will be listed with the
 case of their first occurrence), is sorted by frequency, and the patterns we specified were ignored:
 
+```pwsh
+./DfsShell.ps1 cat /tutorial2output/WordCountOutput-00001
+```
+
+Output:
+
 ```text
-> ./DfsShell.ps1 cat /sampleoutput/WordCountOutput-00001
 [The, 12465]
 [of, 5870]
 [and, 5605]
@@ -604,7 +612,6 @@ If you want to look at some jobs that are more complex than WordCount, take a lo
 [`PushTask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_PushTask_2.htm
 [`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
 [`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
-[`String.Split`]: https://learn.microsoft.com/dotnet/api/system.string.split
 [`String`]: https://learn.microsoft.com/dotnet/api/system.string
 [`StringComparer.OrdinalIgnoreCase`]: https://learn.microsoft.com/dotnet/api/system.stringcomparer.ordinalignorecase
 [`TaskContext.DownloadDfsFile`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm

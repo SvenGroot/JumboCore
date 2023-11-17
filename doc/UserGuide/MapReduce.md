@@ -14,9 +14,7 @@ For example, to convert the word count sample to MapReduce, all we need to do is
 
 ```C#
 public static void ReduceWordCount(Utf8String key, IEnumerable<int> values, RecordWriter<Pair<Utf8String, int>> output)
-{
-    output.WriteRecord(Pair.MakePair(key, values.Sum()));
-}
+    => output.WriteRecord(Pair.MakePair(key, values.Sum()));
 ```
 
 This is pretty much exactly like the reduce function you’d write in Hadoop (except for convenience

@@ -367,7 +367,7 @@ that class.
 Running the job is done the same way as with the built-in WordCount sample in the quick start guide:
 
 ```pwsh
-./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll wordcount /mobydick.txt /sampleoutput
+./JetShell.ps1 job ~/JumboTutorial/bin/Debug/net8.0/JumboTutorial.dll wordcount /mobydick.txt /tutorialoutput
 ```
 
 With basically the same output:
