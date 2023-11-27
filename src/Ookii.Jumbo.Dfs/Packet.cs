@@ -44,6 +44,14 @@ namespace Ookii.Jumbo.Dfs
         }
 
         /// <summary>
+        /// Gets the valid data for this packet.
+        /// </summary>
+        /// <value>
+        /// A span of the packet data of <see cref="Size"/> bytes in length.
+        /// </value>
+        public ReadOnlySpan<byte> Data => _data.AsSpan(0, Size);
+
+        /// <summary>
         /// Gets or sets a value that indicates whether this packet is the last packet being sent.
         /// </summary>
         /// <value>

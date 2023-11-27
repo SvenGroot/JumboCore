@@ -11,9 +11,16 @@ namespace Ookii.Jumbo.IO
     /// A mutable string stored and serialized in utf-8 format.
     /// </summary>
     /// <remarks>
+    /// <warning>
+    ///   The <see cref="Utf8String"/> class does not provide full utf-8 string manipulation. Its
+    ///   primary use is as a mutable serialization format, providing a <see cref="IWritable"/>
+    ///   record type that allows record reuse for strings. For string manipulation, conversion
+    ///   to/from <see cref="string"/> will typically be necessary.
+    /// </warning>
     /// <note>
-    ///   Instances of the <see cref="Utf8String"/> class will not compare in proper lexicographical order if the string contains multi-byte characters.
-    ///   All that is guaranteed is that the ordering is deterministic.
+    ///   Instances of the <see cref="Utf8String"/> class are compared per byte, and will not sort
+    ///   in proper lexicographical order if the string contains multi-byte characters. The only
+    ///   guarantee is that the ordering is deterministic.
     /// </note>
     /// <para>
     ///   Because this object is mutable you must take care when using it scenarios where immutability is expected, e.g. as a key
@@ -21,7 +28,8 @@ namespace Ookii.Jumbo.IO
     /// </para>
     /// </remarks>
     [RawComparer(typeof(Utf8StringRawComparer))]
-    public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<Utf8String>, IComparable, ICloneable
+    public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<Utf8String>, IComparable, ICloneable,
+        ISpanFormattable, IUtf8SpanFormattable, ISpanParsable<Utf8String>, IUtf8SpanParsable<Utf8String>
     {
         private static readonly Encoding _encoding = Encoding.UTF8;
         private byte[] _utf8Bytes;
@@ -32,36 +40,44 @@ namespace Ookii.Jumbo.IO
         /// </summary>
         public Utf8String()
         {
-            _utf8Bytes = Array.Empty<byte>();
+            _utf8Bytes = [];
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Utf8String"/> class using the specified string.
         /// </summary>
         /// <param name="value">The <see cref="String"/> to set the value to. May be <see langword="null"/>.</param>
-        public Utf8String(string value)
+        public Utf8String(string? value)
         {
             Set(value);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Utf8String"/> class using the specified utf-8 byte array.
+        /// Initializes a new instance of the <see cref="Utf8String"/> class using the specified
+        /// span of characters.
         /// </summary>
-        /// <param name="value">A byte array containing a utf-8 encoded string.</param>
-        public Utf8String(byte[] value)
+        /// <param name="value">A span of characters.</param>
+        public Utf8String(ReadOnlySpan<char> value)
         {
             Set(value);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Utf8String"/> class using the specified utf-8 byte array, index and count.
+        /// Initializes a new instance of the <see cref="Utf8String"/> class using the specified
+        /// utf-8 span.
         /// </summary>
-        /// <param name="value">A byte array containing a utf-8 encoded string.</param>
-        /// <param name="index">The index in <paramref name="value"/> to start copying.</param>
-        /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
-        public Utf8String(byte[] value, int index, int count)
+        /// <param name="value">A span containing a utf-8 encoded string.</param>
+        /// <remarks>
+        /// <warning>
+        ///   This constructor does not check if the span contains valid utf-8 data.
+        /// </warning>
+        /// <para>
+        ///   The contents of the span will be copied into the new instance.
+        /// </para>
+        /// </remarks>
+        public Utf8String(ReadOnlySpan<byte> value)
         {
-            Set(value, index, count);
+            Set(value);
         }
 
         /// <summary>
@@ -73,6 +89,12 @@ namespace Ookii.Jumbo.IO
             Set(value);
         }
 
+        /// <summary>
+        /// Gets the bytes of the utf-8 encoded string.
+        /// </summary>
+        /// <value>A span containing the utf-8 data.</value>
+        public ReadOnlySpan<byte> Bytes => _utf8Bytes.AsSpan(0, _byteLength);
+        
         /// <summary>
         /// Gets the number of bytes in the encoded string.
         /// </summary>
@@ -90,19 +112,18 @@ namespace Ookii.Jumbo.IO
         }
 
         /// <summary>
-        /// Gets or sets the maximum size, in bytes, of the string this instance can hold without resizing.
+        /// Gets or sets the maximum size, in bytes, of the string this instance can hold without
+        /// resizing.
         /// </summary>
         public int Capacity
         {
-            get { return _utf8Bytes == null ? 0 : _utf8Bytes.Length; }
+            get => _utf8Bytes.Length;
             set
             {
                 if (value < _byteLength)
                     throw new ArgumentOutOfRangeException(nameof(value), "New capacity is too small");
                 var capacity = GetCapacityNeeded(value);
-                var newArray = new byte[capacity];
-                Array.Copy(_utf8Bytes, newArray, _byteLength);
-                _utf8Bytes = newArray;
+                Array.Resize(ref _utf8Bytes, capacity);
             }
         }
 
@@ -113,57 +134,77 @@ namespace Ookii.Jumbo.IO
         {
             get
             {
-                return _encoding.GetCharCount(_utf8Bytes, 0, _byteLength);
+                return _encoding.GetCharCount(Bytes);
             }
         }
 
         /// <summary>
-        /// Sets the value of this <see cref="Utf8String"/> to the specified <see cref="String"/>.
+        /// Sets the value of this <see cref="Utf8String"/> to the specified span of characters.
         /// </summary>
-        /// <param name="value">The <see cref="String"/> to set the value to. May be <see langword="null"/>.</param>
+        /// <param name="value">A span of characters.</param>
+        /// <remarks>
+        /// <para>
+        ///   The contents of the span will be copied into this instance.
+        /// </para>
+        /// </remarks>
         [MemberNotNull(nameof(_utf8Bytes))]
-        public void Set(string value)
+        public void Set(ReadOnlySpan<char> value)
+        {
+            _byteLength = _encoding.GetByteCount(value);
+            if (_utf8Bytes == null || Capacity < _byteLength)
+            {
+                _utf8Bytes = new byte[GetCapacityNeeded(_byteLength)];
+            }
+
+            _encoding.GetBytes(value, _utf8Bytes);
+        }
+
+        /// <summary>
+        /// Sets the value of this <see cref="Utf8String"/> to the specified <see cref="string"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="string"/> to set the value to. May be <see langword="null"/>.</param>
+        /// <remarks>
+        /// <para>
+        ///   The contents of the string will be copied into this instance.
+        /// </para>
+        /// </remarks>
+        [MemberNotNull(nameof(_utf8Bytes))]
+        public void Set(string? value)
         {
             if (string.IsNullOrEmpty(value))
             {
                 _byteLength = 0;
-                _utf8Bytes = Array.Empty<byte>();
+                _utf8Bytes = [];
             }
             else
             {
-                _byteLength = _encoding.GetByteCount(value);
-                if (_utf8Bytes == null || Capacity < _byteLength)
-                    _utf8Bytes = new byte[GetCapacityNeeded(_byteLength)];
-                _encoding.GetBytes(value, 0, value.Length, _utf8Bytes, 0);
+                Set(value.AsSpan());
             }
-        }
-
-        /// <summary>
-        /// Sets the value of this <see cref="Utf8String"/> to the specified byte array.
-        /// </summary>
-        /// <param name="value">A byte array containing a utf-8 encoded string.</param>
-        [MemberNotNull(nameof(_utf8Bytes))]
-        public void Set(byte[] value)
-        {
-            ArgumentNullException.ThrowIfNull(value);
-            Set(value, 0, value.Length);
         }
 
         /// <summary>
         /// Sets the value of this <see cref="Utf8String"/> to the specified region of the specified byte array.
         /// </summary>
-        /// <param name="value">A byte array containing a utf-8 encoded string.</param>
-        /// <param name="index">The index in <paramref name="value"/> to start copying.</param>
-        /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
+        /// <param name="value">A span of bytes containing a utf-8 encoded string.</param>
+        /// <remarks>
+        /// <warning>
+        ///   This method does not check if the span contains valid utf-8 data.
+        /// </warning>
+        /// <para>
+        ///   The contents of the span will be copied into this instance.
+        /// </para>
+        /// </remarks>
         [MemberNotNull(nameof(_utf8Bytes))]
-        public void Set(byte[] value, int index, int count)
+        public void Set(ReadOnlySpan<byte> value)
         {
-            ArgumentNullException.ThrowIfNull(value);
-            var capacityNeeded = GetCapacityNeeded(count);
+            var capacityNeeded = GetCapacityNeeded(value.Length);
             if (_utf8Bytes == null || _utf8Bytes.Length < capacityNeeded)
+            {
                 _utf8Bytes = new byte[capacityNeeded];
-            Array.Copy(value, index, _utf8Bytes, 0, count);
-            _byteLength = count;
+            }
+
+            value.CopyTo(_utf8Bytes);
+            _byteLength = value.Length;
         }
 
         /// <summary>
@@ -174,7 +215,7 @@ namespace Ookii.Jumbo.IO
         public void Set(Utf8String value)
         {
             ArgumentNullException.ThrowIfNull(value);
-            Set(value._utf8Bytes, 0, value._byteLength);
+            Set(value.Bytes);
         }
 
         /// <summary>
@@ -184,35 +225,39 @@ namespace Ookii.Jumbo.IO
         public void Append(Utf8String value)
         {
             ArgumentNullException.ThrowIfNull(value);
-            Append(value._utf8Bytes, 0, value.ByteLength);
+            Append(value.Bytes);
         }
 
         /// <summary>
-        /// Appends a byte array containing utf-8 encoded data to this string.
+        /// Appends a span containing utf-8 encoded data to this string.
         /// </summary>
-        /// <param name="value">A byte array containing the utf-8 encoded string to append.</param>
-        /// <param name="index">The index in <paramref name="value"/> at which to start copying.</param>
-        /// <param name="count">The number of bytes from <paramref name="value"/> to copy.</param>
-        public void Append(byte[] value, int index, int count)
+        /// <param name="value">A span containing the utf-8 encoded string to append.</param>
+        /// <remarks>
+        /// <warning>
+        ///   This method does not check if the span contains valid utf-8 data.
+        /// </warning>
+        /// </remarks>
+        public void Append(ReadOnlySpan<byte> value)
         {
-            ArgumentNullException.ThrowIfNull(value);
-
-            if (Capacity == 0)
+            if (_byteLength == 0)
             {
-                Set(value, index, count);
+                Set(value);
             }
             else
             {
                 var newCapacity = Capacity;
-                var newSize = _byteLength + count;
+                var newSize = _byteLength + value.Length;
                 while (newSize > newCapacity)
                 {
                     newCapacity <<= 2;
                 }
-                if (newCapacity != Capacity)
-                    Capacity = newCapacity;
 
-                Array.Copy(value, index, _utf8Bytes, _byteLength, count);
+                if (newCapacity != Capacity)
+                {
+                    Capacity = newCapacity;
+                }
+
+                value.CopyTo(_utf8Bytes.AsSpan(_byteLength));
                 _byteLength = newSize;
             }
         }
@@ -221,10 +266,7 @@ namespace Ookii.Jumbo.IO
         /// Gets a string representation of the current <see cref="Utf8String"/>.
         /// </summary>
         /// <returns>A string representation of the current <see cref="Utf8String"/>.</returns>
-        public override string ToString()
-        {
-            return _encoding.GetString(_utf8Bytes, 0, _byteLength);
-        }
+        public override string ToString() => _encoding.GetString(Bytes);
 
         /// <summary>
         /// Writes this <see cref="Utf8String"/> to the specified stream.
@@ -237,18 +279,7 @@ namespace Ookii.Jumbo.IO
         {
             ArgumentNullException.ThrowIfNull(stream);
 
-            stream.Write(_utf8Bytes, 0, _byteLength);
-        }
-
-        /// <summary>
-        /// Gets the bytes of the utf-8 encoded string.
-        /// </summary>
-        /// <returns>The utf-8 encoded string.</returns>
-        public byte[] GetBytes()
-        {
-            var result = new byte[_byteLength];
-            Buffer.BlockCopy(_utf8Bytes, 0, result, 0, _byteLength);
-            return result;
+            stream.Write(Bytes);
         }
 
         /// <summary>
@@ -288,6 +319,53 @@ namespace Ookii.Jumbo.IO
             var offset = index;
             var length = LittleEndianBitConverter.ToInt32From7BitEncoding(buffer, ref offset);
             return length + (offset - index);
+        }
+
+        /// <inheritdoc/>
+        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            => _encoding.TryGetChars(Bytes, destination, out charsWritten);
+
+        /// <inheritdoc/>
+        public string ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+        /// <inheritdoc/>
+        public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        {
+            var source = Bytes;
+            var copySize = Math.Min(utf8Destination.Length, source.Length);
+            source[..copySize].CopyTo(utf8Destination);
+            bytesWritten = copySize;
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public static Utf8String Parse(ReadOnlySpan<char> s, IFormatProvider? provider) => new(s);
+
+        /// <inheritdoc/>
+        public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out Utf8String result)
+        {
+            result = new(s);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public static Utf8String Parse(string s, IFormatProvider? provider) => new(s);
+
+        /// <inheritdoc/>
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out Utf8String result)
+        {
+            result = new(s);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public static Utf8String Parse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider) => new(utf8Text);
+
+        /// <inheritdoc/>
+        public static bool TryParse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider, [MaybeNullWhen(false)] out Utf8String result)
+        {
+            result = new(utf8Text);
+            return true;
         }
 
         /// <summary>
@@ -422,7 +500,7 @@ namespace Ookii.Jumbo.IO
         {
             ArgumentNullException.ThrowIfNull(reader);
             var length = WritableUtility.Read7BitEncodedInt32(reader);
-            if (length <= Capacity)
+            if (_utf8Bytes != null && length <= Capacity)
             {
                 var totalRead = 0;
                 do
@@ -446,7 +524,7 @@ namespace Ookii.Jumbo.IO
         {
             ArgumentNullException.ThrowIfNull(writer);
             WritableUtility.Write7BitEncodedInt32(writer, _byteLength);
-            writer.Write(_utf8Bytes, 0, _byteLength);
+            writer.Write(Bytes);
         }
 
         #endregion

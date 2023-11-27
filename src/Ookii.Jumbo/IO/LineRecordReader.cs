@@ -79,7 +79,7 @@ namespace Ookii.Jumbo.IO
                         case (byte)'\n':
                             length = _bufferPos - start;
                             bytesProcessed += length;
-                            _line.Append(_buffer, start, length);
+                            _line.Append(_buffer.AsSpan(start, length));
                             ++_bufferPos;
                             ++bytesProcessed;
                             if (b == '\r' && (_bufferPos < _bufferLength || ReadBuffer()) && _buffer[_bufferPos] == '\n')
@@ -95,7 +95,7 @@ namespace Ookii.Jumbo.IO
                     bytesProcessed += length;
                     if (length > 0)
                     {
-                        _line.Append(_buffer, start, length);
+                        _line.Append(_buffer.AsSpan(start, length));
                     }
                 }
             }

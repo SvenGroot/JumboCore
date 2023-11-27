@@ -235,7 +235,7 @@ public class DfsInputStream : Stream, IRecordInputStream
     /// 	<see langword="true"/> if the stream has reached the position indicated by <see cref="StopReadingAtPosition"/>; otherwise, <see langword="false"/>.
     /// </value>
     /// <remarks>
-    /// If this property is <see langword="true"/> it means the next call to <see cref="Read"/> will return 0.
+    /// If this property is <see langword="true"/> it means the next call to <see cref="Read(byte[], int, int)"/> will return 0.
     /// </remarks>
     public bool IsStopped
     {
@@ -249,26 +249,24 @@ public class DfsInputStream : Stream, IRecordInputStream
     /// <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
     /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
     /// <returns>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</returns>
-    public override int Read(byte[] buffer, int offset, int count)
-    {
-        if (_disposed)
-            throw new ObjectDisposedException(typeof(DfsInputStream).FullName);
-        // These exceptions match the contract given in the Stream class documentation.
-        ArgumentNullException.ThrowIfNull(buffer);
-        if (offset < 0)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (offset + count > buffer.Length)
-            throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
 
+    /// <summary>
+    /// Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read. 
+    /// </summary>
+    /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between offset and (offset + count - 1) replaced by the bytes read from the current source.</param>
+    /// <returns>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</returns>
+    public override int Read(Span<byte> buffer)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        var count = buffer.Length;
         if (_position + count > _endOffset)
             count = (int)(_endOffset - _position);
 
-        var sizeRemaining = count;
+        var remaining = buffer[..count];
         if (count > 0)
         {
-            while (_position < _endOffset && sizeRemaining > 0)
+            while (_position < _endOffset && remaining.Length > 0)
             {
                 if (_currentPacketOffset >= _currentPacket.Size)
                 {
@@ -278,14 +276,12 @@ public class DfsInputStream : Stream, IRecordInputStream
                         break;
                 }
 
-                var packetCount = Math.Min(_currentPacket.Size - _currentPacketOffset, sizeRemaining);
-
-                var copied = _currentPacket.CopyTo(_currentPacketOffset, buffer, offset, packetCount);
-                Debug.Assert(copied == packetCount);
-                offset += copied;
-                sizeRemaining -= copied;
-                _position += copied;
-                _currentPacketOffset += copied;
+                var packetSpan = _currentPacket.Data[_currentPacketOffset..];
+                var copyCount = Math.Min(packetSpan.Length, remaining.Length);
+                packetSpan[..copyCount].CopyTo(remaining);
+                remaining = remaining[copyCount..];
+                _position += copyCount;
+                _currentPacketOffset += copyCount;
 
                 if (_currentPacket.IsLastPacket && _position < Length && _currentPacketOffset == _currentPacket.Size && _currentPacket.Size < Packet.PacketSize)
                 {
@@ -295,7 +291,16 @@ public class DfsInputStream : Stream, IRecordInputStream
                 }
             }
         }
-        return count - sizeRemaining;
+
+        return count - remaining.Length;
+    }
+
+    /// <inheritdoc />
+    public override int ReadByte()
+    {
+        Span<byte> buffer = stackalloc byte[1];
+        var bytesRead = Read(buffer);
+        return bytesRead == 0 ? -1 : buffer[0];
     }
 
     /// <summary>

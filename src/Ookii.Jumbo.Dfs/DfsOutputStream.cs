@@ -256,46 +256,66 @@ namespace Ookii.Jumbo.Dfs
         /// <param name="buffer">An array of bytes. This method copies count bytes from buffer to the current stream.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the current stream.</param>
         /// <param name="count">The number of bytes to be written to the current stream.</param>
-        public override void Write(byte[] buffer, int offset, int count)
+        public override void Write(byte[] buffer, int offset, int count) => Write(buffer.AsSpan(offset, count));
+
+        /// <summary>
+        /// Writes a span of bytes to the current stream and advances the current position within
+        /// this stream by the number of bytes written.
+        /// </summary>
+        /// <param name="buffer">A span of bytes.</param>
+        public override void Write(ReadOnlySpan<byte> buffer)
         {
             CheckDisposed();
-            // These exceptions match the contract given in the Stream class documentation.
-            ArgumentNullException.ThrowIfNull(buffer);
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (offset + count > buffer.Length)
-                throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
-
-            if (_sender != null)
-                _sender.ThrowIfErrorOccurred();
+            _sender?.ThrowIfErrorOccurred();
 
             // If the DoNotCrossBoundary option is set, we write records into a temporary buffer and do not add them to the real buffer until MarkRecord is called.
             if (_recordBuffer != null)
             {
-                _recordBuffer.Write(buffer, offset, count);
-                _length += count;
+                _recordBuffer.Write(buffer);
+                _length += buffer.Length;
             }
             else
             {
-                var bufferPos = offset;
-                var end = offset + count;
-
-                while (bufferPos < end)
+                var remaining = buffer;
+                while (remaining.Length > 0)
                 {
                     if (_bufferPos == _buffer.Length)
                     {
                         WriteBufferToPacket(false);
                     }
-                    var bufferRemaining = _buffer.Length - _bufferPos;
-                    var writeSize = Math.Min(end - bufferPos, bufferRemaining);
-                    Array.Copy(buffer, bufferPos, _buffer, _bufferPos, writeSize);
+
+                    var bufferSpan = _buffer.AsSpan(_bufferPos);
+                    var writeSize = Math.Min(bufferSpan.Length, remaining.Length);
+                    remaining[..writeSize].CopyTo(bufferSpan);
                     _bufferPos += writeSize;
-                    bufferPos += writeSize;
+                    remaining = remaining[writeSize..];
                     _length += writeSize;
                     System.Diagnostics.Debug.Assert(_bufferPos <= _buffer.Length);
                 }
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void WriteByte(byte value)
+        {
+            CheckDisposed();
+            _sender?.ThrowIfErrorOccurred();
+            if (_recordBuffer != null)
+            {
+                _recordBuffer.WriteByte(value);
+                ++_length;
+            }
+            else
+            {
+                if (_bufferPos == _buffer.Length)
+                {
+                    WriteBufferToPacket(false);
+                }
+
+                _buffer[_bufferPos] = value;
+                ++_bufferPos;
+                ++_length;
+                System.Diagnostics.Debug.Assert(_bufferPos <= _buffer.Length);
             }
         }
 
@@ -406,8 +426,7 @@ namespace Ookii.Jumbo.Dfs
 
         private void CheckDisposed()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(typeof(DfsOutputStream).FullName);
+            ObjectDisposedException.ThrowIf(_disposed, this);
         }
 
         private void WritePacket(byte[] buffer, int length, bool finalPacket)
