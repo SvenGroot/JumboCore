@@ -116,15 +116,32 @@ public sealed partial class WordCount : JobBuilderJob
     [AllowRecordReuse]
     public static void SplitLines(RecordReader<Utf8String> input, RecordWriter<Pair<Utf8String, int>> output)
     {
+        // Reuse the same pair instance every time.
         Pair<Utf8String, int> record = Pair.MakePair(new Utf8String(), 1);
-        char[] separator = new[] { ' ' };
+        Span<Range> ranges = stackalloc Range[10];
         foreach (Utf8String line in input.EnumerateRecords())
         {
-            string[] words = line.ToString().Split(separator, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string word in words)
+            var lineSpan = line.ToString().AsSpan();
+            while (true)
             {
-                record.Key!.Set(word);
-                output.WriteRecord(record);
+                // Use MemoryExtensions.Split to avoid allocating a string for each word.
+                var splits = lineSpan.Split(ranges, ' ', StringSplitOptions.RemoveEmptyEntries);
+
+                // Don't write the last range in the ranges span since it could still contain
+                // spaces.
+                foreach (var split in ranges[..Math.Min(splits, ranges.Length - 1)])
+                {
+                    record.Key!.Set(lineSpan[split]);
+                    output.WriteRecord(record);
+                }
+
+                if (splits != ranges.Length)
+                {
+                    break;
+                }
+
+                // If there are more ranges, the last item contains the remainder of the span.
+                lineSpan = lineSpan[ranges[^1]];
             }
         }
     }
