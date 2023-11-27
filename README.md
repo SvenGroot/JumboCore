@@ -1,6 +1,6 @@
-# Jumbo for .Net 6+
+# Jumbo for .Net 8+
 
-Jumbo is a distributed data processing system for Microsoft .Net 6.0 and later. It was created as
+Jumbo is a distributed data processing system for Microsoft .Net 8.0 and later. It was created as
 a way for me to learn more about MapReduce and [Apache Hadoop](https://hadoop.apache.org/) during
 my time as a Ph.D. candidate at [Kitsuregawa Lab](http://www.tkl.iis.u-tokyo.ac.jp/new/?lang=en) at
 the University of Tokyo's Institute of Industrial Science.
@@ -24,7 +24,7 @@ more flexibility and also allows for alternate processing pipelines.
 
 Jumbo was originally created between 2008 and 2013 for Mono (to run on Linux clusters) and Microsoft
 .Net Framework (for development/debugging). JumboCore is a port of the original Jumbo to run on on
-.Net Core, and now .Net 6+. If you want to play around with Jumbo, this is the version you want;
+.Net Core, and now .Net 8+. If you want to play around with Jumbo, this is the version you want;
 it's much easier to run than the original.
 
 If you're interested, there is a repository for the [original Jumbo](https://github.com/SvenGroot/Jumbo).
@@ -52,6 +52,8 @@ randomly see some updates. Here's some updates that were made after bringing the
   `IWritable` using the `GeneratedWritableAttribute` attribute, `IValueWriter` using the
   `GenerateValueWriterAttribute` attribute, and RPC clients and servers using the
   `RpcInterfaceAttribute` attribute.
+- **Upgrade to .Net 8.0**: the original public release targeted .Net 6.0, but when .Net 8.0 was
+  released, I updated the project to target that instead.
 
 ## Limitations
 
@@ -90,12 +92,13 @@ I will try to help you if I can, but please understand that I’m not officially
 
 ## Why is it called Jumbo?
 
-Hadoop, in case you didn't know, is named after the stuffed elephant of one of the original developer's
-children. Jumbo is a real elephant, made famous by P.T. Barnum, and since his name has become
-synonymous with things that are huge, it seemed appropriate for *large* scale data processing.
+Hadoop, in case you didn't know, is named after the stuffed elephant of one of the original
+developer's children. Jumbo is a real elephant, made famous by P.T. Barnum, and since his name has
+become synonymous with things that are huge, it seemed appropriate for *large* scale data
+processing.
 
-Additionally, it was consistent with my penchant for using words meaning "big" (my last name is "big"
-in Dutch, and my website is [Ookii.org](https://www.ookii.org), "big" in Japanese).
+Additionally, it was consistent with my penchant for using words meaning "big" (my last name is
+"big" in Dutch, and my website is [Ookii.org](https://www.ookii.org), "big" in Japanese).
 
 As for Jumbo Jet, that was an obvious pun that I couldn't resist once the name Jumbo was selected.
 

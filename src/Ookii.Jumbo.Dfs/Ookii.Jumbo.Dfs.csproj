@@ -9,6 +9,7 @@
     <DelaySign>false</DelaySign>
     <Title>Ookii.Jumbo.Dfs</Title>
     <Description>Class library for Jumbo DFS functionality.</Description>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
