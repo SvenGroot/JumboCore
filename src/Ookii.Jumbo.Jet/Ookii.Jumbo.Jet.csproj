@@ -8,6 +8,7 @@
     <DelaySign>false</DelaySign>
     <Title>Ookii.Jumbo.Jet</Title>
     <Description>Class library for functionality common to both Jumbo DFS and Jumbo Jet.</Description>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
