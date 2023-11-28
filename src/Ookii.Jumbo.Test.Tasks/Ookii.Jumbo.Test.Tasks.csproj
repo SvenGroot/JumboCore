@@ -10,7 +10,6 @@
     <ProjectReference Include="..\Ookii.Jumbo.Jet\Ookii.Jumbo.Jet.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo\Ookii.Jumbo.csproj" />
     <ProjectReference Include="..\Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   
 </Project>
