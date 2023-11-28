@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Ookii.CommandLine;
+using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs;
@@ -23,6 +24,8 @@ namespace Ookii.Jumbo.Jet.Samples;
 [Description("Alternative version of WordCount that demonstrates some more advanced features of Jumbo.")]
 public partial class AdvancedWordCount : JobBuilderJob
 {
+    private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(AdvancedWordCount));
+
     /// <summary>
     /// Gets or sets the input path.
     /// </summary>
@@ -107,17 +110,22 @@ public partial class AdvancedWordCount : JobBuilderJob
     [AllowRecordReuse]
     public static void MapWords(RecordReader<Utf8String> input, RecordWriter<Pair<string, int>> output, TaskContext context)
     {
-        Regex? ignorePattern = GetIgnorePattern(context);
+        var ignorePattern = GetIgnorePattern(context);
 
-        Pair<string, int>? outputRecord = Pair.MakePair(string.Empty, 1);
-        char[] separator = new char[] { ' ' };
+        // Reuse the same pair instance every time.
+        var outputRecord = Pair.MakePair(string.Empty, 1);
         foreach (Utf8String record in input.EnumerateRecords())
         {
-            string line = record.ToString();
+            var line = record.ToString();
             if (ignorePattern != null)
+            {
                 line = ignorePattern.Replace(line, " ");
+            }
 
-            string[] words = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            // Because we have to create string instances anyway to be able to use case-insensitive
+            // comparisons, there is no point to using MemoryExtensions.Split like the regular
+            // WordCount sample does.
+            var words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             foreach (string word in words)
             {
                 outputRecord.Key = word;
@@ -156,16 +164,19 @@ public partial class AdvancedWordCount : JobBuilderJob
 
     private static Regex? GetIgnorePattern(TaskContext context)
     {
-        // It would probably be easier to just add the patterns themselves to the job settings rather than using a file, but
-        // the purpose of this is to demonstrate how to use the DownloadDfsFile method.
+        // It would probably be easier to just add the patterns themselves to the job settings
+        // rather than using a file, but the purpose of this is to demonstrate how to use the
+        // DownloadDfsFile method.
 
-        // TaskContext has a GetSetting method, but it searched both stage and job settings. In this case, we know
-        // that the setting is in the JobConfiguration, so we just check that directly.
+        // TaskContext has a GetSetting method, but it searched both stage and job settings. In this
+        // case, we know that the setting is in the JobConfiguration, so we just check that
+        // directly.
         string? dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
         if (dfsPath == null)
             return null;
 
-        // Using DownloadDfsFile causes the TaskServer to download the file once, and all tasks on this node can then use the locally cached version.
+        // Using DownloadDfsFile causes the TaskServer to download the file once, and all tasks on
+        // this node can then use the locally cached version.
         string path = context.DownloadDfsFile(dfsPath);
         var patterns = File.ReadLines(path).Where(line => !string.IsNullOrWhiteSpace(line)).Select(line => "(" + line.Trim() + ")");
         return new Regex(string.Join("|", patterns));

@@ -537,7 +537,7 @@ it on the DFS as /ignore.txt (`./DfsShell.ps1 put ignore.txt /`):
 
 ```text
 \bIshmael\b
-\bwh.*\b
+\bwh.*?\b
 ```
 
 This will ignore the word “Ishmael”, and any word starting with “wh” (like “whale”). Now, let's
