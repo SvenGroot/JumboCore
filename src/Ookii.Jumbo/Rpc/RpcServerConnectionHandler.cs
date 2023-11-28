@@ -73,8 +73,9 @@ sealed class RpcServerConnectionHandler : IDisposable
     {
         try
         {
+            using var responseStream = new MemoryStream();
             using var reader = new BinaryReader(_stream, Encoding.UTF8, true);
-            using var writer = new BinaryWriter(_stream, Encoding.UTF8, true);
+            using var writer = new BinaryWriter(responseStream);
             if (!_hostNameReceived)
             {
                 _context.ClientHostName = reader.ReadString();
@@ -90,6 +91,8 @@ sealed class RpcServerConnectionHandler : IDisposable
             var interfaceName = reader.ReadString();
             var operationName = reader.ReadString();
             RpcRequestHandler.HandleRequest(_context, objectName, interfaceName, operationName, reader, writer);
+            writer.Flush();
+            responseStream.WriteTo(_stream);
         }
         catch (Exception ex)
         {
