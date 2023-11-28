@@ -261,11 +261,14 @@ namespace Ookii.Jumbo.Jet.Jobs
                 var attribute = (JobSettingAttribute?)Attribute.GetCustomAttribute(prop, typeof(JobSettingAttribute));
                 if (attribute != null)
                 {
-                    var key = attribute.Key;
-                    if (key == null)
-                        key = string.Format(CultureInfo.InvariantCulture, "{0}.{1}", prop.DeclaringType!.Name, prop.Name);
+                    var key = attribute.Key
+                        ?? string.Format(CultureInfo.InvariantCulture, "{0}.{1}", prop.DeclaringType!.Name, prop.Name);
 
-                    jobConfiguration.AddSetting(key, prop.GetValue(this, null)!);
+                    var value = prop.GetValue(this, null);
+                    if (value != null)
+                    {
+                        jobConfiguration.AddSetting(key, value);
+                    }
                 }
             }
         }
