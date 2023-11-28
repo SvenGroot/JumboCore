@@ -748,8 +748,15 @@ namespace Ookii.Jumbo.Test.Jet
         {
             Assert.AreEqual(stageId, stage.StageId);
             Assert.AreEqual(taskCount, stage.TaskCount);
-            Assert.AreEqual(taskType, stage.TaskType.ReferencedType);
-            Assert.AreEqual(stageMultiInputRecordReader, stage.MultiInputRecordReaderType.ReferencedType);
+            Assert.AreEqual(taskType, stage.TaskType.GetReferencedType());
+            if (stageMultiInputRecordReader != null)
+            {
+                Assert.AreEqual(stageMultiInputRecordReader, stage.MultiInputRecordReaderType.GetReferencedType());
+            }
+            else
+            {
+                Assert.IsNull(stage.MultiInputRecordReaderType.TypeName);
+            }
         }
 
         private static void VerifyDataInput(JobConfiguration job, StageConfiguration stage, Type recordReaderType, string inputPath = _inputPath)
@@ -776,7 +783,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.IsTrue(stage.HasDataOutput);
             Type outputType = typeof(FileDataOutput);
             Assert.IsInstanceOf(outputType, stage.DataOutput);
-            Assert.AreEqual(outputType, stage.DataOutputType.ReferencedType);
+            Assert.AreEqual(outputType, stage.DataOutputType.GetReferencedType());
             Assert.AreEqual(outputType.AssemblyQualifiedName, stage.DataOutputType.TypeName);
             Assert.AreEqual(recordWriterType.AssemblyQualifiedName, stage.GetSetting(FileDataOutput.RecordWriterTypeSettingKey, null));
             Assert.AreEqual(_fileSystemClient.Path.Combine(_outputPath, stage.StageId + "-{0:00000}"), stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null));
@@ -786,13 +793,13 @@ namespace Ookii.Jumbo.Test.Jet
 
         private static void VerifyChannel(StageConfiguration sender, StageConfiguration receiver, ChannelType channelType, Type partitionerType = null, Type multiInputRecordReaderType = null, int partitionsPerTask = 1, PartitionAssignmentMethod assigmentMethod = PartitionAssignmentMethod.Linear)
         {
-            TaskTypeInfo info = new TaskTypeInfo(sender.TaskType.ReferencedType);
+            TaskTypeInfo info = new TaskTypeInfo(sender.TaskType.GetReferencedType());
             if (partitionerType == null)
                 partitionerType = typeof(HashPartitioner<>).MakeGenericType(info.OutputRecordType);
             if (multiInputRecordReaderType == null)
                 multiInputRecordReaderType = typeof(MultiRecordReader<>).MakeGenericType(info.OutputRecordType);
             Assert.IsNull(sender.DataOutput);
-            Assert.IsNull(sender.DataOutputType.ReferencedType);
+            Assert.IsNull(sender.DataOutputType.TypeName);
             Assert.IsFalse(sender.HasDataOutput);
             Assert.IsNull(receiver.DataInput);
             if (channelType == ChannelType.Pipeline)
@@ -800,7 +807,7 @@ namespace Ookii.Jumbo.Test.Jet
                 Assert.IsNull(sender.OutputChannel);
                 Assert.AreEqual(receiver, sender.ChildStage);
                 Assert.AreEqual(sender, receiver.Parent);
-                Assert.AreEqual(partitionerType, sender.ChildStagePartitionerType.ReferencedType);
+                Assert.AreEqual(partitionerType, sender.ChildStagePartitionerType.GetReferencedType());
             }
             else
             {
@@ -809,8 +816,8 @@ namespace Ookii.Jumbo.Test.Jet
                 Assert.IsNull(receiver.Parent);
                 Assert.AreEqual(channelType, sender.OutputChannel.ChannelType);
                 Assert.AreEqual(receiver.StageId, sender.OutputChannel.OutputStage);
-                Assert.AreEqual(partitionerType, sender.OutputChannel.PartitionerType.ReferencedType);
-                Assert.AreEqual(multiInputRecordReaderType, sender.OutputChannel.MultiInputRecordReaderType.ReferencedType);
+                Assert.AreEqual(partitionerType, sender.OutputChannel.PartitionerType.GetReferencedType());
+                Assert.AreEqual(multiInputRecordReaderType, sender.OutputChannel.MultiInputRecordReaderType.GetReferencedType());
                 Assert.AreEqual(partitionsPerTask, sender.OutputChannel.PartitionsPerTask);
                 Assert.AreEqual(assigmentMethod, sender.OutputChannel.PartitionAssignmentMethod);
             }

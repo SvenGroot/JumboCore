@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace Ookii.Jumbo.IO
@@ -23,19 +24,14 @@ namespace Ookii.Jumbo.IO
         {
             ArgumentNullException.ThrowIfNull(type);
             var baseType = type.FindGenericBaseType(typeof(MultiInputRecordReader<>), true)!;
-
-            return GetAcceptedInputTypesCore(type, baseType);
-        }
-
-        private static IEnumerable<Type> GetAcceptedInputTypesCore(Type type, Type baseType)
-        {
-            var attributes = Attribute.GetCustomAttributes(type, typeof(InputTypeAttribute));
-            if (attributes.Length == 0)
-                yield return baseType.GetGenericArguments()[0];
+            var attributes = type.GetCustomAttributes<InputTypeAttribute>();
+            if (!attributes.Any())
+            {
+                return baseType.GetGenericArguments().Take(1);
+            }
             else
             {
-                foreach (InputTypeAttribute attribute in attributes)
-                    yield return attribute.AcceptedType;
+                return attributes.Select(a => a.AcceptedType);
             }
         }
     }

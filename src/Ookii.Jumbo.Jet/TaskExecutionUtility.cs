@@ -106,7 +106,7 @@ namespace Ookii.Jumbo.Jet
             _jobServerTaskClient = JetClient.CreateJobServerTaskClient(jetClient.Configuration);
             _context = configuration;
             _umbilical = umbilical;
-            _taskType = _context.StageConfiguration.TaskType.ReferencedType!;
+            _taskType = _context.StageConfiguration.TaskType.GetReferencedType();
             configuration.TaskExecution = this;
             _progressInterval = _jetClient.Configuration.TaskServer.ProgressInterval;
 
@@ -534,7 +534,7 @@ namespace Ookii.Jumbo.Jet
 
         private static Type DetermineTaskExecutionType(TaskContext configuration)
         {
-            var taskType = configuration.StageConfiguration.TaskType.ReferencedType!;
+            var taskType = configuration.StageConfiguration.TaskType.GetReferencedType();
             var interfaceType = taskType.FindGenericInterfaceType(typeof(ITask<,>), true)!;
             var recordTypes = interfaceType.GetGenericArguments();
 
@@ -546,7 +546,7 @@ namespace Ookii.Jumbo.Jet
             if (Context.StageConfiguration.HasDataInput)
             {
                 WarnIfNoRecordReuse();
-                var input = (IDataInput)JetActivator.CreateInstance(Context.StageConfiguration.DataInputType.ReferencedType!, this);
+                var input = (IDataInput)JetActivator.CreateInstance(Context.StageConfiguration.DataInputType.GetReferencedType(), this);
                 TaskInput = TaskInputUtility.ReadTaskInput(new LocalFileSystemClient(), _context.LocalJobDirectory, _context.TaskAttemptId.TaskId.StageId, _context.TaskAttemptId.TaskId.TaskNumber - 1);
                 return input.CreateRecordReader(TaskInput);
             }
@@ -560,7 +560,7 @@ namespace Ookii.Jumbo.Jet
                 }
                 else
                 {
-                    var multiInputRecordReaderType = Context.StageConfiguration.MultiInputRecordReaderType.ReferencedType!;
+                    var multiInputRecordReaderType = Context.StageConfiguration.MultiInputRecordReaderType.GetReferencedType();
                     var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)JetClient.Configuration.FileChannel.ReadBufferSize;
                     var compressionType = Context.GetSetting(FileOutputChannel.CompressionTypeSetting, JetClient.Configuration.FileChannel.CompressionType);
                     var reader = (IMultiInputRecordReader)JetActivator.CreateInstance(multiInputRecordReaderType, this, new int[] { 0 }, _inputChannels.Count, Context.StageConfiguration.AllowRecordReuse, bufferSize, compressionType);
@@ -827,7 +827,7 @@ namespace Ookii.Jumbo.Jet
             var file = FileSystemClient.Path.Combine(FileSystemClient.Path.Combine(Context.DfsJobDirectory, "temp"), Context.TaskAttemptId + "_part" + partition.ToString(System.Globalization.CultureInfo.InvariantCulture));
             _log.DebugFormat("Opening output file {0}", file);
 
-            var output = (IDataOutput)JetActivator.CreateInstance(Context.StageConfiguration.DataOutputType.ReferencedType!, this);
+            var output = (IDataOutput)JetActivator.CreateInstance(Context.StageConfiguration.DataOutputType.GetReferencedType(), this);
             if (_dataOutputs == null)
                 _dataOutputs = new List<IOutputCommitter>();
 

@@ -56,7 +56,7 @@ namespace Ookii.Jumbo.Jet.Channels
                 CompressionType = taskExecution.Context.JobConfiguration.GetSetting(FileOutputChannel.CompressionTypeSetting, taskExecution.JetClient.Configuration.FileChannel.CompressionType);
             // The type of the records in the intermediate files will be the output type of the input stage, which usually matches the input type of the output stage but
             // in the case of a join it may not.
-            InputRecordType = inputStage.TaskType.ReferencedType!.FindGenericInterfaceType(typeof(ITask<,>))!.GetGenericArguments()[1];
+            InputRecordType = inputStage.TaskType.GetReferencedType().FindGenericInterfaceType(typeof(ITask<,>))!.GetGenericArguments()[1];
 
             GetInputTaskIdsFull();
         }
@@ -184,7 +184,7 @@ namespace Ookii.Jumbo.Jet.Channels
         /// g <see cref="IMultiInputRecordReader"/>.</returns>
         protected IMultiInputRecordReader CreateChannelRecordReader()
         {
-            var multiInputRecordReaderType = InputStage.OutputChannel!.MultiInputRecordReaderType.ReferencedType!;
+            var multiInputRecordReaderType = InputStage.OutputChannel!.MultiInputRecordReaderType.GetReferencedType();
             _log.InfoFormat(System.Globalization.CultureInfo.CurrentCulture, "Creating MultiRecordReader of type {3} for {0} inputs, allow record reuse = {1}, buffer size = {2}.", InputTaskIds.Count, TaskExecution.Context.StageConfiguration.AllowRecordReuse, TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize, multiInputRecordReaderType);
             var bufferSize = (multiInputRecordReaderType.IsGenericType && multiInputRecordReaderType.GetGenericTypeDefinition() == typeof(MergeRecordReader<>)) ? (int)TaskExecution.JetClient.Configuration.MergeRecordReader.MergeStreamReadBufferSize : (int)TaskExecution.JetClient.Configuration.FileChannel.ReadBufferSize;
             // We're not using JetActivator to create the object because we need to delay calling NotifyConfigurationChanged until after InputStage was set.

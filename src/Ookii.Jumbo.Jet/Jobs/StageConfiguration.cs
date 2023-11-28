@@ -70,10 +70,7 @@ namespace Ookii.Jumbo.Jet.Jobs
         /// The <see cref="TaskTypeInfo"/> for the <see cref="TaskType"/>, or <see langword="null"/> if the type has not been set.
         /// </value>
         [XmlIgnore]
-        public TaskTypeInfo? TaskTypeInfo
-        {
-            get { return _taskType.ReferencedType == null ? null : _taskTypeInfo ?? (_taskTypeInfo = new TaskTypeInfo(_taskType.ReferencedType)); }
-        }
+        public TaskTypeInfo? TaskTypeInfo => _taskTypeInfo ??= (_taskType.TryGetReferencedType(out var type) ? new(type) : null);
 
         /// <summary>
         /// Gets or sets the number of tasks in this stage.
@@ -414,13 +411,9 @@ namespace Ookii.Jumbo.Jet.Jobs
         }
 
         [XmlIgnore]
-        internal bool IsOutputPrepartitioned
-        {
-            get
-            {
-                return TaskType.ReferencedType?.FindGenericBaseType(typeof(PrepartitionedPushTask<,>), false) != null;
-            }
-        }
+        internal bool IsOutputPrepartitioned 
+            => TaskType.TryGetReferencedType(out var type) 
+                && type.FindGenericBaseType(typeof(PrepartitionedPushTask<,>), false) != null;
 
         /// <summary>
         /// Gets a child stage of this stage.
@@ -584,28 +577,27 @@ namespace Ookii.Jumbo.Jet.Jobs
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} has both data output and an output channel.", CompoundStageId));
                 if (DataOutput.RecordType != TaskTypeInfo!.OutputRecordType)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output record type {1} is incompatible with its data output's record record type {2}.", StageId, DataOutput.RecordType, TaskTypeInfo.OutputRecordType));
-                if (DataOutputType.ReferencedType == null || !DataOutputType.ReferencedType.IsInstanceOfType(DataOutput))
+                if (!DataOutputType.TryGetReferencedType(out var type) || !type.IsInstanceOfType(DataOutput))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data output type must match the data output instance.", CompoundStageId));
             }
-            else if (DataOutputType.ReferencedType != null)
+            else if (DataOutputType.TypeName != null)
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data output type must be null when the stage has no data output.", CompoundStageId));
 
             if (OutputChannel != null)
             {
                 if (ChildStage != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have both a child stage and an output channel.", CompoundStageId));
-                if (OutputChannel.MultiInputRecordReaderType.ReferencedType == null)
+                if (!OutputChannel.MultiInputRecordReaderType.TryGetReferencedType(out var multiInputRecordReaderType))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel must specify a multi-input record reader type.", CompoundStageId));
-                if (OutputChannel.PartitionerType.ReferencedType == null)
+                if (!OutputChannel.PartitionerType.TryGetReferencedType(out var partitionerType))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel must specify a partitioner type.", CompoundStageId));
-                ValidatePartitionerType(OutputChannel.PartitionerType.ReferencedType);
-                if (!MultiInputRecordReader.GetAcceptedInputTypes(OutputChannel.MultiInputRecordReaderType.ReferencedType).Contains(TaskTypeInfo!.OutputRecordType))
-                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel multi-input record reader type {1} doesn't accept the stage's output record type {2}.", CompoundStageId, OutputChannel.MultiInputRecordReaderType.ReferencedType, TaskTypeInfo.OutputRecordType));
+                ValidatePartitionerType(partitionerType);
+                if (!MultiInputRecordReader.GetAcceptedInputTypes(multiInputRecordReaderType).Contains(TaskTypeInfo!.OutputRecordType))
+                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel multi-input record reader type {1} doesn't accept the stage's output record type {2}.", CompoundStageId, multiInputRecordReaderType, TaskTypeInfo.OutputRecordType));
                 if (OutputChannel.OutputStage != null) // null is allowed for debugging purposes; see OutputChannel class
                 {
-                    var receiver = job.GetStage(OutputChannel.OutputStage);
-                    if (receiver == null)
-                        throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel specifies non-existant output stage ID {1}.", CompoundStageId, OutputChannel.OutputStage));
+                    var receiver = job.GetStage(OutputChannel.OutputStage)
+                        ?? throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel specifies non-existant output stage ID {1}.", CompoundStageId, OutputChannel.OutputStage));
                     // Receiver types validated when the receiver's Validate method is called.
                 }
             }
@@ -616,9 +608,9 @@ namespace Ookii.Jumbo.Jet.Jobs
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have a child stage with internal partitioning because internal partitioning was already applied in this compound stage.", CompoundStageId));
                 if (ChildStage.TaskCount > 1)
                 {
-                    if (ChildStagePartitionerType.ReferencedType == null)
+                    if (!ChildStagePartitionerType.TryGetReferencedType(out var childStagePartitionerType))
                         throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} must have a child stage partitioner because it has a child stage with internal partitioning.", CompoundStageId));
-                    ValidatePartitionerType(ChildStagePartitionerType.ReferencedType);
+                    ValidatePartitionerType(childStagePartitionerType);
                 }
 
                 ChildStage.Validate(job);
@@ -637,12 +629,12 @@ namespace Ookii.Jumbo.Jet.Jobs
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0} cannot have both data input and an input channel.", CompoundStageId));
                 if (DataInput.RecordType != TaskTypeInfo!.InputRecordType)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input record type {1} is incompatible with its data input's record record type {2}.", CompoundStageId, DataInput.RecordType, TaskTypeInfo.InputRecordType));
-                if (DataInputType.ReferencedType == null || !DataInputType.ReferencedType.IsInstanceOfType(DataInput))
+                if (!DataInputType.TryGetReferencedType(out var type) || !type.IsInstanceOfType(DataInput))
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data input type must match the data input instance.", CompoundStageId));
             }
             else
             {
-                if (DataInputType.ReferencedType != null)
+                if (DataInputType.TypeName != null)
                     throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s data input type must be null when the stage has no data input.", CompoundStageId));
                 if (Parent == null)
                 {
@@ -650,21 +642,21 @@ namespace Ookii.Jumbo.Jet.Jobs
                     IEnumerable<Type> inputTypes;
                     if (sendingStages.Length > 1)
                     {
-                        if (MultiInputRecordReaderType.ReferencedType == null)
+                        if (!MultiInputRecordReaderType.TryGetReferencedType(out var multiInputRecordReaderType))
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s must specify a stage multi-input record reader because it has more than one input channel.", CompoundStageId));
-                        if (RecordReader.GetRecordType(MultiInputRecordReaderType.ReferencedType) != TaskTypeInfo!.InputRecordType)
-                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input record type {1} is not compatible with the stage multi-input record reader's record type {2}.", CompoundStageId, TaskTypeInfo.InputRecordType, RecordReader.GetRecordType(MultiInputRecordReaderType.ReferencedType)));
-                        inputTypes = MultiInputRecordReader.GetAcceptedInputTypes(MultiInputRecordReaderType.ReferencedType);
+                        if (RecordReader.GetRecordType(multiInputRecordReaderType) != TaskTypeInfo!.InputRecordType)
+                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input record type {1} is not compatible with the stage multi-input record reader's record type {2}.", CompoundStageId, TaskTypeInfo.InputRecordType, RecordReader.GetRecordType(multiInputRecordReaderType)));
+                        inputTypes = MultiInputRecordReader.GetAcceptedInputTypes(multiInputRecordReaderType);
                     }
                     else
-                        inputTypes = new[] { TaskTypeInfo!.InputRecordType };
+                        inputTypes = [TaskTypeInfo!.InputRecordType];
 
                     foreach (var sendingStage in sendingStages)
                     {
-                        if (sendingStage.OutputChannel!.MultiInputRecordReaderType.ReferencedType == null)
+                        if (!sendingStage.OutputChannel!.MultiInputRecordReaderType.TryGetReferencedType(out var multiInputRecordReaderType))
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s output channel must specify a multi-input record reader type.", sendingStage.CompoundStageId));
-                        if (!inputTypes.Contains(RecordReader.GetRecordType(sendingStage.OutputChannel.MultiInputRecordReaderType.ReferencedType)))
-                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input channel uses incompatible record type {1}.", CompoundStageId, RecordReader.GetRecordType(sendingStage.OutputChannel.MultiInputRecordReaderType.ReferencedType)));
+                        if (!inputTypes.Contains(RecordReader.GetRecordType(multiInputRecordReaderType)))
+                            throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Stage {0}'s input channel uses incompatible record type {1}.", CompoundStageId, RecordReader.GetRecordType(multiInputRecordReaderType)));
                     }
                 }
             }

@@ -100,7 +100,7 @@ namespace Ookii.Jumbo.Jet.Channels
             if (TaskExecution.Context.StageConfiguration.InternalPartitionCount > 1 && TaskExecution.Context.StageConfiguration.IsOutputPrepartitioned)
                 partitioner = new PrepartitionedPartitioner<T>();
             else
-                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(TaskExecution.Context.StageConfiguration.OutputChannel!.PartitionerType.ReferencedType!, TaskExecution);
+                partitioner = (IPartitioner<T>)JetActivator.CreateInstance(TaskExecution.Context.StageConfiguration.OutputChannel!.PartitionerType.GetReferencedType(), TaskExecution);
             return partitioner;
         }
     }

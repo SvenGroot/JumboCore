@@ -145,7 +145,7 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual("InputStage", stage.StageId);
             Assert.AreEqual(file.Blocks.Length * splitsPerBlock, stage.DataInput.TaskInputs.Count);
             Assert.IsInstanceOf<FileDataInput>(stage.DataInput);
-            Assert.AreEqual(typeof(FileDataInput), stage.DataInputType.ReferencedType);
+            Assert.AreEqual(typeof(FileDataInput), stage.DataInputType.GetReferencedType());
             Assert.AreEqual(typeof(FileDataInput).AssemblyQualifiedName, stage.DataInputType.TypeName);
             Assert.AreEqual(typeof(LineRecordReader).AssemblyQualifiedName, stage.GetSetting(FileDataInput.RecordReaderTypeSettingKey, null));
             Assert.AreEqual(file.FullPath, stage.GetSetting(FileDataInput.InputPathSettingKey, null));
@@ -156,10 +156,10 @@ namespace Ookii.Jumbo.Test.Jet
                 Assert.AreEqual(_blockSize / splitsPerBlock, input.Size);
             }
             Assert.IsNull(stage.DataOutput);
-            Assert.IsNull(stage.DataOutputType.ReferencedType);
+            Assert.IsNull(stage.DataOutputType.TypeName);
             Assert.IsFalse(stage.HasDataOutput);
             Assert.AreEqual(typeof(Tasks.LineCounterTask).AssemblyQualifiedName, stage.TaskType.TypeName);
-            Assert.AreEqual(typeof(Tasks.LineCounterTask), stage.TaskType.ReferencedType);
+            Assert.AreEqual(typeof(Tasks.LineCounterTask), stage.TaskType.GetReferencedType());
             target.Validate();
 
         }
@@ -235,8 +235,8 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(ChannelType.File, channel.ChannelType);
             Assert.IsFalse(channel.ForceFileDownload);
             Assert.AreEqual(typeof(HashPartitioner<Utf8String>).AssemblyQualifiedName, channel.PartitionerType.TypeName);
-            Assert.AreEqual(typeof(HashPartitioner<Utf8String>), channel.PartitionerType.ReferencedType);
-            Assert.AreEqual(typeof(MultiRecordReader<Utf8String>), channel.MultiInputRecordReaderType.ReferencedType);
+            Assert.AreEqual(typeof(HashPartitioner<Utf8String>), channel.PartitionerType.GetReferencedType());
+            Assert.AreEqual(typeof(MultiRecordReader<Utf8String>), channel.MultiInputRecordReaderType.GetReferencedType());
             Assert.AreEqual(typeof(MultiRecordReader<Utf8String>).AssemblyQualifiedName, channel.MultiInputRecordReaderType.TypeName);
             Assert.AreEqual(stage.StageId, channel.OutputStage);
             Assert.AreEqual(partitionsPerTask, channel.PartitionsPerTask);
@@ -262,8 +262,8 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(ChannelType.File, channel.ChannelType);
             Assert.IsFalse(channel.ForceFileDownload);
             Assert.AreEqual(typeof(HashPartitioner<Utf8String>).AssemblyQualifiedName, channel.PartitionerType.TypeName);
-            Assert.AreEqual(typeof(HashPartitioner<Utf8String>), channel.PartitionerType.ReferencedType);
-            Assert.AreEqual(typeof(MultiRecordReader<Utf8String>), channel.MultiInputRecordReaderType.ReferencedType);
+            Assert.AreEqual(typeof(HashPartitioner<Utf8String>), channel.PartitionerType.GetReferencedType());
+            Assert.AreEqual(typeof(MultiRecordReader<Utf8String>), channel.MultiInputRecordReaderType.GetReferencedType());
             Assert.AreEqual(typeof(MultiRecordReader<Utf8String>).AssemblyQualifiedName, channel.MultiInputRecordReaderType.TypeName);
             Assert.AreEqual(stage.StageId, channel.OutputStage);
             Assert.AreEqual(partitionsPerTask, channel.PartitionsPerTask);
@@ -292,7 +292,7 @@ namespace Ookii.Jumbo.Test.Jet
 
             Assert.AreEqual("SecondStage", stage.StageId);
             Assert.IsNull(stage.DataInput);
-            Assert.IsNull(stage.DataInputType.ReferencedType);
+            Assert.IsNull(stage.DataInputType.TypeName);
             Assert.IsFalse(stage.HasDataInput);
             if (useOutput)
             {
@@ -300,7 +300,7 @@ namespace Ookii.Jumbo.Test.Jet
                 Assert.IsTrue(stage.HasDataOutput);
                 Type outputType = typeof(FileDataOutput);
                 Assert.IsInstanceOf(outputType, stage.DataOutput);
-                Assert.AreEqual(outputType, stage.DataOutputType.ReferencedType);
+                Assert.AreEqual(outputType, stage.DataOutputType.GetReferencedType());
                 Assert.AreEqual(outputType.AssemblyQualifiedName, stage.DataOutputType.TypeName);
                 Assert.AreEqual(typeof(TextRecordWriter<int>).AssemblyQualifiedName, stage.GetSetting(FileDataOutput.RecordWriterTypeSettingKey, null));
                 Assert.AreEqual(DfsPath.Combine(outputPath, stage.StageId + "-{0:00000}"), stage.GetSetting(FileDataOutput.OutputPathFormatSettingKey, null));
@@ -310,19 +310,19 @@ namespace Ookii.Jumbo.Test.Jet
             else
             {
                 Assert.IsNull(stage.DataOutput);
-                Assert.IsNull(stage.DataOutputType.ReferencedType);
+                Assert.IsNull(stage.DataOutputType.TypeName);
                 Assert.IsFalse(stage.HasDataOutput);
             }
 
             Assert.AreEqual(typeof(Tasks.LineAdderTask).AssemblyQualifiedName, stage.TaskType.TypeName);
-            Assert.AreEqual(typeof(Tasks.LineAdderTask), stage.TaskType.ReferencedType);
+            Assert.AreEqual(typeof(Tasks.LineAdderTask), stage.TaskType.GetReferencedType());
 
             ChannelConfiguration channel = inputStage1.OutputChannel;
             Assert.AreEqual(ChannelType.File, channel.ChannelType);
             Assert.IsFalse(channel.ForceFileDownload);
             Assert.AreEqual(typeof(HashPartitioner<int>).AssemblyQualifiedName, channel.PartitionerType.TypeName);
-            Assert.AreEqual(typeof(HashPartitioner<int>), channel.PartitionerType.ReferencedType);
-            Assert.AreEqual(typeof(MultiRecordReader<int>), channel.MultiInputRecordReaderType.ReferencedType);
+            Assert.AreEqual(typeof(HashPartitioner<int>), channel.PartitionerType.GetReferencedType());
+            Assert.AreEqual(typeof(MultiRecordReader<int>), channel.MultiInputRecordReaderType.GetReferencedType());
             Assert.AreEqual(typeof(MultiRecordReader<int>).AssemblyQualifiedName, channel.MultiInputRecordReaderType.TypeName);
             Assert.AreEqual(stage.StageId, channel.OutputStage);
             Assert.AreEqual(1, channel.PartitionsPerTask);
@@ -330,8 +330,8 @@ namespace Ookii.Jumbo.Test.Jet
             Assert.AreEqual(ChannelType.File, channel.ChannelType);
             Assert.IsFalse(channel.ForceFileDownload);
             Assert.AreEqual(typeof(HashPartitioner<int>).AssemblyQualifiedName, channel.PartitionerType.TypeName);
-            Assert.AreEqual(typeof(HashPartitioner<int>), channel.PartitionerType.ReferencedType);
-            Assert.AreEqual(typeof(MultiRecordReader<int>), channel.MultiInputRecordReaderType.ReferencedType);
+            Assert.AreEqual(typeof(HashPartitioner<int>), channel.PartitionerType.GetReferencedType());
+            Assert.AreEqual(typeof(MultiRecordReader<int>), channel.MultiInputRecordReaderType.GetReferencedType());
             Assert.AreEqual(typeof(MultiRecordReader<int>).AssemblyQualifiedName, channel.MultiInputRecordReaderType.TypeName);
             Assert.AreEqual(stage.StageId, channel.OutputStage);
             Assert.AreEqual(1, channel.PartitionsPerTask);

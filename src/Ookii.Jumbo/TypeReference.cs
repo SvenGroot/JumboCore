@@ -3,239 +3,212 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
-namespace Ookii.Jumbo
+namespace Ookii.Jumbo;
+
+/// <summary>
+/// Represents a reference to a <see cref="Type"/> that will be serialized to XML using the type name.
+/// </summary>
+public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
 {
+    private Type? _type;
+
     /// <summary>
-    /// Represents a reference to a <see cref="Type"/> that will be serialized to XML using the type name.
+    /// A <see cref="TypeReference" /> instance that doesn't reference any type.
     /// </summary>
-    public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
+    public static readonly TypeReference Empty = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type.
+    /// </summary>
+    /// <param name="type">The type this instance should reference. May be <see langword="null"/>.</param>
+    public TypeReference(Type? type)
     {
-        private static bool _resolveTypes = true;
-        private string? _typeName;
-        private Type? _type;
+        _type = type;
+        TypeName = type?.AssemblyQualifiedName;
+    }
 
-        /// <summary>
-        /// A <see cref="TypeReference" /> instance that doesn't reference any type.
-        /// </summary>
-        public static readonly TypeReference Empty = new TypeReference();
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type name.
+    /// </summary>
+    /// <param name="typeName">Name of the type. May be <see langword="null"/>.</param>
+    public TypeReference(string? typeName)
+    {
+        _type = null;
+        TypeName = typeName;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type.
-        /// </summary>
-        /// <param name="type">The type this instance should reference. May be <see langword="null"/>.</param>
-        public TypeReference(Type? type)
+    /// <summary>
+    /// Gets or sets a value indicating whether <see cref="TypeReference"/> instances should resolve
+    /// the type specified by <see cref="TypeName"/> if the type isn't already known.
+    /// </summary>
+    /// <value>
+    ///     <see langword="true"/> if types should be resolved; otherwise, <see langword="false"/>.
+    ///     The default value is <see langword="true"/>.
+    /// </value>
+    /// <remarks>
+    /// <para>
+    ///   The <see cref="TypeReference"/> class is used as part of the configuration for Jumbo Jet
+    ///   jobs. The job server will load the configuration, but loading referenced assemblies into
+    ///   the job server should be avoided. This property allows you to ensure that even if e.g. a
+    ///   debugger executes the <see cref="GetReferencedType"/> method the type will not be loaded.
+    /// </para>
+    /// </remarks>
+    public static bool ResolveTypes { get; set; } = true;
+
+    /// <summary>
+    /// Gets type that this <see cref="TypeReference" /> references, if any.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if this instance references a type and
+    /// </returns>
+    /// <exception cref="System.InvalidOperationException">Resolving type references is disabled.</exception>
+    public bool TryGetReferencedType([MaybeNullWhen(false)] out Type type)
+    {
+        if (TypeName == null)
         {
-            _type = type;
-            _typeName = type == null ? null : type.AssemblyQualifiedName;
+            type = null;
+            return false;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TypeReference"/> structure using the specified type name.
-        /// </summary>
-        /// <param name="typeName">Name of the type. May be <see langword="null"/>.</param>
-        public TypeReference(string? typeName)
+        if (_type == null)
         {
-            _type = null;
-            _typeName = typeName;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether <see cref="TypeReference"/> instances should resolve the type specified by <see cref="TypeName"/>
-        /// if <see cref="ReferencedType"/> wasn't explicitly set.
-        /// </summary>
-        /// <value>
-        /// 	<see langword="true"/> if types should be resolved; otherwise, <see langword="false"/>. The default value is <see langword="true"/>.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   The <see cref="TypeReference"/> class is used as part of the configuration for Jumbo Jet jobs. The job server will load the
-        ///   configuration, but loading referenced assemblies into the job server should be avoided. This property allows you to ensure
-        ///   that even if e.g. a debugger accesses the <see cref="ReferencedType"/> property the type will not be loaded.
-        /// </para>
-        /// </remarks>
-        public static bool ResolveTypes
-        {
-            get { return _resolveTypes; }
-            set { _resolveTypes = value; }
-        }
-
-
-        /// <summary>
-        /// Gets or sets the type that this <see cref="TypeReference" /> references.
-        /// </summary>
-        /// <value>
-        /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
-        /// </value>
-        /// <exception cref="System.InvalidOperationException">Resolving type references is disabled.</exception>
-        public Type? ReferencedType
-        {
-            get
-            {
-                if (_type == null && _typeName != null)
-                {
-                    if (ResolveTypes)
-                        _type = Type.GetType(_typeName, true);
-                    else
-                        throw new InvalidOperationException("Resolving type references is disabled.");
-                }
-                return _type;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type that this <see cref="TypeReference" /> references.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
-        /// </returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// Resolving type references is disabled, or no type is referenced.
-        /// </exception>
-        public Type GetReferencedType()
-        {
-            if (_type != null)
-            {
-                return _type;
-            }
-
-            if (_typeName == null)
-            {
-                throw new InvalidOperationException("No type is referenced by this TypeReference object.");
-            }
-
             if (!ResolveTypes)
             {
+                // This should always throw, not return false, because it means this is called in
+                // a context where it shouldn't be.
                 throw new InvalidOperationException("Resolving type references is disabled.");
             }
 
-            _type = Type.GetType(_typeName, true)!;
+            _type = Type.GetType(TypeName, true)!;
+        }
+
+        type = _type;
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the type that this <see cref="TypeReference" /> references.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="Type"/> that this <see cref="TypeReference"/> references.
+    /// </returns>
+    /// <exception cref="System.InvalidOperationException">
+    /// Resolving type references is disabled, or no type is referenced.
+    /// </exception>
+    public Type GetReferencedType()
+    {
+        if (_type != null)
+        {
             return _type;
         }
 
-        /// <summary>
-        /// Gets or sets the name of the type that this <see cref="TypeReference" /> references.
-        /// </summary>
-        /// <value>
-        /// The assembly qualified name of the referenced type.
-        /// </value>
-        public string? TypeName
+        if (TypeName == null)
         {
-            get
-            {
-                return _typeName;
-            }
+            throw new InvalidOperationException("No type is referenced by this TypeReference object.");
         }
 
-        /// <summary>
-        /// Converts this instance to a string representation.
-        /// </summary>
-        /// <returns>The name of the type that this <see cref="TypeReference"/> references, or an empty string if <see cref="TypeName"/> is <see langword="null"/>.</returns>
-        public override string ToString()
+        if (!ResolveTypes)
         {
-            return TypeName ?? string.Empty;
+            throw new InvalidOperationException("Resolving type references is disabled.");
         }
 
-
-        /// <summary>
-        /// Implicitly converts a <see cref="Type"/> to a <see cref="TypeReference"/>.
-        /// </summary>
-        /// <param name="type">The type to reference.</param>
-        /// <returns>An instance of <see cref="TypeReference"/> that references <paramref name="type"/>.</returns>
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Constructor is the alternative.")]
-        public static implicit operator TypeReference(Type type)
-        {
-            return new TypeReference(type);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="Object"/> to compare to the current <see cref="TypeReference"/>.</param>
-        /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals([NotNullWhen(true)] object? obj)
-        {
-            if (obj is TypeReference right)
-            {
-                return right.ReferencedType == ReferencedType;
-            }
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Serves as a hash function for a particular type. 
-        /// </summary>
-        /// <returns>A hash code for the current <see cref="Object"/>.</returns>
-        public override int GetHashCode()
-        {
-            if (ReferencedType == null)
-                return 0;
-            else
-                return ReferencedType.GetHashCode();
-        }
-
-        /// <summary>
-        /// Determines whether two specified <see cref="TypeReference"/> object have the same value.
-        /// </summary>
-        /// <param name="left">A <see cref="TypeReference"/>.</param>
-        /// <param name="right">A <see cref="TypeReference"/>.</param>
-        /// <returns><see langword="true"/> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(TypeReference left, TypeReference right)
-        {
-            return object.Equals(left, right);
-        }
-
-        /// <summary>
-        /// Determines whether two specified <see cref="TypeReference"/> object have different values.
-        /// </summary>
-        /// <param name="left">A <see cref="TypeReference"/>.</param>
-        /// <param name="right">A <see cref="TypeReference"/>.</param>
-        /// <returns><see langword="true"/> if the value of <paramref name="left"/> is different from the value of <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(TypeReference left, TypeReference right)
-        {
-            return !object.Equals(left, right);
-        }
-
-        #region IXmlSerializable Members
-
-        System.Xml.Schema.XmlSchema? IXmlSerializable.GetSchema()
-        {
-            return null;
-        }
-
-        void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
-        {
-            ArgumentNullException.ThrowIfNull(reader);
-            if (reader.IsEmptyElement)
-                reader.ReadStartElement();
-            else
-            {
-                _typeName = reader.ReadString();
-                _type = null;
-                reader.ReadEndElement();
-            }
-        }
-
-        void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
-        {
-            ArgumentNullException.ThrowIfNull(writer);
-            writer.WriteString(TypeName);
-        }
-
-        #endregion
-
-        #region IEquatable Members
-
-        /// <summary>
-        /// Returns a value indicating whether the this instance is equal to the specified instance.
-        /// </summary>
-        /// <param name="other">The instance to compare to.</param>
-        /// <returns><see langword="true" /> if the instances are equal; otherwise, <see langword="false" />.</returns>
-        public bool Equals(TypeReference other)
-        {
-            return ReferencedType == other.ReferencedType;
-        }
-
-        #endregion
+        _type = Type.GetType(TypeName, true)!;
+        return _type;
     }
+
+    /// <summary>
+    /// Gets or sets the name of the type that this <see cref="TypeReference" /> references.
+    /// </summary>
+    /// <value>
+    /// The assembly qualified name of the referenced type.
+    /// </value>
+    public string? TypeName { get; private set; }
+
+    /// <summary>
+    /// Converts this instance to a string representation.
+    /// </summary>
+    /// <returns>The name of the type that this <see cref="TypeReference"/> references, or an empty string if <see cref="TypeName"/> is <see langword="null"/>.</returns>
+    public override readonly string ToString() => TypeName ?? string.Empty;
+
+    /// <summary>
+    /// Implicitly converts a <see cref="Type"/> to a <see cref="TypeReference"/>.
+    /// </summary>
+    /// <param name="type">The type to reference.</param>
+    /// <returns>An instance of <see cref="TypeReference"/> that references <paramref name="type"/>.</returns>
+    public static implicit operator TypeReference(Type type) => new(type);
+
+    /// <summary>
+    /// Determines whether the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>.
+    /// </summary>
+    /// <param name="obj">The <see cref="Object"/> to compare to the current <see cref="TypeReference"/>.</param>
+    /// <returns><see langword="true"/> if the specified <see cref="Object"/> is equal to the current <see cref="TypeReference"/>; otherwise, <see langword="false"/>.</returns>
+    public override readonly bool Equals([NotNullWhen(true)] object? obj)
+    {
+        if (obj is TypeReference right)
+        {
+            return right.TypeName == TypeName;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Serves as a hash function for a particular type. 
+    /// </summary>
+    /// <returns>A hash code for the current <see cref="Object"/>.</returns>
+    public override readonly int GetHashCode() => TypeName?.GetHashCode() ?? 0;
+
+    /// <summary>
+    /// Determines whether two specified <see cref="TypeReference"/> object have the same value.
+    /// </summary>
+    /// <param name="left">A <see cref="TypeReference"/>.</param>
+    /// <param name="right">A <see cref="TypeReference"/>.</param>
+    /// <returns><see langword="true"/> if the value of <paramref name="left"/> is the same as the value of <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+    public static bool operator ==(TypeReference left, TypeReference right) => left.Equals(right);
+
+    /// <summary>
+    /// Determines whether two specified <see cref="TypeReference"/> object have different values.
+    /// </summary>
+    /// <param name="left">A <see cref="TypeReference"/>.</param>
+    /// <param name="right">A <see cref="TypeReference"/>.</param>
+    /// <returns><see langword="true"/> if the value of <paramref name="left"/> is different from the value of <paramref name="right"/>; otherwise, <see langword="false"/>.</returns>
+    public static bool operator !=(TypeReference left, TypeReference right) => !left.Equals(right);
+
+    #region IXmlSerializable Members
+
+    readonly System.Xml.Schema.XmlSchema? IXmlSerializable.GetSchema() => null;
+
+    void IXmlSerializable.ReadXml(System.Xml.XmlReader reader)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        if (reader.IsEmptyElement)
+        {
+            reader.ReadStartElement();
+        }
+        else
+        {
+            TypeName = reader.ReadString();
+            _type = null;
+            reader.ReadEndElement();
+        }
+    }
+
+    readonly void IXmlSerializable.WriteXml(System.Xml.XmlWriter writer)
+    {
+        ArgumentNullException.ThrowIfNull(writer);
+        writer.WriteString(TypeName);
+    }
+
+    #endregion
+
+    #region IEquatable Members
+
+    /// <summary>
+    /// Returns a value indicating whether the this instance is equal to the specified instance.
+    /// </summary>
+    /// <param name="other">The instance to compare to.</param>
+    /// <returns><see langword="true" /> if the instances are equal; otherwise, <see langword="false" />.</returns>
+    public readonly bool Equals(TypeReference other) => TypeName == other.TypeName;
+
+    #endregion
 }
