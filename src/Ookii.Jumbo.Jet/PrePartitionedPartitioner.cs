@@ -2,30 +2,32 @@
 using System;
 using Ookii.Jumbo.IO;
 
-namespace Ookii.Jumbo.Jet
+namespace Ookii.Jumbo.Jet;
+
+sealed class PrepartitionedPartitioner<T> : IPartitioner<T>
+    where T : notnull
 {
-    sealed class PrepartitionedPartitioner<T> : IPartitioner<T>
-        where T : notnull
+    private int _currentPartition;
+
+    public int Partitions { get; set; }
+
+    public int CurrentPartition
     {
-        private int _currentPartition;
-
-        public int Partitions { get; set; }
-
-        public int CurrentPartition
+        get { return _currentPartition; }
+        set
         {
-            get { return _currentPartition; }
-            set
+            if (value < 0 || value >= Partitions)
             {
-                if (value < 0 || value >= Partitions)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                _currentPartition = value;
+                throw new ArgumentOutOfRangeException(nameof(value));
             }
+
+            _currentPartition = value;
         }
+    }
 
 
-        public int GetPartition(T value)
-        {
-            return CurrentPartition;
-        }
+    public int GetPartition(T value)
+    {
+        return CurrentPartition;
     }
 }

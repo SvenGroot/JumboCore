@@ -1,76 +1,83 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 
-namespace Ookii.Jumbo
+namespace Ookii.Jumbo;
+
+/// <summary>
+/// Computes the CRC32 checksum for the input data.
+/// </summary>
+public sealed class Crc32Checksum
 {
+    private uint _crc;
+
     /// <summary>
-    /// Computes the CRC32 checksum for the input data.
+    /// Gets or sets the the current CRC32 checksum computed so far.
     /// </summary>
-    public sealed class Crc32Checksum
+    /// <value>
+    /// The CRC32 checksum computed so far.
+    /// </value>
+    public long Value
     {
-        private uint _crc;
+        get { return _crc; }
+        set { _crc = (uint)value; }
+    }
 
-        /// <summary>
-        /// Gets or sets the the current CRC32 checksum computed so far.
-        /// </summary>
-        /// <value>
-        /// The CRC32 checksum computed so far.
-        /// </value>
-        public long Value
+    /// <summary>
+    /// Gets or sets the the current CRC32 checksum computed so far.
+    /// </summary>
+    /// <value>
+    /// The CRC32 checksum computed so far.
+    /// </value>
+    [CLSCompliant(false)]
+    public uint ValueUInt32
+    {
+        get { return _crc; }
+        set { _crc = value; }
+    }
+
+    /// <summary>
+    /// Resets the checksum value.
+    /// </summary>
+    public void Reset()
+    {
+        _crc = 0;
+    }
+
+    /// <summary>
+    /// Updates the checksum using the data in the specified array.
+    /// </summary>
+    /// <param name="buffer">An array of bytes.</param>
+    public void Update(byte[] buffer)
+    {
+        ArgumentNullException.ThrowIfNull(buffer);
+
+        Update(buffer, 0, buffer.Length);
+    }
+
+    /// <summary>
+    /// Updates the checksum using the data in the specified array.
+    /// </summary>
+    /// <param name="buffer">An array of bytes.</param>
+    /// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin calculating the checksum.</param>
+    /// <param name="count">The number of bytes from <paramref name="buffer"/> to be used in the checksum calculation.</param>
+    public void Update(byte[] buffer, int offset, int count)
+    {
+        ArgumentNullException.ThrowIfNull(buffer);
+        if (offset < 0)
         {
-            get { return _crc; }
-            set { _crc = (uint)value; }
+            throw new ArgumentOutOfRangeException(nameof(offset));
         }
 
-        /// <summary>
-        /// Gets or sets the the current CRC32 checksum computed so far.
-        /// </summary>
-        /// <value>
-        /// The CRC32 checksum computed so far.
-        /// </value>
-        [CLSCompliant(false)]
-        public uint ValueUInt32
+        if (count < 0)
         {
-            get { return _crc; }
-            set { _crc = value; }
+            throw new ArgumentOutOfRangeException(nameof(count));
         }
 
-        /// <summary>
-        /// Resets the checksum value.
-        /// </summary>
-        public void Reset()
+        if (offset + count > buffer.Length)
         {
-            _crc = 0;
+            throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
         }
 
-        /// <summary>
-        /// Updates the checksum using the data in the specified array.
-        /// </summary>
-        /// <param name="buffer">An array of bytes.</param>
-        public void Update(byte[] buffer)
-        {
-            ArgumentNullException.ThrowIfNull(buffer);
-
-            Update(buffer, 0, buffer.Length);
-        }
-
-        /// <summary>
-        /// Updates the checksum using the data in the specified array.
-        /// </summary>
-        /// <param name="buffer">An array of bytes.</param>
-        /// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin calculating the checksum.</param>
-        /// <param name="count">The number of bytes from <paramref name="buffer"/> to be used in the checksum calculation.</param>
-        public void Update(byte[] buffer, int offset, int count)
-        {
-            ArgumentNullException.ThrowIfNull(buffer);
-            if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            if (offset + count > buffer.Length)
-                throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
-
-            _crc = Force.Crc32.Crc32Algorithm.Append(_crc, buffer, offset, count);
-        }
+        _crc = Force.Crc32.Crc32Algorithm.Append(_crc, buffer, offset, count);
     }
 }

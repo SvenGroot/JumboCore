@@ -3,32 +3,31 @@ using System;
 using System.Threading;
 using Ookii.Jumbo;
 
-namespace JobServerApplication
+namespace JobServerApplication;
+
+static class Program
 {
-    static class Program
+    private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Program));
+
+    public static void Main()
     {
-        private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(Program));
+        JumboConfiguration.GetConfiguration().Log.ConfigureLogger();
+        AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+        Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
 
-        public static void Main()
-        {
-            JumboConfiguration.GetConfiguration().Log.ConfigureLogger();
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
+        Thread.CurrentThread.Name = "main";
+        JobServer.Run();
 
-            Thread.CurrentThread.Name = "main";
-            JobServer.Run();
+        Thread.Sleep(Timeout.Infinite);
+    }
 
-            Thread.Sleep(Timeout.Infinite);
-        }
+    static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        JobServer.Shutdown();
+    }
 
-        static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            JobServer.Shutdown();
-        }
-
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            _log.Fatal("Unhandled exception.", (Exception)e.ExceptionObject);
-        }
+    static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        _log.Fatal("Unhandled exception.", (Exception)e.ExceptionObject);
     }
 }

@@ -2,17 +2,16 @@
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Jet;
 
-namespace JetShell.Commands
+namespace JetShell.Commands;
+
+abstract class JetShellCommand : ICommand
 {
-    abstract class JetShellCommand : ICommand
+    private readonly JetClient _jetClient = new JetClient();
+
+    public JetClient JetClient
     {
-        private readonly JetClient _jetClient = new JetClient();
-
-        public JetClient JetClient
-        {
-            get { return _jetClient; }
-        }
-
-        public abstract int Run();
+        get { return _jetClient; }
     }
+
+    public abstract int Run();
 }

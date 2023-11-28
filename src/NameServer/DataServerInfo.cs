@@ -6,70 +6,71 @@ using Ookii.Jumbo;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Topology;
 
-namespace NameServerApplication
+namespace NameServerApplication;
+
+class DataServerInfo : TopologyNode
 {
-    class DataServerInfo : TopologyNode
+    private readonly List<HeartbeatResponse> _pendingResponses = new List<HeartbeatResponse>();
+    private readonly HashSet<Guid> _blocks = new HashSet<Guid>();
+    private readonly HashSet<Guid> _pendingBlocks = new HashSet<Guid>();
+    private readonly Guid _fileSystemId;
+
+    public DataServerInfo(ServerAddress address, Guid fileSystemId)
+        : base(address)
     {
-        private readonly List<HeartbeatResponse> _pendingResponses = new List<HeartbeatResponse>();
-        private readonly HashSet<Guid> _blocks = new HashSet<Guid>();
-        private readonly HashSet<Guid> _pendingBlocks = new HashSet<Guid>();
-        private readonly Guid _fileSystemId;
+        _fileSystemId = fileSystemId;
+    }
 
-        public DataServerInfo(ServerAddress address, Guid fileSystemId)
-            : base(address)
+    public bool HasReportedBlocks { get; set; }
+
+    public HashSet<Guid> Blocks { get { return _blocks; } }
+
+    public HashSet<Guid> PendingBlocks { get { return _pendingBlocks; } }
+
+    public DateTime LastContactUtc { get; set; }
+
+    public long DiskSpaceUsed { get; set; }
+
+    public long DiskSpaceFree { get; set; }
+
+    public long DiskSpaceTotal { get; set; }
+
+    public void AddResponseForNextHeartbeat(HeartbeatResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+
+        lock (_pendingResponses)
         {
-            _fileSystemId = fileSystemId;
+            _pendingResponses.Add(response);
         }
+    }
 
-        public bool HasReportedBlocks { get; set; }
-
-        public HashSet<Guid> Blocks { get { return _blocks; } }
-
-        public HashSet<Guid> PendingBlocks { get { return _pendingBlocks; } }
-
-        public DateTime LastContactUtc { get; set; }
-
-        public long DiskSpaceUsed { get; set; }
-
-        public long DiskSpaceFree { get; set; }
-
-        public long DiskSpaceTotal { get; set; }
-
-        public void AddResponseForNextHeartbeat(HeartbeatResponse response)
+    public void AddBlockToDelete(Guid blockID)
+    {
+        lock (_pendingResponses)
         {
-            ArgumentNullException.ThrowIfNull(response);
-
-            lock (_pendingResponses)
-                _pendingResponses.Add(response);
-        }
-
-        public void AddBlockToDelete(Guid blockID)
-        {
-            lock (_pendingResponses)
+            var response = (from r in _pendingResponses
+                            let dr = r as DeleteBlocksHeartbeatResponse
+                            where dr != null
+                            select dr).SingleOrDefault();
+            if (response == null)
             {
-                var response = (from r in _pendingResponses
-                                let dr = r as DeleteBlocksHeartbeatResponse
-                                where dr != null
-                                select dr).SingleOrDefault();
-                if (response == null)
-                {
-                    _pendingResponses.Add(new DeleteBlocksHeartbeatResponse(_fileSystemId, new[] { blockID }));
-                }
-                else
-                {
-                    response.Blocks.Add(blockID);
-                }
+                _pendingResponses.Add(new DeleteBlocksHeartbeatResponse(_fileSystemId, new[] { blockID }));
+            }
+            else
+            {
+                response.Blocks.Add(blockID);
             }
         }
+    }
 
-        public HeartbeatResponse[] GetAndClearPendingResponses()
+    public HeartbeatResponse[] GetAndClearPendingResponses()
+    {
+        lock (_pendingResponses)
         {
-            lock (_pendingResponses)
-            {
-                var result = _pendingResponses.ToArray();
-                _pendingResponses.Clear();
-                return result;
-            }
+            var result = _pendingResponses.ToArray();
+            _pendingResponses.Clear();
+            return result;
         }
     }
 }

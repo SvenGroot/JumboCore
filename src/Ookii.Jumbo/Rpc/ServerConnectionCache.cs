@@ -1,93 +1,99 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 
-namespace Ookii.Jumbo.Rpc
+namespace Ookii.Jumbo.Rpc;
+
+class ServerConnectionCache
 {
-    class ServerConnectionCache
+    #region Nested types
+
+    private record class CachedConnection(RpcClientConnectionHandler Handler, DateTime LastUsed)
     {
-        #region Nested types
+        public CachedConnection? Next { get; set; }
+    }
 
-        private record class CachedConnection(RpcClientConnectionHandler Handler, DateTime LastUsed)
-        {
-            public CachedConnection? Next { get; set; }
-        }
+    #endregion
 
-        #endregion
+    private int _connectionCount;
+    private CachedConnection? _firstConnection;
+    private readonly TimeSpan _connectionTimeout;
 
-        private int _connectionCount;
-        private CachedConnection? _firstConnection;
-        private readonly TimeSpan _connectionTimeout;
+    public ServerConnectionCache(TimeSpan connectionTimeout)
+    {
+        _connectionTimeout = connectionTimeout;
+    }
 
-        public ServerConnectionCache(TimeSpan connectionTimeout)
-        {
-            _connectionTimeout = connectionTimeout;
-        }
-
-        public RpcClientConnectionHandler? GetConnection()
-        {
-            if (_connectionCount != 0)
-            {
-                lock (this)
-                {
-                    if (_firstConnection != null)
-                    {
-                        var handler = _firstConnection.Handler;
-                        _firstConnection = _firstConnection.Next;
-                        --_connectionCount;
-                        return handler;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public void ReturnConnection(RpcClientConnectionHandler handler)
+    public RpcClientConnectionHandler? GetConnection()
+    {
+        if (_connectionCount != 0)
         {
             lock (this)
             {
-                _firstConnection = new CachedConnection(handler, DateTime.UtcNow) { Next = _firstConnection };
-                ++_connectionCount;
-            }
-        }
-
-        public void CloseConnections()
-        {
-            lock (this)
-            {
-                while (_firstConnection != null)
+                if (_firstConnection != null)
                 {
-                    _firstConnection.Handler.Close();
+                    var handler = _firstConnection.Handler;
                     _firstConnection = _firstConnection.Next;
                     --_connectionCount;
+                    return handler;
                 }
             }
         }
+        return null;
+    }
 
-        public void TimeoutConnections(DateTime now)
+    public void ReturnConnection(RpcClientConnectionHandler handler)
+    {
+        lock (this)
         {
-            if (_connectionCount != 0)
+            _firstConnection = new CachedConnection(handler, DateTime.UtcNow) { Next = _firstConnection };
+            ++_connectionCount;
+        }
+    }
+
+    public void CloseConnections()
+    {
+        lock (this)
+        {
+            while (_firstConnection != null)
             {
-                lock (this)
+                _firstConnection.Handler.Close();
+                _firstConnection = _firstConnection.Next;
+                --_connectionCount;
+            }
+        }
+    }
+
+    public void TimeoutConnections(DateTime now)
+    {
+        if (_connectionCount != 0)
+        {
+            lock (this)
+            {
+                var connection = _firstConnection;
+                CachedConnection? previous = null;
+                while (connection != null)
                 {
-                    var connection = _firstConnection;
-                    CachedConnection? previous = null;
-                    while (connection != null)
+                    if (now - connection.LastUsed > _connectionTimeout)
                     {
-                        if (now - connection.LastUsed > _connectionTimeout)
+                        // Connection timed out, remove it from the list
+                        if (previous == null)
                         {
-                            // Connection timed out, remove it from the list
-                            if (previous == null)
-                                _firstConnection = connection.Next;
-                            else
-                                previous.Next = connection.Next;
-                            --_connectionCount;
-                            connection.Handler.Close(); // Close the connection
+                            _firstConnection = connection.Next;
                         }
                         else
-                            previous = connection;
+                        {
+                            previous.Next = connection.Next;
+                        }
 
-                        connection = connection.Next;
+                        --_connectionCount;
+                        connection.Handler.Close(); // Close the connection
                     }
+                    else
+                    {
+                        previous = connection;
+                    }
+
+                    connection = connection.Next;
                 }
             }
         }

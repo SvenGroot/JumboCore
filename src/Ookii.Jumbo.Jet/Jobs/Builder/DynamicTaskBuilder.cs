@@ -95,17 +95,25 @@ public sealed class DynamicTaskBuilder
     {
         ArgumentNullException.ThrowIfNull(methodToOverride);
         if (methodToOverride.DeclaringType!.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
+        {
             throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
+        }
+
         ArgumentNullException.ThrowIfNull(taskMethodDelegate);
 
         var cacheKey = Tuple.Create(methodToOverride, taskMethodDelegate, skipParameters, recordReuseMode);
         if (_taskTypeCache.TryGetValue(cacheKey, out var cachedTask))
+        {
             return cachedTask;
+        }
 
         var parameters = methodToOverride.GetParameters();
         var delegateParameters = taskMethodDelegate.Method.GetParameters();
         if (methodToOverride.ReturnType != taskMethodDelegate.Method.ReturnType)
+        {
             throw new ArgumentException("The delegate method doesn't have the correct return type.");
+        }
+
         ValidateParameters(skipParameters, parameters, delegateParameters);
 
         var taskType = CreateTaskType(taskMethodDelegate, recordReuseMode, methodToOverride.DeclaringType!);
@@ -113,7 +121,10 @@ public sealed class DynamicTaskBuilder
 
         var generator = overriddenMethod.GetILGenerator();
         for (var x = skipParameters; x < parameters.Length; ++x)
+        {
             generator.Emit(OpCodes.Ldarg, x + 1); // Zero is "this", hence +1
+        }
+
         if (delegateParameters.Length > parameters.Length - skipParameters)
         {
             // Put the TaskContext on the stack.
@@ -149,7 +160,9 @@ public sealed class DynamicTaskBuilder
     public void DeleteAssembly()
     {
         if (IsDynamicAssemblyCreated && File.Exists(DynamicAssemblyPath))
+        {
             File.Delete(DynamicAssemblyPath);
+        }
     }
 
     internal bool IsDynamicAssembly(Assembly assembly) => assembly.FullName == _assembly?.FullName;
@@ -177,14 +190,22 @@ public sealed class DynamicTaskBuilder
     private static void ValidateParameters(int skipParameters, ParameterInfo[] parameters, ParameterInfo[] delegateParameters)
     {
         if (skipParameters < 0 || skipParameters > parameters.Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(skipParameters));
+        }
+
         if (delegateParameters.Length < parameters.Length - skipParameters || delegateParameters.Length > parameters.Length - skipParameters + 1)
+        {
             throw new ArgumentException("The delegate method doesn't have the correct number of parameters.");
+        }
+
         for (var x = 0; x < delegateParameters.Length; ++x)
         {
             var requiredType = (x + skipParameters == parameters.Length) ? typeof(TaskContext) : parameters[x + skipParameters].ParameterType;
             if (delegateParameters[x].ParameterType != requiredType)
+            {
                 throw new ArgumentException("The delegate method doesn't have the correct method signature.");
+            }
         }
     }
 

@@ -64,7 +64,9 @@ public class TcpInputChannel : InputChannel, IHasMetrics
             {
                 var bytesRead = _stream.EndRead(ar);
                 if (bytesRead != HeaderSize)
+                {
                     throw new ChannelException("Bad TCP channel header format.");
+                }
                 else
                 {
                     var flags = (TcpChannelConnectionFlags)_header[0];
@@ -72,9 +74,14 @@ public class TcpInputChannel : InputChannel, IHasMetrics
                     var segmentNumber = ReadInt32(5);
 
                     if (sendingTaskNumber < 1 || sendingTaskNumber > _channel.InputStage.Root.TaskCount)
+                    {
                         throw new ChannelException("Invalid sending task number.");
+                    }
+
                     if (flags.HasFlag(TcpChannelConnectionFlags.KeepAlive))
+                    {
                         _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                    }
 
                     _stream.ReadTimeout = 30000;
                     _channel.HandleSegment(sendingTaskNumber, segmentNumber, flags.HasFlag(TcpChannelConnectionFlags.FinalSegment), this);
@@ -87,7 +94,9 @@ public class TcpInputChannel : InputChannel, IHasMetrics
                         HandleConnection(); // Read the next header.
                     }
                     else
+                    {
                         Close(); // We're done
+                    }
                 }
             }
             catch (Exception ex)
@@ -104,7 +113,10 @@ public class TcpInputChannel : InputChannel, IHasMetrics
             {
                 var bytesRead = _stream.Read(_header, totalBytesRead, PartitionHeaderSize - totalBytesRead);
                 if (bytesRead == 0)
+                {
                     throw new ChannelException("Invalid segment format.");
+                }
+
                 totalBytesRead += bytesRead;
             } while (totalBytesRead < PartitionHeaderSize);
 
@@ -141,7 +153,9 @@ public class TcpInputChannel : InputChannel, IHasMetrics
                 contentStream.WriteTo(_stream);
             }
             else
+            {
                 _stream.WriteByte(1);
+            }
         }
 
         private void Close()
@@ -229,7 +243,10 @@ public class TcpInputChannel : InputChannel, IHasMetrics
             _listeners[x] = listener;
             listener.Start();
             if (port == 0)
+            {
                 port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            }
+
             listener.BeginAcceptSocket(BeginAcceptCallback, listener);
         }
         TaskExecution.Umbilical.RegisterTcpChannelPort(TaskExecution.Context.JobId, TaskExecution.Context.TaskAttemptId, port);
@@ -256,7 +273,9 @@ public class TcpInputChannel : InputChannel, IHasMetrics
     {
         var listener = (TcpListener)ar.AsyncState!;
         if (_running)
+        {
             listener.BeginAcceptSocket(BeginAcceptCallback, listener);
+        }
 
         TcpChannelConnectionHandler? handler = null;
         Socket? socket = null;
@@ -271,9 +290,13 @@ public class TcpInputChannel : InputChannel, IHasMetrics
         catch (Exception ex)
         {
             if (handler != null)
+            {
                 handler.CloseOnError(ex);
+            }
             else if (socket != null)
+            {
                 socket.Close();
+            }
         }
     }
 
@@ -305,10 +328,15 @@ public class TcpInputChannel : InputChannel, IHasMetrics
                 var reader = readers[x];
                 handler.ReadPartitionHeader(out var partition, out var partitionSize);
                 if (partition != ActivePartitions[x])
+                {
                     throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Received partition {0}, excepted {1}.", partition, ActivePartitions[x]));
+                }
+
                 reader.AddSegment(partitionSize, segmentNumber, handler.Stream);
                 if (finalSegment)
+                {
                     reader.CompleteAdding();
+                }
             }
         }
     }

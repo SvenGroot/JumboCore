@@ -5,21 +5,24 @@ using Ookii.CommandLine;
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs.FileSystem;
 
-namespace DfsShell.Commands
-{
-    [GeneratedParser]
-    [Command("safemode"), Description("Checks whether safemode is on or off.")]
-    partial class PrintSafeModeCommand : DfsShellCommand
-    {
-        public override int Run()
-        {
-            var client = Client as DfsClient;
-            if (client != null && client.NameServer.SafeMode)
-                Console.WriteLine("Safe mode is ON.");
-            else
-                Console.WriteLine("Safe mode is OFF.");
+namespace DfsShell.Commands;
 
-            return 0;
+[GeneratedParser]
+[Command("safemode"), Description("Checks whether safemode is on or off.")]
+partial class PrintSafeModeCommand : DfsShellCommand
+{
+    public override int Run()
+    {
+        var client = Client as DfsClient;
+        if (client != null && client.NameServer.SafeMode)
+        {
+            Console.WriteLine("Safe mode is ON.");
         }
+        else
+        {
+            Console.WriteLine("Safe mode is OFF.");
+        }
+
+        return 0;
     }
 }

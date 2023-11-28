@@ -1,34 +1,33 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 
-namespace Ookii.Jumbo.Jet
+namespace Ookii.Jumbo.Jet;
+
+/// <summary>
+/// Indicates that a task, multi record reader or channel reports additional progress.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public sealed class AdditionalProgressCounterAttribute : Attribute
 {
+    private readonly string _displayName;
+
     /// <summary>
-    /// Indicates that a task, multi record reader or channel reports additional progress.
+    /// Initializes a new instance of the <see cref="AdditionalProgressCounterAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public sealed class AdditionalProgressCounterAttribute : Attribute
+    /// <param name="displayName">The id of the progress counter.</param>
+    public AdditionalProgressCounterAttribute(string displayName)
     {
-        private readonly string _displayName;
+        ArgumentNullException.ThrowIfNull(displayName);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdditionalProgressCounterAttribute"/> class.
-        /// </summary>
-        /// <param name="displayName">The id of the progress counter.</param>
-        public AdditionalProgressCounterAttribute(string displayName)
-        {
-            ArgumentNullException.ThrowIfNull(displayName);
+        _displayName = displayName;
+    }
 
-            _displayName = displayName;
-        }
-
-        /// <summary>
-        /// Gets the name of the counter.
-        /// </summary>
-        /// <value>The name of the counter.</value>
-        public string DisplayName
-        {
-            get { return _displayName; }
-        }
+    /// <summary>
+    /// Gets the name of the counter.
+    /// </summary>
+    /// <value>The name of the counter.</value>
+    public string DisplayName
+    {
+        get { return _displayName; }
     }
 }

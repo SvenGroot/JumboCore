@@ -75,7 +75,9 @@ public partial class GenerateText : JobBuilderJob
         {
             SizePerTask = BlockSize;
             if (SizePerTask == BinarySize.Zero)
+            {
                 SizePerTask = (BinarySize?)FileSystemClient.DefaultBlockSize ?? BinarySize.FromMebi(64); // Default to 64MB if the file system doesn't support blocks
+            }
         }
 
         // This is an example of how you can use an instance method of a serializable type to communicate state, instead of using individual settings.
@@ -117,7 +119,10 @@ public partial class GenerateText : JobBuilderJob
         for (int x = 0; x < numWords; ++x)
         {
             if (x > 0)
+            {
                 line.Append(_space);
+            }
+
             Utf8String word = words[rnd.Next(words.Length)];
             line.Append(word);
         }

@@ -3,18 +3,17 @@ using Ookii.Jumbo.Dfs.FileSystem;
 
 #pragma warning disable CA1822 // Mark members as static
 
-namespace DfsWeb.Api
+namespace DfsWeb.Api;
+
+[Route("api/[controller]")]
+public class FileSystemController : Controller
 {
-    [Route("api/[controller]")]
-    public class FileSystemController : Controller
+    // GET: api/<controller>
+    [HttpGet]
+    public FileSystemEntryInfo Get(string path = "/")
     {
-        // GET: api/<controller>
-        [HttpGet]
-        public FileSystemEntryInfo Get(string path = "/")
-        {
-            var client = FileSystemClient.Create();
-            return new FileSystemEntryInfo(client.GetDirectoryInfo(path), true);
-        }
+        var client = FileSystemClient.Create();
+        return new FileSystemEntryInfo(client.GetDirectoryInfo(path), true);
     }
 }
 

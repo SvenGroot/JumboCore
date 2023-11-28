@@ -2,17 +2,16 @@
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Dfs.FileSystem;
 
-namespace DfsShell.Commands
+namespace DfsShell.Commands;
+
+abstract class DfsShellCommand : ICommand
 {
-    abstract class DfsShellCommand : ICommand
+    private readonly FileSystemClient _client = FileSystemClient.Create();
+
+    public FileSystemClient Client
     {
-        private readonly FileSystemClient _client = FileSystemClient.Create();
-
-        public FileSystemClient Client
-        {
-            get { return _client; }
-        }
-
-        public abstract int Run();
+        get { return _client; }
     }
+
+    public abstract int Run();
 }

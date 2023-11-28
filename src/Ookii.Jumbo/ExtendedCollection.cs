@@ -1,34 +1,32 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Ookii.Jumbo
+namespace Ookii.Jumbo;
+
+/// <summary>
+/// Provides additional functionality for <see cref="Collection{T}" />.
+/// </summary>
+/// <typeparam name="T">The type of the items in the collection</typeparam>
+public class ExtendedCollection<T> : Collection<T>
 {
+    private readonly List<T> _itemsList;
+
     /// <summary>
-    /// Provides additional functionality for <see cref="Collection{T}" />.
+    /// Initializes a new instance of the <see cref="ExtendedCollection{T}"/> class.
     /// </summary>
-    /// <typeparam name="T">The type of the items in the collection</typeparam>
-    public class ExtendedCollection<T> : Collection<T>
+    public ExtendedCollection()
+        : base(new List<T>())
     {
-        private readonly List<T> _itemsList;
+        _itemsList = (List<T>)Items;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExtendedCollection{T}"/> class.
-        /// </summary>
-        public ExtendedCollection()
-            : base(new List<T>())
-        {
-            _itemsList = (List<T>)Items;
-        }
-
-        /// <summary>
-        /// Adds a range of elements to the collection.
-        /// </summary>
-        /// <param name="collection">The collection containing the elements to add.</param>
-        public void AddRange(IEnumerable<T> collection)
-        {
-            _itemsList.AddRange(collection);
-        }
+    /// <summary>
+    /// Adds a range of elements to the collection.
+    /// </summary>
+    /// <param name="collection">The collection containing the elements to add.</param>
+    public void AddRange(IEnumerable<T> collection)
+    {
+        _itemsList.AddRange(collection);
     }
 }

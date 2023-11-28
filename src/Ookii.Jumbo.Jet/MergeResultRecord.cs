@@ -49,7 +49,10 @@ public sealed class MergeResultRecord<T>
                 ((IWritable)_record).Read(_rawRecordReader!);
             }
             else
+            {
                 _record = ValueWriter<T>.ReadValue(_rawRecordReader!);
+            }
+
             _rawRecord = null;
         }
         return _record!;
@@ -63,7 +66,10 @@ public sealed class MergeResultRecord<T>
     {
         ArgumentNullException.ThrowIfNull(writer);
         if (_rawRecord == null)
+        {
             throw new InvalidOperationException("No raw record stored in this instance.");
+        }
+
         writer.WriteRecord(_rawRecord);
     }
 

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -27,7 +26,7 @@ public partial class JobStatus
     /// Initializes a new instance of the <see cref="JobStatus"/> class.
     /// </summary>
     public JobStatus()
-    { 
+    {
     }
 
     /// <summary>
@@ -183,7 +182,9 @@ public partial class JobStatus
             result.AppendFormat(provider, "; {0}: {1:P1}", stage.StageId, stage.Progress);
         }
         if (ErrorTaskCount > 0)
+        {
             result.AppendFormat(provider, " ({0} errors)", ErrorTaskCount);
+        }
 
         return result.ToString();
     }
@@ -258,7 +259,9 @@ public partial class JobStatus
     {
         ArgumentNullException.ThrowIfNull(job);
         if (job.Name != "Job")
+        {
             throw new ArgumentException("Invalid job element.", nameof(job));
+        }
 
         var jobInfo = job.Element("JobInfo")!;
         var jobStatus = new JobStatus()

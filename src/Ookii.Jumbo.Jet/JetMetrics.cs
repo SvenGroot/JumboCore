@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using Ookii.Jumbo.IO;
 
@@ -79,6 +78,8 @@ public partial class JetMetrics
     private static void PrintList<T>(TextWriter writer, IEnumerable<T> list)
     {
         foreach (var item in list)
+        {
             writer.WriteLine("  {0}", item);
+        }
     }
 }

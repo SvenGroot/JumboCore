@@ -94,7 +94,7 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     /// </summary>
     /// <value>A span containing the utf-8 data.</value>
     public ReadOnlySpan<byte> Bytes => _utf8Bytes.AsSpan(0, _byteLength);
-    
+
     /// <summary>
     /// Gets the number of bytes in the encoded string.
     /// </summary>
@@ -104,9 +104,15 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
         set
         {
             if (value < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value), "Length less than zero.");
+            }
+
             if (value > _byteLength)
+            {
                 throw new ArgumentException("Cannot increase string length.");
+            }
+
             _byteLength = value;
         }
     }
@@ -121,7 +127,10 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
         set
         {
             if (value < _byteLength)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value), "New capacity is too small");
+            }
+
             var capacity = GetCapacityNeeded(value);
             Array.Resize(ref _utf8Bytes, capacity);
         }
@@ -290,7 +299,10 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     {
         var hash = 1;
         for (var i = 0; i < _byteLength; i++)
+        {
             hash = (31 * hash) + _utf8Bytes[i];
+        }
+
         return hash;
     }
 
@@ -314,7 +326,9 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     {
         ArgumentNullException.ThrowIfNull(buffer);
         if (index < 0 || index >= buffer.Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
 
         var offset = index;
         var length = LittleEndianBitConverter.ToInt32From7BitEncoding(buffer, ref offset);
@@ -444,9 +458,14 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     public bool Equals(Utf8String? other)
     {
         if (ReferenceEquals(other, this))
+        {
             return true;
+        }
+
         if (other is null || other._byteLength != _byteLength)
+        {
             return false;
+        }
 
         return UnsafeCompare(_utf8Bytes, _byteLength, other._utf8Bytes, _byteLength) == 0;
     }
@@ -465,9 +484,14 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     public int CompareTo(Utf8String? other)
     {
         if (other is null)
+        {
             return 1;
+        }
+
         if (ReferenceEquals(other, this))
+        {
             return 0;
+        }
 
         return UnsafeCompare(_utf8Bytes, _byteLength, other._utf8Bytes, other._byteLength);
     }
@@ -507,13 +531,18 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
             {
                 var bytesRead = reader.Read(_utf8Bytes, totalRead, length - totalRead);
                 if (bytesRead == 0)
+                {
                     throw new FormatException("Invalid Utf8StringWritable detected in stream.");
+                }
+
                 totalRead += bytesRead;
             } while (totalRead < length);
             _byteLength = length;
         }
         else
+        {
             Set(reader.ReadBytes(length));
+        }
     }
 
     /// <summary>
@@ -561,7 +590,10 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
             while (left < end)
             {
                 if (*left != *right)
+                {
                     return *left - *right;
+                }
+
                 ++left;
                 ++right;
             }

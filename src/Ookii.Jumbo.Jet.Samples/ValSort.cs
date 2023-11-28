@@ -143,11 +143,16 @@ public partial class ValSort : JobBuilderJob
             {
                 int diff = prev.CompareTo(record);
                 if (diff == 0)
+                {
                     ++duplicates;
+                }
                 else if (diff > 0)
                 {
                     if (firstUnordered == null)
+                    {
                         firstUnordered = count;
+                    }
+
                     ++unsorted;
                 }
             }
@@ -199,20 +204,29 @@ public partial class ValSort : JobBuilderJob
             {
                 int diff = GenSortRecord.CompareKeys(prev.LastKey!, record.FirstKey!);
                 if (diff == 0)
+                {
                     ++duplicates;
+                }
                 else if (diff > 0)
                 {
                     if (verbose)
+                    {
                         _log.InfoFormat("Input parts {0}-{1} and {2}-{3} are not sorted in relation to each other.", prev.InputId, prev.InputOffset, record.InputId, record.InputOffset);
+                    }
 
                     if (firstUnsorted == null)
+                    {
                         firstUnsorted = records;
+                    }
+
                     ++unsortedRecords;
                 }
             }
 
             if (verbose && record.UnsortedRecords > 0)
+            {
                 _log.InfoFormat("Input part {0}-{1} has {2} unsorted records.", prev!.InputId, prev.InputOffset, record.UnsortedRecords);
+            }
 
             unsortedRecords += record.UnsortedRecords;
             checksum += record.Checksum;

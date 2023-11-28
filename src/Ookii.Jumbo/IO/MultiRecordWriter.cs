@@ -3,123 +3,134 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ookii.Jumbo.IO
+namespace Ookii.Jumbo.IO;
+
+/// <summary>
+/// A record writer that paritions the records over multiple record writers.
+/// </summary>
+/// <typeparam name="T">The type of the records.</typeparam>
+public sealed class MultiRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter<T>
+    where T : notnull
 {
+    private RecordWriter<T>[]? _writers;
+    private readonly IPartitioner<T> _partitioner;
+
     /// <summary>
-    /// A record writer that paritions the records over multiple record writers.
+    /// Initializes a new instance of the <see cref="MultiRecordWriter{T}"/> class.
     /// </summary>
-    /// <typeparam name="T">The type of the records.</typeparam>
-    public sealed class MultiRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter<T>
-        where T : notnull
+    /// <param name="writers">The writers to write the values to.</param>
+    /// <param name="partitioner">The partitioner used to decide which writer to use for each value.</param>
+    public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
     {
-        private RecordWriter<T>[]? _writers;
-        private readonly IPartitioner<T> _partitioner;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MultiRecordWriter{T}"/> class.
-        /// </summary>
-        /// <param name="writers">The writers to write the values to.</param>
-        /// <param name="partitioner">The partitioner used to decide which writer to use for each value.</param>
-        public MultiRecordWriter(IEnumerable<RecordWriter<T>> writers, IPartitioner<T> partitioner)
+        ArgumentNullException.ThrowIfNull(writers);
+        ArgumentNullException.ThrowIfNull(partitioner);
+        _writers = writers.ToArray();
+        if (_writers.Length == 0)
         {
-            ArgumentNullException.ThrowIfNull(writers);
-            ArgumentNullException.ThrowIfNull(partitioner);
-            _writers = writers.ToArray();
-            if (_writers.Length == 0)
-                throw new ArgumentException("You must provide at least one record writer.");
-
-            _partitioner = partitioner;
-            _partitioner.Partitions = _writers.Length;
+            throw new ArgumentException("You must provide at least one record writer.");
         }
 
-        /// <summary>
-        /// Gets the record writers that this <see cref="MultiRecordWriter{T}"/> is writing to.
-        /// </summary>
-        /// <remarks>
-        /// <note>
-        ///   Writing directly to any of these writers breaks the partitioning.
-        /// </note>
-        /// </remarks>
-        public IEnumerable<RecordWriter<T>>? Writers
+        _partitioner = partitioner;
+        _partitioner.Partitions = _writers.Length;
+    }
+
+    /// <summary>
+    /// Gets the record writers that this <see cref="MultiRecordWriter{T}"/> is writing to.
+    /// </summary>
+    /// <remarks>
+    /// <note>
+    ///   Writing directly to any of these writers breaks the partitioning.
+    /// </note>
+    /// </remarks>
+    public IEnumerable<RecordWriter<T>>? Writers
+    {
+        get { return _writers; }
+    }
+
+    /// <summary>
+    /// Gets the partitioner.
+    /// </summary>
+    /// <value>The partitioner.</value>
+    public IPartitioner<T> Partitioner
+    {
+        get { return _partitioner; }
+    }
+
+    /// <summary>
+    /// Gets the total number of bytes written by each writer.
+    /// </summary>
+    public override long OutputBytes
+    {
+        get
         {
-            get { return _writers; }
+            return Writers == null ? 0 : Writers.Sum(w => w.OutputBytes);
+        }
+    }
+
+    /// <summary>
+    /// Gets the number of bytes written.
+    /// </summary>
+    public override long BytesWritten
+    {
+        get
+        {
+            return Writers == null ? 0 : Writers.Sum(w => w.BytesWritten);
+        }
+    }
+
+    /// <summary>
+    /// Informs the record writer that no further records will be written.
+    /// </summary>
+    public override void FinishWriting()
+    {
+        if (_writers == null)
+        {
+            throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
         }
 
-        /// <summary>
-        /// Gets the partitioner.
-        /// </summary>
-        /// <value>The partitioner.</value>
-        public IPartitioner<T> Partitioner
+        base.FinishWriting();
+        foreach (var writer in _writers)
         {
-            get { return _partitioner; }
+            writer.FinishWriting();
+        }
+    }
+
+    /// <summary>
+    /// When implemented in a derived class, writes a record to one of the underlying record writers.
+    /// </summary>
+    /// <param name="record">The record to write to the stream.</param>
+    protected override void WriteRecordInternal(T record)
+    {
+        if (_writers == null)
+        {
+            throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
         }
 
-        /// <summary>
-        /// Gets the total number of bytes written by each writer.
-        /// </summary>
-        public override long OutputBytes
+        var partition = _partitioner.GetPartition(record);
+        _writers[partition].WriteRecord(record);
+    }
+
+    /// <summary>
+    /// Cleans up all resources associated with this <see cref="MultiRecordWriter{T}"/>.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to clean up both managed and unmanaged resources; <see langword="false"/>
+    /// to clean up unmanaged resources only.</param>
+    /// <remarks>
+    /// If <paramref name="disposing"/> is <see langword="true"/>, this will dispose all the contained record writers.
+    /// </remarks>
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
         {
-            get
+            if (_writers != null)
             {
-                return Writers == null ? 0 : Writers.Sum(w => w.OutputBytes);
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of bytes written.
-        /// </summary>
-        public override long BytesWritten
-        {
-            get
-            {
-                return Writers == null ? 0 : Writers.Sum(w => w.BytesWritten);
-            }
-        }
-
-        /// <summary>
-        /// Informs the record writer that no further records will be written.
-        /// </summary>
-        public override void FinishWriting()
-        {
-            if (_writers == null)
-                throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
-
-            base.FinishWriting();
-            foreach (var writer in _writers)
-                writer.FinishWriting();
-        }
-
-        /// <summary>
-        /// When implemented in a derived class, writes a record to one of the underlying record writers.
-        /// </summary>
-        /// <param name="record">The record to write to the stream.</param>
-        protected override void WriteRecordInternal(T record)
-        {
-            if (_writers == null)
-                throw new ObjectDisposedException(nameof(MultiRecordWriter<T>));
-            var partition = _partitioner.GetPartition(record);
-            _writers[partition].WriteRecord(record);
-        }
-
-        /// <summary>
-        /// Cleans up all resources associated with this <see cref="MultiRecordWriter{T}"/>.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to clean up both managed and unmanaged resources; <see langword="false"/>
-        /// to clean up unmanaged resources only.</param>
-        /// <remarks>
-        /// If <paramref name="disposing"/> is <see langword="true"/>, this will dispose all the contained record writers.
-        /// </remarks>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing)
-            {
-                if (_writers != null)
+                foreach (var writer in _writers)
                 {
-                    foreach (var writer in _writers)
-                        writer.Dispose();
-                    _writers = null;
+                    writer.Dispose();
                 }
+
+                _writers = null;
             }
         }
     }

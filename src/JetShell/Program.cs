@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
@@ -68,7 +67,10 @@ static class Program
         using (TextWriter writer = LineWrappingTextWriter.ForConsoleError())
         {
             if (errorType != null)
+            {
                 writer.WriteLine(errorType);
+            }
+
             writer.WriteLine(message);
         }
     }

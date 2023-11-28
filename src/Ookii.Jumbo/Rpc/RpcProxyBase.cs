@@ -27,7 +27,9 @@ public abstract class RpcProxyBase
         ArgumentNullException.ThrowIfNull(objectName);
         ArgumentNullException.ThrowIfNull(interfaceName);
         if (port < 1 || port > ushort.MaxValue)
+        {
             throw new ArgumentOutOfRangeException(nameof(port));
+        }
 
         _hostName = hostName;
         _port = port;

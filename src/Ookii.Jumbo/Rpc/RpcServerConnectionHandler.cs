@@ -32,9 +32,13 @@ sealed class RpcServerConnectionHandler : IDisposable
         try
         {
             if (!_stream.HasData)
+            {
                 _stream.BeginBuffering(_beginReadRequestCallback);
+            }
             else
+            {
                 hasData = true;
+            }
         }
         catch (Exception ex)
         {
@@ -54,9 +58,13 @@ sealed class RpcServerConnectionHandler : IDisposable
         {
             _stream.EndBuffering(ar);
             if (!_stream.HasData)
+            {
                 Close();
+            }
             else
+            {
                 hasData = true;
+            }
         }
         catch (Exception ex)
         {

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 using Ookii.Jumbo.IO;
@@ -78,7 +77,9 @@ public partial class StageStatus
                         select task.EndTime).Max();
             }
             else
+            {
                 return null;
+            }
         }
     }
 
@@ -115,18 +116,24 @@ public partial class StageStatus
                         if (result.AdditionalProgressValues == null)
                         {
                             foreach (var value in task.TaskProgress.AdditionalProgressValues)
+                            {
                                 result.AddAdditionalProgressValue(value.SourceName, value.Progress);
+                            }
                         }
                         else
                         {
                             for (var x = 0; x < result.AdditionalProgressValues.Count; ++x)
+                            {
                                 result.AdditionalProgressValues[x].Progress += task.TaskProgress.AdditionalProgressValues[x].Progress;
+                            }
                         }
                     }
                     else if (result.AdditionalProgressValues != null && task.TaskProgress.OverallProgress >= 1.0f)
                     {
                         foreach (var value in result.AdditionalProgressValues)
+                        {
                             value.Progress += 1.0f;
+                        }
                     }
                 }
             }
@@ -135,7 +142,9 @@ public partial class StageStatus
             if (result.AdditionalProgressValues != null)
             {
                 foreach (var value in result.AdditionalProgressValues)
+                {
                     value.Progress /= Tasks.Count;
+                }
             }
 
             return result;
@@ -153,7 +162,9 @@ public partial class StageStatus
         {
             // Stage metrics will be non-null only if the job was loaded with JobStatus.FromXml().
             if (StageMetrics != null)
+            {
                 return StageMetrics;
+            }
 
             var result = new TaskMetrics();
             foreach (var task in Tasks)

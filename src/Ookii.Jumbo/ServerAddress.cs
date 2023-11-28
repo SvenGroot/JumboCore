@@ -37,13 +37,17 @@ public partial class ServerAddress : IComparable<ServerAddress>, IEquatable<Serv
         ArgumentNullException.ThrowIfNull(address);
         var parts = address.Split(':');
         if (parts.Length != 2)
+        {
             throw new ArgumentException("Invalid server address string.", nameof(address));
+        }
 
         HostName = parts[0];
         Port = Convert.ToInt32(parts[1], System.Globalization.CultureInfo.InvariantCulture);
 
         if (Port <= 0 || Port > 0xFFFF)
+        {
             throw new ArgumentOutOfRangeException(nameof(address), "Invalid port number in server address string");
+        }
     }
 
     /// <summary>
@@ -176,10 +180,16 @@ public partial class ServerAddress : IComparable<ServerAddress>, IEquatable<Serv
     public int CompareTo(ServerAddress? other)
     {
         if (other == null)
+        {
             return 1;
+        }
+
         var result = StringComparer.Ordinal.Compare(HostName, other.HostName);
         if (result == 0)
+        {
             result = Port - other.Port;
+        }
+
         return result;
     }
 

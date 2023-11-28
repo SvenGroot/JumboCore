@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -144,7 +143,9 @@ public class DfsInputStream : Stream, IRecordInputStream
         set
         {
             if (value < 0 || value >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             Seek(value, SeekOrigin.Begin);
         }
@@ -209,13 +210,19 @@ public class DfsInputStream : Stream, IRecordInputStream
         set
         {
             if (value < _position || value > Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             _endOffset = value;
             if (value > 0)
+            {
                 _lastBlockToDownload = (int)((value - 1) / _file.BlockSize);
+            }
             else
+            {
                 _lastBlockToDownload = 0;
+            }
         }
     }
 
@@ -261,7 +268,9 @@ public class DfsInputStream : Stream, IRecordInputStream
         ObjectDisposedException.ThrowIf(_disposed, this);
         var count = buffer.Length;
         if (_position + count > _endOffset)
+        {
             count = (int)(_endOffset - _position);
+        }
 
         var remaining = buffer[..count];
         if (count > 0)
@@ -273,7 +282,9 @@ public class DfsInputStream : Stream, IRecordInputStream
                     _currentPacketOffset = 0;
                     // ReadPacket returns false if the end of the file or StopReadingAtPosition has been reached.
                     if (!ReadPacket())
+                    {
                         break;
+                    }
                 }
 
                 var packetSpan = _currentPacket.Data[_currentPacketOffset..];
@@ -325,7 +336,10 @@ public class DfsInputStream : Stream, IRecordInputStream
             break;
         }
         if (newPosition < 0 || newPosition >= Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
         if (newPosition != _position)
         {
             CloseDataServerConnection();
@@ -366,7 +380,9 @@ public class DfsInputStream : Stream, IRecordInputStream
     public long OffsetFromBoundary(long position)
     {
         if (position < 0 || position > Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(position));
+        }
 
         return position % _file.BlockSize;
     }
@@ -383,9 +399,14 @@ public class DfsInputStream : Stream, IRecordInputStream
     public bool AreInsideSameBoundary(long position1, long position2)
     {
         if (position1 < 0 || position1 > Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(position1));
+        }
+
         if (position2 < 0 || position2 > Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(position2));
+        }
 
         return position1 / _file.BlockSize == position2 / _file.BlockSize;
     }
@@ -419,7 +440,9 @@ public class DfsInputStream : Stream, IRecordInputStream
                 if (_serverClient == null)
                 {
                     if (!ConnectToDataServer())
+                    {
                         return false;
+                    }
                 }
 
                 var status = (DataServerClientProtocolResult)_serverReader!.ReadInt16();
@@ -442,7 +465,9 @@ public class DfsInputStream : Stream, IRecordInputStream
                 ++_currentServerIndex;
                 DataServerErrors++;
                 if (_currentServerIndex == _dataServers.Count)
+                {
                     throw;
+                }
             }
         } while (!success);
         return true;
@@ -451,7 +476,9 @@ public class DfsInputStream : Stream, IRecordInputStream
     private bool ConnectToDataServer()
     {
         if (_position == _file.Size)
+        {
             return false;
+        }
 
         var success = false;
         ++BlocksRead;
@@ -460,7 +487,10 @@ public class DfsInputStream : Stream, IRecordInputStream
             CloseDataServerConnection();
             var blockIndex = (int)(_position / _file.BlockSize);
             if (_lastBlockToDownload > 0 && blockIndex > _lastBlockToDownload)
+            {
                 return false;
+            }
+
             var blockOffset = (int)(_position % _file.BlockSize);
             var blockId = _file.Blocks[blockIndex];
             _currentBlockId = blockId;
@@ -493,7 +523,9 @@ public class DfsInputStream : Stream, IRecordInputStream
             {
                 ++_currentServerIndex;
                 if (_currentServerIndex == _dataServers.Count)
+                {
                     throw new DfsException("The server encountered an error while sending data.");
+                }
             }
             else
             {

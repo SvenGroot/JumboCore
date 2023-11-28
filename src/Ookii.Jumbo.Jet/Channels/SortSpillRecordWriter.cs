@@ -49,7 +49,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
             _totalBytes = index.Sum(e => e.Count);
             _allowRecordReuse = allowRecordReuse && ValueWriter<T>.Writer == null;
             if (_allowRecordReuse)
+            {
                 _record = (T)WritableUtility.GetUninitializedWritable(typeof(T));
+            }
         }
 
         public override long InputBytes
@@ -75,7 +77,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
                     CurrentRecord = _record;
                 }
                 else
+                {
                     CurrentRecord = ValueWriter<T>.ReadValue(_reader);
+                }
 
                 return true;
             }
@@ -164,9 +168,15 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
     {
         ArgumentNullException.ThrowIfNull(outputPath);
         if (writeBufferSize < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(writeBufferSize));
+        }
+
         if (minSpillsForCombineDuringMerge < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(minSpillsForCombineDuringMerge));
+        }
+
         ArgumentNullException.ThrowIfNull(partitioner);
         _outputPath = outputPath;
         _partitions = partitioner.Partitions;
@@ -185,16 +195,22 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
         else
         {
             if (comparer != null)
+            {
                 _comparer = RawComparer<T>.CreateDeserializingComparer(comparer);
+            }
             else
+            {
                 _comparer = RawComparer<T>.CreateComparer();
+            }
         }
         for (var x = 0; x < _spillPartitionIndices.Length; ++x)
+        {
             _spillPartitionIndices[x] = new List<PartitionFileIndexEntry>();
+        }
 
         if (combiner != null)
         {
-            _combinerAllowsRecordReuse = Attribute.IsDefined(combiner.GetType(), typeof(AllowRecordReuseAttribute));; // PassThrough doesn't matter, since the combiner's output always allows record reuse.
+            _combinerAllowsRecordReuse = Attribute.IsDefined(combiner.GetType(), typeof(AllowRecordReuseAttribute)); ; // PassThrough doesn't matter, since the combiner's output always allows record reuse.
         }
     }
 
@@ -253,9 +269,14 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
                     using (var writer = new BinaryRecordWriter<RawRecord>(stream))
                     {
                         if (_combiner == null)
+                        {
                             WritePartition(partition, writer);
+                        }
                         else
+                        {
                             CombinePartition(partition, writer);
+                        }
+
                         var compressor = stream as ICompressor;
                         uncompressedSize = compressor == null ? stream.Length : compressor.UncompressedBytesWritten;
                     }
@@ -266,7 +287,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
                     _spillPartitionIndices[partition].Add(indexEntry);
                 }
                 else
+                {
                     _spillPartitionIndices[partition].Add(new PartitionFileIndexEntry()); // Add a blank index entry so the merger can tell there's no data here.
+                }
             }
             _bytesWritten += fileStream.Length;
         }
@@ -362,7 +385,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
                 for (var x = 0; x < _spillFiles.Count; ++x)
                 {
                     if (_spillPartitionIndices[partition][x].UncompressedSize > 0)
+                    {
                         diskInputs.Add(new PartitionFileRecordInput(typeof(BinaryRecordReader<T>), _spillFiles[x], new[] { _spillPartitionIndices[partition][x] }, null, true, true, _writeBufferSize, _compressionType));
+                    }
                 }
 
                 var runCombiner = !(_combiner == null || _minSpillsForCombineDuringMerge == 0 || SpillCount < _minSpillsForCombineDuringMerge);
@@ -405,7 +430,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
             for (var partition = 0; partition < _partitions; ++partition)
             {
                 if (_spillPartitionIndices[partition][0].UncompressedSize > 0)
+                {
                     indexWriter.WriteRecord(_spillPartitionIndices[partition][0]);
+                }
             }
 
             _bytesWritten += indexStream.Length;
@@ -417,7 +444,9 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
         foreach (var fileName in _spillFiles)
         {
             if (File.Exists(fileName))
+            {
                 File.Delete(fileName);
+            }
         }
         _spillFiles.Clear();
     }

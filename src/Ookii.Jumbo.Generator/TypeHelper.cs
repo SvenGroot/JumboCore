@@ -1,7 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System.ComponentModel;
-using System.Globalization;
+﻿using System.ComponentModel;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace Ookii.Jumbo.Generator;
 

@@ -1,5 +1,4 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Globalization;
 using Ookii.Jumbo.IO;
 

@@ -71,9 +71,14 @@ public partial class GenSort : JobBuilderJob
     protected override void BuildJob(JobBuilder job)
     {
         if (RecordCount < 1)
+        {
             throw new ArgumentOutOfRangeException("RecordCount", "You must generate at least one record.");
+        }
+
         if (TaskCount < 1)
+        {
             throw new ArgumentOutOfRangeException("TaskCount", "You must use at least one generator task.");
+        }
 
         ulong countPerTask = RecordCount / (ulong)TaskCount;
         ulong remainder = RecordCount % (ulong)TaskCount;
@@ -97,9 +102,13 @@ public partial class GenSort : JobBuilderJob
         int taskNum = context.TaskContext.TaskId.TaskNumber;
         startRecord += (countPerTask * (ulong)(taskNum - 1));
         if (taskNum == context.TaskContext.StageConfiguration.TaskCount)
+        {
             count = countPerTask + count % (ulong)context.TaskContext.StageConfiguration.TaskCount;
+        }
         else
+        {
             count = countPerTask;
+        }
 
         _log.InfoFormat("Generating {0} records starting at number {1}.", count, startRecord);
 

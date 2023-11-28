@@ -73,7 +73,10 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
         if (parentTaskId is not null)
         {
             if (taskId.Contains(ChildStageSeparator, StringComparison.Ordinal))
+            {
                 throw new ArgumentException("Task ID cannot contain a child stage separator ('.') if a parent task ID is specified.");
+            }
+
             _parentTaskId = parentTaskId;
             _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
         }
@@ -107,9 +110,13 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
         _parentTaskId = parentTaskId;
 
         if (parentTaskId is not null)
+        {
             _taskId = parentTaskId.ToString() + ChildStageSeparator + taskId;
+        }
         else
+        {
             _taskId = taskId;
+        }
     }
 
     /// <summary>
@@ -187,13 +194,19 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
         get
         {
             if (ParentTaskId is null)
+            {
                 return 1;
+            }
             else
             {
                 if (TaskNumber > 1)
+                {
                     return TaskNumber;
+                }
                 else
+                {
                     return ParentTaskId.PartitionNumber;
+                }
             }
         }
     }
@@ -217,9 +230,14 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
     {
         ArgumentNullException.ThrowIfNull(stageId);
         if (taskNumber < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(taskNumber), "Task number cannot be less than zero.");
+        }
+
         if (stageId.IndexOfAny(_invalidStageIdCharacters) >= 0)
+        {
             throw new ArgumentException("The characters '-', '.' and '_' may not occur in a stage ID.");
+        }
 
         return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}{1}{2:000}", stageId, TaskNumberSeparator, taskNumber);
     }
@@ -255,9 +273,14 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
     public bool Equals(TaskId? other)
     {
         if (other is null)
+        {
             return false;
+        }
+
         if (ReferenceEquals(other, this))
+        {
             return true;
+        }
 
         return string.Equals(_taskId, other._taskId, StringComparison.Ordinal);
     }
@@ -273,9 +296,14 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
     public int CompareTo(TaskId? other)
     {
         if (other is null)
+        {
             return 1;
+        }
+
         if (ReferenceEquals(other, this))
+        {
             return 0;
+        }
 
         return string.CompareOrdinal(_taskId, other._taskId);
     }
@@ -292,7 +320,9 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
     {
         var other = obj as TaskId;
         if (other is not null)
+        {
             throw new ArgumentException("The specified object is not a TaskId.", nameof(obj));
+        }
 
         return CompareTo(other);
     }
@@ -327,7 +357,10 @@ public sealed class TaskId : IEquatable<TaskId>, IComparable<TaskId>, IComparabl
     {
         var parts = localTaskId.Split(TaskNumberSeparator);
         if (parts.Length != 2)
+        {
             throw new FormatException("Task ID doesn't have the format StageId-Number.");
+        }
+
         stageId = parts[0];
         taskNumber = Convert.ToInt32(parts[1], System.Globalization.CultureInfo.InvariantCulture);
     }

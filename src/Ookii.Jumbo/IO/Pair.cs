@@ -178,16 +178,27 @@ public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValu
     {
         ArgumentNullException.ThrowIfNull(writer);
         if (Key == null || Value == null)
+        {
             throw new InvalidOperationException("Key and value may not be null.");
+        }
+
         if (_keyWriter == null)
+        {
             ((IWritable)Key).Write(writer);
+        }
         else
+        {
             _keyWriter.Write(Key, writer);
+        }
 
         if (_valueWriter == null)
+        {
             ((IWritable)Value).Write(writer);
+        }
         else
+        {
             _valueWriter.Write(Value, writer);
+        }
     }
 
     /// <summary>
@@ -200,20 +211,26 @@ public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValu
         if (_keyWriter == null)
         {
             if (Key == null)
+            {
                 Key = (TKey)WritableUtility.GetUninitializedWritable(typeof(TKey));
-            ((IWritable)Key).Read(reader);
+            } ((IWritable)Key).Read(reader);
         }
         else
+        {
             Key = _keyWriter.Read(reader);
+        }
 
         if (_valueWriter == null)
         {
             if (Value == null)
+            {
                 Value = (TValue)WritableUtility.GetUninitializedWritable(typeof(TValue));
-            ((IWritable)Value).Read(reader);
+            } ((IWritable)Value).Read(reader);
         }
         else
+        {
             Value = _valueWriter.Read(reader);
+        }
     }
 
     /// <summary>
@@ -239,7 +256,10 @@ public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValu
     public int CompareTo(Pair<TKey, TValue>? other)
     {
         if (other is null)
+        {
             return 1;
+        }
+
         return _keyComparer.Compare(Key, other.Key);
     }
 
@@ -256,7 +276,9 @@ public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValu
     public bool Equals(Pair<TKey, TValue>? other)
     {
         if (other is null)
+        {
             return false;
+        }
 
         return object.Equals(Key, other.Key) && object.Equals(Value, other.Value);
     }
@@ -269,13 +291,23 @@ public sealed class Pair<TKey, TValue> : IWritable, IComparable<Pair<TKey, TValu
     {
         var clone = new Pair<TKey, TValue>();
         if (typeof(TKey).IsValueType)
+        {
             clone.Key = Key;
+        }
         else if (Key != null)
+        {
             clone.Key = (TKey)((ICloneable)Key).Clone();
+        }
+
         if (typeof(TValue).IsValueType)
+        {
             clone.Value = Value;
+        }
         else if (Value != null)
+        {
             clone.Value = (TValue)((ICloneable)Value).Clone();
+        }
+
         return clone;
     }
 

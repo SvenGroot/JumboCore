@@ -110,7 +110,10 @@ public class BinaryRecordReader<T> : StreamRecordReader<T>
         {
             // T implements IWritable
             if (allowRecordReuse)
+            {
                 _record = (T)WritableUtility.GetUninitializedWritable(typeof(T));
+            }
+
             _allowRecordReuse = allowRecordReuse;
         }
         _end = offset + size;

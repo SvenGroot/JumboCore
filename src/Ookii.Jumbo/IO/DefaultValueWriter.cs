@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.IO;
 
 namespace Ookii.Jumbo.IO;
@@ -749,47 +748,89 @@ static class DefaultValueWriter
     public static object GetWriter(Type type)
     {
         if (type == typeof(int))
+        {
             return new Int32Writer();
+        }
         else if (type == typeof(long))
+        {
             return new Int64Writer();
+        }
         else if (type == typeof(String))
+        {
             return new StringWriter();
+        }
         else if (type == typeof(Single))
+        {
             return new SingleWriter();
+        }
         else if (type == typeof(Double))
+        {
             return new DoubleWriter();
+        }
         else if (type == typeof(SByte))
+        {
             return new SByteWriter();
+        }
         else if (type == typeof(Int16))
+        {
             return new Int16Writer();
+        }
         else if (type == typeof(Byte))
+        {
             return new ByteWriter();
+        }
         else if (type == typeof(UInt16))
+        {
             return new UInt16Writer();
+        }
         else if (type == typeof(UInt32))
+        {
             return new UInt32Writer();
+        }
         else if (type == typeof(UInt64))
+        {
             return new UInt64Writer();
+        }
         else if (type == typeof(Int128))
+        {
             return new Int128Writer();
+        }
         else if (type == typeof(UInt128))
+        {
             return new UInt128Writer();
+        }
         else if (type == typeof(Decimal))
+        {
             return new DecimalWriter();
+        }
         else if (type == typeof(DateTime))
+        {
             return new DateTimeWriter();
+        }
         else if (type == typeof(TimeSpan))
+        {
             return new TimeSpanWriter();
+        }
         else if (type == typeof(Boolean))
+        {
             return new BooleanWriter();
+        }
         else if (type == typeof(Guid))
+        {
             return new GuidWriter();
+        }
         else if (type == typeof(byte[]))
+        {
             return new ByteArrayWriter();
+        }
         else if (type.IsEnum)
+        {
             return Activator.CreateInstance(typeof(EnumWriter<,>).MakeGenericType(type, type.GetEnumUnderlyingType()))!;
+        }
         else if (type.IsArray)
+        {
             return Activator.CreateInstance(typeof(ArrayWriter<>).MakeGenericType(type.GetElementType()!))!;
+        }
         else if (type.IsGenericType)
         {
             var definition = type.GetGenericTypeDefinition();
@@ -802,37 +843,84 @@ static class DefaultValueWriter
                 return Activator.CreateInstance(typeof(ImmutableArrayWriter<>).MakeGenericType(type.GetGenericArguments()))!;
             }
             if (definition == typeof(ValueTuple<>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(ValueTuple<,,,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(ValueTupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
+
             if (definition == typeof(Tuple<,,,,,,,>))
+            {
                 return Activator.CreateInstance(typeof(TupleWriter<,,,,,,,>).MakeGenericType(type.GetGenericArguments()))!;
+            }
         }
 
         throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Could not find the writer for type {0} and the type does not implement IWritable.", type));

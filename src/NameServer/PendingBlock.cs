@@ -2,24 +2,23 @@
 using System;
 using System.Threading;
 
-namespace NameServerApplication
+namespace NameServerApplication;
+
+class PendingBlock
 {
-    class PendingBlock
+    private int _commitCount;
+
+    public PendingBlock(BlockInfo block)
     {
-        private int _commitCount;
+        ArgumentNullException.ThrowIfNull(block);
+        Block = block;
+    }
 
-        public PendingBlock(BlockInfo block)
-        {
-            ArgumentNullException.ThrowIfNull(block);
-            Block = block;
-        }
+    public int CommitCount { get { return _commitCount; } }
+    public BlockInfo Block { get; private set; }
 
-        public int CommitCount { get { return _commitCount; } }
-        public BlockInfo Block { get; private set; }
-
-        public int IncrementCommit()
-        {
-            return Interlocked.Increment(ref _commitCount);
-        }
+    public int IncrementCommit()
+    {
+        return Interlocked.Increment(ref _commitCount);
     }
 }

@@ -5,27 +5,30 @@ using Ookii.CommandLine;
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo.Jet;
 
-namespace JetShell.Commands
-{
-    [GeneratedParser]
-    [Command("metrics"), Description("Displays generic information about the Jumbo Jet cluster.")]
-    partial class PrintMetricsCommand : JetShellCommand
-    {
-        public override int Run()
-        {
-            var metrics = JetClient.JobServer.GetMetrics();
-            if (RunningJobs)
-            {
-                foreach (var jobId in metrics.RunningJobs)
-                    Console.WriteLine(jobId);
-            }
-            else
-                metrics.PrintMetrics(Console.Out);
+namespace JetShell.Commands;
 
-            return 0;
+[GeneratedParser]
+[Command("metrics"), Description("Displays generic information about the Jumbo Jet cluster.")]
+partial class PrintMetricsCommand : JetShellCommand
+{
+    public override int Run()
+    {
+        var metrics = JetClient.JobServer.GetMetrics();
+        if (RunningJobs)
+        {
+            foreach (var jobId in metrics.RunningJobs)
+            {
+                Console.WriteLine(jobId);
+            }
+        }
+        else
+        {
+            metrics.PrintMetrics(Console.Out);
         }
 
-        [CommandLineArgument, Description("Print a list of running jobs.")]
-        public bool RunningJobs { get; set; }
+        return 0;
     }
+
+    [CommandLineArgument, Description("Print a list of running jobs.")]
+    public bool RunningJobs { get; set; }
 }

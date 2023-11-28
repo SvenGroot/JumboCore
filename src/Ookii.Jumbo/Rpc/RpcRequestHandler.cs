@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 
 namespace Ookii.Jumbo.Rpc;
 
@@ -50,7 +47,7 @@ static class RpcRequestHandler
     private static Dictionary<string, IRpcDispatcher> GetDispatchers(Type type)
     {
         var result = new Dictionary<string, IRpcDispatcher>();
-        foreach (var iface in type.GetInterfaces()) 
+        foreach (var iface in type.GetInterfaces())
         {
             if (Attribute.IsDefined(iface, typeof(RpcInterfaceAttribute)))
             {

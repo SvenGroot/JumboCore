@@ -65,7 +65,9 @@ public class RecordFileReader<T> : StreamRecordReader<T>
         ((IWritable)_header).Read(_reader);
 
         if (_header.RecordType != typeof(T))
+        {
             throw new InvalidOperationException("The specified record file uses a different record type than the one specified for this reader.");
+        }
 
         _allowRecordReuse = allowRecordReuse;
         _end = offset + size;
@@ -113,7 +115,9 @@ public class RecordFileReader<T> : StreamRecordReader<T>
 
             var recordPrefix = _reader.ReadInt32();
             if (recordPrefix == RecordFile.RecordMarkerPrefix)
+            {
                 CheckRecordMarker();
+            }
             else
             {
                 Debug.Assert(recordPrefix == RecordFile.RecordPrefix);
@@ -125,8 +129,9 @@ public class RecordFileReader<T> : StreamRecordReader<T>
                 else
                 {
                     if (!_allowRecordReuse || CurrentRecord == null)
+                    {
                         CurrentRecord = (T)WritableUtility.GetUninitializedWritable(typeof(T));
-                    ((IWritable)CurrentRecord).Read(_reader);
+                    } ((IWritable)CurrentRecord).Read(_reader);
                 }
                 return true;
             }
@@ -161,7 +166,9 @@ public class RecordFileReader<T> : StreamRecordReader<T>
             for (y = 0; y < RecordFile.RecordMarkerSize; ++y)
             {
                 if (fileRecordMarker[y] != _recordMarker[(x + y) % RecordFile.RecordMarkerSize])
+                {
                     break;
+                }
             }
             if (y == RecordFile.RecordMarkerSize)
             {
@@ -180,7 +187,9 @@ public class RecordFileReader<T> : StreamRecordReader<T>
         for (var x = 0; x < RecordFile.RecordMarkerSize; ++x)
         {
             if (fileRecordMarker[x] != _recordMarker[x])
+            {
                 throw new InvalidOperationException("Invalid record marker in file.");
+            }
         }
 
         _lastRecordMarkerPosition = Stream.Position - RecordFile.RecordMarkerSize;

@@ -1,9 +1,8 @@
 ﻿using Ookii.CommandLine.Commands;
 
-namespace JetShell
+namespace JetShell;
+
+[GeneratedCommandManager]
+partial class GeneratedManager
 {
-    [GeneratedCommandManager]
-    partial class GeneratedManager
-    {
-    }
 }

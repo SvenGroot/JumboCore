@@ -117,7 +117,9 @@ public partial class TaskStatus
         ArgumentNullException.ThrowIfNull(job);
 
         if (task.Name != "Task")
+        {
             throw new ArgumentException("Invalid task element.", nameof(task));
+        }
 
         var status = new TaskStatus()
         {

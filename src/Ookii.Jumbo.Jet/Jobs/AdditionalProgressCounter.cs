@@ -38,9 +38,13 @@ public partial class AdditionalProgressCounter
     {
         var counter = obj as AdditionalProgressCounter;
         if (counter == null)
+        {
             return base.Equals(obj);
+        }
         else
+        {
             return counter.TypeName == TypeName;
+        }
     }
 
     /// <summary>

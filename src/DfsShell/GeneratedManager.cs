@@ -1,9 +1,8 @@
 ﻿using Ookii.CommandLine.Commands;
 
-namespace DfsShell
+namespace DfsShell;
+
+[GeneratedCommandManager]
+partial class GeneratedManager
 {
-    [GeneratedCommandManager]
-    partial class GeneratedManager
-    {
-    }
 }

@@ -185,7 +185,9 @@ public sealed class WritableCollection<T> : IList<T>, IWritable, IList
     {
         WritableUtility.Write7BitEncodedInt32(writer, _items.Count);
         foreach (var item in _items)
+        {
             item.Write(writer);
+        }
     }
 
     /// <summary>
@@ -197,9 +199,13 @@ public sealed class WritableCollection<T> : IList<T>, IWritable, IList
         var count = WritableUtility.Read7BitEncodedInt32(reader);
 
         if (_items == null)
+        {
             _items = new List<T>(count);
+        }
         else
+        {
             _items.Clear();
+        }
 
         for (var x = 0; x < count; ++x)
         {
@@ -247,15 +253,23 @@ public sealed class WritableCollection<T> : IList<T>, IWritable, IList
     public override bool Equals(object? obj)
     {
         if (obj == null)
+        {
             return false;
+        }
 
         if (obj == this)
+        {
             return true;
+        }
 
         if (obj is not WritableCollection<T> other)
+        {
             return false;
+        }
         else
+        {
             return _items.SequenceEqual(other);
+        }
     }
 
     bool ICollection<T>.IsReadOnly

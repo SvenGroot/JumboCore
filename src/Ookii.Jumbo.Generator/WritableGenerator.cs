@@ -226,7 +226,7 @@ internal class WritableGenerator
         // IValueWriter should serialize automatic properties without a set, because they can be
         // set in the constructor.
         property = (member as IPropertySymbol)!;
-        return property != null && property.GetMethod != null && 
+        return property != null && property.GetMethod != null &&
             (property.SetMethod != null || valueWriter && property.IsAutomaticProperty()) &&
             property.GetAttribute(_typeHelper.WritableIgnoreAttribute!) == null;
     }
@@ -252,7 +252,7 @@ internal class WritableGenerator
         }
         else if (property.Type.ImplementsInterface(_typeHelper.IWritable) && !valueWriter)
         {
-            _builder.AppendLine($"if (this.{property.Name} == null)"); 
+            _builder.AppendLine($"if (this.{property.Name} == null)");
             _builder.OpenBlock();
             _builder.AppendLine($"this.{property.Name} = Ookii.Jumbo.IO.WritableUtility.GetUninitializedWritable<{type.ToQualifiedName()}>();");
             _builder.CloseBlock();

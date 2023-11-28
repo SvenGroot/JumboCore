@@ -4,71 +4,77 @@ using System.Collections;
 using System.IO;
 using System.Threading;
 
-namespace Ookii.Jumbo.Rpc
+namespace Ookii.Jumbo.Rpc;
+
+static class RpcClient
 {
-    static class RpcClient
+    // Using Hashtable instead of generic Dictionary because Hashtable supports multiple readers without locking in the presence of a single writer.
+    private static readonly Hashtable _connectionCache = new Hashtable();
+    private static readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(10); // TODO: Make this configurable.
+    private static readonly WaitOrTimerCallback _timeoutCallback;
+    private static readonly AutoResetEvent _timeoutEvent;
+    private static RegisteredWaitHandle _registeredTimeoutEvent;
+
+    static RpcClient()
     {
-        // Using Hashtable instead of generic Dictionary because Hashtable supports multiple readers without locking in the presence of a single writer.
-        private static readonly Hashtable _connectionCache = new Hashtable();
-        private static readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(10); // TODO: Make this configurable.
-        private static readonly WaitOrTimerCallback _timeoutCallback;
-        private static readonly AutoResetEvent _timeoutEvent;
-        private static RegisteredWaitHandle _registeredTimeoutEvent;
+        _timeoutCallback = new WaitOrTimerCallback(TimeoutConnections);
+        _timeoutEvent = new AutoResetEvent(false);
+        _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
+    }
 
-        static RpcClient()
+    public static BinaryReader? SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, Action<BinaryWriter>? serializer)
+    {
+        // This method is public only because the dynamic assemblies must be able to access it.
+        var handler = GetConnection(new ServerAddress(hostName, port));
+        var result = handler.SendRequest(objectName, interfaceName, operationName, serializer);
+        handler.ReturnToCache();
+        return result;
+    }
+
+    internal static void CloseConnections()
+    {
+        foreach (ServerConnectionCache cache in _connectionCache.Values)
         {
-            _timeoutCallback = new WaitOrTimerCallback(TimeoutConnections);
-            _timeoutEvent = new AutoResetEvent(false);
-            _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
+            cache.CloseConnections();
         }
 
-        public static BinaryReader? SendRequest(string hostName, int port, string objectName, string interfaceName, string operationName, Action<BinaryWriter>? serializer)
-        {
-            // This method is public only because the dynamic assemblies must be able to access it.
-            var handler = GetConnection(new ServerAddress(hostName, port));
-            var result = handler.SendRequest(objectName, interfaceName, operationName, serializer);
-            handler.ReturnToCache();
-            return result;
-        }
+        _connectionCache.Clear();
+    }
 
-        internal static void CloseConnections()
+    private static RpcClientConnectionHandler GetConnection(ServerAddress address)
+    {
+        var cache = (ServerConnectionCache)_connectionCache[address]!;
+        if (cache == null)
         {
-            foreach (ServerConnectionCache cache in _connectionCache.Values)
-                cache.CloseConnections();
-            _connectionCache.Clear();
-        }
-
-        private static RpcClientConnectionHandler GetConnection(ServerAddress address)
-        {
-            var cache = (ServerConnectionCache)_connectionCache[address]!;
-            if (cache == null)
-            {
-                cache = new ServerConnectionCache(_connectionTimeout);
-                lock (_connectionCache)
-                {
-                    _connectionCache[address] = cache;
-                }
-            }
-
-            var handler = cache.GetConnection();
-            if (handler == null)
-                return new RpcClientConnectionHandler(address.HostName, address.Port, cache); // Will be added to the cache when the client is done with it.
-            else
-                return handler;
-        }
-
-        private static void TimeoutConnections(object? state, bool wasSignalled)
-        {
-            var now = DateTime.UtcNow;
+            cache = new ServerConnectionCache(_connectionTimeout);
             lock (_connectionCache)
             {
-                foreach (DictionaryEntry connection in _connectionCache)
-                {
-                    ((ServerConnectionCache)connection.Value!).TimeoutConnections(now);
-                }
+                _connectionCache[address] = cache;
             }
-            _registeredTimeoutEvent.Unregister(null);
-            _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
         }
+
+        var handler = cache.GetConnection();
+        if (handler == null)
+        {
+            return new RpcClientConnectionHandler(address.HostName, address.Port, cache); // Will be added to the cache when the client is done with it.
+        }
+        else
+        {
+            return handler;
+        }
+    }
+
+    private static void TimeoutConnections(object? state, bool wasSignalled)
+    {
+        var now = DateTime.UtcNow;
+        lock (_connectionCache)
+        {
+            foreach (DictionaryEntry connection in _connectionCache)
+            {
+                ((ServerConnectionCache)connection.Value!).TimeoutConnections(now);
+            }
+        }
+        _registeredTimeoutEvent.Unregister(null);
+        _registeredTimeoutEvent = ThreadPool.RegisterWaitForSingleObject(_timeoutEvent, _timeoutCallback, null, _connectionTimeout, true);
     }
 }

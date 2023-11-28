@@ -17,7 +17,7 @@ public partial class DfsMetrics
     /// Initializes a new instance of the <see cref="DfsMetrics"/> class.
     /// </summary>
     /// <param name="nameServer">The address of the name server.</param>
-    public DfsMetrics(ServerAddress nameServer) 
+    public DfsMetrics(ServerAddress nameServer)
     {
         ArgumentNullException.ThrowIfNull(nameServer);
         NameServer = nameServer;
@@ -125,6 +125,8 @@ public partial class DfsMetrics
         writer.WriteLine("Pending blocks:   {0}", PendingBlockCount);
         writer.WriteLine("Data servers:     {0}", DataServers.Count);
         foreach (ServerMetrics server in DataServers)
+        {
             writer.WriteLine("  {0}", server);
+        }
     }
 }

@@ -35,7 +35,9 @@ public static class ValueWriter
         }
 
         if (!type.IsAbstract && type.GetInterfaces().Contains(typeof(IWritable)))
+        {
             return null;
+        }
 
         return DefaultValueWriter.GetWriter(type);
     }
@@ -249,9 +251,13 @@ public static class ValueWriter<T>
     public static void WriteValue(T value, BinaryWriter writer)
     {
         if (_writer == null)
+        {
             ((IWritable)value).Write(writer);
+        }
         else
+        {
             _writer.Write(value, writer);
+        }
     }
 
     /// <summary>
@@ -279,6 +285,8 @@ public static class ValueWriter<T>
             return result;
         }
         else
+        {
             return _writer.Read(reader);
+        }
     }
 }

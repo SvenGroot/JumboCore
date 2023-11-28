@@ -3,63 +3,64 @@ using System;
 using System.Collections.Generic;
 using Ookii.Jumbo.IO;
 
-namespace Ookii.Jumbo.Jet.Channels
+namespace Ookii.Jumbo.Jet.Channels;
+
+class PartitionFileRecordInput : RecordInput
 {
-    class PartitionFileRecordInput : RecordInput
+    private readonly Type _recordReaderType;
+    private readonly string _fileName;
+    private readonly string? _sourceName;
+    private readonly bool _inputContainsRecordSizes;
+    private readonly int _bufferSize;
+    private readonly bool _allowRecordReuse;
+    private readonly CompressionType _compressionType;
+    private readonly IEnumerable<PartitionFileIndexEntry> _indexEntries;
+
+    public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string? sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
     {
-        private readonly Type _recordReaderType;
-        private readonly string _fileName;
-        private readonly string? _sourceName;
-        private readonly bool _inputContainsRecordSizes;
-        private readonly int _bufferSize;
-        private readonly bool _allowRecordReuse;
-        private readonly CompressionType _compressionType;
-        private readonly IEnumerable<PartitionFileIndexEntry> _indexEntries;
+        ArgumentNullException.ThrowIfNull(recordReaderType);
+        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentNullException.ThrowIfNull(indexEntries);
 
-        public PartitionFileRecordInput(Type recordReaderType, string fileName, IEnumerable<PartitionFileIndexEntry> indexEntries, string? sourceName, bool inputContainsRecordSizes, bool allowRecordReuse, int bufferSize, CompressionType compressionType)
+        _recordReaderType = recordReaderType;
+        _fileName = fileName;
+        _indexEntries = indexEntries;
+        _sourceName = sourceName;
+        _inputContainsRecordSizes = inputContainsRecordSizes;
+        _bufferSize = bufferSize;
+        _allowRecordReuse = allowRecordReuse;
+        _compressionType = compressionType;
+    }
+
+    public override bool IsMemoryBased
+    {
+        get { return false; }
+    }
+
+    public override bool IsRawReaderSupported
+    {
+        get { return !IsReaderCreated && _inputContainsRecordSizes; }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+    protected override IRecordReader CreateReader()
+    {
+        var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
+        var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes)!;
+        reader.SourceName = _sourceName;
+        return reader;
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+    protected override RecordReader<RawRecord> CreateRawReader()
+    {
+        if (!_inputContainsRecordSizes)
         {
-            ArgumentNullException.ThrowIfNull(recordReaderType);
-            ArgumentNullException.ThrowIfNull(fileName);
-            ArgumentNullException.ThrowIfNull(indexEntries);
-
-            _recordReaderType = recordReaderType;
-            _fileName = fileName;
-            _indexEntries = indexEntries;
-            _sourceName = sourceName;
-            _inputContainsRecordSizes = inputContainsRecordSizes;
-            _bufferSize = bufferSize;
-            _allowRecordReuse = allowRecordReuse;
-            _compressionType = compressionType;
+            throw new NotSupportedException("Cannot create a raw record reader for input without record size markers.");
         }
 
-        public override bool IsMemoryBased
-        {
-            get { return false; }
-        }
-
-        public override bool IsRawReaderSupported
-        {
-            get { return !IsReaderCreated && _inputContainsRecordSizes; }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        protected override IRecordReader CreateReader()
-        {
-            var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
-            var reader = (IRecordReader)Activator.CreateInstance(_recordReaderType, stream, 0, stream.Length, _allowRecordReuse, _inputContainsRecordSizes)!;
-            reader.SourceName = _sourceName;
-            return reader;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        protected override RecordReader<RawRecord> CreateRawReader()
-        {
-            if (!_inputContainsRecordSizes)
-                throw new NotSupportedException("Cannot create a raw record reader for input without record size markers.");
-
-            var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
-            // We always allow record reuse for raw record readers. Don't specify that the input contains record sizes, because those are used by the records themselves here.
-            return new BinaryRecordReader<RawRecord>(stream, true) { SourceName = _sourceName };
-        }
+        var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
+        // We always allow record reuse for raw record readers. Don't specify that the input contains record sizes, because those are used by the records themselves here.
+        return new BinaryRecordReader<RawRecord>(stream, true) { SourceName = _sourceName };
     }
 }

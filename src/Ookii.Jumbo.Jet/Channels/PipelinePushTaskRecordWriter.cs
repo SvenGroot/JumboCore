@@ -2,54 +2,55 @@
 using System;
 using Ookii.Jumbo.IO;
 
-namespace Ookii.Jumbo.Jet.Channels
+namespace Ookii.Jumbo.Jet.Channels;
+
+sealed class PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput> : RecordWriter<TRecord>
+    where TRecord : notnull
+    where TPipelinedTaskOutput : notnull
 {
-    sealed class PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput> : RecordWriter<TRecord>
-        where TRecord : notnull
-        where TPipelinedTaskOutput : notnull
+    private readonly TaskExecutionUtility _taskExecution;
+    private PushTask<TRecord, TPipelinedTaskOutput> _task;
+    private RecordWriter<TPipelinedTaskOutput> _output;
+
+    public PipelinePushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output)
     {
-        private readonly TaskExecutionUtility _taskExecution;
-        private PushTask<TRecord, TPipelinedTaskOutput> _task;
-        private RecordWriter<TPipelinedTaskOutput> _output;
+        ArgumentNullException.ThrowIfNull(taskExecution);
+        ArgumentNullException.ThrowIfNull(output);
 
-        public PipelinePushTaskRecordWriter(TaskExecutionUtility taskExecution, RecordWriter<TPipelinedTaskOutput> output)
+        _taskExecution = taskExecution;
+        _task = (PushTask<TRecord, TPipelinedTaskOutput>)taskExecution.Task;
+        _taskExecution.TaskInstanceCreated += new EventHandler(_taskExecution_TaskInstanceCreated);
+        _output = output;
+    }
+
+    protected override void WriteRecordInternal(TRecord record)
+    {
+        if (_output == null)
         {
-            ArgumentNullException.ThrowIfNull(taskExecution);
-            ArgumentNullException.ThrowIfNull(output);
-
-            _taskExecution = taskExecution;
-            _task = (PushTask<TRecord, TPipelinedTaskOutput>)taskExecution.Task;
-            _taskExecution.TaskInstanceCreated += new EventHandler(_taskExecution_TaskInstanceCreated);
-            _output = output;
+            throw new ObjectDisposedException(typeof(PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput>).FullName);
         }
 
-        protected override void WriteRecordInternal(TRecord record)
-        {
-            if (_output == null)
-                throw new ObjectDisposedException(typeof(PipelinePushTaskRecordWriter<TRecord, TPipelinedTaskOutput>).FullName);
-            _task.ProcessRecord(record, _output);
-        }
+        _task.ProcessRecord(record, _output);
+    }
 
-        protected override void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
+    {
+        try
         {
-            try
+            if (disposing)
             {
-                if (disposing)
-                {
-                    _output.Dispose();
-                }
-            }
-            finally
-            {
-                base.Dispose(disposing);
+                _output.Dispose();
             }
         }
-
-        void _taskExecution_TaskInstanceCreated(object? sender, EventArgs e)
+        finally
         {
-            _task = (PushTask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
+            base.Dispose(disposing);
         }
+    }
 
+    void _taskExecution_TaskInstanceCreated(object? sender, EventArgs e)
+    {
+        _task = (PushTask<TRecord, TPipelinedTaskOutput>)_taskExecution.Task;
     }
 
 }

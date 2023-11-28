@@ -74,7 +74,10 @@ public sealed class ArchivedJob : IWritable
         writer.Write(JobId.ToByteArray());
         writer.Write(JobName != null);
         if (JobName != null)
+        {
             writer.Write(JobName);
+        }
+
         writer.Write(IsSuccessful);
         writer.Write(StartTime.Ticks);
         writer.Write(EndTime.Ticks);
@@ -91,7 +94,10 @@ public sealed class ArchivedJob : IWritable
 
         JobId = new Guid(reader.ReadBytes(16));
         if (reader.ReadBoolean())
+        {
             JobName = reader.ReadString();
+        }
+
         IsSuccessful = reader.ReadBoolean();
         StartTime = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);
         EndTime = new DateTime(reader.ReadInt64(), DateTimeKind.Utc);

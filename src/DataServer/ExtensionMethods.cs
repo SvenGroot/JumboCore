@@ -2,14 +2,13 @@
 using System.IO;
 using Ookii.Jumbo.Dfs;
 
-namespace DataServerApplication
+namespace DataServerApplication;
+
+static class ExtensionMethods
 {
-    static class ExtensionMethods
+    public static void WriteResult(this BinaryWriter writer, DataServerClientProtocolResult result)
     {
-        public static void WriteResult(this BinaryWriter writer, DataServerClientProtocolResult result)
-        {
-            writer.Write((short)result);
-            writer.Flush();
-        }
+        writer.Write((short)result);
+        writer.Flush();
     }
 }

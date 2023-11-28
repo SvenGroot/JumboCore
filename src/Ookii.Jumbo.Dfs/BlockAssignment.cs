@@ -2,10 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using Ookii.Jumbo.Dfs.FileSystem;
 using Ookii.Jumbo.IO;
 
 namespace Ookii.Jumbo.Dfs;

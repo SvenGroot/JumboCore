@@ -135,12 +135,16 @@ public partial class PFPGrowth : JobBuilderJob
     {
         // Need to determine this now because we need it to validate the number of groups.
         if (FPGrowthTaskCount == 0)
+        {
             FPGrowthTaskCount = JetClient.JobServer.GetMetrics().Capacity;
+        }
 
         // If the number of groups equals or is smaller than the number of partitions, we don't need to sort, because each
         // partition will get exactly one group.
         if (FPGrowthTaskCount * PartitionsPerTask < Groups)
+        {
             throw new NotSupportedException("The number of groups must be less than or equal to the number of partitions.");
+        }
 
         string fglistDirectory = FileSystemClient.Path.Combine(OutputPath, "fglist");
         string resultDirectory = FileSystemClient.Path.Combine(OutputPath, "output");
@@ -288,14 +292,20 @@ public partial class PFPGrowth : JobBuilderJob
 
             int maxPerGroup = itemCount / numGroups;
             if (itemCount % numGroups != 0)
+            {
                 maxPerGroup++;
+            }
+
             FrequentPatternMaxHeap[]? itemHeaps = null;
             while (true)
             {
                 FPTree tree;
                 int groupId;
                 if (input.HasFinished)
+                {
                     break;
+                }
+
                 groupId = input.CurrentRecord.Key;
                 _log.InfoFormat("Building tree for group {0}.", groupId);
                 tree = new FPTree(EnumerateGroup(input), minSupport, Math.Min((groupId + 1) * maxPerGroup, itemCount), config);
@@ -310,7 +320,9 @@ public partial class PFPGrowth : JobBuilderJob
                 {
                     FrequentPatternMaxHeap heap = itemHeaps[item];
                     if (heap != null)
+                    {
                         heap.OutputItems(item, output);
+                    }
                 }
             }
         }
@@ -412,7 +424,10 @@ public partial class PFPGrowth : JobBuilderJob
             {
                 fgList.Add(item);
                 if (itemMapping != null)
+                {
                     itemMapping.Add(item.Feature!.ToString(), x);
+                }
+
                 ++x;
             }
         }

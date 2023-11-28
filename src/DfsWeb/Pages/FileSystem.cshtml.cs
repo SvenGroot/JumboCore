@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DfsWeb.Pages
+namespace DfsWeb.Pages;
+
+public class FileSystemModel : PageModel
 {
-    public class FileSystemModel : PageModel
-    {
-    }
 }

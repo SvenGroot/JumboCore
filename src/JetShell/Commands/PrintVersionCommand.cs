@@ -5,23 +5,26 @@ using Ookii.CommandLine;
 using Ookii.CommandLine.Commands;
 using Ookii.Jumbo;
 
-namespace JetShell.Commands
+namespace JetShell.Commands;
+
+[GeneratedParser]
+[Command("version"), Description("Shows version information.")]
+partial class PrintVersionCommand : JetShellCommand
 {
-    [GeneratedParser]
-    [Command("version"), Description("Shows version information.")]
-    partial class PrintVersionCommand : JetShellCommand
+    [CommandLineArgument, Description("Display only the revision number rather than the full version.")]
+    public bool Revision { get; set; }
+
+    public override int Run()
     {
-        [CommandLineArgument, Description("Display only the revision number rather than the full version.")]
-        public bool Revision { get; set; }
-
-        public override int Run()
+        if (Revision)
         {
-            if (Revision)
-                Console.WriteLine(RuntimeEnvironment.JumboAssemblyVersion.Revision);
-            else
-                Console.WriteLine("Jumbo {0} ({1})", RuntimeEnvironment.JumboVersion, RuntimeEnvironment.JumboConfiguration);
-
-            return 0;
+            Console.WriteLine(RuntimeEnvironment.JumboAssemblyVersion.Revision);
         }
+        else
+        {
+            Console.WriteLine("Jumbo {0} ({1})", RuntimeEnvironment.JumboVersion, RuntimeEnvironment.JumboConfiguration);
+        }
+
+        return 0;
     }
 }

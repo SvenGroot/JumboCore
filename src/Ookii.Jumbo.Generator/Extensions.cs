@@ -1,6 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Text;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Text;
 
 namespace Ookii.Jumbo.Generator;
 
@@ -243,7 +243,7 @@ internal static class Extensions
     {
         foreach (var member in property.ContainingType.GetMembers())
         {
-            if (member is IFieldSymbol field && field.AssociatedSymbol != null && field.AssociatedSymbol.SymbolEquals(property)) 
+            if (member is IFieldSymbol field && field.AssociatedSymbol != null && field.AssociatedSymbol.SymbolEquals(property))
             {
                 return true;
             }

@@ -1,27 +1,26 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 
-namespace Ookii.Jumbo.Jet
+namespace Ookii.Jumbo.Jet;
+
+/// <summary>
+/// The current status of a task attempt.
+/// </summary>
+public enum TaskAttemptStatus
 {
     /// <summary>
-    /// The current status of a task attempt.
+    /// The task has not yet been started.
     /// </summary>
-    public enum TaskAttemptStatus
-    {
-        /// <summary>
-        /// The task has not yet been started.
-        /// </summary>
-        NotStarted,
-        /// <summary>
-        /// The task is running.
-        /// </summary>
-        Running,
-        /// <summary>
-        /// The task has completed successfully.
-        /// </summary>
-        Completed,
-        /// <summary>
-        /// Task execution encountered an error.
-        /// </summary>
-        Error
-    }
+    NotStarted,
+    /// <summary>
+    /// The task is running.
+    /// </summary>
+    Running,
+    /// <summary>
+    /// The task has completed successfully.
+    /// </summary>
+    Completed,
+    /// <summary>
+    /// Task execution encountered an error.
+    /// </summary>
+    Error
 }

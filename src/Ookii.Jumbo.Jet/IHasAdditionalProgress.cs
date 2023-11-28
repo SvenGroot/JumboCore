@@ -1,22 +1,21 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 
-namespace Ookii.Jumbo.Jet
+namespace Ookii.Jumbo.Jet;
+
+/// <summary>
+/// Interface for tasks, multi record readers and channels that report additional progress.
+/// </summary>
+/// <remarks>
+/// Use the <see cref="AdditionalProgressCounterAttribute"/> attribute to specify a name for the counter.
+/// </remarks>
+public interface IHasAdditionalProgress
 {
     /// <summary>
-    /// Interface for tasks, multi record readers and channels that report additional progress.
+    /// Gets the additional progress value.
     /// </summary>
+    /// <value>The additional progress value.</value>
     /// <remarks>
-    /// Use the <see cref="AdditionalProgressCounterAttribute"/> attribute to specify a name for the counter.
+    /// This property must be thread safe.
     /// </remarks>
-    public interface IHasAdditionalProgress
-    {
-        /// <summary>
-        /// Gets the additional progress value.
-        /// </summary>
-        /// <value>The additional progress value.</value>
-        /// <remarks>
-        /// This property must be thread safe.
-        /// </remarks>
-        float AdditionalProgress { get; }
-    }
+    float AdditionalProgress { get; }
 }

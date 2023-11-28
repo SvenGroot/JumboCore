@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using Ookii.Jumbo.Jet;
 
-namespace JetWeb.Models
+namespace JetWeb.Models;
+
+public class StageTableModel
 {
-    public class StageTableModel
-    {
-        public JobStatus Job { get; set; }
+    public JobStatus Job { get; set; }
 
-        public bool Archived { get; set; }
+    public bool Archived { get; set; }
 
-        public IEnumerable<StageStatus> Stages { get; set; }
-    }
+    public IEnumerable<StageStatus> Stages { get; set; }
 }

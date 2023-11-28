@@ -1,95 +1,96 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.IO;
 
-namespace Ookii.Jumbo.Jet.Channels
+namespace Ookii.Jumbo.Jet.Channels;
+
+sealed class SizeRecordingStream : Stream
 {
-    sealed class SizeRecordingStream : Stream
+    private readonly Stream _baseStream;
+    private long _bytesRead;
+    private long _bytesWritten;
+
+    public SizeRecordingStream(Stream baseStream)
     {
-        private readonly Stream _baseStream;
-        private long _bytesRead;
-        private long _bytesWritten;
+        _baseStream = baseStream;
+    }
 
-        public SizeRecordingStream(Stream baseStream)
+
+    public long BytesRead
+    {
+        get { return _bytesRead; }
+    }
+
+    public long BytesWritten
+    {
+        get { return _bytesWritten; }
+    }
+
+    public override bool CanRead
+    {
+        get { return _baseStream.CanRead; }
+    }
+
+    public override bool CanSeek
+    {
+        get { return _baseStream.CanSeek; }
+    }
+
+    public override bool CanWrite
+    {
+        get { return _baseStream.CanWrite; }
+    }
+
+    public override void Flush()
+    {
+        _baseStream.Flush();
+    }
+
+    public override long Length
+    {
+        get { return _baseStream.Length; }
+    }
+
+    public override long Position
+    {
+        get
         {
-            _baseStream = baseStream;
+            return _baseStream.Position;
         }
-
-
-        public long BytesRead
+        set
         {
-            get { return _bytesRead; }
+            _baseStream.Position = value;
         }
+    }
 
-        public long BytesWritten
-        {
-            get { return _bytesWritten; }
-        }
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        var bytesRead = _baseStream.Read(buffer, offset, count);
+        _bytesRead += bytesRead;
+        return bytesRead;
+    }
 
-        public override bool CanRead
-        {
-            get { return _baseStream.CanRead; }
-        }
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        return _baseStream.Seek(offset, origin);
+    }
 
-        public override bool CanSeek
-        {
-            get { return _baseStream.CanSeek; }
-        }
+    public override void SetLength(long value)
+    {
+        _baseStream.SetLength(value);
+    }
 
-        public override bool CanWrite
-        {
-            get { return _baseStream.CanWrite; }
-        }
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        _baseStream.Write(buffer, offset, count);
+        _bytesWritten += count;
+    }
 
-        public override void Flush()
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
         {
-            _baseStream.Flush();
-        }
-
-        public override long Length
-        {
-            get { return _baseStream.Length; }
-        }
-
-        public override long Position
-        {
-            get
-            {
-                return _baseStream.Position;
-            }
-            set
-            {
-                _baseStream.Position = value;
-            }
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            var bytesRead = _baseStream.Read(buffer, offset, count);
-            _bytesRead += bytesRead;
-            return bytesRead;
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return _baseStream.Seek(offset, origin);
-        }
-
-        public override void SetLength(long value)
-        {
-            _baseStream.SetLength(value);
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            _baseStream.Write(buffer, offset, count);
-            _bytesWritten += count;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing)
-                _baseStream.Dispose();
+            _baseStream.Dispose();
         }
     }
 }

@@ -51,7 +51,10 @@ public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSeriali
         while (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == startElementName && reader.Depth == depth))
         {
             if (reader.IsStartElement("Setting", JobConfiguration.XmlNamespace))
+            {
                 Add(reader.GetAttribute("key")!, reader.GetAttribute("value")!);
+            }
+
             reader.Read();
         }
         reader.ReadEndElement();
@@ -97,7 +100,9 @@ public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSeriali
             return (T?)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null, System.Globalization.CultureInfo.InvariantCulture, value);
         }
         else
+        {
             return defaultValue;
+        }
     }
 
     /// <summary>
@@ -132,9 +137,13 @@ public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSeriali
     public string? GetSetting(string key, string? defaultValue)
     {
         if (TryGetValue(key, out var value))
+        {
             return value;
+        }
         else
+        {
             return defaultValue;
+        }
     }
 
     /// <summary>
@@ -153,7 +162,9 @@ public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSeriali
 
         var value = stage.GetSetting(key, null);
         if (value == null)
+        {
             value = job.GetSetting(key, defaultValue);
+        }
 
         return value;
     }
@@ -175,8 +186,12 @@ public sealed class SettingsDictionary : Dictionary<string, string>, IXmlSeriali
         ArgumentNullException.ThrowIfNull(stage);
 
         if (!stage.TryGetSetting(key, out T? value) && !job.TryGetSetting(key, out value))
+        {
             return defaultValue;
+        }
         else
+        {
             return value;
+        }
     }
 }

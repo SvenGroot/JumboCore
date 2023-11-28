@@ -88,9 +88,14 @@ public sealed partial class TaskAttemptId : IEquatable<TaskAttemptId>, IComparab
     public bool Equals(TaskAttemptId? other)
     {
         if (other is null)
+        {
             return false;
+        }
+
         if (ReferenceEquals(other, this))
+        {
             return true;
+        }
 
         return TaskId.Equals(other.TaskId) && Attempt == other.Attempt;
     }
@@ -106,9 +111,14 @@ public sealed partial class TaskAttemptId : IEquatable<TaskAttemptId>, IComparab
     public int CompareTo(TaskAttemptId? other)
     {
         if (other is null)
+        {
             return 1;
+        }
+
         if (ReferenceEquals(other, this))
+        {
             return 0;
+        }
 
         var result = TaskId.CompareTo(other.TaskId);
         if (result == 0)
@@ -131,7 +141,10 @@ public sealed partial class TaskAttemptId : IEquatable<TaskAttemptId>, IComparab
     {
         var other = obj as TaskAttemptId;
         if (other is null)
+        {
             throw new ArgumentException("obj is not a TaskAttemptId.", nameof(obj));
+        }
+
         return CompareTo(other);
     }
 

@@ -45,7 +45,9 @@ public static class TaskInputUtility
                 writer.Flush();
 
                 if (input.Locations == null)
+                {
                     WritableUtility.Write7BitEncodedInt32(locationsWriter, 0);
+                }
                 else
                 {
                     WritableUtility.Write7BitEncodedInt32(locationsWriter, input.Locations.Count);
@@ -81,7 +83,10 @@ public static class TaskInputUtility
                 var locationsCount = WritableUtility.Read7BitEncodedInt32(reader);
                 var locations = new string[locationsCount];
                 for (var x = 0; x < locationsCount; ++x)
+                {
                     locations[x] = reader.ReadString();
+                }
+
                 result.Add(locations);
             }
         }
@@ -103,7 +108,9 @@ public static class TaskInputUtility
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(stageId);
         if (splitIndex < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(splitIndex));
+        }
 
         var splitsFile = GetSplitsFileName(fileSystem, path, stageId);
         var splitsIndexFile = GetSplitsIndexFileName(splitsFile);

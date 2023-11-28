@@ -24,7 +24,10 @@ sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReade
         if (ValueWriter<T>.Writer == null)
         {
             if (allowRecordReuse)
+            {
                 _record = (T)WritableUtility.GetUninitializedWritable(typeof(T));
+            }
+
             _allowRecordReuse = true;
         }
     }
@@ -40,7 +43,9 @@ sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReade
         CheckDisposed();
 
         if (++_lastSegmentNumber != number)
+        {
             throw new ChannelException(string.Format(CultureInfo.CurrentCulture, "Segment received out of order: expected {0}, got {1}.", _lastSegmentNumber, number));
+        }
 
         // TODO: Maybe we could use the memory storage for this, with file backing if necessary. Would have to check how that works with the merge record reader though
         // TODO: Maybe we should use async I/O for this
@@ -105,10 +110,16 @@ sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReade
             if (disposing)
             {
                 if (_currentSegment != null)
+                {
                     _currentSegment.Dispose();
+                }
+
                 _segments.CompleteAdding();
                 foreach (var stream in _segments)
+                {
                     stream.Dispose();
+                }
+
                 _segments.Dispose();
             }
         }
@@ -117,6 +128,8 @@ sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReade
     private void CheckDisposed()
     {
         if (_disposed)
+        {
             throw new ObjectDisposedException(typeof(TcpChannelRecordReader<T>).FullName);
+        }
     }
 }

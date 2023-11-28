@@ -1,31 +1,30 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System.Configuration;
 
-namespace Ookii.Jumbo.Topology
+namespace Ookii.Jumbo.Topology;
+
+/// <summary>
+/// Provides configuration for the <see cref="PatternTopologyResolver"/>.
+/// </summary>
+public class PatternTopologyResolverConfigurationElement : ConfigurationElement
 {
     /// <summary>
-    /// Provides configuration for the <see cref="PatternTopologyResolver"/>.
+    /// Gets or sets the type of the patterns used to assign nodes to racks.
     /// </summary>
-    public class PatternTopologyResolverConfigurationElement : ConfigurationElement
+    /// <value>One of the values of the <see cref="PatternType"/> enumeration.</value>
+    [ConfigurationProperty("patternType", DefaultValue = PatternType.RegularExpression, IsRequired = false, IsKey = false)]
+    public PatternType PatternType
     {
-        /// <summary>
-        /// Gets or sets the type of the patterns used to assign nodes to racks.
-        /// </summary>
-        /// <value>One of the values of the <see cref="PatternType"/> enumeration.</value>
-        [ConfigurationProperty("patternType", DefaultValue = PatternType.RegularExpression, IsRequired = false, IsKey = false)]
-        public PatternType PatternType
-        {
-            get { return (PatternType)this["patternType"]; }
-            set { this["patternType"] = value; }
-        }
+        get { return (PatternType)this["patternType"]; }
+        set { this["patternType"] = value; }
+    }
 
-        /// <summary>
-        /// Gets the racks of this configuration element.
-        /// </summary>
-        [ConfigurationProperty("racks", IsRequired = true, IsKey = false)]
-        public RackConfigurationElementCollection Racks
-        {
-            get { return (RackConfigurationElementCollection)this["racks"]; }
-        }
+    /// <summary>
+    /// Gets the racks of this configuration element.
+    /// </summary>
+    [ConfigurationProperty("racks", IsRequired = true, IsKey = false)]
+    public RackConfigurationElementCollection Racks
+    {
+        get { return (RackConfigurationElementCollection)this["racks"]; }
     }
 }

@@ -65,7 +65,9 @@ public sealed class BlockSender : IDisposable
                 _serverReader = new BinaryReader(_serverStream);
                 _serverWriter = new BinaryWriter(_serverStream);
                 if (!WriteHeader())
+                {
                     throw new DfsException(string.Format(CultureInfo.CurrentCulture, "There was an error connecting to the downstream data server {0}.", server));
+                }
             }
             catch (Exception ex)
             {
@@ -108,10 +110,14 @@ public sealed class BlockSender : IDisposable
         ThrowIfErrorOccurred();
 
         if (_hasLastPacket)
+        {
             throw new InvalidOperationException("The last packet has been sent.");
+        }
 
         if (_serverWriter != null)
+        {
             packet.Write(_serverWriter, PacketFormatOption.Default);
+        }
 
         _pendingAcknowledgements.Add(packet.SequenceNumber, _cancellation.Token);
         if (packet.IsLastPacket)
@@ -145,7 +151,9 @@ public sealed class BlockSender : IDisposable
     public void ThrowIfErrorOccurred()
     {
         if (_serverStatus != DataServerClientProtocolResult.Ok)
+        {
             throw new DfsException("There was an error sending the block to the downstream data server.");
+        }
     }
 
     /// <summary>
@@ -166,13 +174,24 @@ public sealed class BlockSender : IDisposable
             {
                 _cancellation.Cancel();
                 if (_serverWriter != null)
+                {
                     _serverWriter.Dispose();
+                }
+
                 if (_serverReader != null)
+                {
                     _serverReader.Dispose();
+                }
+
                 if (_serverStream != null)
+                {
                     _serverStream.Dispose();
+                }
+
                 if (_serverClient != null)
+                {
                     ((IDisposable)_serverClient).Dispose();
+                }
 
                 _acknowledgementThread.Join();
                 _cancellation.Dispose();
@@ -213,7 +232,9 @@ public sealed class BlockSender : IDisposable
     private void CheckDisposed()
     {
         if (_disposed)
+        {
             throw new ObjectDisposedException(this.GetType().FullName);
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
@@ -238,7 +259,9 @@ public sealed class BlockSender : IDisposable
                     }
                 }
                 if (_cancellation.IsCancellationRequested)
+                {
                     _log.Warn("The block sender was cancelled.");
+                }
                 else
                 {
                     Debug.Assert(_pendingAcknowledgements.IsCompleted);

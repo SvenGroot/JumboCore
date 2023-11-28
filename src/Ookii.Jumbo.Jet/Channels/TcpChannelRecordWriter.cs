@@ -26,9 +26,14 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
         public void Dispose()
         {
             if (ClientStream != null)
+            {
                 ClientStream.Dispose();
+            }
+
             if (Client != null)
+            {
                 ((IDisposable)Client).Dispose();
+            }
         }
     }
 
@@ -52,12 +57,18 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
         var outputStage = taskExecution.Context.JobConfiguration.GetStage(taskExecution.Context.StageConfiguration.OutputChannel!.OutputStage!)!;
         _outputIds = new TaskId[outputStage.TaskCount]; // We need this to be task based, not partition based.
         for (var x = 0; x < _outputIds.Length; ++x)
+        {
             _outputIds[x] = new TaskId(outputStage.StageId!, x + 1);
+        }
+
         _taskConnections = new TaskConnectionInfo[_outputIds.Length];
         _taskExecution = taskExecution;
         _reuseConnections = reuseConnections;
         if (reuseConnections)
+        {
             _header[0] = (byte)TcpChannelConnectionFlags.KeepAlive;
+        }
+
         WriteInt32ToHeader(1, taskExecution.RootTask.Context.TaskAttemptId.TaskId.TaskNumber);
     }
 
@@ -89,7 +100,9 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
             if (disposing)
             {
                 for (var x = 0; x < _taskConnections.Length; ++x)
+                {
                     _taskConnections[x].Dispose();
+                }
             }
         }
     }
@@ -120,8 +133,8 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
             var partitions = _taskConnections[taskIndex].Partitions;
             if (partitions == null)
             {
-                partitions = _taskExecution.Context.StageConfiguration.OutputChannel!.PartitionsPerTask <= 1 
-                    ? new[] { _outputIds[taskIndex].TaskNumber } 
+                partitions = _taskExecution.Context.StageConfiguration.OutputChannel!.PartitionsPerTask <= 1
+                    ? new[] { _outputIds[taskIndex].TaskNumber }
                     : _taskExecution.JobServerTaskClient.GetPartitionsForTask(_taskExecution.Context.JobId, _outputIds[taskIndex]);
 
                 if (partitions == null)
@@ -166,8 +179,9 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
                     Interlocked.Add(ref _headerBytesWritten, TcpInputChannel.PartitionHeaderSize);
                 }
                 if (sendData && size > 0)
+                {
                     WritePartition(partition - 1, stream);
-
+                }
             }
             stream.Flush();
             CheckResult(stream, taskIndex);
@@ -177,9 +191,14 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
             if (disposeStream)
             {
                 if (stream != null)
+                {
                     stream.Dispose();
+                }
+
                 if (client != null)
+                {
                     ((IDisposable)client).Dispose();
+                }
             }
         }
     }
@@ -188,7 +207,9 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
     {
         var result = stream.ReadByte();
         if (result == -1)
+        {
             throw new ChannelException(string.Format(CultureInfo.InvariantCulture, "Task {0} did not send a status result.", _outputIds[taskIndex]));
+        }
         else if (result == 0)
         {
             using var reader = new BinaryReader(stream, Encoding.UTF8, true);
@@ -245,7 +266,10 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
 
         var client = new TcpClient(_taskConnections[taskIndex].HostName, _taskConnections[taskIndex].Port);
         if (_reuseConnections)
+        {
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+        }
+
         client.Client.NoDelay = true;
         return client;
     }

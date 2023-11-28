@@ -197,9 +197,14 @@ public sealed partial class TaskMetrics
     public static TaskMetrics? FromXml(XElement? element)
     {
         if (element == null)
+        {
             return null;
+        }
+
         if (element.Name != "Metrics")
+        {
             throw new ArgumentException("Invalid metrics element.", nameof(element));
+        }
 
         return new TaskMetrics()
         {

@@ -2,90 +2,97 @@
 using System;
 using System.IO;
 
-namespace Ookii.Jumbo.IO
+namespace Ookii.Jumbo.IO;
+
+/// <summary>
+/// Abstract base class for classes that write records to a stream.
+/// </summary>
+/// <typeparam name="T">The type of the record.</typeparam>
+public abstract class StreamRecordWriter<T> : RecordWriter<T>
+    where T : notnull
 {
+    private readonly IRecordOutputStream? _recordOutputStream;
+    private readonly long _startPosition;
+
     /// <summary>
-    /// Abstract base class for classes that write records to a stream.
+    /// Initializes a new instance of the <see cref="RecordWriter{T}"/> class.
     /// </summary>
-    /// <typeparam name="T">The type of the record.</typeparam>
-    public abstract class StreamRecordWriter<T> : RecordWriter<T>
-        where T : notnull
+    /// <param name="stream">The stream to which to write the records.</param>
+    protected StreamRecordWriter(Stream stream)
     {
-        private readonly IRecordOutputStream? _recordOutputStream;
-        private readonly long _startPosition;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecordWriter{T}"/> class.
-        /// </summary>
-        /// <param name="stream">The stream to which to write the records.</param>
-        protected StreamRecordWriter(Stream stream)
+        ArgumentNullException.ThrowIfNull(stream);
+        Stream = stream;
+        _startPosition = stream.Position;
+        _recordOutputStream = stream as IRecordOutputStream;
+        if (_recordOutputStream != null && _recordOutputStream.RecordOptions == RecordStreamOptions.None)
         {
-            ArgumentNullException.ThrowIfNull(stream);
-            Stream = stream;
-            _startPosition = stream.Position;
-            _recordOutputStream = stream as IRecordOutputStream;
-            if (_recordOutputStream != null && _recordOutputStream.RecordOptions == RecordStreamOptions.None)
-                _recordOutputStream = null; // No need to waste time calling MarkRecord if there's no record options set.
+            _recordOutputStream = null; // No need to waste time calling MarkRecord if there's no record options set.
         }
+    }
 
-        /// <summary>
-        /// Gets the underlying stream to which this record reader is writing.
-        /// </summary>
-        public Stream Stream { get; private set; }
+    /// <summary>
+    /// Gets the underlying stream to which this record reader is writing.
+    /// </summary>
+    public Stream Stream { get; private set; }
 
-        /// <summary>
-        /// Gets the size of the written records after serialization.
-        /// </summary>
-        /// <value>
-        /// The number of bytes written to the output stream.
-        /// </value>
-        public override long OutputBytes
+    /// <summary>
+    /// Gets the size of the written records after serialization.
+    /// </summary>
+    /// <value>
+    /// The number of bytes written to the output stream.
+    /// </value>
+    public override long OutputBytes
+    {
+        get { return _recordOutputStream == null ? Stream.Position - _startPosition : _recordOutputStream.RecordsSize; }
+    }
+
+    /// <summary>
+    /// Gets the number of bytes that were actually written to the output.
+    /// </summary>
+    /// <value>If compression was used, the number of bytes written to the output after compression; otherwise, the same value as <see cref="OutputBytes"/>.</value>
+    public override long BytesWritten
+    {
+        get
         {
-            get { return _recordOutputStream == null ? Stream.Position - _startPosition : _recordOutputStream.RecordsSize; }
-        }
-
-        /// <summary>
-        /// Gets the number of bytes that were actually written to the output.
-        /// </summary>
-        /// <value>If compression was used, the number of bytes written to the output after compression; otherwise, the same value as <see cref="OutputBytes"/>.</value>
-        public override long BytesWritten
-        {
-            get
+            if (Stream is not ICompressor compressionStream)
             {
-                if (Stream is not ICompressor compressionStream)
-                    return Stream.Position - _startPosition;
-                else
-                    return compressionStream.CompressedBytesWritten;
+                return Stream.Position - _startPosition;
+            }
+            else
+            {
+                return compressionStream.CompressedBytesWritten;
             }
         }
+    }
 
-        /// <summary>
-        /// Writes a record.
-        /// </summary>
-        /// <param name="record">The record to write.</param>
-        /// <remarks>
-        /// <para>
-        ///   Derived classes should call the base class implementation after they wrote the record to the stream.
-        /// </para>
-        /// </remarks>
-        protected override void WriteRecordInternal(T record)
+    /// <summary>
+    /// Writes a record.
+    /// </summary>
+    /// <param name="record">The record to write.</param>
+    /// <remarks>
+    /// <para>
+    ///   Derived classes should call the base class implementation after they wrote the record to the stream.
+    /// </para>
+    /// </remarks>
+    protected override void WriteRecordInternal(T record)
+    {
+        if (_recordOutputStream != null)
         {
-            if (_recordOutputStream != null)
-                _recordOutputStream.MarkRecord();
+            _recordOutputStream.MarkRecord();
         }
+    }
 
-        /// <summary>
-        /// Cleans up all resources associated with this <see cref="StreamRecordReader{T}"/>.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to clean up both managed and unmanaged resources; <see langword="false"/>
-        /// to clean up unmanaged resources only.</param>
-        protected override void Dispose(bool disposing)
+    /// <summary>
+    /// Cleans up all resources associated with this <see cref="StreamRecordReader{T}"/>.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to clean up both managed and unmanaged resources; <see langword="false"/>
+    /// to clean up unmanaged resources only.</param>
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
         {
-            base.Dispose(disposing);
-            if (disposing)
-            {
-                Stream?.Dispose();
-            }
+            Stream?.Dispose();
         }
     }
 }

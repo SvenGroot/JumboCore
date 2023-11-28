@@ -2,108 +2,124 @@
 using System;
 using System.Globalization;
 
-namespace Ookii.Jumbo.Jet.Jobs.Builder
+namespace Ookii.Jumbo.Jet.Jobs.Builder;
+
+/// <summary>
+/// An operation representing data processing being done in a single job stage.
+/// </summary>
+public class StageOperation : StageOperationBase
 {
+    private readonly Channel? _inputChannel;
+    private readonly FileInput? _dataInput;
+    private readonly int _noInputTaskCount;
+
     /// <summary>
-    /// An operation representing data processing being done in a single job stage.
+    /// Initializes a new instance of the <see cref="StageOperation"/> class.
     /// </summary>
-    public class StageOperation : StageOperationBase
+    /// <param name="builder">The job builder.</param>
+    /// <param name="input">The input for the operation.</param>
+    /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
+    /// <remarks>
+    /// If <paramref name="taskType"/> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
+    /// You can use this with types such as <see cref="Tasks.EmptyTask{T}"/>, in which case you can specify them as <c>typeof(EmptyTask&lt;&gt;)</c> without
+    /// specifying the record type.
+    /// </remarks>
+    public StageOperation(JobBuilder builder, IOperationInput? input, Type taskType)
+        : this(builder, input, 0, taskType)
     {
-        private readonly Channel? _inputChannel;
-        private readonly FileInput? _dataInput;
-        private readonly int _noInputTaskCount;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StageOperation"/> class.
-        /// </summary>
-        /// <param name="builder">The job builder.</param>
-        /// <param name="input">The input for the operation.</param>
-        /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
-        /// <remarks>
-        /// If <paramref name="taskType"/> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
-        /// You can use this with types such as <see cref="Tasks.EmptyTask{T}"/>, in which case you can specify them as <c>typeof(EmptyTask&lt;&gt;)</c> without
-        /// specifying the record type.
-        /// </remarks>
-        public StageOperation(JobBuilder builder, IOperationInput? input, Type taskType)
-            : this(builder, input, 0, taskType)
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StageOperation"/> class for a stage without input.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="taskCount">The number of tasks in the stage.</param>
+    /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
+    /// <remarks>
+    /// If <paramref name="taskType"/> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
+    /// You can use this with types such as <see cref="Tasks.EmptyTask{T}"/>, in which case you can specify them as <c>typeof(EmptyTask&lt;&gt;)</c> without
+    /// specifying the record type.
+    /// </remarks>
+    public StageOperation(JobBuilder builder, int taskCount, Type taskType)
+        : this(builder, null, taskCount, taskType)
+    {
+    }
+
+    private StageOperation(JobBuilder builder, IOperationInput? input, int noInputTaskCount, Type taskType)
+        : base(builder, MakeGenericTaskType(taskType, input))
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(taskType);
+        if (noInputTaskCount < 0)
         {
+            throw new ArgumentOutOfRangeException(nameof(noInputTaskCount));
         }
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StageOperation"/> class for a stage without input.
-        /// </summary>
-        /// <param name="builder">The job builder.</param>
-        /// <param name="taskCount">The number of tasks in the stage.</param>
-        /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
-        /// <remarks>
-        /// If <paramref name="taskType"/> is a generic type definition with a singe type parameter, it will be constructed using the input's record type.
-        /// You can use this with types such as <see cref="Tasks.EmptyTask{T}"/>, in which case you can specify them as <c>typeof(EmptyTask&lt;&gt;)</c> without
-        /// specifying the record type.
-        /// </remarks>
-        public StageOperation(JobBuilder builder, int taskCount, Type taskType)
-            : this(builder, null, taskCount, taskType)
+        if (noInputTaskCount == 0 && input == null)
         {
+            throw new ArgumentException("You must specify either an input or a task count larger than zero.");
         }
 
-        private StageOperation(JobBuilder builder, IOperationInput? input, int noInputTaskCount, Type taskType)
-            : base(builder, MakeGenericTaskType(taskType, input))
+        if (input != null)
         {
-            ArgumentNullException.ThrowIfNull(builder);
-            ArgumentNullException.ThrowIfNull(taskType);
-            if (noInputTaskCount < 0)
-                throw new ArgumentOutOfRangeException(nameof(noInputTaskCount));
-            if (noInputTaskCount == 0 && input == null)
-                throw new ArgumentException("You must specify either an input or a task count larger than zero.");
-
-            if (input != null)
+            if (TaskType.InputRecordType != input.RecordType)
             {
-                if (TaskType.InputRecordType != input.RecordType)
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The input record type {0} of the task {1} doesn't match the record type {2} of the input.", TaskType.InputRecordType, taskType, input.RecordType));
-
-                _dataInput = input as FileInput;
-                if (_dataInput == null)
-                    _inputChannel = new Channel((IJobBuilderOperation)input, this);
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The input record type {0} of the task {1} doesn't match the record type {2} of the input.", TaskType.InputRecordType, taskType, input.RecordType));
             }
 
-            builder.AddOperation(this);
-            builder.AddAssembly(taskType.Assembly);
-
-            _noInputTaskCount = noInputTaskCount;
+            _dataInput = input as FileInput;
+            if (_dataInput == null)
+            {
+                _inputChannel = new Channel((IJobBuilderOperation)input, this);
+            }
         }
 
-        /// <summary>
-        /// Gets the input channel for this operation.
-        /// </summary>
-        /// <value>
-        /// The input channel, or <see langword="null"/>
-        /// </value>
-        public Channel? InputChannel
-        {
-            get { return _inputChannel; }
-        }
+        builder.AddOperation(this);
+        builder.AddAssembly(taskType.Assembly);
 
-        /// <summary>
-        /// Creates the configuration for this stage.
-        /// </summary>
-        /// <param name="compiler">The <see cref="JobBuilderCompiler"/>.</param>
-        /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
-        protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
-        {
-            ArgumentNullException.ThrowIfNull(compiler);
-            if (_dataInput != null)
-                return compiler.CreateStage(StageId, TaskType.TaskType, _dataInput, Output);
-            else
-                return compiler.CreateStage(StageId, TaskType.TaskType, _inputChannel == null ? _noInputTaskCount : _inputChannel.TaskCount, _inputChannel == null ? null : _inputChannel.CreateInput(), Output, true, _inputChannel == null ? null : _inputChannel.Settings);
-        }
+        _noInputTaskCount = noInputTaskCount;
+    }
 
-        private static Type MakeGenericTaskType(Type taskType, IOperationInput? input)
+    /// <summary>
+    /// Gets the input channel for this operation.
+    /// </summary>
+    /// <value>
+    /// The input channel, or <see langword="null"/>
+    /// </value>
+    public Channel? InputChannel
+    {
+        get { return _inputChannel; }
+    }
+
+    /// <summary>
+    /// Creates the configuration for this stage.
+    /// </summary>
+    /// <param name="compiler">The <see cref="JobBuilderCompiler"/>.</param>
+    /// <returns>The <see cref="StageConfiguration"/> for the stage.</returns>
+    protected override StageConfiguration CreateConfiguration(JobBuilderCompiler compiler)
+    {
+        ArgumentNullException.ThrowIfNull(compiler);
+        if (_dataInput != null)
         {
-            // This only works for tasks with a single type argument (like EmptyTask<T>).
-            if (taskType.IsGenericTypeDefinition && input != null)
-                return taskType.MakeGenericType(input.RecordType!);
-            else
-                return taskType;
+            return compiler.CreateStage(StageId, TaskType.TaskType, _dataInput, Output);
+        }
+        else
+        {
+            return compiler.CreateStage(StageId, TaskType.TaskType, _inputChannel == null ? _noInputTaskCount : _inputChannel.TaskCount, _inputChannel == null ? null : _inputChannel.CreateInput(), Output, true, _inputChannel == null ? null : _inputChannel.Settings);
+        }
+    }
+
+    private static Type MakeGenericTaskType(Type taskType, IOperationInput? input)
+    {
+        // This only works for tasks with a single type argument (like EmptyTask<T>).
+        if (taskType.IsGenericTypeDefinition && input != null)
+        {
+            return taskType.MakeGenericType(input.RecordType!);
+        }
+        else
+        {
+            return taskType;
         }
     }
 }

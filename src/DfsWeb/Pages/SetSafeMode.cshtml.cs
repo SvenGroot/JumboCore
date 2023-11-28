@@ -3,36 +3,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Ookii.Jumbo.Dfs.FileSystem;
 
-namespace DfsWeb.Pages
+namespace DfsWeb.Pages;
+
+public class SetSafeModeModel : PageModel
 {
-    public class SetSafeModeModel : PageModel
+    public bool SafeMode { get; set; }
+
+    [BindProperty]
+    public bool NewSafeMode { get; set; }
+
+    public string ErrorMessage { get; set; }
+
+    public void OnGet()
     {
-        public bool SafeMode { get; set; }
+        var client = (DfsClient)FileSystemClient.Create();
+        SafeMode = client.NameServer.SafeMode;
+    }
 
-        [BindProperty]
-        public bool NewSafeMode { get; set; }
-
-        public string ErrorMessage { get; set; }
-
-        public void OnGet()
+    public void OnPost()
+    {
+        try
         {
             var client = (DfsClient)FileSystemClient.Create();
             SafeMode = client.NameServer.SafeMode;
+            client.NameServer.SafeMode = NewSafeMode;
+            SafeMode = NewSafeMode;
         }
-
-        public void OnPost()
+        catch (InvalidOperationException ex)
         {
-            try
-            {
-                var client = (DfsClient)FileSystemClient.Create();
-                SafeMode = client.NameServer.SafeMode;
-                client.NameServer.SafeMode = NewSafeMode;
-                SafeMode = NewSafeMode;
-            }
-            catch (InvalidOperationException ex)
-            {
-                ErrorMessage = ex.Message;
-            }
+            ErrorMessage = ex.Message;
         }
     }
 }

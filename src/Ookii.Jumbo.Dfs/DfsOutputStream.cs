@@ -81,18 +81,29 @@ public class DfsOutputStream : Stream, IRecordOutputStream
         ArgumentNullException.ThrowIfNull(nameServer);
         ArgumentNullException.ThrowIfNull(path);
         if (blockSize < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be zero or greater.");
+        }
+
         if (blockSize % Packet.PacketSize != 0)
+        {
             throw new ArgumentException("Block size must be a multiple of the packet size.", nameof(blockSize));
+        }
+
         if (replicationFactor < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(replicationFactor), "Replication factor must be zero or greater.");
+        }
 
         if (blockSize == 0)
         {
             BlockSize = nameServer.BlockSize;
         }
         else
+        {
             BlockSize = blockSize;
+        }
+
         _nameServer = nameServer;
         _path = path;
         _recordOptions = recordOptions;
@@ -328,7 +339,9 @@ public class DfsOutputStream : Stream, IRecordOutputStream
         if (_recordBuffer != null && _recordBuffer.Length > 0)
         {
             if (_recordBuffer.Length > BlockSize)
+            {
                 throw new InvalidOperationException("The record is larger than a block."); // TODO: Allow this.
+            }
 
             // Does the record fit in the current block?
             if (_blockBytesWritten + _bufferPos + _recordBuffer.Length > BlockSize)
@@ -354,7 +367,9 @@ public class DfsOutputStream : Stream, IRecordOutputStream
                 }
 
                 if (_bufferPos == _buffer.Length)
+                {
                     WriteBufferToPacket(false);
+                }
             }
 
             // If the data left in the record is bigger than a single packet, we add those whole packets to the sender.
@@ -411,9 +426,14 @@ public class DfsOutputStream : Stream, IRecordOutputStream
                     if (disposing)
                     {
                         if (_sender != null)
+                        {
                             _sender.Dispose();
+                        }
+
                         if (_recordBuffer != null)
+                        {
                             _recordBuffer.Dispose();
+                        }
                     }
                 }
             }
@@ -442,7 +462,10 @@ public class DfsOutputStream : Stream, IRecordOutputStream
         if (_sender == null)
         {
             if (_block == null)
+            {
                 _block = _nameServer.AppendBlock(_path, _useLocalReplica);
+            }
+
             _sender = new BlockSender(_block);
         }
     }

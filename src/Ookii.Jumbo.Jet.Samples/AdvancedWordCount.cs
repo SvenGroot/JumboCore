@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Ookii.CommandLine;
-using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.IO;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Jobs;
@@ -173,7 +172,9 @@ public partial class AdvancedWordCount : JobBuilderJob
         // directly.
         string? dfsPath = context.JobConfiguration.GetSetting("AdvancedWordCount.IgnorePatternsFile", null);
         if (dfsPath == null)
+        {
             return null;
+        }
 
         // Using DownloadDfsFile causes the TaskServer to download the file once, and all tasks on
         // this node can then use the locally cached version.

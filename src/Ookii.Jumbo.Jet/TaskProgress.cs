@@ -1,5 +1,4 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -34,9 +33,13 @@ public partial class TaskProgress
         get
         {
             if (AdditionalProgressValuesList == null)
+            {
                 return Progress;
+            }
             else
+            {
                 return (Progress + AdditionalProgressValuesList.Sum(x => x.Progress)) / (AdditionalProgressValuesList.Count + 1);
+            }
         }
     }
 
@@ -70,7 +73,9 @@ public partial class TaskProgress
         if (AdditionalProgressValuesList != null)
         {
             foreach (var value in AdditionalProgressValuesList)
+            {
                 value.Progress = 1.0f;
+            }
         }
     }
 
@@ -83,8 +88,12 @@ public partial class TaskProgress
     public override string ToString()
     {
         if (AdditionalProgressValuesList == null)
+        {
             return Progress.ToString("P1", CultureInfo.InvariantCulture);
+        }
         else
+        {
             return string.Format(CultureInfo.InvariantCulture, "Overall: {0:P1}; Base: {1:P1}; {2}", OverallProgress, Progress, AdditionalProgressValuesList.ToDelimitedString("; "));
+        }
     }
 }
