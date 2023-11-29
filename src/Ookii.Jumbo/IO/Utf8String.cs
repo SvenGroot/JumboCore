@@ -11,12 +11,12 @@ namespace Ookii.Jumbo.IO;
 /// A mutable string stored and serialized in utf-8 format.
 /// </summary>
 /// <remarks>
-/// <warning>
+/// <note type="warning">
 ///   The <see cref="Utf8String"/> class does not provide full utf-8 string manipulation. Its
 ///   primary use is as a mutable serialization format, providing a <see cref="IWritable"/>
 ///   record type that allows record reuse for strings. For string manipulation, conversion
 ///   to/from <see cref="string"/> will typically be necessary.
-/// </warning>
+/// </note>
 /// <note>
 ///   Instances of the <see cref="Utf8String"/> class are compared per byte, and will not sort
 ///   in proper lexicographical order if the string contains multi-byte characters. The only
@@ -68,9 +68,9 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     /// </summary>
     /// <param name="value">A span containing a utf-8 encoded string.</param>
     /// <remarks>
-    /// <warning>
+    /// <note type="warning">
     ///   This constructor does not check if the span contains valid utf-8 data.
-    /// </warning>
+    /// </note>
     /// <para>
     ///   The contents of the span will be copied into the new instance.
     /// </para>
@@ -196,9 +196,9 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     /// </summary>
     /// <param name="value">A span of bytes containing a utf-8 encoded string.</param>
     /// <remarks>
-    /// <warning>
+    /// <note type="warning">
     ///   This method does not check if the span contains valid utf-8 data.
-    /// </warning>
+    /// </note>
     /// <para>
     ///   The contents of the span will be copied into this instance.
     /// </para>
@@ -242,9 +242,9 @@ public sealed class Utf8String : IWritable, IEquatable<Utf8String>, IComparable<
     /// </summary>
     /// <param name="value">A span containing the utf-8 encoded string to append.</param>
     /// <remarks>
-    /// <warning>
+    /// <note type="warning">
     ///   This method does not check if the span contains valid utf-8 data.
-    /// </warning>
+    /// </note>
     /// </remarks>
     public void Append(ReadOnlySpan<byte> value)
     {

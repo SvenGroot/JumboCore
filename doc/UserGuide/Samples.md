@@ -82,11 +82,11 @@ Seriously though, there's much more to learn, if you're so inclined. Begin by ch
 [class library documentation](http://www.ookii.org/Link/JumboDoc) and of course, the Jumbo source
 code. If you have any questions, contact me [on GitHub](https://github.com/SvenGroot/JumboCore/discussions).
 
-[`EmptyTask<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Tasks_EmptyTask_1.htm
-[`GenSortRecord`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecord.htm
-[`GenSortRecordRawComparer`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordRawComparer.htm
-[`GenSortRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordReader.htm
-[`GenSortRecordWriter`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordWriter.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
-[`RangePartitioner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Samples_IO_RangePartitioner.htm
-[`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
+[`EmptyTask<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Tasks_EmptyTask_1.htm
+[`GenSortRecord`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecord.htm
+[`GenSortRecordRawComparer`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordRawComparer.htm
+[`GenSortRecordReader`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordReader.htm
+[`GenSortRecordWriter`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Samples_IO_GenSortRecordWriter.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`RangePartitioner`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Samples_IO_RangePartitioner.htm
+[`SpillSort`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm

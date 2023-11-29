@@ -596,28 +596,28 @@ Output:
 If you want to look at some jobs that are more complex than WordCount, take a look at some of the
 [included samples](Samples.md).
 
-[`AllowRecordReuseAttribute`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_AllowRecordReuseAttribute.htm
-[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
+[`AllowRecordReuseAttribute`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_AllowRecordReuseAttribute.htm
+[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
 [`ICloneable`]: https://learn.microsoft.com/dotnet/api/system.icloneable
-[`InvertedRawComparer<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_InvertedRawComparer_1.htm
-[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
-[`JobBuilder.Process`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Process.htm
-[`JobBuilder.Settings`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Settings.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
-[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
-[`JobSettingAttribute`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm
-[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
-[`Pair<int, string>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
-[`Pair<string, int>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
-[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
-[`PushTask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_PushTask_2.htm
-[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
-[`SpillSort`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
-[`StageOperation.InputChannel`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_Builder_StageOperation_InputChannel.htm
+[`InvertedRawComparer<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_InvertedRawComparer_1.htm
+[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`JobBuilder.Process`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Process.htm
+[`JobBuilder.Settings`]: https://www.ookii.org/docs/jumbo-0.3/html/P_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Settings.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
+[`JobSettingAttribute`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_JobSettingAttribute.htm
+[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
+[`Pair<int, string>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<string, int>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`PushTask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_PushTask_2.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`SpillSort`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSort.htm
+[`StageOperation.InputChannel`]: https://www.ookii.org/docs/jumbo-0.3/html/P_Ookii_Jumbo_Jet_Jobs_Builder_StageOperation_InputChannel.htm
 [`String`]: https://learn.microsoft.com/dotnet/api/system.string
 [`StringComparer.OrdinalIgnoreCase`]: https://learn.microsoft.com/dotnet/api/system.stringcomparer.ordinalignorecase
-[`TaskContext.DownloadDfsFile`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
-[`TaskContext.StageConfiguration.AllowOutputRecordReuse`]: https://www.ookii.org/docs/jumbo-2.0/html/P_Ookii_Jumbo_Jet_Jobs_StageConfiguration_AllowOutputRecordReuse.htm
-[`TaskContext`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_TaskContext.htm
-[`Utf8String`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm
-[DownloadDfsFile_1]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
+[`TaskContext.DownloadDfsFile`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm
+[`TaskContext.StageConfiguration.AllowOutputRecordReuse`]: https://www.ookii.org/docs/jumbo-0.3/html/P_Ookii_Jumbo_Jet_Jobs_StageConfiguration_AllowOutputRecordReuse.htm
+[`TaskContext`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_TaskContext.htm
+[`Utf8String`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Utf8String.htm
+[DownloadDfsFile_1]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_TaskContext_DownloadDfsFile.htm

@@ -145,9 +145,9 @@ files is not supported; for that, you have to use DfsShell.
 
 Next, we'll look at [Jumbo Jet's features](JetFeatures.md).
 
-[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
-[`IRecordInputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordInputStream.htm
-[`IRecordOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_IRecordOutputStream.htm
-[`RecordStreamOptions.DoNotCrossBoundary`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordStreamOptions.htm
-[`StreamRecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordReader_1.htm
-[`StreamRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_StreamRecordWriter_1.htm
+[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
+[`IRecordInputStream`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_IRecordInputStream.htm
+[`IRecordOutputStream`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_IRecordOutputStream.htm
+[`RecordStreamOptions.DoNotCrossBoundary`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordStreamOptions.htm
+[`StreamRecordReader<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_StreamRecordReader_1.htm
+[`StreamRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_StreamRecordWriter_1.htm

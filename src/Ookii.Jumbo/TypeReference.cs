@@ -58,10 +58,25 @@ public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
     /// <summary>
     /// Gets type that this <see cref="TypeReference" /> references, if any.
     /// </summary>
+    /// <param name="type">
+    /// When this method returns <see langword="true"/>, contains the type referenced by this
+    /// instance.
+    /// </param>
     /// <returns>
-    /// <see langword="true"/> if this instance references a type and
+    /// <see langword="true"/> if this instance references a type and it was resolved;
+    /// <see langword="false"/> if this instance did not reference a type (the <see cref="TypeName"/>
+    /// property is <see langword="null"/>.
     /// </returns>
-    /// <exception cref="System.InvalidOperationException">Resolving type references is disabled.</exception>
+    /// <exception cref="System.InvalidOperationException">
+    /// Resolving type references is disabled.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   This method still throws an exception if the <see cref="ResolveTypes"/> property is
+    ///   <see langword="false"/>, or if the type specified by the <see cref="TypeName"/> property
+    ///   could not be resolved.
+    /// </para>
+    /// </remarks>
     public bool TryGetReferencedType([MaybeNullWhen(false)] out Type type)
     {
         if (TypeName == null)

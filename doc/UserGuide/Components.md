@@ -150,8 +150,8 @@ execution (although of course this is available if you want to do more complex p
 We will go into more details about how jobs are executed [later](JobExecution.md). First, it's time
 to learn how to [write your own jobs for Jumbo Jet](Tutorial1.md).
 
-[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
-[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
-[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
-[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm
+[`DfsOutputStream`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Dfs_DfsOutputStream.htm
+[`FileSystemClient`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Dfs_FileSystem_FileSystemClient.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm

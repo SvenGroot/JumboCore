@@ -46,8 +46,8 @@ WordCount example is likely slower than the version we built earlier.
 
 Next, it's time to look at [how Jumbo Jet executes jobs](JobExecution.md).
 
-[`BuildJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
-[`Reduce`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Reduce.htm
-[`SpillSortCombine`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSortCombine.htm
+[`BuildJob`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`Reduce`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Reduce.htm
+[`SpillSortCombine`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_SpillSortCombine.htm
 [`Sum`]: https://learn.microsoft.com/dotnet/api/system.linq.enumerable.sum

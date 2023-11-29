@@ -423,25 +423,25 @@ easiest option.
 The job we used here is not a typical MapReduce job (since it used hash-table aggregation). What
 if we do want to write a traditional MapReduce job? [Keep reading](MapReduce.md) and find out.
 
-[`BaseJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm
-[`BuildJob`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
+[`BaseJobRunner`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_BaseJobRunner.htm
+[`BuildJob`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_BuildJob.htm
 [`GeneratedParserAttribute`]: https://www.ookii.org/docs/commandline-4.0/html/T_Ookii_CommandLine_GeneratedParserAttribute.htm
-[`GroupAggregate`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_GroupAggregate.htm
-[`IJobRunner`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
-[`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_ITask_2.htm
-[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
-[`JobBuilder.Write`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Write.htm
-[`JobBuilder`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
-[`JobBuilderJob.WriteOutput`]: https://www.ookii.org/docs/jumbo-2.0/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_WriteOutput.htm
-[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
+[`GroupAggregate`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_GroupAggregate.htm
+[`IJobRunner`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_IJobRunner.htm
+[`ITask<TInput, TOutput>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_ITask_2.htm
+[`JobBuilder.Map`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`JobBuilder.Write`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Write.htm
+[`JobBuilder`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder.htm
+[`JobBuilderJob.WriteOutput`]: https://www.ookii.org/docs/jumbo-0.3/html/M_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob_WriteOutput.htm
+[`JobBuilderJob`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilderJob.htm
 [`KeyValuePair<TKey, TValue>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2
-[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
-[`Map`]: https://www.ookii.org/docs/jumbo-2.0/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
-[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
-[`Pair<Utf8String, int>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Pair_2.htm
-[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
-[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm
+[`LineRecordReader`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_LineRecordReader.htm
+[`Map`]: https://www.ookii.org/docs/jumbo-0.3/html/Overload_Ookii_Jumbo_Jet_Jobs_Builder_JobBuilder_Map.htm
+[`Pair<TKey, TValue>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`Pair<Utf8String, int>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Pair_2.htm
+[`RecordReader<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordReader_1.htm
+[`RecordWriter<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_RecordWriter_1.htm
 [`String`]: https://learn.microsoft.com/dotnet/api/system.string
-[`TextRecordWriter<Pair<Utf8String, int>>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
-[`TextRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
-[`Utf8String`]: https://www.ookii.org/docs/jumbo-2.0/html/T_Ookii_Jumbo_IO_Utf8String.htm
+[`TextRecordWriter<Pair<Utf8String, int>>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
+[`TextRecordWriter<T>`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_TextRecordWriter_1.htm
+[`Utf8String`]: https://www.ookii.org/docs/jumbo-0.3/html/T_Ookii_Jumbo_IO_Utf8String.htm
