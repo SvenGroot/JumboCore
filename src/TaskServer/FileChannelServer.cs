@@ -50,7 +50,6 @@ class FileChannelServer : TcpServer
         _bufferSize = (int)taskServer.Configuration.FileChannel.ReadBufferSize.Value;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the server.")]
     protected override void HandleConnection(TcpClient client)
     {
         try

@@ -13,7 +13,6 @@ namespace DfsShell;
 
 static class Program
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
     public static int Main(string[] args)
     {
         var repository = log4net.LogManager.GetRepository(Assembly.GetEntryAssembly());

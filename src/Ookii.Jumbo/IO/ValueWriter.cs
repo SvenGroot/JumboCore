@@ -247,7 +247,6 @@ public static class ValueWriter<T>
     ///   the value. If it does not, the <see cref="IValueWriter{T}"/> is used to write the value.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
     public static void WriteValue(T value, BinaryWriter writer)
     {
         if (_writer == null)
@@ -275,7 +274,6 @@ public static class ValueWriter<T>
     ///   should not be used in scenarios where you wish to support record reuse.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
     public static T ReadValue(BinaryReader reader)
     {
         if (_writer == null)

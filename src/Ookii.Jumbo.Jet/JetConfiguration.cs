@@ -67,7 +67,6 @@ public class JetConfiguration : ConfigurationSection
     /// </summary>
     /// <returns>A <see cref="JetConfiguration"/> object representing the settings in the application configuration file, or
     /// a default instance if the section was not present in the configuration file.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     public static JetConfiguration GetConfiguration()
     {
         var config = (JetConfiguration)ConfigurationManager.GetSection("ookii.jumbo.jet");

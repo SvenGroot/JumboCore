@@ -38,7 +38,6 @@ public sealed class BlockSender : IDisposable
     /// Initializes a new instance of the <see cref="BlockSender"/> class.
     /// </summary>
     /// <param name="assignment">The block assignment.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
     public BlockSender(BlockAssignment assignment)
         : this(assignment.BlockId, assignment.DataServers, null)
     {
@@ -237,7 +236,6 @@ public sealed class BlockSender : IDisposable
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void AcknowledgementThread()
     {
         try

@@ -357,7 +357,6 @@ public class DataServer
         return Path.Combine(_blockStorageDirectory, blockID.ToString());
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Failures should be logged and not cause a crash.")]
     private void ReplicateBlocksThread()
     {
         while (_running)

@@ -253,7 +253,6 @@ public sealed class SortSpillRecordWriter<T> : SpillRecordWriter<T>
     /// Writes the spill data to the output.
     /// </summary>
     /// <param name="finalSpill">If set to <see langword="true"/>, this is the final spill.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
     protected override void SpillOutput(bool finalSpill)
     {
         var spillFile = string.Format(CultureInfo.InvariantCulture, "{0}_spill{1}.tmp", _outputPathBase, SpillCount);

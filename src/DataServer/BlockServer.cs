@@ -111,7 +111,6 @@ class BlockServer : TcpServer
             catch (Exception ex)
             {
                 _log.Error("Error occurred receiving block.", ex);
-#pragma warning disable CA1031 // Do not catch general exception types - Okay to hide inner exception and rethrow the outer.
                 try
                 {
                     SendErrorResultAndWaitForConnectionClosed(clientWriter, acceptedHeader);
@@ -119,7 +118,6 @@ class BlockServer : TcpServer
                 catch
                 {
                 }
-#pragma warning restore CA1031 // Do not catch general exception types
 
                 throw;
             }

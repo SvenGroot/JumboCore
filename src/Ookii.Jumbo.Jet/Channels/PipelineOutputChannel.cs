@@ -37,7 +37,6 @@ public sealed class PipelineOutputChannel : IOutputChannel
     /// </summary>
     /// <typeparam name="T">The type of record.</typeparam>
     /// <returns>A record writer for the channel.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
     public RecordWriter<T> CreateRecordWriter<T>()
         where T : notnull
     {

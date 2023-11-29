@@ -295,7 +295,6 @@ public sealed class RangeExpression
         return index == value.Length;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
     private static List<BaseNode> ParsePattern(string pattern)
     {
         var current = new List<BaseNode>();

@@ -92,7 +92,6 @@ public sealed class PartitionFileIndex : IDisposable
         Debug.Assert(_index != null);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void LoadIndex(object? state)
     {
         try

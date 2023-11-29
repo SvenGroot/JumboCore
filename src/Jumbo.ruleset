@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Jumbo rule set." Description=" " ToolsVersion="16.0">
-  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
-    <Rule Id="CA1303" Action="None" />
-    <Rule Id="CA2235" Action="None" />
-  </Rules>
-</RuleSet>

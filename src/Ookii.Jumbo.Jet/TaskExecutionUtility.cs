@@ -22,7 +22,6 @@ namespace Ookii.Jumbo.Jet;
 /// <summary>
 /// Encapsulates all the data and functionality needed to run a task and its pipelined tasks.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 public abstract class TaskExecutionUtility : IDisposable
 {
     #region Nested types
@@ -328,7 +327,6 @@ public abstract class TaskExecutionUtility : IDisposable
     ///   This method should only be invoked by the TaskHost, and by the TaskServer when using AppDomain mode.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     public static void RunTask(Guid jobId, string jobDirectory, string dfsJobDirectory, TaskAttemptId taskAttemptId, bool noLogConfig = false)
     {
         ArgumentNullException.ThrowIfNull(taskAttemptId);
@@ -837,7 +835,6 @@ public abstract class TaskExecutionUtility : IDisposable
         sources.Add(progressObj);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private List<IInputChannel>? CreateInputChannels(IEnumerable<StageConfiguration> inputStages)
     {
         List<IInputChannel>? result = null;
@@ -910,7 +907,6 @@ public abstract class TaskExecutionUtility : IDisposable
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFrom")]
     private static JobConfiguration LoadJobConfiguration(string jobDirectory)
     {
         var xmlConfigPath = Path.Combine(jobDirectory, Job.JobConfigFileName);
@@ -962,7 +958,6 @@ public abstract class TaskExecutionUtility : IDisposable
     }
 
     // Code Analysis warns about the two objects even though they're in using statements, because they're creating with ?:
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private void ProgressThread()
     {
         TaskProgress? progress = null;

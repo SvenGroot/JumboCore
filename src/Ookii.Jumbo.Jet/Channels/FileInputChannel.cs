@@ -19,7 +19,7 @@ namespace Ookii.Jumbo.Jet.Channels;
 /// <summary>
 /// Represents the reading end of a file channel.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), AdditionalProgressCounter("Shuffle")]
+[AdditionalProgressCounter("Shuffle")]
 public class FileInputChannel : InputChannel, IDisposable, IHasAdditionalProgress, IHasMetrics
 {
     #region Nested types
@@ -771,7 +771,6 @@ public class FileInputChannel : InputChannel, IDisposable, IHasAdditionalProgres
         return server.TasksToDownloadCount;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private void UseLocalPartitionFileForInput(CompletedTask task, IList<RecordInput> inputs, string taskOutputDirectory)
     {
 
@@ -796,8 +795,6 @@ public class FileInputChannel : InputChannel, IDisposable, IHasAdditionalProgres
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
     private int DownloadFiles(InputServer server, IMultiInputRecordReader targetReader)
     {
         var port = server.FileServerPort;

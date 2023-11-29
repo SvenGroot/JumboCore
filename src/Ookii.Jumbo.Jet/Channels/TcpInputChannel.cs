@@ -129,8 +129,6 @@ public class TcpInputChannel : InputChannel, IHasMetrics
             return _header[index] | _header[index + 1] << 8 | _header[index + 2] << 16 | _header[index + 3] << 24;
         }
 
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void TrySendError(Exception ex)
         {
             try
@@ -268,7 +266,6 @@ public class TcpInputChannel : InputChannel, IHasMetrics
         throw new NotSupportedException();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void BeginAcceptCallback(IAsyncResult ar)
     {
         var listener = (TcpListener)ar.AsyncState!;

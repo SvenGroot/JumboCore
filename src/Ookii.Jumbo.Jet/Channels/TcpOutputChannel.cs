@@ -44,7 +44,6 @@ public sealed class TcpOutputChannel : OutputChannel, IHasMetrics
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     /// <returns>A <see cref="RecordWriter{T}"/> for the channel.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
     public override RecordWriter<T> CreateRecordWriter<T>()
     {
         if (_writer != null)

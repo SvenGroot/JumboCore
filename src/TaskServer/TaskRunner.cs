@@ -270,7 +270,6 @@ sealed class TaskRunner
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions should not crash the task server.")]
     private void RunTask(RunTaskJetHeartbeatResponse task)
     {
         _log.InfoFormat("Running task {{{0}}}_{1}.", task.Job.JobId, task.TaskAttemptId);

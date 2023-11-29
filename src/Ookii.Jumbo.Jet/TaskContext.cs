@@ -93,7 +93,6 @@ public class TaskContext
     /// <remarks>
     /// Set this status message from task classes. This status message will be sent to the task server as part of a progress update.
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
     public string? StatusMessage
     {
         get

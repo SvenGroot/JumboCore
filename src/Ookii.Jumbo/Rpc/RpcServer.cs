@@ -47,7 +47,6 @@ class RpcServer
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void AcceptSocketCallback(IAsyncResult ar)
     {
         var listener = (TcpListener)ar.AsyncState!;

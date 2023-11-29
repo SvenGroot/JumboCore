@@ -309,7 +309,6 @@ public class StageConfiguration
     /// <summary>
     /// Gets or sets a list of settings that are specific to this task.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
     public SettingsDictionary? StageSettings { get; set; }
 
     /// <summary>

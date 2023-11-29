@@ -8,7 +8,6 @@ namespace Ookii.Jumbo.Topology;
 /// Represents a collection of <see cref="RackConfigurationElement"/> objects in a configuration file.
 /// </summary>
 [ConfigurationCollection(typeof(RackConfigurationElement), AddItemName = "rack")]
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Base class is non-generic collection.")]
 public class RackConfigurationElementCollection : ConfigurationElementCollection
 {
     /// <summary>

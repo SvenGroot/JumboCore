@@ -53,7 +53,6 @@ public class JumboConfiguration : ConfigurationSection
     /// </summary>
     /// <returns>A <see cref="JumboConfiguration"/> object representing the settings in the application configuration file, or
     /// a default instance if the section was not present in the configuration file.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     public static JumboConfiguration GetConfiguration()
     {
         var config = (JumboConfiguration)ConfigurationManager.GetSection("ookii.jumbo");

@@ -21,7 +21,6 @@ public class DfsClient : FileSystemClient, IFileSystemWithLocality
     private readonly INameServerClientProtocol _nameServer;
     private static readonly DfsPathUtility _path = new DfsPathUtility(); // Thread-safe, so static is okay
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
     static DfsClient()
     {
     }

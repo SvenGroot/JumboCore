@@ -204,7 +204,6 @@ public class JobConfiguration
     /// <returns>
     /// A <see cref="StageConfiguration"/> for the new stage.
     /// </returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3")]
     public StageConfiguration AddStage(string stageId, Type taskType, int taskCount, IEnumerable<InputStageInfo>? inputStages, Type? stageMultiInputRecordReaderType)
     {
         ArgumentNullException.ThrowIfNull(stageId);
@@ -548,7 +547,6 @@ public class JobConfiguration
     /// Gets all channels in the job.
     /// </summary>
     /// <returns>A list of all channels in the jobs.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     public IEnumerable<ChannelConfiguration> GetAllChannels()
     {
         var nestedStages = new Stack<StageConfiguration>(Stages);
@@ -571,7 +569,6 @@ public class JobConfiguration
     /// Gets the top-level stages of the task in dependency order (if stage B depends on the output of stage A, then B will come after A in the order).
     /// </summary>
     /// <returns>The ordered list of stages.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     public IEnumerable<StageConfiguration> GetDependencyOrderedStages()
     {
         var result = new List<StageConfiguration>(Stages.Count);
@@ -626,7 +623,6 @@ public class JobConfiguration
     /// </summary>
     /// <param name="stream">The stream containing the XML.</param>
     /// <returns>An instance of the <see cref="JobConfiguration"/> class created from the XML.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5369:Use XmlReader For Deserialize", Justification = "It's actually safe.")]
     public static JobConfiguration LoadXml(System.IO.Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);

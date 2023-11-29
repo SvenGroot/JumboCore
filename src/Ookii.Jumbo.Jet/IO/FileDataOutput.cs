@@ -25,10 +25,10 @@ public class FileDataOutput : Configurable, IDataOutput
     /// The key of the setting in the stage settings that stores the output path format. You should not normally change this setting.
     /// </summary>
     public const string OutputPathFormatSettingKey = "FileDataOutput.OutputPathFormat";
+
     /// <summary>
     /// The key of the setting in the stage settings that stores the record writer type. You should not normally change this setting.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "TypeSetting")]
     public const string RecordWriterTypeSettingKey = "FileDataOutput.RecordWriterType";
     /// <summary>
     /// The key of the setting in the stage settings that stores the block size. You should not normally change this setting.

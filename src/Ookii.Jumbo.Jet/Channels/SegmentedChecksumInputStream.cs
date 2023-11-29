@@ -18,7 +18,6 @@ class SegmentedChecksumInputStream : Stream
     private long _position;
     private bool _disposed;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     public SegmentedChecksumInputStream(string fileName, int bufferSize, bool deleteFile, int segmentCount, CompressionType compressionType, long uncompressedSize)
         : this(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize), segmentCount, compressionType, uncompressedSize)
     {

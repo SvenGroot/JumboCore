@@ -212,7 +212,6 @@ public static class LittleEndianBitConverter
     /// <param name="buffer">An array of bytes.</param>
     /// <param name="offset">The starting position within <paramref name="buffer"/>. On return, contains the offset after the value.</param>
     /// <returns>A 32-bit integer in compressed format, using between one and five bytes. </returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "1#")]
     public static int ToInt32From7BitEncoding(byte[] buffer, ref int offset)
     {
         ArgumentNullException.ThrowIfNull(buffer);

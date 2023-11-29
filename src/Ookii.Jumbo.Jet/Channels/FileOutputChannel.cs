@@ -99,7 +99,6 @@ public sealed class FileOutputChannel : OutputChannel, IHasMetrics
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     /// <returns>A <see cref="RecordWriter{T}"/> for the channel.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
     public override RecordWriter<T> CreateRecordWriter<T>()
     {
         if (_writer != null)
@@ -122,7 +121,6 @@ public sealed class FileOutputChannel : OutputChannel, IHasMetrics
         return Path.Combine(inputTaskAttemptId, inputTaskAttemptId + ".output");
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private RecordWriter<T> CreateSpillRecordWriter<T>(BinarySize writeBufferSize)
         where T : notnull
     {

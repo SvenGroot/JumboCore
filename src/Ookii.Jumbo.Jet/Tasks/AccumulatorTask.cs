@@ -63,7 +63,6 @@ public abstract class AccumulatorTask<TKey, TValue> : PushTask<Pair<TKey, TValue
     /// </summary>
     /// <param name="record">The record to process.</param>
     /// <param name="output">The <see cref="RecordWriter{T}"/> to which the task's output should be written.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
     public override void ProcessRecord(Pair<TKey, TValue> record, RecordWriter<Pair<TKey, TValue>> output)
     {
         if (_acculumatedValues == null)

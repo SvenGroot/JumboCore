@@ -122,7 +122,6 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Ownership may be handed off to cached connection.")]
     private void SendSegmentToTask(bool sendData, int taskIndex)
     {
         var disposeStream = false;
@@ -226,7 +225,6 @@ sealed class TcpChannelRecordWriter<T> : SpillRecordWriter<T>
         _header[index + 3] = (byte)((value >> 24) & 0xFF);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private TcpClient ConnectToTask(int taskIndex)
     {
         if (_taskConnections[taskIndex].HostName == null)

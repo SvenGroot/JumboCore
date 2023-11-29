@@ -30,7 +30,6 @@ public class RecordFileReader<T> : StreamRecordReader<T>
     /// Initializes a new instance of the <see cref="RecordFileReader{T}"/> class that reads from the specified stream.
     /// </summary>
     /// <param name="stream">The <see cref="Stream"/> to read from.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
     public RecordFileReader(Stream stream)
         : this(stream, 0, stream.Length, false)
     {

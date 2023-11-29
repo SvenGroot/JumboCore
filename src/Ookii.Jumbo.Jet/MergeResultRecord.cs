@@ -9,7 +9,6 @@ namespace Ookii.Jumbo.Jet;
 /// Represents an output record of a merge operation.
 /// </summary>
 /// <typeparam name="T">The type of the record.</typeparam>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "Memory resources only, no good place to dispose it.")]
 public sealed class MergeResultRecord<T>
     where T : notnull
 {

@@ -982,7 +982,6 @@ public sealed class JobServer : IJobServerHeartbeatProtocol, IJobServerClientPro
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Error should fail the job not the server.")]
     private void DoSchedulingRun(List<JobInfo> jobs, CancellationToken token)
     {
         lock (_orderedJobs)

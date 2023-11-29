@@ -9,7 +9,6 @@ namespace Ookii.Jumbo.Jet;
 /// Contains the result of a merge operation.
 /// </summary>
 /// <typeparam name="T">The type of the record.</typeparam>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 public class MergeResult<T> : IEnumerable<MergeResultRecord<T>>
     where T : notnull
 {

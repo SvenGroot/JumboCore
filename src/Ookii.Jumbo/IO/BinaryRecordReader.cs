@@ -44,7 +44,6 @@ public class BinaryRecordReader<T> : StreamRecordReader<T>
     /// <param name="bufferSize">The size of the buffer to use when reading the file.</param>
     /// <param name="compressionType">The type of compression to use to decompress the file.</param>
     /// <param name="uncompressedSize">The uncompressed size of the stream.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     public BinaryRecordReader(string fileName, bool allowRecordReuse, bool deleteFile, int bufferSize, CompressionType compressionType, long uncompressedSize)
         : this(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize).CreateDecompressor(compressionType, uncompressedSize), allowRecordReuse)
     {

@@ -18,7 +18,6 @@ sealed class ChecksumInputStream : Stream
     private long _position;
     private bool _disposed;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     public ChecksumInputStream(string fileName, int bufferSize, bool deleteFile)
         : this(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize), true)
     {

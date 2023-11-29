@@ -37,7 +37,6 @@ sealed class TcpChannelRecordReader<T> : RecordReader<T>, ITcpChannelRecordReade
         get { return _disposed || _segments.IsCompleted ? 1.0f : 0.0f; }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     public void AddSegment(int size, int number, Stream stream)
     {
         CheckDisposed();

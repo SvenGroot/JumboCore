@@ -36,7 +36,6 @@ public class ServerContext
     /// Gets the name of the local host.
     /// </summary>
     /// <value>The name of the local host.</value>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "LocalHost")]
     public static string LocalHostName
     {
         get { return _localHostName; }

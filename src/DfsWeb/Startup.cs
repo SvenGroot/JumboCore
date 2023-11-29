@@ -6,8 +6,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace DfsWeb;
 
-#pragma warning disable CA1822 // Mark members as static - members must be instance.
-
 public class Startup
 {
     // This method gets called by the runtime. Use this method to add services to the container.
@@ -33,6 +31,3 @@ public class Startup
         app.UseMvc();
     }
 }
-
-#pragma warning restore CA1822 // Mark members as static
-

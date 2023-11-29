@@ -152,7 +152,6 @@ public sealed class JobBuilderCompiler
     /// <param name="channelSettings">The settings applied to the sending stage of the <paramref name="input"/> channel if <paramref name="input"/> is not <see langword="null"/>. Not used if empty task replacement is performed.</param>
     /// <param name="stageMultiInputRecordReaderType">Type of the stage multi input record reader.</param>
     /// <returns>The stage configuration.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multi")]
     public StageConfiguration CreateStage(string stageId, Type taskType, int taskCount, InputStageInfo[] input, IOperationOutput? output, SettingsDictionary[] channelSettings, Type stageMultiInputRecordReaderType)
     {
         ArgumentNullException.ThrowIfNull(stageId);

@@ -28,7 +28,6 @@ namespace Ookii.Jumbo.Jet.Tasks;
 ///   only if <typeparamref name="TKey"/> is a value type or implements <see cref="ICloneable"/>.
 /// </para>
 /// </remarks>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1005:AvoidExcessiveParametersOnGenericTypes")]
 public abstract class ReduceTask<TKey, TValue, TOutput> : Configurable, ITask<Pair<TKey, TValue>, TOutput>
     where TKey : notnull, IComparable<TKey>
     where TValue : notnull

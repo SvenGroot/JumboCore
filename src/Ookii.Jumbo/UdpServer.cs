@@ -138,7 +138,6 @@ public abstract class UdpServer : IDisposable
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void ReceiveFromCallback(IAsyncResult ar)
     {
         try

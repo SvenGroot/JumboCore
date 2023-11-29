@@ -59,7 +59,6 @@ public class FileSystemEntryInfo
     public string DateCreated { get; set; }
 
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "This is fine for a json helper class.")]
     public FileSystemEntryInfo[] Children { get; set; }
 
     public string BlockSize { get; set; }

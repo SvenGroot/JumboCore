@@ -19,7 +19,6 @@ namespace Ookii.Jumbo.IO;
 ///   <see cref="InputTypeAttribute"/> attributes with both <typeparamref name="TOuter"/> and <typeparamref name="TInner"/>.
 /// </para>
 /// </remarks>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1005:AvoidExcessiveParametersOnGenericTypes")]
 public abstract class InnerJoinRecordReader<TOuter, TInner, TResult> : MultiInputRecordReader<TResult>
     where TResult : notnull, new()
     where TOuter : notnull

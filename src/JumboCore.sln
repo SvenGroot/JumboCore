@@ -25,8 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		dfs.config = dfs.config
 		Directory.Build.props = Directory.Build.props
 		jet.config = jet.config
-		Jumbo.ruleset = Jumbo.ruleset
-		JumboShell.ruleset = JumboShell.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DfsShell", "DfsShell\DfsShell.csproj", "{7049AE4F-3AB9-46A5-A112-17949E744E92}"
@@ -51,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.Jumbo.Jet.Samples", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JetWeb", "JetWeb\JetWeb.csproj", "{C2C9DB18-822E-45E0-AA5E-7A6480C5D257}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.Jumbo.Generator", "Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj", "{271A3F82-A250-4DDA-BD97-EFD156290640}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.Jumbo.Generator", "Ookii.Jumbo.Generator\Ookii.Jumbo.Generator.csproj", "{271A3F82-A250-4DDA-BD97-EFD156290640}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -45,7 +45,6 @@ class FileRecordInput : RecordInput
         get { return !IsReaderCreated && _inputContainsRecordSizes; }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Ownership handed to returned record reader.")]
     protected override IRecordReader CreateReader()
     {
         var stream = CreateStream();
@@ -78,7 +77,6 @@ class FileRecordInput : RecordInput
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     private Stream CreateStream()
     {
         Stream stream;

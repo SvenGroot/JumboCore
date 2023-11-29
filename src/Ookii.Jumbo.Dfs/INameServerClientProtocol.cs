@@ -122,7 +122,6 @@ public interface INameServerClientProtocol
     /// Gets current metrics for the distributed file system.
     /// </summary>
     /// <returns>An object holding the metrics for the name server.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     DfsMetrics GetMetrics();
 
     /// <summary>

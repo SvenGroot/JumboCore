@@ -13,7 +13,6 @@ public interface IOutputChannel
     /// </summary>
     /// <typeparam name="T">The type of the records.</typeparam>
     /// <returns>A <see cref="RecordWriter{T}"/> for the channel.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
     RecordWriter<T> CreateRecordWriter<T>()
         where T : notnull;
 }

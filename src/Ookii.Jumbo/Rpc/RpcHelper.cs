@@ -78,7 +78,6 @@ public static class RpcHelper
     /// <param name="port">The port of the RPC server.</param>
     /// <param name="objectName">The object name of the service.</param>
     /// <returns>An object that implements the specified interface that forwards all calls to the specified service.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
     public static T CreateClient<T>(string hostName, int port, string objectName)
     {
         ArgumentNullException.ThrowIfNull(hostName);

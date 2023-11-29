@@ -229,14 +229,10 @@ class JobInfo : IJobInfo
     /// <param name="failedTaskAttempt"></param>
     public int AddFailedTaskAttempt(TaskStatus failedTaskAttempt)
     {
-#pragma warning disable 420 // volatile field not treated as volatile warning
-
         if (_failedTaskAttempts == null)
         {
             Interlocked.CompareExchange(ref _failedTaskAttempts, new List<TaskStatus>(), null);
         }
-
-#pragma warning restore 420
 
         lock (_failedTaskAttempts)
         {

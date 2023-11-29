@@ -69,7 +69,6 @@ public interface IJobServerClientProtocol
     /// Gets current metrics for the distributed execution engine.
     /// </summary>
     /// <returns>An object holding the metrics for the job server.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
     JetMetrics GetMetrics();
 
     /// <summary>

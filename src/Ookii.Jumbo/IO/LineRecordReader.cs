@@ -118,7 +118,6 @@ public sealed class LineRecordReader : StreamRecordReader<Utf8String>
     /// Initializes a new instance of the <see cref="LineRecordReader"/> class that reads from the specified stream.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
     public LineRecordReader(Stream stream)
         : this(stream, 0, stream.Length, false)
     {

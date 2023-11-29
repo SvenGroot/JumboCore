@@ -21,7 +21,6 @@ public class DefaultScheduler : ITaskScheduler
     {
         public bool Invert { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1")]
         public int Compare(ITaskServerJobInfo? x, ITaskServerJobInfo? y)
         {
             Debug.Assert(x != null && y != null);
@@ -50,7 +49,6 @@ public class DefaultScheduler : ITaskScheduler
             _stage = stage;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
         public int Compare(ITaskServerJobInfo? x, ITaskServerJobInfo? y)
         {
             Debug.Assert(x != null && y != null);

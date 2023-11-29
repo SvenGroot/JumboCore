@@ -42,7 +42,6 @@ class PartitionFileRecordInput : RecordInput
         get { return !IsReaderCreated && _inputContainsRecordSizes; }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     protected override IRecordReader CreateReader()
     {
         var stream = new PartitionFileStream(_fileName, _bufferSize, _indexEntries, _compressionType);
@@ -51,7 +50,6 @@ class PartitionFileRecordInput : RecordInput
         return reader;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
     protected override RecordReader<RawRecord> CreateRawReader()
     {
         if (!_inputContainsRecordSizes)

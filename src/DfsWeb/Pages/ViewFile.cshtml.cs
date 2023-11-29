@@ -131,7 +131,6 @@ public class ViewFileModel : PageModel
 
     public bool Error { get; set; }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
     public void OnGet()
     {
         var maxSize = MaxSize == null ? 100 * BinarySize.Kibi : (long)BinarySize.Parse(MaxSize, CultureInfo.InvariantCulture);

@@ -8,7 +8,6 @@ namespace Ookii.Jumbo.Jet;
 /// </summary>
 /// <typeparam name="TInput">The input type of the task.</typeparam>
 /// <typeparam name="TOutput">The output type of the task.</typeparam>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces")]
 public interface ITask<TInput, TOutput>
     where TInput : notnull
     where TOutput : notnull

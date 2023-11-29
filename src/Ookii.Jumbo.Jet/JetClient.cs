@@ -20,7 +20,6 @@ public class JetClient
     private const string _taskServerObjectName = "TaskServer";
     private static readonly log4net.ILog _log = log4net.LogManager.GetLogger(typeof(JetClient));
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
     static JetClient()
     {
     }
@@ -254,7 +253,6 @@ public class JetClient
     /// <param name="fileSystemClient">A <see cref="FileSystemClient"/> used to access the Jumbo DFS.</param>
     /// <param name="files">The local paths of the files to store in the job directory on the DFS. This should include the assembly containing the task classes.</param>
     /// <returns>An instance of the <see cref="Job"/> class describing the job that was started.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     public void RunJob(Job job, JobConfiguration config, FileSystemClient fileSystemClient, params string[] files)
     {
         ArgumentNullException.ThrowIfNull(job);

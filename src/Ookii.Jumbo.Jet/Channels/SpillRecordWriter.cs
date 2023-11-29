@@ -362,8 +362,6 @@ public abstract class SpillRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter
     ///   Use this if you want to to custom writing of the partitions.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "False positive.")]
     protected byte[] SpillBuffer
     {
         get
@@ -694,7 +692,6 @@ public abstract class SpillRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter
         _spillInProgress = true;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
     private void SpillThread()
     {
         try
