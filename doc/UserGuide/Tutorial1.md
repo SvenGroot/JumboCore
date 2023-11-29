@@ -13,7 +13,7 @@ WordCount reads an input file and counts how often each word occurs in the input
 pretty standard example for MapReduce-style data processing.
 
 First, let’s get a project set up for the sample. Create a directory called `JumboTutorial`, and run
-the following command in that directory:
+the following commands in that directory:
 
 ```bash
 dotnet new classlib -f net8.0

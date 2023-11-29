@@ -31,6 +31,9 @@ If you're interested, there is a repository for the [original Jumbo](https://git
 It's only provided to preserve the history of the project, since this repository only contains
 the history of the port. There's no reason to try and use that version.
 
+I've also written [a series of blog posts](https://www.ookii.org/blog/Jumbo) about Jumbo's history
+and development, which you may find enlightening.
+
 Because this is a port of an older project, it mostly does not use any fancy new C# language
 features that were introduced after .Net Framework 4.0, and I'm sure the code could be improved in
 many ways.
