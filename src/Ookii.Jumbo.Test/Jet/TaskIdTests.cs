@@ -15,10 +15,10 @@ public class TaskIdTests
         string taskId = "Test-003";
         TaskId target = new TaskId(taskId);
 
-        Assert.AreEqual(taskId, target.ToString());
-        Assert.AreEqual("Test", target.StageId);
-        Assert.AreEqual(3, target.TaskNumber);
-        Assert.IsNull(target.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo(taskId));
+        Assert.That(target.StageId, Is.EqualTo("Test"));
+        Assert.That(target.TaskNumber, Is.EqualTo(3));
+        Assert.That(target.ParentTaskId, Is.Null);
     }
 
     [Test]
@@ -27,18 +27,18 @@ public class TaskIdTests
         string taskId = "Parent-002.Child-007.SecondChild-001";
         TaskId target = new TaskId(taskId);
 
-        Assert.AreEqual(taskId, target.ToString());
-        Assert.AreEqual("SecondChild", target.StageId);
-        Assert.AreEqual(1, target.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId);
-        Assert.AreEqual("Parent-002.Child-007", target.ParentTaskId.ToString());
-        Assert.AreEqual("Child", target.ParentTaskId.StageId);
-        Assert.AreEqual(7, target.ParentTaskId.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId.ParentTaskId);
-        Assert.AreEqual("Parent-002", target.ParentTaskId.ParentTaskId.ToString());
-        Assert.AreEqual("Parent", target.ParentTaskId.ParentTaskId.StageId);
-        Assert.AreEqual(2, target.ParentTaskId.ParentTaskId.TaskNumber);
-        Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo(taskId));
+        Assert.That(target.StageId, Is.EqualTo("SecondChild"));
+        Assert.That(target.TaskNumber, Is.EqualTo(1));
+        Assert.That(target.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ToString(), Is.EqualTo("Parent-002.Child-007"));
+        Assert.That(target.ParentTaskId.StageId, Is.EqualTo("Child"));
+        Assert.That(target.ParentTaskId.TaskNumber, Is.EqualTo(7));
+        Assert.That(target.ParentTaskId.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ParentTaskId.ToString(), Is.EqualTo("Parent-002"));
+        Assert.That(target.ParentTaskId.ParentTaskId.StageId, Is.EqualTo("Parent"));
+        Assert.That(target.ParentTaskId.ParentTaskId.TaskNumber, Is.EqualTo(2));
+        Assert.That(target.ParentTaskId.ParentTaskId.ParentTaskId, Is.Null);
     }
 
     [Test]
@@ -48,10 +48,10 @@ public class TaskIdTests
         int taskNumber = 3;
         TaskId target = new TaskId(stageId, taskNumber);
 
-        Assert.AreEqual("Test-003", target.ToString());
-        Assert.AreEqual(stageId, target.StageId);
-        Assert.AreEqual(taskNumber, target.TaskNumber);
-        Assert.IsNull(target.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo("Test-003"));
+        Assert.That(target.StageId, Is.EqualTo(stageId));
+        Assert.That(target.TaskNumber, Is.EqualTo(taskNumber));
+        Assert.That(target.ParentTaskId, Is.Null);
     }
 
     [Test]
@@ -60,18 +60,18 @@ public class TaskIdTests
         TaskId parentTaskId = new TaskId("Parent-002.Child-007");
         TaskId target = new TaskId(parentTaskId, "SecondChild-001");
 
-        Assert.AreEqual("Parent-002.Child-007.SecondChild-001", target.ToString());
-        Assert.AreEqual("SecondChild", target.StageId);
-        Assert.AreEqual(1, target.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId);
-        Assert.AreEqual("Parent-002.Child-007", target.ParentTaskId.ToString());
-        Assert.AreEqual("Child", target.ParentTaskId.StageId);
-        Assert.AreEqual(7, target.ParentTaskId.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId.ParentTaskId);
-        Assert.AreEqual("Parent-002", target.ParentTaskId.ParentTaskId.ToString());
-        Assert.AreEqual("Parent", target.ParentTaskId.ParentTaskId.StageId);
-        Assert.AreEqual(2, target.ParentTaskId.ParentTaskId.TaskNumber);
-        Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo("Parent-002.Child-007.SecondChild-001"));
+        Assert.That(target.StageId, Is.EqualTo("SecondChild"));
+        Assert.That(target.TaskNumber, Is.EqualTo(1));
+        Assert.That(target.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ToString(), Is.EqualTo("Parent-002.Child-007"));
+        Assert.That(target.ParentTaskId.StageId, Is.EqualTo("Child"));
+        Assert.That(target.ParentTaskId.TaskNumber, Is.EqualTo(7));
+        Assert.That(target.ParentTaskId.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ParentTaskId.ToString(), Is.EqualTo("Parent-002"));
+        Assert.That(target.ParentTaskId.ParentTaskId.StageId, Is.EqualTo("Parent"));
+        Assert.That(target.ParentTaskId.ParentTaskId.TaskNumber, Is.EqualTo(2));
+        Assert.That(target.ParentTaskId.ParentTaskId.ParentTaskId, Is.Null);
     }
 
     [Test]
@@ -80,18 +80,18 @@ public class TaskIdTests
         TaskId parentTaskId = new TaskId("Parent-002.Child-007");
         TaskId target = new TaskId(parentTaskId, "SecondChild", 4);
 
-        Assert.AreEqual("Parent-002.Child-007.SecondChild-004", target.ToString());
-        Assert.AreEqual("SecondChild", target.StageId);
-        Assert.AreEqual(4, target.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId);
-        Assert.AreEqual("Parent-002.Child-007", target.ParentTaskId.ToString());
-        Assert.AreEqual("Child", target.ParentTaskId.StageId);
-        Assert.AreEqual(7, target.ParentTaskId.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId.ParentTaskId);
-        Assert.AreEqual("Parent-002", target.ParentTaskId.ParentTaskId.ToString());
-        Assert.AreEqual("Parent", target.ParentTaskId.ParentTaskId.StageId);
-        Assert.AreEqual(2, target.ParentTaskId.ParentTaskId.TaskNumber);
-        Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo("Parent-002.Child-007.SecondChild-004"));
+        Assert.That(target.StageId, Is.EqualTo("SecondChild"));
+        Assert.That(target.TaskNumber, Is.EqualTo(4));
+        Assert.That(target.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ToString(), Is.EqualTo("Parent-002.Child-007"));
+        Assert.That(target.ParentTaskId.StageId, Is.EqualTo("Child"));
+        Assert.That(target.ParentTaskId.TaskNumber, Is.EqualTo(7));
+        Assert.That(target.ParentTaskId.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ParentTaskId.ToString(), Is.EqualTo("Parent-002"));
+        Assert.That(target.ParentTaskId.ParentTaskId.StageId, Is.EqualTo("Parent"));
+        Assert.That(target.ParentTaskId.ParentTaskId.TaskNumber, Is.EqualTo(2));
+        Assert.That(target.ParentTaskId.ParentTaskId.ParentTaskId, Is.Null);
     }
 
     [Test]
@@ -110,17 +110,17 @@ public class TaskIdTests
             target = ValueWriter<TaskId>.ReadValue(reader);
         }
 
-        Assert.AreEqual(taskId, target.ToString());
-        Assert.AreEqual("SecondChild", target.StageId);
-        Assert.AreEqual(1, target.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId);
-        Assert.AreEqual("Parent-002.Child-007", target.ParentTaskId.ToString());
-        Assert.AreEqual("Child", target.ParentTaskId.StageId);
-        Assert.AreEqual(7, target.ParentTaskId.TaskNumber);
-        Assert.IsNotNull(target.ParentTaskId.ParentTaskId);
-        Assert.AreEqual("Parent-002", target.ParentTaskId.ParentTaskId.ToString());
-        Assert.AreEqual("Parent", target.ParentTaskId.ParentTaskId.StageId);
-        Assert.AreEqual(2, target.ParentTaskId.ParentTaskId.TaskNumber);
-        Assert.IsNull(target.ParentTaskId.ParentTaskId.ParentTaskId);
+        Assert.That(target.ToString(), Is.EqualTo(taskId));
+        Assert.That(target.StageId, Is.EqualTo("SecondChild"));
+        Assert.That(target.TaskNumber, Is.EqualTo(1));
+        Assert.That(target.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ToString(), Is.EqualTo("Parent-002.Child-007"));
+        Assert.That(target.ParentTaskId.StageId, Is.EqualTo("Child"));
+        Assert.That(target.ParentTaskId.TaskNumber, Is.EqualTo(7));
+        Assert.That(target.ParentTaskId.ParentTaskId, Is.Not.Null);
+        Assert.That(target.ParentTaskId.ParentTaskId.ToString(), Is.EqualTo("Parent-002"));
+        Assert.That(target.ParentTaskId.ParentTaskId.StageId, Is.EqualTo("Parent"));
+        Assert.That(target.ParentTaskId.ParentTaskId.TaskNumber, Is.EqualTo(2));
+        Assert.That(target.ParentTaskId.ParentTaskId.ParentTaskId, Is.Null);
     }
 }

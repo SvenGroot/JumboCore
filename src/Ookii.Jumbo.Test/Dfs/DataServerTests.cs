@@ -54,18 +54,20 @@ public class DataServerTests
             using (DfsOutputStream output = new DfsOutputStream(_nameServer, "/TestStreams.dat"))
             {
                 Utilities.CopyStream(stream, output);
-                Assert.AreEqual(size, output.Length);
-                Assert.AreEqual(size, output.Position);
+                Assert.That(output.Length, Is.EqualTo(size));
+                Assert.That(output.Position, Is.EqualTo(size));
             }
 
             Ookii.Jumbo.Dfs.FileSystem.JumboFile file = _nameServer.GetFileInfo("/TestStreams.dat");
-            Assert.AreEqual(1, file.Blocks.Length);
-            Assert.AreEqual(size, file.Size);
+            Assert.That(file.Blocks.Length, Is.EqualTo(1));
+            Assert.That(file.Size, Is.EqualTo(size));
             ServerAddress[] servers = _nameServer.GetDataServersForBlock(file.Blocks[0]);
-            Assert.AreEqual(_replicationFactor, servers.Length);
-            Assert.AreNotEqual(servers[0], servers[1]);
+            Assert.That(servers.Length, Is.EqualTo(_replicationFactor));
+            Assert.That(servers[1], Is.Not.EqualTo(servers[0]));
             foreach (ServerAddress server in servers)
+            {
                 DownloadAndCompareBlock(file.Blocks[0], server, stream);
+            }
         }
     }
 
@@ -83,21 +85,21 @@ public class DataServerTests
         header.Size = (int)dataStream.Length;
         ValueWriter.WriteValue<DataServerClientProtocolHeader>(header, writer);
         DataServerClientProtocolResult result = (DataServerClientProtocolResult)reader.ReadInt16();
-        Assert.AreEqual(DataServerClientProtocolResult.Ok, result);
+        Assert.That(result, Is.EqualTo(DataServerClientProtocolResult.Ok));
         int offset = reader.ReadInt32();
-        Assert.AreEqual(0, offset);
+        Assert.That(offset, Is.EqualTo(0));
         Packet packet = new Packet();
         byte[] buffer1 = new byte[Packet.PacketSize];
         byte[] buffer2 = new byte[Packet.PacketSize];
         while (!packet.IsLastPacket)
         {
             result = (DataServerClientProtocolResult)reader.ReadInt16();
-            Assert.AreEqual(DataServerClientProtocolResult.Ok, result);
+            Assert.That(result, Is.EqualTo(DataServerClientProtocolResult.Ok));
             packet.Read(reader, PacketFormatOption.NoSequenceNumber, true);
             packet.CopyTo(0, buffer1, 0, buffer1.Length);
             dataStream.Read(buffer2, 0, packet.Size);
-            Assert.IsTrue(Utilities.CompareArray(buffer1, 0, buffer2, 0, packet.Size));
+            Assert.That(Utilities.CompareArray(buffer1, 0, buffer2, 0, packet.Size), Is.True);
         }
-        Assert.AreEqual(dataStream.Length, dataStream.Position);
+        Assert.That(dataStream.Position, Is.EqualTo(dataStream.Length));
     }
 }

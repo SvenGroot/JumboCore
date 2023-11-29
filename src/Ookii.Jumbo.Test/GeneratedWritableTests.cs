@@ -47,20 +47,20 @@ public class GeneratedWritableTests
             ((IWritable)actual).Read(reader);
         }
 
-        Assert.AreEqual(expected.StringProperty, actual.StringProperty);
-        Assert.AreEqual(expected.AnotherStringProperty, actual.AnotherStringProperty);
-        Assert.AreEqual(expected.IntProperty, actual.IntProperty);
-        Assert.AreEqual(expected.NullableProperty, actual.NullableProperty);
-        Assert.AreEqual(expected.BooleanProperty, actual.BooleanProperty);
-        Assert.AreEqual(expected.WritableProperty, actual.WritableProperty);
-        Assert.AreEqual(expected.AnotherWritableProperty, actual.AnotherWritableProperty);
-        Assert.AreEqual(expected.DateProperty, actual.DateProperty);
-        Assert.IsTrue(Utilities.CompareList(expected.ByteArrayProperty, actual.ByteArrayProperty));
-        Assert.IsTrue(Utilities.CompareList(expected.IntArrayProperty, actual.IntArrayProperty));
-        Assert.AreEqual(0, actual.Ignored); // Not serialized
-        Assert.AreEqual(10, actual.ValueWriterProperty.Value1);
-        Assert.AreEqual(20, actual.ValueWriterProperty.Value2);
-        Assert.AreEqual(DayOfWeek.Friday, actual.EnumProperty);
+        Assert.That(actual.StringProperty, Is.EqualTo(expected.StringProperty));
+        Assert.That(actual.AnotherStringProperty, Is.EqualTo(expected.AnotherStringProperty));
+        Assert.That(actual.IntProperty, Is.EqualTo(expected.IntProperty));
+        Assert.That(actual.NullableProperty, Is.EqualTo(expected.NullableProperty));
+        Assert.That(actual.BooleanProperty, Is.EqualTo(expected.BooleanProperty));
+        Assert.That(actual.WritableProperty, Is.EqualTo(expected.WritableProperty));
+        Assert.That(actual.AnotherWritableProperty, Is.EqualTo(expected.AnotherWritableProperty));
+        Assert.That(actual.DateProperty, Is.EqualTo(expected.DateProperty));
+        Assert.That(Utilities.CompareList(expected.ByteArrayProperty, actual.ByteArrayProperty), Is.True);
+        Assert.That(Utilities.CompareList(expected.IntArrayProperty, actual.IntArrayProperty), Is.True);
+        Assert.That(actual.Ignored, Is.EqualTo(0)); // Not serialized
+        Assert.That(actual.ValueWriterProperty.Value1, Is.EqualTo(10));
+        Assert.That(actual.ValueWriterProperty.Value2, Is.EqualTo(20));
+        Assert.That(actual.EnumProperty, Is.EqualTo(DayOfWeek.Friday));
     }
 
     [Test]

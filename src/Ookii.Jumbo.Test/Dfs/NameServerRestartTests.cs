@@ -6,156 +6,51 @@ using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 using Ookii.Jumbo.Dfs.FileSystem;
 
-namespace Ookii.Jumbo.Test.Dfs
+namespace Ookii.Jumbo.Test.Dfs;
+
+[TestFixture]
+[Category("ClusterTest")]
+public class NameServerRestartTests
 {
-    [TestFixture]
-    [Category("ClusterTest")]
-    public class NameServerRestartTests
+    [Test]
+    public void TestClusterRestart()
     {
-        [Test]
-        public void TestClusterRestart()
+        TestDfsCluster cluster = null;
+        try
         {
-            TestDfsCluster cluster = null;
-            try
+            cluster = new TestDfsCluster(1, 1);
+            DfsClient client = cluster.Client;
+            INameServerClientProtocol nameServer = client.NameServer;
+            client.WaitForSafeModeOff(Timeout.Infinite);
+            DateTime rootCreatedDate = nameServer.GetDirectoryInfo("/").DateCreated;
+            nameServer.CreateDirectory("/test1");
+            nameServer.CreateDirectory("/test2");
+            nameServer.CreateDirectory("/test1/test2");
+            nameServer.Delete("/test1", true);
+            nameServer.CreateDirectory("/test2/test1");
+            nameServer.Move("/test2/test1", "/test3");
+            const int size = 20000000;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
+            using (MemoryStream input = new MemoryStream())
             {
-                cluster = new TestDfsCluster(1, 1);
-                DfsClient client = cluster.Client;
-                INameServerClientProtocol nameServer = client.NameServer;
-                client.WaitForSafeModeOff(Timeout.Infinite);
-                DateTime rootCreatedDate = nameServer.GetDirectoryInfo("/").DateCreated;
-                nameServer.CreateDirectory("/test1");
-                nameServer.CreateDirectory("/test2");
-                nameServer.CreateDirectory("/test1/test2");
-                nameServer.Delete("/test1", true);
-                nameServer.CreateDirectory("/test2/test1");
-                nameServer.Move("/test2/test1", "/test3");
-                const int size = 20000000;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
-                using (MemoryStream input = new MemoryStream())
-                {
-                    Utilities.GenerateData(input, size);
-                    input.Position = 0;
-                    Utilities.CopyStream(input, output);
-                }
-
-                const int customBlockSize = 16 * 1024 * 1024;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 0))
-                using (MemoryStream input = new MemoryStream())
-                {
-                    Utilities.GenerateData(input, size);
-                    input.Position = 0;
-                    Utilities.CopyStream(input, output);
-                }
-
-                JumboFile file;
-                DfsMetrics metrics;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
-                {
-                    nameServer = null;
-                    Thread.Sleep(1000);
-                    cluster.Shutdown();
-                    cluster = null;
-                    Thread.Sleep(1000);
-                    cluster = new TestDfsCluster(1, 1, null, false);
-                    nameServer = DfsClient.CreateNameServerClient(TestDfsCluster.CreateClientConfig());
-                    cluster.Client.WaitForSafeModeOff(Timeout.Infinite);
-
-                    Assert.AreEqual(rootCreatedDate, nameServer.GetDirectoryInfo("/").DateCreated);
-
-                    file = nameServer.GetFileInfo("/test2/pending.dat");
-                    Assert.IsTrue(file.IsOpenForWriting);
-
-                    metrics = nameServer.GetMetrics();
-                    Assert.AreEqual(1, metrics.PendingBlockCount);
-
-                    // The reason this works even though the data server is also restarted is because we didn't start writing before,
-                    // so the stream hadn't connected to the data server yet.
-                    Utilities.GenerateData(output, size);
-                }
-                file = nameServer.GetFileInfo("/test2/pending.dat");
-                //Assert.IsFalse(file.IsOpenForWriting);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(nameServer.BlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-                Assert.AreEqual(1, file.Blocks.Length);
-                Assert.IsNull(nameServer.GetDirectoryInfo("/test1"));
-                Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = nameServer.GetDirectoryInfo("/test2");
-                Assert.IsNotNull(dir);
-                Assert.AreEqual(3, dir.Children.Length);
-                file = nameServer.GetFileInfo("/test2/foo.dat");
-                Assert.IsNotNull(file);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(1, file.Blocks.Length);
-                Assert.AreEqual(nameServer.BlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-                file = nameServer.GetFileInfo("/test2/foo2.dat");
-                Assert.IsNotNull(file);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(2, file.Blocks.Length);
-                Assert.AreEqual(customBlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-
-                Assert.IsNull(nameServer.GetDirectoryInfo("/test2/test1"));
-                Assert.IsNotNull(nameServer.GetDirectoryInfo("/test3"));
-                metrics = nameServer.GetMetrics();
-                Assert.AreEqual(size * 3, metrics.TotalSize);
-                Assert.AreEqual(4, metrics.TotalBlockCount);
-                Assert.AreEqual(0, metrics.PendingBlockCount);
-                Assert.AreEqual(0, metrics.UnderReplicatedBlockCount);
-                Assert.AreEqual(1, metrics.DataServers.Count);
+                Utilities.GenerateData(input, size);
+                input.Position = 0;
+                Utilities.CopyStream(input, output);
             }
-            finally
+
+            const int customBlockSize = 16 * 1024 * 1024;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 0))
+            using (MemoryStream input = new MemoryStream())
             {
-                if (cluster != null)
-                    cluster.Shutdown();
+                Utilities.GenerateData(input, size);
+                input.Position = 0;
+                Utilities.CopyStream(input, output);
             }
-        }
 
-        [Test]
-        public void TestClusterRestartWithCheckpoint()
-        {
-            TestDfsCluster cluster = null;
-            try
+            JumboFile file;
+            DfsMetrics metrics;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
             {
-                cluster = new TestDfsCluster(1, 1);
-                INameServerClientProtocol nameServer = DfsClient.CreateNameServerClient(TestDfsCluster.CreateClientConfig());
-                cluster.Client.WaitForSafeModeOff(Timeout.Infinite);
-                DateTime rootCreatedDate = nameServer.GetDirectoryInfo("/").DateCreated;
-                nameServer.CreateDirectory("/test1");
-                nameServer.CreateDirectory("/test2");
-                nameServer.CreateDirectory("/test1/test2");
-                nameServer.Delete("/test1", true);
-                nameServer.CreateDirectory("/test2/test1");
-                nameServer.Move("/test2/test1", "/test3");
-                const int size = 20000000;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
-                using (MemoryStream input = new MemoryStream())
-                {
-                    Utilities.GenerateData(input, size);
-                    input.Position = 0;
-                    Utilities.CopyStream(input, output);
-                }
-
-                const int customBlockSize = 16 * 1024 * 1024;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 1))
-                using (MemoryStream input = new MemoryStream())
-                {
-                    Utilities.GenerateData(input, size);
-                    input.Position = 0;
-                    Utilities.CopyStream(input, output);
-                }
-
-
-                JumboFile file;
-                DfsMetrics metrics;
-                using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
-                {
-                    nameServer.CreateCheckpoint();
-
-                    // We write data after the checkpoint to check if it will correctly process the log file after this too.
-                    Utilities.GenerateData(output, size);
-                }
-
                 nameServer = null;
                 Thread.Sleep(1000);
                 cluster.Shutdown();
@@ -165,43 +60,151 @@ namespace Ookii.Jumbo.Test.Dfs
                 nameServer = DfsClient.CreateNameServerClient(TestDfsCluster.CreateClientConfig());
                 cluster.Client.WaitForSafeModeOff(Timeout.Infinite);
 
-                Assert.AreEqual(rootCreatedDate, nameServer.GetDirectoryInfo("/").DateCreated);
+                Assert.That(nameServer.GetDirectoryInfo("/").DateCreated, Is.EqualTo(rootCreatedDate));
 
                 file = nameServer.GetFileInfo("/test2/pending.dat");
-                Assert.IsFalse(file.IsOpenForWriting);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(1, file.Blocks.Length);
-                Assert.IsNull(nameServer.GetDirectoryInfo("/test1"));
-                Assert.AreEqual(nameServer.BlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-                Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = nameServer.GetDirectoryInfo("/test2");
-                Assert.IsNotNull(dir);
-                Assert.AreEqual(3, dir.Children.Length);
-                file = nameServer.GetFileInfo("/test2/foo.dat");
-                Assert.IsNotNull(file);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(1, file.Blocks.Length);
-                Assert.AreEqual(nameServer.BlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-                file = nameServer.GetFileInfo("/test2/foo2.dat");
-                Assert.IsNotNull(file);
-                Assert.AreEqual(size, file.Size);
-                Assert.AreEqual(2, file.Blocks.Length);
-                Assert.AreEqual(customBlockSize, file.BlockSize);
-                Assert.AreEqual(1, file.ReplicationFactor);
-                Assert.IsNull(nameServer.GetDirectoryInfo("/test2/test1"));
-                Assert.IsNotNull(nameServer.GetDirectoryInfo("/test3"));
+                Assert.That(file.IsOpenForWriting, Is.True);
+
                 metrics = nameServer.GetMetrics();
-                Assert.AreEqual(size * 3, metrics.TotalSize);
-                Assert.AreEqual(4, metrics.TotalBlockCount);
-                Assert.AreEqual(0, metrics.PendingBlockCount);
-                Assert.AreEqual(0, metrics.UnderReplicatedBlockCount);
-                Assert.AreEqual(1, metrics.DataServers.Count);
+                Assert.That(metrics.PendingBlockCount, Is.EqualTo(1));
+
+                // The reason this works even though the data server is also restarted is because we didn't start writing before,
+                // so the stream hadn't connected to the data server yet.
+                Utilities.GenerateData(output, size);
             }
-            finally
+            file = nameServer.GetFileInfo("/test2/pending.dat");
+            //Assert.IsFalse(file.IsOpenForWriting);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.BlockSize, Is.EqualTo(nameServer.BlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+            Assert.That(file.Blocks.Length, Is.EqualTo(1));
+            Assert.That(nameServer.GetDirectoryInfo("/test1"), Is.Null);
+            Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = nameServer.GetDirectoryInfo("/test2");
+            Assert.That(dir, Is.Not.Null);
+            Assert.That(dir.Children.Length, Is.EqualTo(3));
+            file = nameServer.GetFileInfo("/test2/foo.dat");
+            Assert.That(file, Is.Not.Null);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.Blocks.Length, Is.EqualTo(1));
+            Assert.That(file.BlockSize, Is.EqualTo(nameServer.BlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+            file = nameServer.GetFileInfo("/test2/foo2.dat");
+            Assert.That(file, Is.Not.Null);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.Blocks.Length, Is.EqualTo(2));
+            Assert.That(file.BlockSize, Is.EqualTo(customBlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+
+            Assert.That(nameServer.GetDirectoryInfo("/test2/test1"), Is.Null);
+            Assert.That(nameServer.GetDirectoryInfo("/test3"), Is.Not.Null);
+            metrics = nameServer.GetMetrics();
+            Assert.That(metrics.TotalSize, Is.EqualTo(size * 3));
+            Assert.That(metrics.TotalBlockCount, Is.EqualTo(4));
+            Assert.That(metrics.PendingBlockCount, Is.EqualTo(0));
+            Assert.That(metrics.UnderReplicatedBlockCount, Is.EqualTo(0));
+            Assert.That(metrics.DataServers.Count, Is.EqualTo(1));
+        }
+        finally
+        {
+            if (cluster != null)
             {
-                if (cluster != null)
-                    cluster.Shutdown();
+                cluster.Shutdown();
+            }
+        }
+    }
+
+    [Test]
+    public void TestClusterRestartWithCheckpoint()
+    {
+        TestDfsCluster cluster = null;
+        try
+        {
+            cluster = new TestDfsCluster(1, 1);
+            INameServerClientProtocol nameServer = DfsClient.CreateNameServerClient(TestDfsCluster.CreateClientConfig());
+            cluster.Client.WaitForSafeModeOff(Timeout.Infinite);
+            DateTime rootCreatedDate = nameServer.GetDirectoryInfo("/").DateCreated;
+            nameServer.CreateDirectory("/test1");
+            nameServer.CreateDirectory("/test2");
+            nameServer.CreateDirectory("/test1/test2");
+            nameServer.Delete("/test1", true);
+            nameServer.CreateDirectory("/test2/test1");
+            nameServer.Move("/test2/test1", "/test3");
+            const int size = 20000000;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo.dat"))
+            using (MemoryStream input = new MemoryStream())
+            {
+                Utilities.GenerateData(input, size);
+                input.Position = 0;
+                Utilities.CopyStream(input, output);
+            }
+
+            const int customBlockSize = 16 * 1024 * 1024;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/foo2.dat", customBlockSize, 1))
+            using (MemoryStream input = new MemoryStream())
+            {
+                Utilities.GenerateData(input, size);
+                input.Position = 0;
+                Utilities.CopyStream(input, output);
+            }
+
+
+            JumboFile file;
+            DfsMetrics metrics;
+            using (DfsOutputStream output = new DfsOutputStream(nameServer, "/test2/pending.dat"))
+            {
+                nameServer.CreateCheckpoint();
+
+                // We write data after the checkpoint to check if it will correctly process the log file after this too.
+                Utilities.GenerateData(output, size);
+            }
+
+            nameServer = null;
+            Thread.Sleep(1000);
+            cluster.Shutdown();
+            cluster = null;
+            Thread.Sleep(1000);
+            cluster = new TestDfsCluster(1, 1, null, false);
+            nameServer = DfsClient.CreateNameServerClient(TestDfsCluster.CreateClientConfig());
+            cluster.Client.WaitForSafeModeOff(Timeout.Infinite);
+
+            Assert.That(nameServer.GetDirectoryInfo("/").DateCreated, Is.EqualTo(rootCreatedDate));
+
+            file = nameServer.GetFileInfo("/test2/pending.dat");
+            Assert.That(file.IsOpenForWriting, Is.False);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.Blocks.Length, Is.EqualTo(1));
+            Assert.That(nameServer.GetDirectoryInfo("/test1"), Is.Null);
+            Assert.That(file.BlockSize, Is.EqualTo(nameServer.BlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+            Ookii.Jumbo.Dfs.FileSystem.JumboDirectory dir = nameServer.GetDirectoryInfo("/test2");
+            Assert.That(dir, Is.Not.Null);
+            Assert.That(dir.Children.Length, Is.EqualTo(3));
+            file = nameServer.GetFileInfo("/test2/foo.dat");
+            Assert.That(file, Is.Not.Null);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.Blocks.Length, Is.EqualTo(1));
+            Assert.That(file.BlockSize, Is.EqualTo(nameServer.BlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+            file = nameServer.GetFileInfo("/test2/foo2.dat");
+            Assert.That(file, Is.Not.Null);
+            Assert.That(file.Size, Is.EqualTo(size));
+            Assert.That(file.Blocks.Length, Is.EqualTo(2));
+            Assert.That(file.BlockSize, Is.EqualTo(customBlockSize));
+            Assert.That(file.ReplicationFactor, Is.EqualTo(1));
+            Assert.That(nameServer.GetDirectoryInfo("/test2/test1"), Is.Null);
+            Assert.That(nameServer.GetDirectoryInfo("/test3"), Is.Not.Null);
+            metrics = nameServer.GetMetrics();
+            Assert.That(metrics.TotalSize, Is.EqualTo(size * 3));
+            Assert.That(metrics.TotalBlockCount, Is.EqualTo(4));
+            Assert.That(metrics.PendingBlockCount, Is.EqualTo(0));
+            Assert.That(metrics.UnderReplicatedBlockCount, Is.EqualTo(0));
+            Assert.That(metrics.DataServers.Count, Is.EqualTo(1));
+        }
+        finally
+        {
+            if (cluster != null)
+            {
+                cluster.Shutdown();
             }
         }
     }

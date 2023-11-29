@@ -57,11 +57,11 @@ public class ValueWriterTests
     {
         BaseClass expected = new DerivedClass1 { Test = 42 };
         var actual = SerializeDeserialize(expected);
-        Assert.AreEqual(42, ((DerivedClass1)actual).Test);
+        Assert.That(((DerivedClass1)actual).Test, Is.EqualTo(42));
 
         expected = new DerivedClass2 { Test = "foo" };
         actual = SerializeDeserialize(expected);
-        Assert.AreEqual("foo", ((DerivedClass2)actual).Test);
+        Assert.That(((DerivedClass2)actual).Test, Is.EqualTo("foo"));
     }
 
     private static void TestSerialization<T>(T expected)
@@ -73,7 +73,7 @@ public class ValueWriterTests
         writer.Flush();
         stream.Position = 0;
         T actual = ValueWriter<T>.ReadValue(reader);
-        Assert.AreEqual(expected, actual);
+        Assert.That(actual, Is.EqualTo(expected));
     }
 
     private static void TestSerialization<T>(T[] expected)
@@ -85,7 +85,7 @@ public class ValueWriterTests
         writer.Flush();
         stream.Position = 0;
         T[] actual = ValueWriter<T[]>.ReadValue(reader);
-        CollectionAssert.AreEqual(expected, actual);
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
 
     private T SerializeDeserialize<T>(T value)

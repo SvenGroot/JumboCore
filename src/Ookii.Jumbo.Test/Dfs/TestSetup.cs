@@ -3,20 +3,19 @@ using System;
 using System.Diagnostics;
 using NUnit.Framework;
 
-namespace Ookii.Jumbo.Test.Dfs
+namespace Ookii.Jumbo.Test.Dfs;
+
+[SetUpFixture]
+public class TestSetup
 {
-    [SetUpFixture]
-    public class TestSetup
+    [OneTimeSetUp]
+    public void Setup()
     {
-        [OneTimeSetUp]
-        public void Setup()
+        if (Environment.GetEnvironmentVariable("JUMBO_TRACE") == "true")
         {
-            if (Environment.GetEnvironmentVariable("JUMBO_TRACE") == "true")
-            {
-                Trace.Listeners.Clear();
-                Trace.Listeners.Add(new ConsoleTraceListener());
-                Utilities.TraceLineAndFlush("Listeners configured");
-            }
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            Utilities.TraceLineAndFlush("Listeners configured");
         }
     }
 }

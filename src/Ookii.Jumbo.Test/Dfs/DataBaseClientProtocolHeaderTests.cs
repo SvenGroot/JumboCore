@@ -3,37 +3,36 @@ using System;
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 
-namespace Ookii.Jumbo.Test.Dfs
+namespace Ookii.Jumbo.Test.Dfs;
+
+[TestFixture]
+public class DataBaseClientProtocolHeaderTests
 {
-    [TestFixture]
-    public class DataBaseClientProtocolHeaderTests
+    private class Header : DataServerClientProtocolHeader
     {
-        private class Header : DataServerClientProtocolHeader
+        public Header(DataServerCommand command)
+            : base(command)
         {
-            public Header(DataServerCommand command)
-                : base(command)
-            {
-            }
         }
+    }
 
-        [Test]
-        public void TestConstructor()
-        {
-            DataServerClientProtocolHeader target = new Header(DataServerCommand.WriteBlock);
-            Assert.AreEqual(DataServerCommand.WriteBlock, target.Command);
-            Assert.AreEqual(Guid.Empty, target.BlockId);
-            target = new Header(DataServerCommand.ReadBlock);
-            Assert.AreEqual(DataServerCommand.ReadBlock, target.Command);
-            Assert.AreEqual(Guid.Empty, target.BlockId);
-        }
+    [Test]
+    public void TestConstructor()
+    {
+        DataServerClientProtocolHeader target = new Header(DataServerCommand.WriteBlock);
+        Assert.That(target.Command, Is.EqualTo(DataServerCommand.WriteBlock));
+        Assert.That(target.BlockId, Is.EqualTo(Guid.Empty));
+        target = new Header(DataServerCommand.ReadBlock);
+        Assert.That(target.Command, Is.EqualTo(DataServerCommand.ReadBlock));
+        Assert.That(target.BlockId, Is.EqualTo(Guid.Empty));
+    }
 
-        [Test]
-        public void TestBlockID()
-        {
-            DataServerClientProtocolHeader target = new Header(DataServerCommand.ReadBlock);
-            Guid expected = Guid.NewGuid();
-            target.BlockId = expected;
-            Assert.AreEqual(expected, target.BlockId);
-        }
+    [Test]
+    public void TestBlockID()
+    {
+        DataServerClientProtocolHeader target = new Header(DataServerCommand.ReadBlock);
+        Guid expected = Guid.NewGuid();
+        target.BlockId = expected;
+        Assert.That(target.BlockId, Is.EqualTo(expected));
     }
 }

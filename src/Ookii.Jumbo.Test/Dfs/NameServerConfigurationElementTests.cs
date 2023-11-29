@@ -2,55 +2,54 @@
 using NUnit.Framework;
 using Ookii.Jumbo.Dfs;
 
-namespace Ookii.Jumbo.Test.Dfs
+namespace Ookii.Jumbo.Test.Dfs;
+
+[TestFixture]
+public class NameServerConfigurationElementTests
 {
-    [TestFixture]
-    public class NameServerConfigurationElementTests
+    [Test]
+    public void TestConstructor()
     {
-        [Test]
-        public void TestConstructor()
-        {
-            NameServerConfigurationElement target = new NameServerConfigurationElement();
-            Assert.AreEqual(67108864, (int)target.BlockSize);
-            Assert.AreEqual(1, target.ReplicationFactor);
-            Assert.IsTrue(target.ListenIPv4AndIPv6);
-            Assert.AreEqual(string.Empty, target.ImageDirectory);
-        }
+        NameServerConfigurationElement target = new NameServerConfigurationElement();
+        Assert.That((int)target.BlockSize, Is.EqualTo(67108864));
+        Assert.That(target.ReplicationFactor, Is.EqualTo(1));
+        Assert.That(target.ListenIPv4AndIPv6, Is.True);
+        Assert.That(target.ImageDirectory, Is.EqualTo(string.Empty));
+    }
 
-        [Test]
-        public void TestBlockSize()
-        {
-            NameServerConfigurationElement target = new NameServerConfigurationElement();
-            BinarySize expected = (BinarySize)(20 * Packet.PacketSize);
-            target.BlockSize = expected;
-            Assert.AreEqual(expected, target.BlockSize);
-        }
+    [Test]
+    public void TestBlockSize()
+    {
+        NameServerConfigurationElement target = new NameServerConfigurationElement();
+        BinarySize expected = (BinarySize)(20 * Packet.PacketSize);
+        target.BlockSize = expected;
+        Assert.That(target.BlockSize, Is.EqualTo(expected));
+    }
 
-        [Test]
-        public void TestReplicationFactor()
-        {
-            NameServerConfigurationElement target = new NameServerConfigurationElement();
-            int expected = 3;
-            target.ReplicationFactor = expected;
-            Assert.AreEqual(expected, target.ReplicationFactor);
-        }
+    [Test]
+    public void TestReplicationFactor()
+    {
+        NameServerConfigurationElement target = new NameServerConfigurationElement();
+        int expected = 3;
+        target.ReplicationFactor = expected;
+        Assert.That(target.ReplicationFactor, Is.EqualTo(expected));
+    }
 
-        [Test]
-        public void TestListenIPv4AndIPv6()
-        {
-            NameServerConfigurationElement target = new NameServerConfigurationElement();
-            bool expected = false;
-            target.ListenIPv4AndIPv6 = expected;
-            Assert.AreEqual(expected, target.ListenIPv4AndIPv6);
-        }
+    [Test]
+    public void TestListenIPv4AndIPv6()
+    {
+        NameServerConfigurationElement target = new NameServerConfigurationElement();
+        bool expected = false;
+        target.ListenIPv4AndIPv6 = expected;
+        Assert.That(target.ListenIPv4AndIPv6, Is.EqualTo(expected));
+    }
 
-        [Test]
-        public void TestEditLogDirectory()
-        {
-            NameServerConfigurationElement target = new NameServerConfigurationElement();
-            string expected = "c:\\log";
-            target.ImageDirectory = expected;
-            Assert.AreEqual(expected, target.ImageDirectory);
-        }
+    [Test]
+    public void TestEditLogDirectory()
+    {
+        NameServerConfigurationElement target = new NameServerConfigurationElement();
+        string expected = "c:\\log";
+        target.ImageDirectory = expected;
+        Assert.That(target.ImageDirectory, Is.EqualTo(expected));
     }
 }
