@@ -14,10 +14,11 @@
   <ItemGroup>
     
     <!-- 
-      Needed to resolve a conflicting reference from web sites and other binaries, which causes
-      issues with the JobBuilder's dependency detection.
+      These are needed to resolve a conflicting reference from web sites and other binaries, which
+      causes issues with the JobBuilder's dependency detection.
     -->
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
