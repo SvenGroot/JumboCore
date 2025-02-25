@@ -10,7 +10,10 @@ updates:
        nuget-dependencies:
           patterns:
              - "*"
-  - package-ecosystem: "github-actions"
+    ignore:
+        # Don't update to continue to support .Net 8
+      - dependency-name: "Microsoft.CodeAnalysis.CSharp"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     directory: "/"
     schedule:
       interval: "daily"
