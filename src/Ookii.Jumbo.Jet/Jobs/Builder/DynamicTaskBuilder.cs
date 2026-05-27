@@ -150,7 +150,8 @@ public sealed class DynamicTaskBuilder
         {
             // TODO: Switch back to _assembly.Save once supported by .Net Core.
             var generator = new Lokad.ILPack.AssemblyGenerator();
-            generator.GenerateAssembly(_assembly, Path.Combine(_dynamicAssemblyDirectory, _assembly.GetName().Name + ".dll"));
+            IEnumerable<Assembly> references = [typeof(Dfs.DfsConfiguration).Assembly, typeof(JetConfiguration).Assembly, typeof(JumboConfiguration).Assembly];
+            generator.GenerateAssembly(_assembly, references, Path.Combine(_dynamicAssemblyDirectory, _assembly.GetName().Name + ".dll"));
         }
     }
 

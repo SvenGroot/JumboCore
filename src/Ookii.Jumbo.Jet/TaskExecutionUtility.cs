@@ -1140,7 +1140,7 @@ public abstract class TaskExecutionUtility : IDisposable
 
     private static void ConfigureLog(string logFile)
     {
-        log4net.LogManager.ResetConfiguration(Assembly.GetEntryAssembly());
+        log4net.LogManager.ResetConfiguration(Assembly.GetEntryAssembly()!);
         var appender = new log4net.Appender.FileAppender()
         {
             File = logFile,
@@ -1148,7 +1148,7 @@ public abstract class TaskExecutionUtility : IDisposable
             Threshold = log4net.Core.Level.All
         };
         appender.ActivateOptions();
-        var repository = log4net.LogManager.GetRepository(Assembly.GetEntryAssembly());
+        var repository = log4net.LogManager.GetRepository(Assembly.GetEntryAssembly()!);
         log4net.Config.BasicConfigurator.Configure(repository, appender);
     }
 
