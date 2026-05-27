@@ -31,7 +31,7 @@ public static class LogFileHelper
         switch (kind)
         {
         case LogFileKind.Log:
-            foreach (var appender in log4net.LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly()).GetAppenders())
+            foreach (var appender in log4net.LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly()!).GetAppenders())
             {
                 var fileAppender = appender as log4net.Appender.FileAppender;
                 if (fileAppender != null)

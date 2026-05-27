@@ -72,21 +72,21 @@ public class NameServerTests
     public void CreateDirectoryPathNullTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentNullException>(() => target.CreateDirectory(null));
+        Assert.Throws<ArgumentNullException>((Action)(() => target.CreateDirectory(null)));
     }
 
     [Test]
     public void CreateDirectoryNotRootedTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.CreateDirectory("test/foo"));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateDirectory("test/foo")));
     }
 
     [Test]
     public void CreateDirectoryEmptyComponentTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.CreateDirectory("/createdirectory/test//"));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateDirectory("/createdirectory/test//")));
         Assert.That(target.GetDirectoryInfo("/createdirectory/test"), Is.Null);
     }
 
@@ -98,28 +98,28 @@ public class NameServerTests
         target.CreateFile("/createdirectory/test", 0, 0, true, IO.RecordStreamOptions.None);
         target.CloseFile("/createdirectory/test");
 
-        Assert.Throws<ArgumentException>(() => target.CreateDirectory("/createdirectory/test/foo"));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateDirectory("/createdirectory/test/foo")));
     }
 
     [Test]
     public void GetDirectoryInfoPathNullTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentNullException>(() => target.GetDirectoryInfo(null));
+        Assert.Throws<ArgumentNullException>((Action)(() => target.GetDirectoryInfo(null)));
     }
 
     [Test]
     public void GetDirectoryInfoEmptyComponentTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.GetDirectoryInfo("/test//"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetDirectoryInfo("/test//")));
     }
 
     [Test]
     public void GetDirectoryInfoNotRootedTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.GetDirectoryInfo("test/foo"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetDirectoryInfo("test/foo")));
     }
 
     [Test]
@@ -128,7 +128,7 @@ public class NameServerTests
         INameServerClientProtocol target = _nameServer;
         target.CreateFile("/getdirectoryinfotestfile", 0, 0, true, IO.RecordStreamOptions.None);
         target.CloseFile("/getdirectoryinfotestfile");
-        Assert.Throws<ArgumentException>(() => target.GetDirectoryInfo("/getdirectoryinfotestfile/foo"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetDirectoryInfo("/getdirectoryinfotestfile/foo")));
     }
 
     [Test]
@@ -153,35 +153,35 @@ public class NameServerTests
     public void CreateFilePathNullTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentNullException>(() => target.CreateFile(null, 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentNullException>((Action)(() => target.CreateFile(null, 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
     public void CreateFileNameEmptyTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.CreateFile("/test/", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("/test/", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
     public void CreateFileDirectoryNotRootedTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.CreateFile("test/foo/test", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("test/foo/test", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
     public void CreateFileDirectoryEmptyComponentTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.CreateFile("/test//test", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("/test//test", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
     public void CreateFileDirectoryNotFoundTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<System.IO.DirectoryNotFoundException>(() => target.CreateFile("/test/test", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<System.IO.DirectoryNotFoundException>((Action)(() => target.CreateFile("/test/test", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
@@ -190,7 +190,7 @@ public class NameServerTests
         INameServerClientProtocol target = _nameServer;
         target.CreateFile("/existingfile", 0, 0, true, IO.RecordStreamOptions.None);
         target.CloseFile("/existingfile");
-        Assert.Throws<ArgumentException>(() => target.CreateFile("/existingfile", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("/existingfile", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
@@ -198,7 +198,7 @@ public class NameServerTests
     {
         INameServerClientProtocol target = _nameServer;
         target.CreateDirectory("/existingdirectory");
-        Assert.Throws<ArgumentException>(() => target.CreateFile("/existingdirectory", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("/existingdirectory", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
@@ -207,7 +207,7 @@ public class NameServerTests
         INameServerClientProtocol target = _nameServer;
         target.CreateFile("/test", 0, 0, true, IO.RecordStreamOptions.None);
         target.CloseFile("/test");
-        Assert.Throws<ArgumentException>(() => target.CreateFile("/test/foo", 0, 0, true, IO.RecordStreamOptions.None));
+        Assert.Throws<ArgumentException>((Action)(() => target.CreateFile("/test/foo", 0, 0, true, IO.RecordStreamOptions.None)));
     }
 
     [Test]
@@ -226,35 +226,35 @@ public class NameServerTests
     public void GetFileInfoPathNullTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentNullException>(() => target.GetFileInfo(null));
+        Assert.Throws<ArgumentNullException>((Action)(() => target.GetFileInfo(null)));
     }
 
     [Test]
     public void GetFileInfoNameEmptyTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.GetFileInfo("/test/"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetFileInfo("/test/")));
     }
 
     [Test]
     public void GetFileInfoDirectoryNotRootedTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.GetFileInfo("test"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetFileInfo("test")));
     }
 
     [Test]
     public void GetFileInfoDirectoryEmptyComponentTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<ArgumentException>(() => target.GetFileInfo("/test//test"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetFileInfo("/test//test")));
     }
 
     [Test]
     public void GetFileInfoDirectoryNotFoundTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<DirectoryNotFoundException>(() => target.GetFileInfo("/directorythatdoesntexist/test"));
+        Assert.Throws<DirectoryNotFoundException>((Action)(() => target.GetFileInfo("/directorythatdoesntexist/test")));
     }
 
     [Test]
@@ -263,7 +263,7 @@ public class NameServerTests
         INameServerClientProtocol target = _nameServer;
         target.CreateFile("/getfileinfofile", 0, 0, true, IO.RecordStreamOptions.None);
         target.CloseFile("/getfileinfofile");
-        Assert.Throws<ArgumentException>(() => target.GetFileInfo("/getfileinfofile/foo"));
+        Assert.Throws<ArgumentException>((Action)(() => target.GetFileInfo("/getfileinfofile/foo")));
     }
 
     [Test]
@@ -294,7 +294,7 @@ public class NameServerTests
     public void GetFileSystemEntryInfoDirectoryNotFoundTest()
     {
         INameServerClientProtocol target = _nameServer;
-        Assert.Throws<DirectoryNotFoundException>(() => target.GetFileSystemEntryInfo("/directorythatdoesntexist/test"));
+        Assert.Throws<DirectoryNotFoundException>((Action)(() => target.GetFileSystemEntryInfo("/directorythatdoesntexist/test")));
     }
 
     [Test]
