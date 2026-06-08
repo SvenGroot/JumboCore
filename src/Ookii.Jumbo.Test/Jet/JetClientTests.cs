@@ -42,7 +42,7 @@ public class JetClientTests
     public void TestCreateTaskServerUmbilicalClient()
     {
         ITaskServerUmbilicalProtocol client = JetClient.CreateTaskServerUmbilicalClient(TestJetCluster.TaskServerPort);
-        Assert.Throws<ArgumentNullException>(() => client.ReportCompletion(Guid.Empty, null, null));
+        Assert.Throws<ArgumentNullException>((Action)(() => client.ReportCompletion(Guid.Empty, null, null)));
     }
 
     [Test]

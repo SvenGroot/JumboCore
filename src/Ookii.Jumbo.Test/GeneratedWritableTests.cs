@@ -66,7 +66,7 @@ public class GeneratedWritableTests
     [Test]
     public void TestNotNullException()
     {
-        Assert.Throws(typeof(ArgumentNullException), () =>
+        Assert.Throws<ArgumentNullException>((Action)(() =>
         {
             TestClass expected = new TestClass();
             using (MemoryStream stream = new MemoryStream())
@@ -75,7 +75,7 @@ public class GeneratedWritableTests
                 // Fails because StringProperty is null.
                 ((IWritable)expected).Write(writer);
             }
-        });
+        }));
     }
 }
 
