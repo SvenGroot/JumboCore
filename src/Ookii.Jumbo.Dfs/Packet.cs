@@ -137,7 +137,7 @@ public class Packet
             throw new ArgumentException("The packet has an invalid size.");
         }
 
-        stream.Read(_data, 0, size);
+        stream.ReadExactly(_data, 0, size);
         Size = size;
         IsLastPacket = isLastPacket;
         SequenceNumber = sequenceNumber;

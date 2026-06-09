@@ -471,7 +471,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
         }
 
@@ -487,7 +486,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
         }
@@ -505,7 +503,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);
@@ -525,7 +522,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3, T4> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);
@@ -547,7 +543,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3, T4, T5> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);
@@ -571,7 +566,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3, T4, T5, T6> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);
@@ -597,7 +591,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3, T4, T5, T6, T7> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);
@@ -625,7 +618,6 @@ static class DefaultValueWriter
     {
         public void Write(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(value);
             ValueWriter<T1>.WriteValue(value.Item1, writer);
             ValueWriter<T2>.WriteValue(value.Item2, writer);
             ValueWriter<T3>.WriteValue(value.Item3, writer);

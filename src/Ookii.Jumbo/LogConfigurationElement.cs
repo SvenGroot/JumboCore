@@ -41,7 +41,7 @@ public class LogConfigurationElement : ConfigurationElement
         dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, dir);
         log4net.GlobalContext.Properties["LogDirectory"] = dir;
         log4net.GlobalContext.Properties["LocalHostName"] = ServerContext.LocalHostName;
-        log4net.Config.XmlConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetEntryAssembly()),
+        log4net.Config.XmlConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()),
             new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).FilePath));
     }
 }

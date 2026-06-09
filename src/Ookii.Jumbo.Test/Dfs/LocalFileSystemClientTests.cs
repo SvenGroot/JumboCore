@@ -192,7 +192,7 @@ public class LocalFileSystemClientTests
         using (Stream stream = target.OpenFile(path))
         {
             actual = new byte[stream.Length];
-            stream.Read(actual, 0, actual.Length);
+            stream.ReadExactly(actual, 0, actual.Length);
         }
         byte[] expected = File.ReadAllBytes(path);
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
@@ -207,7 +207,7 @@ public class LocalFileSystemClientTests
         using (Stream stream = target.OpenFile(path))
         {
             actual = new byte[stream.Length];
-            stream.Read(actual, 0, actual.Length);
+            stream.ReadExactly(actual, 0, actual.Length);
         }
         byte[] expected = File.ReadAllBytes(Path.Combine(_testPath, "test1.dat"));
         Assert.That(actual, Is.EqualTo(expected).AsCollection);

@@ -118,8 +118,8 @@ public class DfsStreamTest
                 stream.Position = 100000;
                 byte[] buffer = new byte[100000];
                 byte[] buffer2 = new byte[100000];
-                input.Read(buffer, 0, buffer.Length);
-                stream.Read(buffer2, 0, buffer.Length);
+                input.ReadExactly(buffer, 0, buffer.Length);
+                stream.ReadExactly(buffer2, 0, buffer.Length);
                 Assert.That(Utilities.CompareArray(buffer, 0, buffer2, 0, buffer.Length), Is.True);
                 Assert.That(input.PaddingBytesSkipped, Is.EqualTo(0));
             }
@@ -244,10 +244,10 @@ public class DfsStreamTest
                 stream.Position = startPosition;
                 byte[] buffer = new byte[100000];
                 byte[] buffer2 = new byte[100000];
-                input.Read(buffer, 0, buffer.Length);
+                input.ReadExactly(buffer, 0, buffer.Length);
                 Assert.That(input.IsStopped, Is.False);
                 Assert.That(input.PaddingBytesSkipped, Is.EqualTo(totalPadding + blockPadding)); // PaddingBytesSkipped is not reset to zero.
-                stream.Read(buffer2, 0, buffer.Length);
+                stream.ReadExactly(buffer2, 0, buffer.Length);
                 Assert.That(Utilities.CompareArray(buffer, 0, buffer2, 0, buffer.Length), Is.True);
                 Assert.That(input.Position, Is.EqualTo(startPosition + buffer.Length + blockPadding));
                 Utilities.TraceLineAndFlush("Testing stream seek into padding.");
@@ -255,8 +255,8 @@ public class DfsStreamTest
                 input.Position = startPosition;
                 // We read from the reference stream after the last record in the first block rather than the computed position.
                 stream.Position = blockSize - blockPadding;
-                input.Read(buffer, 0, buffer.Length);
-                stream.Read(buffer2, 0, buffer.Length);
+                input.ReadExactly(buffer, 0, buffer.Length);
+                stream.ReadExactly(buffer2, 0, buffer.Length);
                 Assert.That(Utilities.CompareArray(buffer, 0, buffer2, 0, buffer.Length), Is.True);
                 // Position of input should have been updated to blockSize after the seek, so the current position should reflect that.
                 Assert.That(input.Position, Is.EqualTo(blockSize + buffer.Length));

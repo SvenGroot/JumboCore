@@ -79,7 +79,7 @@ class RpcStream : Stream
             return string.Empty;
         }
 
-        Read(_byteBuffer, 0, length);
+        ReadExactly(_byteBuffer, 0, length);
         return Encoding.UTF8.GetString(_byteBuffer, 0, length);
     }
 

@@ -133,7 +133,7 @@ public abstract class SpillRecordWriter<T> : RecordWriter<T>, IMultiRecordWriter
                         throw new ObjectDisposedException(typeof(SpillRecordWriter<T>).FullName);
                     }
                 }
-                newBufferUsed = Thread.VolatileRead(ref _bufferUsed);
+                newBufferUsed = Volatile.Read(ref _bufferUsed);
                 Debug.Assert(newBufferUsed >= count); // Make sure FreeBuffer doesn't free too much
             }
             _bufferPos = CopyCircular(buffer, offset, _buffer, _bufferPos, count);

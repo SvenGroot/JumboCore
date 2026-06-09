@@ -30,8 +30,8 @@ public sealed class JumboDirectory : JumboFileSystemEntry
         /// <inheritdoc/>
         public void Write(JumboDirectory value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(nameof(value));
-            ArgumentNullException.ThrowIfNull(nameof(writer));
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(writer);
             value.Serialize(writer);
             ValueWriter.WriteValue(value.Children, writer);
         }

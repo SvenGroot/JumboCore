@@ -27,8 +27,8 @@ public sealed class JumboFile : JumboFileSystemEntry
         /// <inheritdoc/>
         public void Write(JumboFile value, BinaryWriter writer)
         {
-            ArgumentNullException.ThrowIfNull(nameof(value));
-            ArgumentNullException.ThrowIfNull(nameof(writer));
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(writer);
             value.Serialize(writer);
             writer.Write(value._size);
             writer.Write(value._blockSize);
