@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
+using System.Reflection.Emit;
+using Ookii.Jumbo.Jet.Jobs.Builder;
 
 namespace Ookii.Jumbo.Jet.Jobs;
 
@@ -11,15 +13,26 @@ public class TaskTypeInfo
     private readonly Type _inputRecordType;
     private readonly Type _outputRecordType;
     private readonly Type _taskType;
-    private readonly TaskRecordReuse _recordReuse;
+    private TaskRecordReuse? _recordReuse;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TaskTypeInfo"/> class.
     /// </summary>
     /// <param name="taskType">Type of the task.</param>
-    public TaskTypeInfo(Type taskType)
+    /// <param name="input">The operation input, used to specialize single-parameter generic task types.</param>
+    public TaskTypeInfo(Type taskType, IOperationInput? input = null)
     {
         ArgumentNullException.ThrowIfNull(taskType);
+        if (taskType.IsGenericTypeDefinition)
+        {
+            if (input?.RecordType == null)
+            {
+                throw new ArgumentException("Task type must be a concrete type.", nameof(taskType));
+            }
+
+            taskType = taskType.MakeGenericType(input.RecordType);
+        }
+
         if (taskType.ContainsGenericParameters)
         {
             throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
@@ -30,11 +43,34 @@ public class TaskTypeInfo
         var arguments = interfaceType.GetGenericArguments();
         _inputRecordType = arguments[0];
         _outputRecordType = arguments[1];
-        var recordReuseAttribute = (AllowRecordReuseAttribute?)Attribute.GetCustomAttribute(taskType, typeof(AllowRecordReuseAttribute));
-        if (recordReuseAttribute != null)
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TaskTypeInfo"/> class based on a dynamically generated task type.
+    /// </summary>
+    /// <param name="taskType">Type of the task.</param>
+    /// <param name="inputRecordType">Type of the input records.</param>
+    /// <param name="outputRecordType">Type of the output records.</param>
+    /// <param name="recordReuse">Indicates whether the task type allows record reuse.</param>
+    /// <remarks>
+    /// <para>
+    ///   Dynamically generated task types, created by the <see cref="DynamicTaskBuilder"/> class, do not support
+    ///   reflection so certain information must be provided directly.
+    /// </para>
+    /// </remarks>
+    public TaskTypeInfo(TypeBuilder taskType, Type inputRecordType, Type outputRecordType, TaskRecordReuse recordReuse)
+    {
+        ArgumentNullException.ThrowIfNull(taskType);
+        _taskType = taskType;
+        if (taskType.ContainsGenericParameters)
         {
-            _recordReuse = recordReuseAttribute.PassThrough ? TaskRecordReuse.PassThrough : TaskRecordReuse.Allowed;
+            throw new ArgumentException("The task must be closed constructed generic type.", nameof(taskType));
         }
+
+        _taskType = taskType.CreateType();
+        _inputRecordType = inputRecordType;
+        _outputRecordType = outputRecordType;
+        _recordReuse = recordReuse;
     }
 
     /// <summary>
@@ -46,6 +82,26 @@ public class TaskTypeInfo
     public Type TaskType
     {
         get { return _taskType; }
+    }
+
+    /// <summary>
+    /// Gets the name of the task type.
+    /// </summary>
+    /// <value>
+    /// The assembly qualified name of the task type.
+    /// </value>
+    public string TaskTypeName
+    {
+        get
+        {
+            // AssemblyQualifiedName doesn't work on dyanmic types.
+            if (_taskType is TypeBuilder)
+            {
+                return _taskType.FullName + ", " + _taskType.Assembly.FullName;
+            }
+
+            return _taskType.AssemblyQualifiedName!;
+        }
     }
 
     /// <summary>
@@ -76,10 +132,7 @@ public class TaskTypeInfo
     /// <value>
     /// One of the values of the <see cref="TaskRecordReuse"/> enumeration.
     /// </value>
-    public TaskRecordReuse RecordReuse
-    {
-        get { return _recordReuse; }
-    }
+    public TaskRecordReuse RecordReuse => _recordReuse ??= DetermineRecordReuse();
 
     /// <summary>
     /// Gets a value indicating whether this task is a push task.
@@ -90,5 +143,16 @@ public class TaskTypeInfo
     public bool IsPushTask
     {
         get { return _taskType.FindGenericBaseType(typeof(PushTask<,>), false) != null || _taskType.FindGenericBaseType(typeof(PrepartitionedPushTask<,>), false) != null; }
+    }
+
+    private TaskRecordReuse DetermineRecordReuse()
+    {
+        var recordReuseAttribute = (AllowRecordReuseAttribute?)Attribute.GetCustomAttribute(_taskType, typeof(AllowRecordReuseAttribute));
+        if (recordReuseAttribute != null)
+        {
+            return recordReuseAttribute.PassThrough ? TaskRecordReuse.PassThrough : TaskRecordReuse.Allowed;
+        }
+
+        return TaskRecordReuse.NotAllowed;
     }
 }

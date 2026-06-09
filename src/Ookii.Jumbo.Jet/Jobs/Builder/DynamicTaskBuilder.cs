@@ -16,11 +16,23 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder;
 /// </summary>
 public sealed class DynamicTaskBuilder
 {
+    private bool _persisted;
     private AssemblyBuilder? _assembly;
     private ModuleBuilder? _module;
     private string? _dynamicAssemblyDirectory;
-    private readonly Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type> _taskTypeCache = new Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, Type>();
-    private readonly HashSet<string> _usedTypeNames = new HashSet<string>();
+    private readonly Dictionary<Tuple<MethodInfo, Delegate, int, RecordReuseMode>, TaskTypeInfo> _taskTypeCache = [];
+    private readonly HashSet<string> _usedTypeNames = [];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DynamicTaskBuilder"/> class.
+    /// </summary>
+    /// <param name="persisted">
+    /// Indicates whether the dynamic assembly should be able to be persisted to disk. This is used for test purposes only.
+    /// </param>
+    public DynamicTaskBuilder(bool persisted = true)
+    {
+        _persisted = persisted;
+    }
 
     /// <summary>
     /// Gets a value indicating whether a dynamic assembly has been created.
@@ -91,10 +103,11 @@ public sealed class DynamicTaskBuilder
     ///   attribute will be copied to the task class.
     /// </para>
     /// </remarks>
-    public Type CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
+    public TaskTypeInfo CreateDynamicTask(MethodInfo methodToOverride, Delegate taskMethodDelegate, int skipParameters, RecordReuseMode recordReuseMode)
     {
         ArgumentNullException.ThrowIfNull(methodToOverride);
-        if (methodToOverride.DeclaringType!.FindGenericInterfaceType(typeof(ITask<,>), false) == null)
+        var taskInterfaceType = methodToOverride.DeclaringType!.FindGenericInterfaceType(typeof(ITask<,>), false);
+        if (taskInterfaceType == null)
         {
             throw new ArgumentException("The method that declares the method to override is not a task.", nameof(methodToOverride));
         }
@@ -116,7 +129,7 @@ public sealed class DynamicTaskBuilder
 
         ValidateParameters(skipParameters, parameters, delegateParameters);
 
-        var taskType = CreateTaskType(taskMethodDelegate, recordReuseMode, methodToOverride.DeclaringType!);
+        var (taskType, recordReuse) = CreateTaskType(taskMethodDelegate, recordReuseMode, methodToOverride.DeclaringType!);
         var overriddenMethod = OverrideMethod(taskType, methodToOverride);
 
         var generator = overriddenMethod.GetILGenerator();
@@ -134,7 +147,8 @@ public sealed class DynamicTaskBuilder
         generator.Emit(OpCodes.Call, taskMethodDelegate.Method);
         generator.Emit(OpCodes.Ret);
 
-        var result = taskType.CreateType()!;
+        var arguments = taskInterfaceType.GetGenericArguments();
+        var result = new TaskTypeInfo(taskType, arguments[0], arguments[1], recordReuse);
 
         _taskTypeCache.Add(cacheKey, result);
 
@@ -148,9 +162,11 @@ public sealed class DynamicTaskBuilder
     {
         if (IsDynamicAssemblyCreated)
         {
-            // TODO: Switch back to _assembly.Save once supported by .Net Core.
-            var generator = new Lokad.ILPack.AssemblyGenerator();
-            generator.GenerateAssembly(_assembly, Path.Combine(_dynamicAssemblyDirectory, _assembly.GetName().Name + ".dll"));
+            if (_persisted)
+            {
+                using var stream = File.Create(Path.Combine(_dynamicAssemblyDirectory, _assembly.GetName().Name + ".dll"));
+                ((PersistedAssemblyBuilder)_assembly).Save(stream);
+            }
         }
     }
 
@@ -177,7 +193,15 @@ public sealed class DynamicTaskBuilder
             // Use a Guid to ensure a unique name.
             var name = new AssemblyName("Ookii.Jumbo.Jet.Generated." + Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
             _dynamicAssemblyDirectory = Path.GetTempPath();
-            _assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            if (_persisted)
+            {
+                _assembly = new PersistedAssemblyBuilder(name, typeof(object).Assembly);
+            }
+            else
+            {
+                _assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndCollect);
+            }
+
             _module = _assembly.DefineDynamicModule(name.Name!);
         }
         else
@@ -209,8 +233,9 @@ public sealed class DynamicTaskBuilder
         }
     }
 
-    private static void SetTaskAttributes(MethodInfo taskMethod, RecordReuseMode mode, TypeBuilder taskTypeBuilder)
+    private static TaskRecordReuse SetTaskAttributes(MethodInfo taskMethod, RecordReuseMode mode, TypeBuilder taskTypeBuilder)
     {
+        var recordReuse = TaskRecordReuse.NotAllowed;
         if (mode != RecordReuseMode.DoNotAllow)
         {
             var allowRecordReuseAttributeType = typeof(AllowRecordReuseAttribute);
@@ -220,8 +245,17 @@ public sealed class DynamicTaskBuilder
                 var ctor = allowRecordReuseAttributeType.GetConstructor(Type.EmptyTypes)!;
                 var passThrough = allowRecordReuseAttributeType.GetProperty("PassThrough")!;
 
-                var allowRecordReuseBuilder = new CustomAttributeBuilder(ctor, Array.Empty<object>(), new[] { passThrough }, new object[] { mode == RecordReuseMode.PassThrough || (allowRecordReuse != null && allowRecordReuse.PassThrough) });
+                var passthroughValue = mode == RecordReuseMode.PassThrough || (allowRecordReuse != null && allowRecordReuse.PassThrough);
+                var allowRecordReuseBuilder = new CustomAttributeBuilder(ctor, [], [passThrough], [passthroughValue]);
                 taskTypeBuilder.SetCustomAttribute(allowRecordReuseBuilder);
+                if (passthroughValue)
+                {
+                    recordReuse = TaskRecordReuse.PassThrough;
+                }
+                else
+                {
+                    recordReuse = TaskRecordReuse.Allowed;
+                }
             }
         }
 
@@ -232,9 +266,11 @@ public sealed class DynamicTaskBuilder
 
             taskTypeBuilder.SetCustomAttribute(partitionAttribute);
         }
+
+        return recordReuse;
     }
 
-    private TypeBuilder CreateTaskType(Delegate taskDelegate, RecordReuseMode recordReuseMode, Type baseOrInterfaceType)
+    private (TypeBuilder, TaskRecordReuse) CreateTaskType(Delegate taskDelegate, RecordReuseMode recordReuseMode, Type baseOrInterfaceType)
     {
         CreateDynamicAssembly();
 
@@ -256,9 +292,9 @@ public sealed class DynamicTaskBuilder
 
         var taskTypeBuilder = _module.DefineType(_assembly.GetName().Name + "." + typeName, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed, baseOrInterfaceType, interfaces);
 
-        SetTaskAttributes(taskDelegate.Method, recordReuseMode, taskTypeBuilder);
+        var recordReuse = SetTaskAttributes(taskDelegate.Method, recordReuseMode, taskTypeBuilder);
 
-        return taskTypeBuilder;
+        return (taskTypeBuilder, recordReuse);
     }
 
     private static MethodBuilder OverrideMethod(TypeBuilder taskTypeBuilder, MethodInfo interfaceMethod)

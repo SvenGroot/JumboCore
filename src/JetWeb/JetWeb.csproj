@@ -8,8 +8,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" PrivateAssets="all" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
     <!-- Override transitive references to non-vulnerable versions (GHSA-g4vj-cjjj-v7hg). -->
-    <PackageReference Include="NuGet.Packaging" Version="6.12.5" />
-    <PackageReference Include="NuGet.Protocol" Version="6.12.5" />
+    <PackageReference Include="NuGet.Packaging" Version="7.6.0" />
+    <PackageReference Include="NuGet.Protocol" Version="7.6.0" />
   </ItemGroup>
 
   <ItemGroup>

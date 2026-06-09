@@ -29,6 +29,16 @@ public class StageOperation : StageOperationBase
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StageOperation"/> class.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="input">The input for the operation.</param>
+    /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
+    public StageOperation(JobBuilder builder, IOperationInput? input, TaskTypeInfo taskType)
+        : this(builder, input, 0, taskType)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StageOperation"/> class for a stage without input.
@@ -46,8 +56,25 @@ public class StageOperation : StageOperationBase
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StageOperation"/> class for a stage without input.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="taskCount">The number of tasks in the stage.</param>
+    /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
+    public StageOperation(JobBuilder builder, int taskCount, TaskTypeInfo taskType)
+        : this(builder, null, taskCount, taskType)
+    {
+    }
+
+
     private StageOperation(JobBuilder builder, IOperationInput? input, int noInputTaskCount, Type taskType)
-        : base(builder, MakeGenericTaskType(taskType, input))
+        : this(builder, input, noInputTaskCount, new TaskTypeInfo(MakeGenericTaskType(taskType, input)))
+    {
+    }
+
+    private StageOperation(JobBuilder builder, IOperationInput? input, int noInputTaskCount, TaskTypeInfo taskType)
+        : base(builder, taskType)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(taskType);
@@ -76,7 +103,7 @@ public class StageOperation : StageOperationBase
         }
 
         builder.AddOperation(this);
-        builder.AddAssembly(taskType.Assembly);
+        builder.AddAssembly(taskType.TaskType.Assembly);
 
         _noInputTaskCount = noInputTaskCount;
     }

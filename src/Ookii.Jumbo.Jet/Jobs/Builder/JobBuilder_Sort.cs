@@ -15,7 +15,7 @@ public sealed partial class JobBuilder
     /// <returns>A <see cref="SortOperation"/> instance that can be used to further customize the operation.</returns>
     /// <remarks>
     /// <para>
-    ///   This operation sorts all the records produced by a single task in memory. For large or unknown amounts of records, use <see cref="SpillSortCombine"/> instead.
+    ///   This operation sorts all the records produced by a single task in memory. For large or unknown amounts of records, use <see cref="SpillSortCombine{TKey, TValue}(IOperationInput, Action{TKey, IEnumerable{TValue}, RecordWriter{Pair{TKey, TValue}}}, Type?, RecordReuseMode)"/> instead.
     /// </para>
     /// </remarks>
     public SortOperation MemorySort(IOperationInput input, Type? comparerType = null)
@@ -37,7 +37,7 @@ public sealed partial class JobBuilder
     {
         ArgumentNullException.ThrowIfNull(input);
         CheckIfInputBelongsToJobBuilder(input);
-        return SortOperation.CreateSpillSortOperation(this, input, comparerType, null);
+        return SortOperation.CreateSpillSortOperation(this, input, comparerType);
     }
 
     /// <summary>
@@ -55,6 +55,23 @@ public sealed partial class JobBuilder
         CheckIfInputBelongsToJobBuilder(input);
         return SortOperation.CreateSpillSortOperation(this, input, comparerType, combinerType);
     }
+
+    /// <summary>
+    /// Sorts the specified input by using a file channel with an output type of <see cref="Channels.FileChannelOutputType.SortSpill"/>.
+    /// </summary>
+    /// <param name="input">The input.</param>
+    /// <param name="combinerType">Type of the combiner task. May be <see langword="null"/>. May be a generic type definition with a single type parameter.</param>
+    /// <param name="comparerType">Type of the comparer to use. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="IRawComparer{T}"/> are supported, but using <see cref="IRawComparer{T}"/> is strongly recommended.</param>
+    /// <returns>
+    /// A <see cref="SortOperation"/> instance that can be used to further customize the operation.
+    /// </returns>
+    public SortOperation SpillSortCombine(IOperationInput input, TaskTypeInfo combinerType, Type? comparerType = null)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        CheckIfInputBelongsToJobBuilder(input);
+        return SortOperation.CreateSpillSortOperation(this, input, comparerType, combinerType);
+    }
+
 
     /// <summary>
     /// Sorts the specified input by using a file channel with an output type of <see cref="Channels.FileChannelOutputType.SortSpill"/> and using

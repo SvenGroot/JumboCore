@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Xml;
 using System.Xml.Serialization;
 using Ookii.Jumbo.IO;
@@ -659,7 +660,7 @@ public class JobConfiguration
             // DisplayName isn't used in comparied AdditionalProgressCounter objects so we can postpone setting it.
             if (!_additionalProgressCounters.Contains(counter))
             {
-                var attribute = (AdditionalProgressCounterAttribute?)Attribute.GetCustomAttribute(type, typeof(AdditionalProgressCounterAttribute));
+                var attribute = (AdditionalProgressCounterAttribute?)Attribute.GetCustomAttribute(type is TypeBuilder ? type.BaseType! : type, typeof(AdditionalProgressCounterAttribute));
                 counter.DisplayName = attribute == null ? type.Name : attribute.DisplayName;
                 _additionalProgressCounters.Add(counter);
                 return true;

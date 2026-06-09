@@ -290,7 +290,8 @@ public sealed partial class JobBuilder
         ArgumentNullException.ThrowIfNull(assembly);
 
         if (!_dependencyAssemblies.Contains(assembly.FullName!) &&
-            (_taskBuilder.IsDynamicAssembly(assembly) || _assemblies.Add(assembly)))
+            !_taskBuilder.IsDynamicAssembly(assembly) &&
+            _assemblies.Add(assembly))
         {
             foreach (var reference in assembly.GetReferencedAssemblies())
             {

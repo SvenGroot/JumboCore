@@ -28,17 +28,13 @@ public abstract class StageOperationBase : IJobBuilderOperation
     /// </summary>
     /// <param name="builder">The job builder.</param>
     /// <param name="taskType">Type of the task.</param>
-    protected StageOperationBase(JobBuilder builder, Type taskType)
+    protected StageOperationBase(JobBuilder builder, TaskTypeInfo taskType)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(taskType);
-        if (taskType.IsGenericTypeDefinition)
-        {
-            throw new ArgumentException("Task type must be a concrete type.", nameof(taskType));
-        }
 
         _builder = builder;
-        _taskTypeInfo = new TaskTypeInfo(taskType);
+        _taskTypeInfo = taskType;
     }
 
     /// <summary>

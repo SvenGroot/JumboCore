@@ -71,6 +71,35 @@ public class TwoStepOperation : StageOperation
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="TwoStepOperation"/> class.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="input">The input for the operation.</param>
+    /// <param name="taskType">Type of the task. May be a generic type definition with a single type parameter.</param>
+    /// <param name="secondStepTaskType">The type of the task for the second step. May be a generic type definition with a single type parameter. May be <see langword="null"/> to use the same type as <paramref name="taskType"/>.</param>
+    /// <param name="usePrePartitioning">If set to <see langword="true"/> the input to the first step will be partitioned when a second step is created.</param>
+    public TwoStepOperation(JobBuilder builder, IOperationInput input, TaskTypeInfo taskType, TaskTypeInfo? secondStepTaskType, bool usePrePartitioning)
+        : base(builder, CreateExtraStepForDataInput(builder, input), taskType)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        if (secondStepTaskType != null)
+        {
+            _secondStepTaskType = secondStepTaskType;
+            if (!(_secondStepTaskType.InputRecordType == TaskType.OutputRecordType && _secondStepTaskType.OutputRecordType == TaskType.OutputRecordType))
+            {
+                throw new ArgumentException("The second step task type is incompatible with the first step task type.");
+            }
+        }
+        else
+        {
+            _secondStepTaskType = TaskType;
+        }
+
+        _usePrePartitioning = usePrePartitioning;
+    }
+
+    /// <summary>
     /// Gets or sets the stage ID for the second step, if one is created.
     /// </summary>
     /// <value>

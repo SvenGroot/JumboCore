@@ -44,7 +44,7 @@ public class InnerJoinOperation : StageOperationBase
     /// <param name="outerComparerType">Type of the comparer used to sort the outer relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="IRawComparer{T}"/> are supported, but using <see cref="IRawComparer{T}"/> is strongly recommended.</param>
     /// <param name="innerComparerType">Type of the comparer used to sort the inner relation. May be <see langword="null"/>. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="IRawComparer{T}"/> are supported, but using <see cref="IRawComparer{T}"/> is strongly recommended.</param>
     public InnerJoinOperation(JobBuilder builder, IOperationInput outerInput, IOperationInput innerInput, Type innerJoinRecordReaderType, Type outerComparerType, Type innerComparerType)
-        : base(builder, GetEmptyTaskTypeForRecord(innerJoinRecordReaderType))
+        : base(builder, new TaskTypeInfo(GetEmptyTaskTypeForRecord(innerJoinRecordReaderType)))
     {
         ArgumentNullException.ThrowIfNull(outerInput);
         ArgumentNullException.ThrowIfNull(innerInput);

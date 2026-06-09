@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Ookii.Common;
 using Ookii.Jumbo.Jet.Channels;
 using Ookii.Jumbo.Jet.Tasks;
 
@@ -11,10 +12,9 @@ namespace Ookii.Jumbo.Jet.Jobs.Builder;
 public class SortOperation : TwoStepOperation
 {
     private readonly Type? _comparerType;
-    private readonly Type? _combinerType;
     private readonly bool _useSpillSort;
 
-    private SortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, Type? combinerType, bool useSpillSort)
+    private SortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, TaskTypeInfo? combinerType, bool useSpillSort)
         : base(builder, input, typeof(SortTask<>), typeof(EmptyTask<>), true)
     {
         if (comparerType != null)
@@ -45,22 +45,16 @@ public class SortOperation : TwoStepOperation
                 throw new NotSupportedException("Combiners can only be used with spill sort.");
             }
 
-            if (combinerType.IsGenericTypeDefinition)
-            {
-                combinerType = combinerType.MakeGenericType(input.RecordType!);
-            }
-
-            var info = new TaskTypeInfo(combinerType);
-            if (!(info.InputRecordType == input.RecordType && info.OutputRecordType == input.RecordType))
+            if (!(combinerType.InputRecordType == input.RecordType && combinerType.OutputRecordType == input.RecordType))
             {
                 throw new ArgumentException("The combiner's input or output record type doesn't match the sort operation's input record type.");
             }
 
-            builder.AddAssembly(combinerType.Assembly);
+            builder.AddAssembly(combinerType.TaskType.Assembly);
         }
 
         _comparerType = comparerType;
-        _combinerType = combinerType;
+        CombinerType = combinerType;
         InputChannel!.MultiInputRecordReaderType = typeof(MergeRecordReader<>);
         StageId = "SortStage";
         SecondStepStageId = "MergeStage";
@@ -73,10 +67,7 @@ public class SortOperation : TwoStepOperation
     /// <value>
     /// The type of the combiner.
     /// </value>
-    public Type? CombinerType
-    {
-        get { return _combinerType; }
-    }
+    public TaskTypeInfo? CombinerType { get; private init; }
 
     /// <summary>
     /// Gets the type of the comparer.
@@ -113,6 +104,20 @@ public class SortOperation : TwoStepOperation
     /// <param name="builder">The job builder.</param>
     /// <param name="input">The input for this operation.</param>
     /// <param name="comparerType">Type of the comparer to use, or <see langword="null"/> to use the default. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> are supported, but using <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> is strongly recommended.</param>
+    /// <returns>
+    /// A <see cref="SortOperation" /> instance.
+    /// </returns>
+    public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type? comparerType)
+    {
+        return CreateSpillSortOperation(builder, input, comparerType, (TaskTypeInfo?)null);
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="SortOperation" /> class for regular sorting.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="input">The input for this operation.</param>
+    /// <param name="comparerType">Type of the comparer to use, or <see langword="null"/> to use the default. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> are supported, but using <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> is strongly recommended.</param>
     /// <param name="combinerType">The type of the combiner task to use, or <see langword="null" /> to use no combiner. May be a generic type definition with a single type parameter.</param>
     /// <returns>
     /// A <see cref="SortOperation" /> instance.
@@ -122,11 +127,27 @@ public class SortOperation : TwoStepOperation
     /// </remarks>
     public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, Type? combinerType)
     {
+        return CreateSpillSortOperation(builder, input, comparerType, combinerType.Map(c => new TaskTypeInfo(c, input)));
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="SortOperation" /> class for regular sorting.
+    /// </summary>
+    /// <param name="builder">The job builder.</param>
+    /// <param name="input">The input for this operation.</param>
+    /// <param name="comparerType">Type of the comparer to use, or <see langword="null"/> to use the default. May be a generic type definition with a single type parameter. Both <see cref="IComparer{T}"/> and <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> are supported, but using <see cref="Ookii.Jumbo.IO.IRawComparer{T}"/> is strongly recommended.</param>
+    /// <param name="combinerType">The type of the combiner task to use, or <see langword="null" /> to use no combiner. May be a generic type definition with a single type parameter.</param>
+    /// <returns>
+    /// A <see cref="SortOperation" /> instance.
+    /// </returns>
+    public static SortOperation CreateSpillSortOperation(JobBuilder builder, IOperationInput input, Type? comparerType, TaskTypeInfo? combinerType)
+    {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(input);
 
         return new SortOperation(builder, input, comparerType, combinerType, true);
     }
+
 
     /// <summary>
     /// Creates the configuration for this stage.
@@ -157,9 +178,9 @@ public class SortOperation : TwoStepOperation
                 input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortComparerType, _comparerType.AssemblyQualifiedName!);
             }
 
-            if (_combinerType != null)
+            if (CombinerType != null)
             {
-                input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, _combinerType.AssemblyQualifiedName!);
+                input.InputStage.AddSetting(JumboSettings.FileChannel.Stage.SpillSortCombinerType, CombinerType.TaskTypeName);
             }
 
             return compiler.CreateStage("MergeStage", SecondStepTaskType.TaskType, InputChannel.TaskCount, input, Output, true, InputChannel.Settings);

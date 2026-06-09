@@ -19,9 +19,9 @@ public class DynamicTaskBuilderTests
     [Test]
     public void TestCreateDynamicTask()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         Action<RecordReader<int>, RecordWriter<int>, TaskContext> taskDelegate = TaskMethod;
-        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 0, RecordReuseMode.Allow);
+        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 0, RecordReuseMode.Allow).TaskType;
         TaskContext context = CreateConfiguration(taskType);
         context.StageConfiguration.AddSetting("Factor", 2);
         ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
@@ -40,9 +40,9 @@ public class DynamicTaskBuilderTests
     [Test]
     public void TestCreateDynamicTaskNoContext()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         Action<RecordReader<int>, RecordWriter<int>> taskDelegate = TaskMethodNoContext;
-        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 0, RecordReuseMode.Allow);
+        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 0, RecordReuseMode.Allow).TaskType;
         TaskContext context = CreateConfiguration(taskType);
         ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
         List<int> data = Utilities.GenerateNumberData(10);
@@ -61,9 +61,9 @@ public class DynamicTaskBuilderTests
     [Test]
     public void TestCreateDynamicTaskReturnType()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         Func<Utf8String, int, int, int> taskDelegate = AccumulateMethod;
-        Type taskType = target.CreateDynamicTask(typeof(AccumulatorTask<Utf8String, int>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), taskDelegate, 0, RecordReuseMode.Allow);
+        Type taskType = target.CreateDynamicTask(typeof(AccumulatorTask<Utf8String, int>).GetMethod("Accumulate", BindingFlags.NonPublic | BindingFlags.Instance), taskDelegate, 0, RecordReuseMode.Allow).TaskType;
         TaskContext context = CreateConfiguration(taskType);
         AccumulatorTask<Utf8String, int> task = (AccumulatorTask<Utf8String, int>)JetActivator.CreateInstance(taskType, null, null, context);
         List<string> data = Utilities.GenerateDataWords(null, 100, 10);
@@ -85,9 +85,9 @@ public class DynamicTaskBuilderTests
     [Test]
     public void TestCreateDynamicTaskSkipParameters()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         Action<RecordWriter<int>, TaskContext> taskDelegate = TaskMethodNoInput;
-        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 1, RecordReuseMode.Allow);
+        Type taskType = target.CreateDynamicTask(typeof(ITask<int, int>).GetMethod("Run"), taskDelegate, 1, RecordReuseMode.Allow).TaskType;
         TaskContext context = CreateConfiguration(taskType);
         context.StageConfiguration.AddSetting("Count", 6);
         ITask<int, int> task = (ITask<int, int>)JetActivator.CreateInstance(taskType, null, null, context);
@@ -104,39 +104,39 @@ public class DynamicTaskBuilderTests
     [Test]
     public void TestCreateDynamicTaskAllowRecordReuse()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         MethodInfo runMethod = typeof(ITask<int, int>).GetMethod("Run");
         // From attribute
-        Type type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReuse, 0, RecordReuseMode.Default);
+        Type type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReuse, 0, RecordReuseMode.Default).TaskType;
         VerifyRecordReuse(type, true);
         // With passthrough
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReusePassThrough, 0, RecordReuseMode.Default);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReusePassThrough, 0, RecordReuseMode.Default).TaskType;
         VerifyRecordReuse(type, true, true);
         // Not allowed despite attribute
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReuse, 0, RecordReuseMode.DoNotAllow);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodAllowRecordReuse, 0, RecordReuseMode.DoNotAllow).TaskType;
         VerifyRecordReuse(type, false);
         // No attribute
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Default);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Default).TaskType;
         VerifyRecordReuse(type, false);
         // No attribute with mode
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Allow);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Allow).TaskType;
         VerifyRecordReuse(type, true);
         // No attribute with mode (passthrough)
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.PassThrough);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.PassThrough).TaskType;
         VerifyRecordReuse(type, true, true);
         // Mode used for lambda
-        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)((input, output) => { }), 0, RecordReuseMode.Allow);
+        type = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)((input, output) => { }), 0, RecordReuseMode.Allow).TaskType;
         VerifyRecordReuse(type, true);
     }
 
     [Test]
     public void TestCreateDynamicTaskCache()
     {
-        DynamicTaskBuilder target = new DynamicTaskBuilder();
+        DynamicTaskBuilder target = new DynamicTaskBuilder(false);
         MethodInfo runMethod = typeof(ITask<int, int>).GetMethod("Run");
-        Type type1 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.DoNotAllow);
-        Type type2 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.DoNotAllow);
-        Type type3 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Allow);
+        Type type1 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.DoNotAllow).TaskType;
+        Type type2 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.DoNotAllow).TaskType;
+        Type type3 = target.CreateDynamicTask(runMethod, (Action<RecordReader<int>, RecordWriter<int>>)TaskMethodNoContext, 0, RecordReuseMode.Allow).TaskType;
 
         Assert.That(type1.Name, Is.EqualTo("TaskMethodNoContextTask"));
         Assert.That(type3.Name, Is.EqualTo("TaskMethodNoContextTask2"));

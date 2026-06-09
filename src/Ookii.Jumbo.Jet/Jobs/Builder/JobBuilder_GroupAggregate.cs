@@ -32,7 +32,23 @@ public sealed partial class JobBuilder
             accumulatorTaskType = ConstructGenericAccumulatorTaskType(input.RecordType, accumulatorTaskType);
         }
 
-        var taskBaseType = accumulatorTaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true)!; // Ensure it's an accumulator.
+        return GroupAggregate(input, new TaskTypeInfo(accumulatorTaskType), keyComparerType);
+    }
+
+    /// <summary>
+    /// Groups the input records by key, then aggregates their values.
+    /// </summary>
+    /// <param name="input">The input.</param>
+    /// <param name="accumulatorTaskType">The type of the accumulator task used to collect the aggregated values. May be a generic type definition with one or two generic parameters.</param>
+    /// <param name="keyComparerType">Type of the <see cref="IEqualityComparer{T}"/> to use to compare the aggregation keys, 
+    /// or <see langword="null" /> to use <see cref="EqualityComparer{T}.Default"/>. May be a generic type definition with one type parameter, which will be set to the key type.</param>
+    /// <returns>A <see cref="TwoStepOperation"/> instance that can be used to further customize the operation.</returns>
+    public TwoStepOperation GroupAggregate(IOperationInput input, TaskTypeInfo accumulatorTaskType, Type? keyComparerType = null)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(accumulatorTaskType);
+
+        var taskBaseType = accumulatorTaskType.TaskType.FindGenericBaseType(typeof(AccumulatorTask<,>), true)!; // Ensure it's an accumulator.
 
         if (keyComparerType != null)
         {
@@ -53,13 +69,14 @@ public sealed partial class JobBuilder
 
         if (keyComparerType != null)
         {
-            AddAssembly(accumulatorTaskType.Assembly);
+            AddAssembly(keyComparerType.Assembly);
             result.Settings.Add(TaskConstants.AccumulatorTaskKeyComparerSettingKey, keyComparerType.AssemblyQualifiedName!);
             result.InputChannel!.Settings.Add(PartitionerConstants.EqualityComparerSetting, keyComparerType.AssemblyQualifiedName!);
         }
 
         return result;
     }
+
 
     /// <summary>
     /// Groups the input records by key, then aggregates their values using the specified accumulator task function.

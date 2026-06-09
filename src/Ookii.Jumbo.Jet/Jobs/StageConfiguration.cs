@@ -181,7 +181,7 @@ public class StageConfiguration
         {
             if (value == null)
             {
-                _dataInput = null;
+                _dataOutput = null;
                 DataOutputType = TypeReference.Empty;
             }
             else

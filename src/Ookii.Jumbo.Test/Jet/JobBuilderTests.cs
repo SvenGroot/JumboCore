@@ -385,7 +385,7 @@ public class JobBuilderTests
         JobConfiguration config = builder.CreateJob();
         VerifyAssemblyNames(config.AssemblyFileNames);
         Assert.That(config.AssemblyFileNames.Last(), Does.StartWith("Ookii.Jumbo.Jet.Generated."));
-        Assert.That(sort.CombinerType.Name, Is.EqualTo("CombineRecordsTask"));
+        Assert.That(sort.CombinerType.TaskType.Name, Is.EqualTo("CombineRecordsTask"));
 
         Assert.That(config.Stages.Count, Is.EqualTo(2));
 
@@ -397,7 +397,7 @@ public class JobBuilderTests
         VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill.ToString());
         VerifyStageSetting(config.Stages[1], JumboSettings.FileChannel.StageOrJob.ChannelOutputType, null);
         VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortComparerType, null);
-        VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortCombinerType, sort.CombinerType.AssemblyQualifiedName);
+        VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortCombinerType, sort.CombinerType.TaskTypeName);
         VerifyStageSetting(config.Stages[1], JumboSettings.FileChannel.Stage.SpillSortCombinerType, null);
         config.Validate();
         builder.TaskBuilder.DeleteAssembly();
@@ -415,7 +415,7 @@ public class JobBuilderTests
         JobConfiguration config = builder.CreateJob();
         VerifyAssemblyNames(config.AssemblyFileNames);
         Assert.That(config.AssemblyFileNames.Last(), Does.StartWith("Ookii.Jumbo.Jet.Generated."));
-        Assert.That(sort.CombinerType.Name, Is.EqualTo("CombineRecordsNoContextTask"));
+        Assert.That(sort.CombinerType.TaskType.Name, Is.EqualTo("CombineRecordsNoContextTask"));
 
         Assert.That(config.Stages.Count, Is.EqualTo(2));
 
@@ -427,7 +427,7 @@ public class JobBuilderTests
         VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.StageOrJob.ChannelOutputType, FileChannelOutputType.SortSpill.ToString());
         VerifyStageSetting(config.Stages[1], JumboSettings.FileChannel.StageOrJob.ChannelOutputType, null);
         VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortComparerType, null);
-        VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortCombinerType, sort.CombinerType.AssemblyQualifiedName);
+        VerifyStageSetting(config.Stages[0], JumboSettings.FileChannel.Stage.SpillSortCombinerType, sort.CombinerType.TaskTypeName);
         VerifyStageSetting(config.Stages[1], JumboSettings.FileChannel.Stage.SpillSortCombinerType, null);
         config.Validate();
         builder.TaskBuilder.DeleteAssembly();
@@ -491,7 +491,7 @@ public class JobBuilderTests
         builder.Write(aggregated, _outputPath, typeof(TextRecordWriter<>));
 
         JobConfiguration config = builder.CreateJob();
-        Assert.That(config.AssemblyFileNames.Count, Is.EqualTo(0));
+        Assert.That(config.AssemblyFileNames.Count, Is.EqualTo(1));
 
         Assert.That(config.Stages.Count, Is.EqualTo(2));
 

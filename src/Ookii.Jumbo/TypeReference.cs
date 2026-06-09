@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sven Groot (Ookii.org)
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Emit;
 using System.Xml.Serialization;
 
 namespace Ookii.Jumbo;
@@ -24,7 +25,14 @@ public struct TypeReference : IXmlSerializable, IEquatable<TypeReference>
     public TypeReference(Type? type)
     {
         _type = type;
-        TypeName = type?.AssemblyQualifiedName;
+        if (type is TypeBuilder)
+        {
+            TypeName = type.FullName + ", " + type.Assembly.FullName;
+        }
+        else
+        {
+            TypeName = type?.AssemblyQualifiedName;
+        }
     }
 
     /// <summary>

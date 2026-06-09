@@ -95,7 +95,7 @@ public sealed partial class JobBuilder
     /// <remarks>
     /// <note>
     ///   Reduce tasks require that their input is already grouped by key. The <see cref="JobBuilder"/> class doesn't guarantee or verify this. To group the
-    ///   records in the same way other common MapReduce implementation do, use the <see cref="SpillSortCombine"/> function.
+    ///   records in the same way other common MapReduce implementation do, use the <see cref="SpillSortCombine{TKey, TValue}(IOperationInput, Action{TKey, IEnumerable{TValue}, RecordWriter{Pair{TKey, TValue}}}, Type?, RecordReuseMode)"/> function.
     /// </note>
     /// <note>
     ///   There is no non-delegate version of this method. To use an existing map task class, simply use the <see cref="Process(IOperationInput,Type)"/> function.
@@ -138,7 +138,7 @@ public sealed partial class JobBuilder
     /// <remarks>
     /// <note>
     ///   Reduce tasks require that their input is already grouped by key. The <see cref="JobBuilder"/> class doesn't guarantee or verify this. To group the
-    ///   records in the same way other common MapReduce implementation do, use the <see cref="SpillSortCombine"/> function.
+    ///   records in the same way other common MapReduce implementation do, use the <see cref="SpillSortCombine{TKey, TValue}(IOperationInput, Action{TKey, IEnumerable{TValue}, RecordWriter{Pair{TKey, TValue}}}, Type?, RecordReuseMode)"/> function.
     /// </note>
     /// <note>
     ///   There is no non-delegate version of this method. To use an existing map task class, simply use the <see cref="Process(IOperationInput,Type)"/> function.
@@ -199,7 +199,7 @@ public sealed partial class JobBuilder
         return result;
     }
 
-    private Type CreateReduceTask<TKey, TValue, TOutput>(Delegate reducer, RecordReuseMode recordReuse)
+    private TaskTypeInfo CreateReduceTask<TKey, TValue, TOutput>(Delegate reducer, RecordReuseMode recordReuse)
         where TKey : notnull, IComparable<TKey>
         where TValue : notnull
         where TOutput : notnull

@@ -17,7 +17,7 @@ namespace Ookii.Jumbo.Jet.Tasks;
 /// </note>
 /// <note>
 ///   This task performs an in-memory sort of all records. Use it to sort small amounts of records only. For large (or unknown) numbers of records, use the file channel with <see cref="Ookii.Jumbo.Jet.Channels.FileChannelOutputType.SortSpill"/>
-///   (e.g. using the <see cref="Ookii.Jumbo.Jet.Jobs.Builder.JobBuilder.SpillSortCombine"/> function).
+///   (e.g. using the <see cref="Jobs.Builder.JobBuilder.SpillSortCombineCore{TKey, TValue}(Ookii.Jumbo.Jet.Jobs.Builder.IOperationInput, Delegate, Type?, Ookii.Jumbo.Jet.Jobs.Builder.RecordReuseMode)"/> function).
 /// </note>
 /// </remarks>
 public class SortTask<T> : PrepartitionedPushTask<T, T>
